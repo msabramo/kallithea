@@ -1,0 +1,13 @@
+
+syntax: regexp
+^data$
+syntax: regexp
+^\.settings$
+syntax: regexp
+^\.project$
+syntax: regexp
+^\.pydevproject$
+syntax: regexp
+^hg_app\.db$
+syntax: regexp
+^repositories\.config$

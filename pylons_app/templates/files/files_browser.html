@@ -1,0 +1,71 @@
+<%def name="file_class(node)">
+	%if node.is_file():
+		<%return "browser-file" %>
+	%else:
+		<%return "browser-dir"%>
+	%endif
+</%def>
+<div id="body" class="browserblock">
+	<div class="browser-header">
+		${h.form(h.url.current())}
+		<div class="info_box">
+          <span >${_('view')}@rev</span> 
+          <a href="${c.url_prev}">&laquo;</a>
+          ${h.text('at_rev',value=c.rev_nr,size=3)}
+          <a href="${c.url_next}">&raquo;</a>
+          ${h.submit('view','view')}
+	    </div>           
+		${h.end_form()}
+	</div>
+	<div class="browser-body">
+		<table class="code-browser">
+		         <thead>
+		             <tr>
+		                 <th>${_('Name')}</th>
+		                 <th>${_('Size')}</th>
+		                 <th>${_('Revision')}</th>
+		                 <th>${_('Last modified')}</th>
+		                 <th>${_('Last commiter')}</th>
+		             </tr>
+		         </thead>
+		         	<tr class="parity0">
+		          		<td>
+		          		% if c.files_list.parent:
+		          			${h.link_to('..',h.url('files_home',repo_name=c.repo_name,revision=c.cur_rev,f_path=c.files_list.parent.path),class_="browser-dir")}
+		          		%endif
+		          		</td>
+		          		<td></td>
+		          		<td></td>
+		          		<td></td>
+		          		<td></td>
+		         	</tr>
+		    %for cnt,node in enumerate(c.files_list,1):
+				<tr class="parity${cnt%2}">
+		             <td>
+						${h.link_to(node.name,h.url('files_home',repo_name=c.repo_name,revision=c.cur_rev,f_path=node.path),class_=file_class(node))}
+		             </td>
+		             <td>
+		                %if node.is_file():
+		             		${h.format_byte_size(node.size,binary=True)}
+		             	%endif
+		             </td>
+		             <td>
+		             	%if node.is_file():
+		             		${node.last_changeset.revision}
+		             	%endif
+		             </td>
+		             <td>
+		             	%if node.is_file():
+		             		${h.age(node.last_changeset._ctx.date())} - ${node.last_changeset.date}
+		             	%endif
+		             </td>
+		             <td>
+		             	%if node.is_file():
+		             		${node.last_changeset.author}
+		             	%endif                    
+		             </td>
+				</tr>
+			%endfor
+		</table>
+	</div>
+</div>
