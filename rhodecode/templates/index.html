@@ -1,0 +1,98 @@
+## -*- coding: utf-8 -*-
+<%inherit file="base/base.html"/>
+<%def name="title()">
+    ${c.rhodecode_name}
+</%def>
+<%def name="breadcrumbs()">
+	${c.rhodecode_name}
+</%def>
+<%def name="page_nav()">
+	${self.menu('home')}
+</%def>
+<%def name="main()">
+	<%def name="get_sort(name)">
+		<%name_slug = name.lower().replace(' ','_') %>
+		
+		%if name_slug == c.sort_slug:
+		  %if c.sort_by.startswith('-'):
+		    <a href="?sort=${name_slug}">${name}&uarr;</a>
+		  %else:
+		    <a href="?sort=-${name_slug}">${name}&darr;</a>
+		  %endif:
+		%else:
+		    <a href="?sort=${name_slug}">${name}</a>
+		%endif
+	</%def>
+	
+    <div class="box">
+	    <!-- box / title -->
+	    <div class="title">
+	        <h5>${_('Dashboard')}</h5>
+	        %if h.HasPermissionAny('hg.admin','hg.create.repository')():
+	        <ul class="links">
+	          <li>
+	            <span>${h.link_to(_('ADD NEW REPOSITORY'),h.url('admin_settings_create_repository'))}</span>
+	          </li>          
+	        </ul>  	        
+	        %endif
+	    </div>
+	    <!-- end box / title -->
+        <div class="table">
+                    <table>
+            <thead>
+	            <tr>
+			        <th class="left">${get_sort(_('Name'))}</th>
+			        <th class="left">${get_sort(_('Description'))}</th>
+			        <th class="left">${get_sort(_('Last change'))}</th>
+			        <th class="left">${get_sort(_('Tip'))}</th>
+			        <th class="left">${get_sort(_('Contact'))}</th>
+			        <th class="left">${_('RSS')}</th>
+			        <th class="left">${_('Atom')}</th>
+	            </tr>
+            </thead>
+                        <tbody>
+					    %for cnt,repo in enumerate(c.repos_list):
+					        %if h.HasRepoPermissionAny('repository.write','repository.read','repository.admin')(repo['name'],'main page check'):
+					        <tr class="parity${cnt%2}">
+					            <td>
+					             %if repo['repo'].dbrepo.private:
+					                <img class="icon" alt="${_('private')}" src="/images/icons/lock.png"/>
+					             %else:
+					                <img class="icon" alt="${_('public')}" src="/images/icons/lock_open.png"/>
+					             %endif  
+					            ${h.link_to(repo['name'],
+					                h.url('summary_home',repo_name=repo['name']))}
+					            %if repo['repo'].dbrepo.fork:
+					            	<a href="${h.url('summary_home',repo_name=repo['repo'].dbrepo.fork.repo_name)}">
+					            	<img class="icon" alt="${_('public')}"
+					            	title="${_('Fork of')} ${repo['repo'].dbrepo.fork.repo_name}" 
+					            	src="/images/icons/arrow_divide.png"/></a>
+					            %endif
+					            </td>
+					            <td title="${repo['description']}">${h.truncate(repo['description'],60)}</td>
+					            <td>${h.age(repo['last_change'])}</td>
+					            <td>
+					            	%if repo['rev']>=0:
+					            	${h.link_to('r%s:%s' % (repo['rev'],repo['tip']),
+					                h.url('changeset_home',repo_name=repo['name'],revision=repo['tip']),
+					                class_="tooltip",
+					                tooltip_title=h.tooltip(repo['last_msg']))}
+					            	%else:
+					            		${_('No changesets yet')}
+					            	%endif    
+					            </td>
+					            <td title="${repo['contact']}">${h.person(repo['contact'])}</td>
+					            <td>
+					                <a title="${_('Subscribe to %s rss feed')%repo['name']}" class="rss_icon"  href="${h.url('rss_feed_home',repo_name=repo['name'])}"></a>
+					            </td>        
+					            <td>
+					                <a title="${_('Subscribe to %s atom feed')%repo['name']}"  class="atom_icon" href="${h.url('atom_feed_home',repo_name=repo['name'])}"></a>
+					            </td>
+					        </tr>
+					        %endif
+					    %endfor
+                        </tbody>
+                    </table>
+            </div>
+    </div>	
+</%def>    
