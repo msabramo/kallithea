@@ -1,0 +1,594 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${c.repo_name} ${_('Summary')} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(u'Home',h.url('/'))}
+    &raquo; 
+    ${h.link_to(c.repo_name,h.url('summary_home',repo_name=c.repo_name))}
+    &raquo;
+    ${_('summary')}
+</%def>
+
+<%def name="page_nav()">
+	${self.menu('summary')}    
+</%def>
+
+<%def name="main()">
+<script type="text/javascript">
+var E = YAHOO.util.Event;
+var D = YAHOO.util.Dom;
+
+E.onDOMReady(function(e){
+    id = 'clone_url';
+    E.addListener(id,'click',function(e){
+        D.get('clone_url').select();
+    })
+})
+</script>
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+	<div class="form">
+	  <div class="fields">
+		 
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Name')}:</label>
+			  </div>
+			  <div class="input-short">
+		         %if c.repo_info.dbrepo.repo_type =='hg':
+		           <img style="margin-bottom:2px" class="icon" title="${_('Mercurial repository')}" alt="${_('Mercurial repository')}" src="/images/icons/hgicon.png"/>
+		         %endif
+		         %if c.repo_info.dbrepo.repo_type =='git':
+		           <img style="margin-bottom:2px" class="icon" title="${_('Git repository')}" alt="${_('Git repository')}" src="/images/icons/giticon.png"/>
+		         %endif 
+                                 			  
+	             %if c.repo_info.dbrepo.private:
+	                <img style="margin-bottom:2px" class="icon" title="${_('private repository')}" alt="${_('private repository')}" src="/images/icons/lock.png"/>
+	             %else:
+	                <img style="margin-bottom:2px" class="icon" title="${_('public repository')}" alt="${_('public repository')}" src="/images/icons/lock_open.png"/>
+	             %endif
+			      <span style="font-size: 1.6em;font-weight: bold;vertical-align: baseline;">${c.repo_info.name}</span>
+			      <br/>
+		            %if c.repo_info.dbrepo.fork:
+		            	<span style="margin-top:5px">
+		            	<a href="${h.url('summary_home',repo_name=c.repo_info.dbrepo.fork.repo_name)}">
+		            	<img class="icon" alt="${_('public')}"
+		            	title="${_('Fork of')} ${c.repo_info.dbrepo.fork.repo_name}" 
+		            	src="/images/icons/arrow_divide.png"/>
+		            	${_('Fork of')} ${c.repo_info.dbrepo.fork.repo_name}
+		            	</a>
+		            	</span>
+		            %endif			      
+			  </div>
+			 </div>
+			
+			
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Description')}:</label>
+			  </div>
+			  <div class="input-short">
+			      ${c.repo_info.dbrepo.description}
+			  </div>
+			 </div>
+			
+			
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Contact')}:</label>
+			  </div>
+			  <div class="input-short">
+			  	<div class="gravatar">
+			  		<img alt="gravatar" src="${h.gravatar_url(c.repo_info.dbrepo.user.email)}"/>
+			  	</div>
+			  		${_('Username')}: ${c.repo_info.dbrepo.user.username}<br/>
+			  		${_('Name')}: ${c.repo_info.dbrepo.user.name} ${c.repo_info.dbrepo.user.lastname}<br/>
+			  		${_('Email')}: <a href="mailto:${c.repo_info.dbrepo.user.email}">${c.repo_info.dbrepo.user.email}</a>
+			  </div>
+			 </div>
+			
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Last change')}:</label>
+			  </div>
+			  <div class="input-short">
+			      ${h.age(c.repo_info.last_change)} - ${c.repo_info.last_change} 
+			      ${_('by')} ${h.get_changeset_safe(c.repo_info,'tip').author} 
+			      
+			  </div>
+			 </div>
+			
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Clone url')}:</label>
+			  </div>
+			  <div class="input-short">
+			      <input type="text" id="clone_url" readonly="readonly" value="hg clone ${c.clone_repo_url}" size="70"/>
+			  </div>
+			 </div>
+			 
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Trending languages')}:</label>
+			  </div>
+			  <div class="input-short">
+			    <div id="lang_stats">
+			    
+			    </div> 			  
+			  	<script type="text/javascript">
+			  		var data = ${c.trending_languages|n};
+			  		var total = 0;
+			  		var no_data = true;
+			  		for (k in data){
+			  		    total += data[k];
+			  		    no_data = false;
+			  		} 
+					var tbl = document.createElement('table');
+					tbl.setAttribute('class','trending_language_tbl');
+			  		for (k in data){
+				  		var tr = document.createElement('tr');
+				  		var percentage = Math.round((data[k]/total*100),2);
+						var value = data[k];
+				  		var td1 = document.createElement('td');
+				  		td1.width=150;
+				  		var trending_language_label = document.createElement('div');
+				  		trending_language_label.innerHTML = k;
+				  		td1.appendChild(trending_language_label);
+
+				  		var td2 = document.createElement('td');
+				  		td2.setAttribute('style','padding-right:14px !important');
+			  		    var trending_language = document.createElement('div');
+			  		    trending_language.title = k;
+			  		    trending_language.innerHTML = "<b>"+percentage+"% "+value+" ${_('files')}</b>";
+			  		    trending_language.setAttribute("class", 'trending_language top-right-rounded-corner bottom-right-rounded-corner');
+			  		    trending_language.style.width=percentage+"%";
+						td2.appendChild(trending_language);
+						
+						tr.appendChild(td1);
+						tr.appendChild(td2);
+			  		    tbl.appendChild(tr);
+			  		    
+			  		}
+			  		if(no_data){
+			  			var tr = document.createElement('tr');
+			  			var td1 = document.createElement('td');
+			  			td1.innerHTML = "${_('No data loaded yet')}";
+			  			tr.appendChild(td1);
+			  			tbl.appendChild(tr);
+					}
+			  		YAHOO.util.Dom.get('lang_stats').appendChild(tbl);
+			  	</script>
+ 
+			  </div>
+			 </div>
+			 			
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Download')}:</label>
+			  </div>
+			  <div class="input-short">
+		        %for cnt,archive in enumerate(c.repo_info._get_archives()):
+		             %if cnt >=1:
+		             |
+		             %endif
+		             ${h.link_to(c.repo_info.name+'.'+archive['type'],
+		                h.url('files_archive_home',repo_name=c.repo_info.name,
+		                revision='tip',fileformat=archive['extension']),class_="archive_icon")}
+		        %endfor
+			  </div>
+			 </div>
+			 
+			 <div class="field">
+			  <div class="label">
+			      <label>${_('Feeds')}:</label>
+			  </div>
+			  <div class="input-short">
+	            ${h.link_to(_('RSS'),h.url('rss_feed_home',repo_name=c.repo_info.name),class_='rss_icon')}
+	            ${h.link_to(_('Atom'),h.url('atom_feed_home',repo_name=c.repo_info.name),class_='atom_icon')}
+			  </div>
+			 </div>				 			 			 
+	  </div>		 
+	</div>				
+</div>
+        
+<div class="box box-right"  style="min-height:455px">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Commit activity by day / author')}</h5>
+    </div>
+    
+    <div class="table">
+        <div id="commit_history" style="width:460px;height:300px;float:left"></div>
+        <div style="clear: both;height: 10px"></div>
+        <div id="overview" style="width:460px;height:100px;float:left"></div>
+        
+    	<div id="legend_data" style="clear:both;margin-top:10px;">
+	    	<div id="legend_container"></div>
+	    	<div id="legend_choices">
+				<table id="legend_choices_tables" style="font-size:smaller;color:#545454"></table>
+	    	</div>
+    	</div>
+		<script type="text/javascript">
+		/**
+		 * Plots summary graph
+		 *
+		 * @class SummaryPlot
+		 * @param {from} initial from for detailed graph
+		 * @param {to} initial to for detailed graph
+		 * @param {dataset}
+		 * @param {overview_dataset}
+		 */
+		function SummaryPlot(from,to,dataset,overview_dataset) {
+			var initial_ranges = {
+			    "xaxis":{
+				    "from":from,
+				   	"to":to,
+				},
+			};
+		    var dataset = dataset;
+		    var overview_dataset = [overview_dataset];
+		    var choiceContainer = YAHOO.util.Dom.get("legend_choices");
+		    var choiceContainerTable = YAHOO.util.Dom.get("legend_choices_tables");
+		    var plotContainer = YAHOO.util.Dom.get('commit_history');
+		    var overviewContainer = YAHOO.util.Dom.get('overview');
+		    
+		    var plot_options = {
+				bars: {show:true,align:'center',lineWidth:4},
+				legend: {show:true, container:"legend_container"},
+				points: {show:true,radius:0,fill:false},
+				yaxis: {tickDecimals:0,},
+				xaxis: {
+					mode: "time", 
+					timeformat: "%d/%m",
+				    min:from,
+				    max:to,	
+				}, 
+				grid: {
+					hoverable: true, 
+				    clickable: true,
+				    autoHighlight:true,
+				    color: "#999"
+				},
+				//selection: {mode: "x"}
+		    };
+		    var overview_options = {
+				legend:{show:false},
+			    bars: {show:true,barWidth: 2,},
+			    shadowSize: 0,
+			    xaxis: {mode: "time", timeformat: "%d/%m/%y",},
+			    yaxis: {ticks: 3, min: 0,},
+			    grid: {color: "#999",},
+			    selection: {mode: "x"}
+			};
+
+			/**
+			*get dummy data needed in few places
+			*/
+		    function getDummyData(label){
+		    	return {"label":label,
+               	 "data":[{"time":0,
+               		 "commits":0,
+	                     "added":0,
+	                     "changed":0,
+	                     "removed":0,
+                    }],
+                    "schema":["commits"],
+                    "color":'#ffffff',
+           		}
+			}
+			
+		    /**
+		     * generate checkboxes accordindly to data
+		     * @param keys
+		     * @returns
+		     */
+		    function generateCheckboxes(data) {
+			    //append checkboxes
+			    var i = 0;
+			    choiceContainerTable.innerHTML = '';
+			    for(var pos in data) {
+			    	
+			    	data[pos].color = i;
+			        i++;
+			        if(data[pos].label != ''){
+				        choiceContainerTable.innerHTML += '<tr><td>'+
+				        '<input type="checkbox" name="' + data[pos].label +'" checked="checked" />'
+				        +data[pos].label+
+				        '</td></tr>';
+			        }
+			    }	
+		    }
+		    
+		    /**
+		     * ToolTip show
+		     */
+		    function showTooltip(x, y, contents) {
+		        var div=document.getElementById('tooltip');
+		        if(!div) {
+		            div = document.createElement('div');
+		            div.id="tooltip";
+		            div.style.position="absolute";
+		            div.style.border='1px solid #fdd';
+		            div.style.padding='2px';
+		            div.style.backgroundColor='#fee';
+		            document.body.appendChild(div);
+		        }
+		        YAHOO.util.Dom.setStyle(div, 'opacity', 0);
+		        div.innerHTML = contents;
+		        div.style.top=(y + 5) + "px";
+		        div.style.left=(x + 5) + "px";
+
+		        var anim = new YAHOO.util.Anim(div, {opacity: {to: 0.8}}, 0.2);
+		        anim.animate();
+		    }
+		    
+			/**
+			 * This function will detect if selected period has some changesets for this user
+			if it does this data is then pushed for displaying
+			Additionally it will only display users that are selected by the checkbox
+			*/
+		    function getDataAccordingToRanges(ranges) {
+		    	
+		        var data = [];
+		        var keys = [];
+				for(var key in dataset){
+					var push = false;
+					//method1 slow !!
+		            ///*
+		            for(var ds in dataset[key].data){
+			            commit_data = dataset[key].data[ds];
+			            //console.log(key);
+			            //console.log(new Date(commit_data.time*1000));
+			            //console.log(new Date(ranges.xaxis.from*1000));
+			            //console.log(new Date(ranges.xaxis.to*1000));
+			            if (commit_data.time >= ranges.xaxis.from && commit_data.time <= ranges.xaxis.to){
+			            	push = true;
+			            	break;
+					    }
+				    }
+				    //*/
+				    /*//method2 sorted commit data !!!
+				    var first_commit = dataset[key].data[0].time;
+				    var last_commit = dataset[key].data[dataset[key].data.length-1].time;
+				    
+				    console.log(first_commit);
+				    console.log(last_commit);
+				    
+				    if (first_commit >= ranges.xaxis.from && last_commit <= ranges.xaxis.to){
+						push = true;
+					}
+				    */
+				    if(push){			
+				    	data.push(dataset[key]);
+				    }
+				}
+				if(data.length >= 1){
+					return data;
+				} 
+				else{
+					//just return dummy data for graph to plot itself
+					return [getDummyData('')];	
+				}
+				
+		    }
+		    
+			/**
+			* redraw using new checkbox data
+			*/
+		    function plotchoiced(e,args){
+			    var cur_data = args[0];
+			    var cur_ranges = args[1];
+		    	
+				var new_data = [];
+		    	var inputs = choiceContainer.getElementsByTagName("input");
+
+		    	//show only checked labels
+		        for(var i=0; i<inputs.length; i++) {
+		            var checkbox_key = inputs[i].name;
+		            
+	                if(inputs[i].checked){
+						for(var d in cur_data){
+							if(cur_data[d].label == checkbox_key){
+								new_data.push(cur_data[d]);
+							}
+						}			                
+	    	        }
+	                else{
+		                //push dummy data to not hide the label
+						new_data.push(getDummyData(checkbox_key));
+			        }
+		        }
+						        
+		    	var new_options = YAHOO.lang.merge(plot_options, {
+		            xaxis: { 
+		  	      		min: cur_ranges.xaxis.from, 
+		  	      		max: cur_ranges.xaxis.to,
+		  	      		mode:"time",
+		  	      		timeformat: "%d/%m",
+		        	}
+		    	});
+		    	if (!new_data){
+					new_data = [[0,1]];
+				}
+		    	// do the zooming
+		       plot = YAHOO.widget.Flot(plotContainer, new_data, new_options);
+		       
+		       plot.subscribe("plotselected", plotselected);
+	
+		       //resubscribe plothover
+		       plot.subscribe("plothover", plothover);
+		        
+		       // don't fire event on the overview to prevent eternal loop
+		       overview.setSelection(cur_ranges, true);
+	
+		    }
+		    
+			/**
+		     * plot only selected items from overview
+		     * @param ranges
+		     * @returns
+		     */
+		    function plotselected(ranges,cur_data) {
+			    //updates the data for new plot
+	    		data = getDataAccordingToRanges(ranges);
+	    		generateCheckboxes(data);
+	    		
+		    	var new_options = YAHOO.lang.merge(plot_options, {
+		            xaxis: { 
+		  	      		min: ranges.xaxis.from, 
+		  	      		max: ranges.xaxis.to,
+		  	      		mode:"time",
+		  	      		timeformat: "%d/%m",
+		        	}
+		    	});
+		    	// do the zooming
+		        plot = YAHOO.widget.Flot(plotContainer, data, new_options);
+
+		        plot.subscribe("plotselected", plotselected);
+
+		        //resubscribe plothover
+		        plot.subscribe("plothover", plothover);
+		        
+		        // don't fire event on the overview to prevent eternal loop
+		        overview.setSelection(ranges, true);
+
+		        //resubscribe choiced
+		        YAHOO.util.Event.on(choiceContainer.getElementsByTagName("input"), "click", plotchoiced, [data, ranges]);
+		    }
+		    
+		    var previousPoint = null;
+
+			function plothover(o) {
+		        var pos = o.pos;
+		        var item = o.item;
+		        
+		        //YAHOO.util.Dom.get("x").innerHTML = pos.x.toFixed(2);
+		        //YAHOO.util.Dom.get("y").innerHTML = pos.y.toFixed(2);
+		        if (item) {
+		            if (previousPoint != item.datapoint) {
+		                previousPoint = item.datapoint;
+		                
+		                var tooltip = YAHOO.util.Dom.get("tooltip");
+		                if(tooltip) {
+		                	  tooltip.parentNode.removeChild(tooltip);
+		                }
+		                var x = item.datapoint.x.toFixed(2);
+		                var y = item.datapoint.y.toFixed(2);
+						
+		                if (!item.series.label){
+		                    item.series.label = 'commits';
+		                }
+		                var d = new Date(x*1000);
+		                var fd = d.toDateString()
+		                var nr_commits = parseInt(y);
+		                
+		                var cur_data = dataset[item.series.label].data[item.dataIndex];
+		                var added = cur_data.added;
+		                var changed = cur_data.changed;
+		                var removed = cur_data.removed;
+		                
+		                var nr_commits_suffix = " ${_('commits')} ";
+		                var added_suffix = " ${_('files added')} ";
+		                var changed_suffix = " ${_('files changed')} ";
+		                var removed_suffix = " ${_('files removed')} ";
+
+		                
+		                if(nr_commits == 1){nr_commits_suffix = " ${_('commit')} ";}
+						if(added==1){added_suffix=" ${_('file added')} ";}
+						if(changed==1){changed_suffix=" ${_('file changed')} ";}
+						if(removed==1){removed_suffix=" ${_('file removed')} ";}
+										                
+		                showTooltip(item.pageX, item.pageY, item.series.label + " on " + fd
+								 +'<br/>'+
+		                         nr_commits + nr_commits_suffix+'<br/>'+
+		                         added + added_suffix +'<br/>'+
+		                         changed + changed_suffix + '<br/>'+
+		                         removed + removed_suffix + '<br/>');
+		            }
+		        }
+		        else {
+		        	  var tooltip = YAHOO.util.Dom.get("tooltip");
+		        	  
+			          if(tooltip) {
+			                tooltip.parentNode.removeChild(tooltip);
+			          }
+		            previousPoint = null;
+		        }
+		    }
+			
+		    /**
+		     * MAIN EXECUTION
+		     */
+			
+			var data = getDataAccordingToRanges(initial_ranges);
+			generateCheckboxes(data);
+			
+		    //main plot
+		    var plot = YAHOO.widget.Flot(plotContainer,data,plot_options);
+		    
+			//overview
+			var overview = YAHOO.widget.Flot(overviewContainer, overview_dataset, overview_options);
+			
+			//show initial selection on overview
+			overview.setSelection(initial_ranges);    
+			
+		    plot.subscribe("plotselected", plotselected);
+		    
+		    overview.subscribe("plotselected", function (ranges) {
+		        plot.setSelection(ranges);
+		    });		
+				
+		    plot.subscribe("plothover", plothover);
+
+		    YAHOO.util.Event.on(choiceContainer.getElementsByTagName("input"), "click", plotchoiced, [data, initial_ranges]);
+		}
+			SummaryPlot(${c.ts_min},${c.ts_max},${c.commit_data|n},${c.overview_data|n});		
+		</script>
+
+    </div>
+</div>    
+
+<div class="box">    
+    <div class="title">
+        <div class="breadcrumbs">${h.link_to(_('Last ten changes'),h.url('shortlog_home',repo_name=c.repo_name))}</div>
+    </div>    
+    <div class="table">
+        <div id="shortlog_data">
+            <%include file='../shortlog/shortlog_data.html'/>
+        </div>
+        ##%if c.repo_changesets:
+        ##	${h.link_to(_('show more'),h.url('changelog_home',repo_name=c.repo_name))}
+        ##%endif
+    </div>
+</div>
+<div class="box">    
+    <div class="title">
+        <div class="breadcrumbs">${h.link_to(_('Last ten tags'),h.url('tags_home',repo_name=c.repo_name))}</div>
+    </div>    
+    <div class="table">
+        <%include file='../tags/tags_data.html'/>
+        %if c.repo_changesets:
+        	${h.link_to(_('show more'),h.url('tags_home',repo_name=c.repo_name))}
+        %endif
+    </div>
+</div>
+<div class="box">
+    <div class="title">
+        <div class="breadcrumbs">${h.link_to(_('Last ten branches'),h.url('branches_home',repo_name=c.repo_name))}</div>
+    </div>    
+    <div class="table">
+        <%include file='../branches/branches_data.html'/>
+        %if c.repo_changesets:
+        	${h.link_to(_('show more'),h.url('branches_home',repo_name=c.repo_name))}
+        %endif
+    </div>      
+</div> 
+
+</%def>    

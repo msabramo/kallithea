@@ -1,0 +1,10 @@
+
+syntax: regexp
+^data$
+^\.settings$
+^\.project$
+^\.pydevproject$
+^rhodecode\.db$
+^test\.db$
+^repositories\.config$
+^RhodeCode\.egg-info$
