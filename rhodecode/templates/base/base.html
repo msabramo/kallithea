@@ -1,0 +1,358 @@
+## -*- coding: utf-8 -*-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="mainhtml">
+<head>
+    <title>${next.title()}</title>
+    <link rel="icon" href="/images/icons/database_gear.png" type="image/png" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="robots" content="index, nofollow"/>
+    <!-- stylesheets -->
+    ${self.css()}
+    <!-- scripts -->
+    ${self.js()}
+</head>
+<body>
+    <!-- header -->
+    <div id="header">
+        <!-- user -->
+        <ul id="logged-user">
+	            <li class="first">
+	                <div class="gravatar">
+	                    <img alt="gravatar" src="${h.gravatar_url(c.rhodecode_user.email,20)}" />
+	                </div>
+		            <div class="account">
+		            %if c.rhodecode_user.username == 'default':
+                        ${h.link_to('anonymous',h.url('register'),title='%s %s'%(c.rhodecode_user.name,c.rhodecode_user.lastname))}
+                    %else:                        		            
+		            	${h.link_to(c.rhodecode_user.username,h.url('admin_settings_my_account'),title='%s %s'%(c.rhodecode_user.name,c.rhodecode_user.lastname))}
+		            %endif
+		            </div>	
+	            </li>
+	            <li>
+	               <a href="${h.url('home')}">${_('Home')}</a>
+	            </li>
+                <li>
+                   <a href="${h.url('journal')}">${_('Journal')}</a> 
+                   ##(${c.unread_journal})</a>
+                </li>
+                %if c.rhodecode_user.username == 'default':
+                    <li class="last highlight">${h.link_to(u'Login',h.url('login_home'))}</li>
+                %else:
+                    <li class="last highlight">${h.link_to(u'Log Out',h.url('logout_home'))}</li>
+                %endif
+        </ul>
+        <!-- end user -->
+        <div id="header-inner" class="title top-left-rounded-corner top-right-rounded-corner">
+            <!-- logo -->
+            <div id="logo">
+                <h1><a href="${h.url('home')}">${c.rhodecode_name}</a></h1>
+            </div>
+            <!-- end logo -->
+            <!-- menu -->
+            ${self.page_nav()}
+            <!-- quick -->
+        </div>
+    </div>     
+    <!-- end header -->
+    
+	<!-- CONTENT -->
+	<div id="content"> 
+        <div class="flash_msg">
+            <% messages = h.flash.pop_messages() %>
+            % if messages:
+            <ul id="flash-messages">
+                % for message in messages:
+                <li class="${message.category}_msg">${message}</li>
+                % endfor
+            </ul>
+            % endif
+        </div>	    
+	    <div id="main"> 
+	        ${next.main()}
+	    </div>
+	</div> 
+    <!-- END CONTENT -->
+
+	<!-- footer -->
+	<div id="footer">
+	   <div id="footer-inner" class="title bottom-left-rounded-corner bottom-right-rounded-corner">
+	       <div>
+	           <p class="footer-link">${h.link_to(_('Submit a bug'),h.url('bugtracker'))}</p>
+		       <p class="footer-link">${h.link_to(_('GPL license'),h.url('gpl_license'))}</p>
+		       <p>RhodeCode ${c.rhodecode_version} &copy; 2010 by Marcin Kuzminski</p>
+	       </div>
+	   </div>
+        <script type="text/javascript">${h.tooltip.activate()}</script>
+	</div>
+	<!-- end footer -->
+</body>
+
+</html>
+
+### MAKO DEFS ### 
+<%def name="page_nav()">
+	${self.menu()}
+</%def>
+
+<%def name="menu(current=None)">
+		<% 
+		def is_current(selected):
+			if selected == current:
+				return h.literal('class="current"')
+		%>
+		%if current not in ['home','admin']:           		
+		   ##REGULAR MENU            
+	        <ul id="quick">
+				<!-- repo switcher -->
+				<li>
+					<a id="repo_switcher" title="${_('Switch repository')}" href="#">
+                    <span class="icon">
+                        <img src="/images/icons/database.png" alt="${_('Products')}" />
+                    </span>
+                    <span>&darr;</span>					
+					</a>
+					<ul class="repo_switcher">
+                        %for repo in c.cached_repo_list:
+                        
+                          %if repo['repo'].dbrepo.private:
+                             <li><img src="/images/icons/lock.png" alt="${_('Private repository')}" class="repo_switcher_type"/>${h.link_to(repo['repo'].name,h.url('summary_home',repo_name=repo['repo'].name),class_="%s" % repo['repo'].dbrepo.repo_type)}</li>
+                          %else:
+                             <li><img src="/images/icons/lock_open.png" alt="${_('Public repository')}" class="repo_switcher_type" />${h.link_to(repo['repo'].name,h.url('summary_home',repo_name=repo['repo'].name),class_="%s" % repo['repo'].dbrepo.repo_type)}</li>
+                          %endif  
+                        %endfor					
+					</ul>			
+				</li>
+				
+	            <li ${is_current('summary')}>
+	               <a title="${_('Summary')}" href="${h.url('summary_home',repo_name=c.repo_name)}">
+	               <span class="icon">
+	                   <img src="/images/icons/clipboard_16.png" alt="${_('Summary')}" />
+	               </span>
+	               <span>${_('Summary')}</span>                 
+	               </a>	            
+	            </li>
+                ##<li ${is_current('shortlog')}>
+                ##   <a title="${_('Shortlog')}" href="${h.url('shortlog_home',repo_name=c.repo_name)}">
+                ##   <span class="icon">
+                ##       <img src="/images/icons/application_view_list.png" alt="${_('Shortlog')}" />
+                ##   </span>
+                ##   <span>${_('Shortlog')}</span>                 
+                ##   </a>             
+                ##</li>	            
+                <li ${is_current('changelog')}>
+                   <a title="${_('Changelog')}" href="${h.url('changelog_home',repo_name=c.repo_name)}">
+                   <span class="icon">
+                       <img src="/images/icons/time.png" alt="${_('Changelog')}" />
+                   </span>
+                   <span>${_('Changelog')}</span>                 
+                   </a>             
+                </li>   	
+                
+                <li ${is_current('switch_to')}>
+                   <a title="${_('Switch to')}" href="#">
+                   <span class="icon">
+                       <img src="/images/icons/arrow_switch.png" alt="${_('Switch to')}" />
+                   </span>
+                   <span>${_('Switch to')}</span>                 
+                   </a>    
+                    <ul>
+                        <li>
+                            ${h.link_to('%s (%s)' % (_('branches'),len(c.repository_branches.values()),),h.url('branches_home',repo_name=c.repo_name),class_='branches childs')}
+                            <ul>
+                            %if c.repository_branches.values():
+						        %for cnt,branch in enumerate(c.repository_branches.items()):
+						            <li>${h.link_to('%s - %s' % (branch[0],h.short_id(branch[1])),h.url('files_home',repo_name=c.repo_name,revision=branch[1]))}</li>
+						        %endfor
+						    %else:
+						    	<li>${h.link_to(_('There are no branches yet'),'#')}</li>
+						    %endif
+                            </ul>                        
+                        </li>
+                        <li>
+                            ${h.link_to('%s (%s)' % (_('tags'),len(c.repository_tags.values()),),h.url('tags_home',repo_name=c.repo_name),class_='tags childs')}
+                            <ul>
+                            %if c.repository_tags.values():
+                                %for cnt,tag in enumerate(c.repository_tags.items()):
+                                 <li>${h.link_to('%s - %s' % (tag[0],h.short_id(tag[1])),h.url('files_home',repo_name=c.repo_name,revision=tag[1]))}</li>
+                                %endfor
+                            %else:
+                            	<li>${h.link_to(_('There are no tags yet'),'#')}</li>
+                            %endif
+                            </ul>                        
+                        </li>                        
+                    </ul>
+                </li>
+                <li ${is_current('files')}>
+                   <a title="${_('Files')}" href="${h.url('files_home',repo_name=c.repo_name)}">
+                   <span class="icon">
+                       <img src="/images/icons/file.png" alt="${_('Files')}" />
+                   </span>
+                   <span>${_('Files')}</span>                 
+                   </a>             
+                </li>                            
+				
+                <li ${is_current('options')}>
+                   <a title="${_('Options')}" href="#">
+                   <span class="icon">
+                       <img src="/images/icons/table_gear.png" alt="${_('Admin')}" />
+                   </span>
+                   <span>${_('Options')}</span>                 
+                   </a>
+                   <ul>
+                   %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
+                   	<li>${h.link_to(_('settings'),h.url('repo_settings_home',repo_name=c.repo_name),class_='settings')}</li>
+                   	<li>${h.link_to(_('fork'),h.url('repo_fork_home',repo_name=c.repo_name),class_='fork')}</li>
+                   %endif  
+                   	<li>${h.link_to(_('search'),h.url('search_repo',search_repo=c.repo_name),class_='search')}</li>
+                    
+                    %if h.HasPermissionAll('hg.admin')('access admin main page'):
+                    <li>
+                       ${h.link_to(_('admin'),h.url('admin_home'),class_='admin')}  
+                        <%def name="admin_menu()">
+                        <ul>
+                            <li>${h.link_to(_('journal'),h.url('admin_home'),class_='journal')}</li>
+                            <li>${h.link_to(_('repositories'),h.url('repos'),class_='repos')}</li>
+                            <li>${h.link_to(_('users'),h.url('users'),class_='users')}</li>
+                            <li>${h.link_to(_('permissions'),h.url('edit_permission',id='default'),class_='permissions')}</li>
+                            <li>${h.link_to(_('ldap'),h.url('ldap_home'),class_='ldap')}</li>
+                            <li class="last">${h.link_to(_('settings'),h.url('admin_settings'),class_='settings')}</li>        
+                        </ul>
+                        </%def>
+                        
+                        ${admin_menu()}
+                    </li>
+                    %endif
+
+                   </ul>             
+                </li>
+                
+                <li>
+                    <a title="${_('Followers')}" href="#">
+                    <span class="icon_short">
+                        <img src="/images/icons/heart.png" alt="${_('Followers')}" />
+                    </span>
+                    <span class="short">${c.repository_followers}</span>
+                    </a>
+                </li>
+                <li>
+                    <a title="${_('Forks')}" href="#">
+                    <span class="icon_short">
+                        <img src="/images/icons/arrow_divide.png" alt="${_('Forks')}" />
+                    </span>
+                    <span class="short">${c.repository_forks}</span>
+                    </a>
+                </li>                
+                
+                
+                
+	        </ul>
+		%else:
+		    ##ROOT MENU
+            <ul id="quick">
+                <li>
+                    <a title="${_('Home')}"  href="${h.url('home')}">
+                    <span class="icon">
+                        <img src="/images/icons/home_16.png" alt="${_('Home')}" />
+                    </span>
+                    <span>${_('Home')}</span>                 
+                    </a>        
+                </li>
+                
+                <li>
+                    <a title="${_('Journal')}"  href="${h.url('journal')}">
+                    <span class="icon">
+                        <img src="/images/icons/book.png" alt="${_('Journal')}" />
+                    </span>
+                    <span>${_('Journal')}</span>                 
+                    </a>        
+                </li>
+                                
+                <li>
+                    <a title="${_('Search')}"  href="${h.url('search')}">
+                    <span class="icon">
+                        <img src="/images/icons/search_16.png" alt="${_('Search')}" />
+                    </span>
+                    <span>${_('Search')}</span>                 
+                    </a>        
+                </li>
+                
+				%if h.HasPermissionAll('hg.admin')('access admin main page'):
+                <li ${is_current('admin')}>
+                   <a title="${_('Admin')}" href="${h.url('admin_home')}">
+                   <span class="icon">
+                       <img src="/images/icons/cog_edit.png" alt="${_('Admin')}" />
+                   </span>
+                   <span>${_('Admin')}</span>                 
+                   </a>
+                    ${admin_menu()}
+                </li>
+				%endif
+			</ul>
+		%endif    
+</%def>
+
+
+<%def name="css()">
+<link rel="stylesheet" type="text/css" href="/css/style.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="/css/pygments.css"  />
+<link rel="stylesheet" type="text/css" href="/css/diff.css"  />
+</%def>
+
+<%def name="js()">
+##<script type="text/javascript" src="/js/yui/utilities/utilities.js"></script>
+##<script type="text/javascript" src="/js/yui/container/container.js"></script>
+##<script type="text/javascript" src="/js/yui/datasource/datasource.js"></script>
+##<script type="text/javascript" src="/js/yui/autocomplete/autocomplete.js"></script>
+##<script type="text/javascript" src="/js/yui/selector/selector-min.js"></script>
+
+<script type="text/javascript" src="/js/yui2a.js"></script>
+<!--[if IE]><script language="javascript" type="text/javascript" src="/js/excanvas.min.js"></script><![endif]-->
+<script type="text/javascript" src="/js/yui.flot.js"></script>
+
+<script type="text/javascript">
+var base_url  ='/_admin/toggle_following';
+var YUC = YAHOO.util.Connect;
+var YUD = YAHOO.util.Dom;
+var YUE = YAHOO.util.Event;
+
+function onSuccess(){
+	
+	var f = YUD.get('follow_toggle');
+    if(f.getAttribute('class')=='follow'){
+        f.setAttribute('class','following');
+        f.setAttribute('title',"${_('Stop following this repository')}");
+    }
+    else{
+        f.setAttribute('class','follow');
+        f.setAttribute('title',"${_('Start following this repository')}");
+    }
+}
+
+function toggleFollowingUser(fallows_user_id,token){
+    args = 'follows_user_id='+fallows_user_id;
+    args+= '&auth_token='+token;
+    YUC.asyncRequest('POST',base_url,{
+        success:function(o){
+        	onSuccess();
+        }
+    },args); return false;
+}
+
+function toggleFollowingRepo(fallows_repo_id,token){
+    args = 'follows_repo_id='+fallows_repo_id;
+    args+= '&auth_token='+token;
+    YUC.asyncRequest('POST',base_url,{
+        success:function(o){
+        	onSuccess();
+        }
+    },args); return false;
+}    
+</script>
+
+</%def>
+
+<%def name="breadcrumbs()">
+    <div class="breadcrumbs">
+    ${self.breadcrumbs_links()}
+    </div>
+</%def>
