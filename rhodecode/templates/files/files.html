@@ -1,0 +1,55 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${c.repo_name} ${_('Files')} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(u'Home',h.url('/'))}
+    &raquo;
+    ${h.link_to(c.repo_name,h.url('files_home',repo_name=c.repo_name))}
+    &raquo;
+    ${_('files')}
+    %if c.files_list:
+        @ r${c.changeset.revision}:${h.short_id(c.changeset.raw_id)}
+    %endif        
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('files')}     
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+	    <ul class="links">
+		    <li>
+		      <span style="text-transform: uppercase;"><a href="#">${_('branch')}: ${c.changeset.branch}</a></span>
+	        </li>          
+	    </ul>             
+    </div>
+    <div class="table">
+		<div id="files_data">
+			%if c.files_list:
+				<h3 class="files_location">
+				    ${_('Location')}: ${h.files_breadcrumbs(c.repo_name,c.changeset.raw_id,c.files_list.path)}
+				</h3>
+					%if c.files_list.is_dir():
+						<%include file='files_browser.html'/>
+					%else:
+						<%include file='files_source.html'/>			
+					%endif	
+			%else:
+				<h2>
+					<a href="#" onClick="javascript:parent.history.back();" target="main">${_('Go back')}</a> 
+					${_('No files at given path')}: "${c.f_path or "/"}" 
+				</h2>
+			%endif
+		
+		</div>    
+    </div>
+</div>    
+	
+</%def>    
