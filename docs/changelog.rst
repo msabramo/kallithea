@@ -35,6 +35,7 @@ fixes
 - fixed ehlo command on mailserver. Was not working on some hosting setups
 - fixed problem with '[' chars in commit messages in journal
 - fixed #99 Unicode errors, on file node paths with non utf-8 characters
+- fixed #106 relation issues on databases different than sqlite
 
 1.1.2 (**2011-01-12**)
 ======================
