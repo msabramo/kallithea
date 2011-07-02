@@ -1,0 +1,37 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Admin journal')} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Admin journal')}
+</%def>
+
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+<%def name="main()">
+<div class="box">
+	<!-- box / title -->
+	<div class="title">
+	    ${self.breadcrumbs()}
+	</div>
+	<!-- end box / title -->
+	<div class="table">
+        <script type="text/javascript">
+        function show_more_event(){
+	        YUE.on(YUD.getElementsByClassName('show_more'),'click',function(e){
+	            var el = e.target;
+	            YUD.setStyle(YUD.get(el.id.substring(1)),'display','');
+	            YUD.setStyle(el.parentNode,'display','none');
+	        });
+        }
+        </script>	
+	    <div id="user_log">
+	        ${c.log_data}
+	    </div>
+	</div>
+</div>    
+</%def>
