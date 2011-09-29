@@ -1,0 +1,16 @@
+syntax: glob
+*.pyc
+*.swp
+
+syntax: regexp
+^build
+^docs/build/
+^docs/_build/
+^data$
+^\.settings$
+^\.project$
+^\.pydevproject$
+^rhodecode\.db$
+^test\.db$
+^repositories\.config$
+^RhodeCode\.egg-info$
