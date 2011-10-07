@@ -16,25 +16,24 @@ requirements = [
         "SQLAlchemy>=0.7.2,<0.8",
         "Mako>=0.4.2",
         "pygments>=1.4",
-        "mercurial>=1.9,<2.0",
+        "mercurial>=1.9.3,<2.0",
         "whoosh<1.8",
         "celery>=2.2.5,<2.3",
         "babel",
         "python-dateutil>=1.5.0,<2.0.0",
         "dulwich>=0.8.0",
-        "vcs>=0.2.1.dev",
+        "vcs>=0.2.1",
         "webob==1.0.8"    
     ]
 
 dependency_links = [
-    "https://secure.rhodecode.org/vcs/archive/default.zip#egg=vcs-0.2.1.dev",
-    "https://bitbucket.org/marcinkuzminski/vcs/get/default.zip#egg=vcs-0.2.1.dev",
 ]
 
-classifiers = ['Development Status :: 4 - Beta',
+classifiers = ['Development Status :: 5 - Production/Stable',
                'Environment :: Web Environment',
                'Framework :: Pylons',
                'Intended Audience :: Developers',
+               'License :: OSI Approved :: BSD License',
                'Operating System :: OS Independent',
                'Programming Language :: Python',
                'Programming Language :: Python :: 2.5',
