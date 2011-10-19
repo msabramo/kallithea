@@ -1,0 +1,88 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Repositories administration')} - ${c.rhodecode_name}
+</%def>
+
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))} &raquo; ${_('Repositories')}
+</%def>
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+          <li>
+            <span>${h.link_to(_(u'ADD NEW REPOSITORY'),h.url('new_repo'))}</span>
+          </li>          
+        </ul>        
+    </div>
+    <!-- end box / title -->
+    <div class="table">
+        <table class="table_disp">
+        <tr class="header">
+	        <th class="left">${_('Name')}</th>
+	        <th class="left">${_('Description')}</th>
+	        <th class="left">${_('Last change')}</th>
+	        <th class="left">${_('Tip')}</th>
+	        <th class="left">${_('Contact')}</th>
+            <th class="left">${_('action')}</th>
+        </tr>
+            %for cnt,repo in enumerate(c.repos_list):
+            <tr class="parity${cnt%2}">
+                 <td>
+                 ## TYPE OF REPO
+                 %if repo['dbrepo']['repo_type'] =='hg':
+                   <img class="icon" title="${_('Mercurial repository')}" alt="${_('Mercurial repository')}" src="${h.url('/images/icons/hgicon.png')}"/>
+                 %elif repo['dbrepo']['repo_type'] =='git':
+                   <img class="icon" title="${_('Git repository')}" alt="${_('Git repository')}" src="${h.url('/images/icons/giticon.png')}"/>
+                 %else:
+                   
+                 %endif
+                 
+                 ## PRIVATE/PUBLIC REPO                  
+                 %if repo['dbrepo']['private']:
+                    <img alt="${_('private')}" src="${h.url('/images/icons/lock.png')}"/>
+                 %else:
+                    <img alt="${_('public')}" src="${h.url('/images/icons/lock_open.png')}"/>
+                 %endif         
+                ${h.link_to(repo['name'],h.url('edit_repo',repo_name=repo['name']))}
+                
+	            %if repo['dbrepo_fork']:
+	            	<a href="${h.url('summary_home',repo_name=repo['dbrepo_fork']['repo_name'])}">
+	            	<img class="icon" alt="${_('public')}"
+	            	title="${_('Fork of')} ${repo['dbrepo_fork']['repo_name']}" 
+	            	src="${h.url("/images/icons/arrow_divide.png")}"/></a>
+	            %endif                
+                </td>
+				<td title="${repo['description']}">${h.truncate(repo['description'],60)}</td>
+	            <td>${h.age(repo['last_change'])}</td>
+	            <td>
+	            	%if repo['rev']>=0:
+	            	${h.link_to('r%s:%s' % (repo['rev'],h.short_id(repo['tip'])),
+	                h.url('changeset_home',repo_name=repo['name'],revision=repo['tip']),
+	                class_="tooltip",
+	                title=h.tooltip(repo['last_msg']))}
+	            	%else:
+	            		${_('No changesets yet')}
+	            	%endif    
+	            </td>
+	            <td title="${repo['contact']}">${h.person(repo['contact'])}</td>
+                <td>
+                  ${h.form(url('repo', repo_name=repo['name']),method='delete')}
+                    ${h.submit('remove_%s' % repo['name'],_('delete'),class_="delete_icon action_button",onclick="return confirm('"+_('Confirm to delete this repository')+"');")}
+                  ${h.end_form()}
+                </td>
+            </tr>
+            %endfor
+        </table>
+    </div>
+</div> 
+		   
+</%def>    
