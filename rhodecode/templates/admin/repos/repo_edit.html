@@ -1,0 +1,197 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Edit repository')} ${c.repo_info.repo_name} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))} 
+    &raquo; 
+    ${h.link_to(_('Repositories'),h.url('repos'))} 
+    &raquo;
+    ${_('edit')} &raquo; ${h.link_to(c.repo_info.just_name,h.url('summary_home',repo_name=c.repo_name))}
+</%def>
+
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}      
+    </div>
+    ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+            <div class="field">
+                <div class="label">
+                    <label for="repo_name">${_('Name')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('repo_name',class_="medium")}
+                </div>
+           </div>
+	       <div class="field">
+	           <div class="label">
+	               <label for="clone_uri">${_('Clone uri')}:</label>
+	           </div>
+	           <div class="input">
+	               ${h.text('clone_uri',class_="medium")}
+	           </div>
+	        </div>             
+	        <div class="field">
+	            <div class="label">
+	                <label for="repo_group">${_('Repository group')}:</label>
+	            </div>
+	            <div class="input">
+	                ${h.select('repo_group','',c.repo_groups,class_="medium")}
+	            </div>
+	        </div>         
+            <div class="field">
+                <div class="label">
+                    <label for="repo_type">${_('Type')}:</label>
+                </div>
+                <div class="input">
+                    ${h.select('repo_type','hg',c.backends,class_="medium")}
+                </div>
+            </div>             
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="description">${_('Description')}:</label>
+                </div>
+                <div class="textarea text-area editor">
+                    ${h.textarea('description',cols=23,rows=5)}
+                </div>
+            </div>
+            
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="private">${_('Private')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('private',value="True")}
+                </div>
+            </div>
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="enable_statistics">${_('Enable statistics')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('enable_statistics',value="True")}
+                </div>
+            </div>     
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="enable_downloads">${_('Enable downloads')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('enable_downloads',value="True")}
+                </div>
+            </div>                      
+            <div class="field">
+                <div class="label">
+                    <label for="user">${_('Owner')}:</label>
+                </div>
+                <div class="input input-small ac">
+                    <div class="perm_ac">
+                       ${h.text('user',class_='yui-ac-input')}
+                       <div id="owner_container"></div>
+                    </div>
+                </div>
+             </div>                
+             
+            <div class="field">
+                <div class="label">
+                    <label for="input">${_('Permissions')}:</label>
+                </div>
+                <div class="input">
+                    <%include file="repo_edit_perms.html"/>
+                </div>
+             
+            <div class="buttons">
+              ${h.submit('save','Save',class_="ui-button")}
+              ${h.reset('reset','Reset',class_="ui-button")}
+            </div>                                                          
+        </div>
+    </div>
+    </div>    
+    ${h.end_form()}
+</div>
+
+<div class="box box-right">
+    <div class="title">
+        <h5>${_('Administration')}</h5>    
+    </div>
+    
+        <h3>${_('Statistics')}</h3>
+        ${h.form(url('repo_stats', repo_name=c.repo_info.repo_name),method='delete')}
+        <div class="form">
+           <div class="fields">
+               ${h.submit('reset_stats_%s' % c.repo_info.repo_name,_('Reset current statistics'),class_="refresh_icon action_button",onclick="return confirm('"+_('Confirm to remove current statistics')+"');")}
+               <div class="field" style="border:none">
+               <ul>
+                    <li>${_('Fetched to rev')}: ${c.stats_revision}/${c.repo_last_rev}</li>
+                    <li>${_('Percentage of stats gathered')}: ${c.stats_percentage} %</li>
+               </ul>
+               </div>
+               
+           </div>
+        </div>                    
+        ${h.end_form()}
+        
+        %if c.repo_info.clone_uri:
+        <h3>${_('Remote')}</h3>
+        ${h.form(url('repo_pull', repo_name=c.repo_info.repo_name),method='put')}
+        <div class="form">
+           <div class="fields">
+               ${h.submit('remote_pull_%s' % c.repo_info.repo_name,_('Pull changes from remote location'),class_="pull_icon action_button",onclick="return confirm('"+_('Confirm to pull changes from remote side')+"');")}
+               <div class="field" style="border:none">
+               <ul>
+                    <li><a href="${c.repo_info.clone_uri}">${c.repo_info.clone_uri}</a></li>
+               </ul> 
+               </div>              
+           </div>
+        </div>                    
+        ${h.end_form()}
+        %endif
+        
+        <h3>${_('Cache')}</h3>
+        ${h.form(url('repo_cache', repo_name=c.repo_info.repo_name),method='delete')}
+        <div class="form">
+           <div class="fields">
+               ${h.submit('reset_cache_%s' % c.repo_info.repo_name,_('Invalidate repository cache'),class_="refresh_icon action_button",onclick="return confirm('"+_('Confirm to invalidate repository cache')+"');")}
+           </div>
+        </div>                    
+        ${h.end_form()}
+        
+        <h3>${_('Public journal')}</h3>
+        ${h.form(url('repo_public_journal', repo_name=c.repo_info.repo_name),method='put')}
+        <div class="form">
+            <div class="fields">
+                ${h.hidden('auth_token',str(h.get_token()))}
+                %if c.in_public_journal:
+                    ${h.submit('set_public_%s' % c.repo_info.repo_name,_('Remove from public journal'),class_="stop_following_icon action_button")}
+                %else:
+		            ${h.submit('set_public_%s' % c.repo_info.repo_name,_('Add to public journal'),class_="start_following_icon action_button")}
+		        %endif
+	         </div>        
+        </div>
+        ${h.end_form()}
+        
+        <h3>${_('Delete')}</h3>
+        ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='delete')}
+        <div class="form">
+           <div class="fields">
+               ${h.submit('remove_%s' % c.repo_info.repo_name,_('Remove this repository'),class_="delete_icon action_button",onclick="return confirm('"+_('Confirm to delete this repository')+"');")}
+           </div>
+        </div>                    
+        ${h.end_form()}
+    
+</div>
+
+
+</%def> 
