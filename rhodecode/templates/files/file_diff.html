@@ -1,0 +1,53 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${c.repo_name} ${_('File diff')} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(u'Home',h.url('/'))}
+    &raquo;
+    ${h.link_to(c.repo_name,h.url('summary_home',repo_name=c.repo_name))}
+    &raquo;
+    ${_('File diff')} r${c.changeset_1.revision}:${h.short_id(c.changeset_1.raw_id)} &rarr; r${c.changeset_2.revision}:${h.short_id(c.changeset_2.raw_id)}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('files')}     
+</%def>
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <div class="table">
+		<div id="body" class="diffblock">
+			<div class="code-header">
+                <div class="changeset_header">
+                <span class="changeset_file">${h.link_to(c.f_path,h.url('files_home',repo_name=c.repo_name,
+				revision=c.changeset_2.raw_id,f_path=c.f_path))}</span>
+				 &raquo; <span>${h.link_to(_('diff'),
+				h.url.current(diff2=c.changeset_2.raw_id,diff1=c.changeset_1.raw_id,diff='diff'))}</span>
+				 &raquo; <span>${h.link_to(_('raw diff'),
+				h.url.current(diff2=c.changeset_2.raw_id,diff1=c.changeset_1.raw_id,diff='raw'))}</span>
+				 &raquo; <span>${h.link_to(_('download diff'),
+				h.url.current(diff2=c.changeset_2.raw_id,diff1=c.changeset_1.raw_id,diff='download'))}</span>
+				</div>
+			</div>
+			<div class="code-body">
+		 			%if c.no_changes:
+		            	${_('No changes')}
+		            %elif c.big_diff:
+		                ${_('Diff is to big to display')} ${h.link_to(_('raw diff'),
+                           h.url.current(diff2=c.changeset_2.raw_id,diff1=c.changeset_1.raw_id,diff='raw'))}
+		            %else:        
+						${c.cur_diff|n}
+		            %endif
+			</div>
+		</div>   
+    </div>
+</div>    
+</%def>  
+
+   
