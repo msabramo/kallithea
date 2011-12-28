@@ -1,0 +1,28 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Admin journal')} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Admin journal')}
+</%def>
+
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+<%def name="main()">
+<div class="box">
+	<!-- box / title -->
+	<div class="title">
+	    ${self.breadcrumbs()}
+	</div>
+	<!-- end box / title -->
+	<div class="table">
+	    <div id="user_log">
+	        ${c.log_data}
+	    </div>
+	</div>
+</div>    
+</%def>
