@@ -1,0 +1,18 @@
+syntax: glob
+*.pyc
+*.swp
+Paste*.egg
+
+syntax: regexp
+^build
+^docs/build/
+^docs/_build/
+^data$
+^\.settings$
+^\.project$
+^\.pydevproject$
+^\.coverage$
+^rhodecode\.db$
+^test\.db$
+^RhodeCode\.egg-info$
+^rc\.ini$
