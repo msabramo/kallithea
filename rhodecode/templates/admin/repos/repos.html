@@ -1,0 +1,124 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Repositories administration')} - ${c.rhodecode_name}
+</%def>
+
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))} &raquo; ${_('Repositories')}
+</%def>
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+<%def name="main()">
+<div class="box">
+
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+          <li>
+            <span>${h.link_to(_(u'ADD REPOSITORY'),h.url('new_repo'))}</span>
+          </li>
+        </ul>
+    </div>
+
+    <div class="table">
+        <div id='repos_list_wrap' class="yui-skin-sam">
+        <%cnt=0%>
+        <%namespace name="dt" file="/_data_table/_dt_elements.html"/>
+
+        <table id="repos_list">
+         <thead>
+          <tr>
+            <th class="left"></th>
+  	        <th class="left">${_('Name')}</th>
+  	        <th class="left">${_('Description')}</th>
+  	        <th class="left">${_('Last change')}</th>
+  	        <th class="left">${_('Tip')}</th>
+  	        <th class="left">${_('Contact')}</th>
+            <th class="left">${_('Action')}</th>
+          </tr>
+         </thead>
+
+          %for cnt,repo in enumerate(c.repos_list,1):
+          <tr class="parity${cnt%2}">
+              <td class="quick_repo_menu">
+                ${dt.quick_menu(repo['name'])}
+              </td>
+              <td class="reponame">
+                ${dt.repo_name(repo['name'],repo['dbrepo']['repo_type'],repo['dbrepo']['private'],repo['dbrepo_fork'].get('repo_name'))}
+              </td>
+              ##DESCRIPTION
+              <td><span class="tooltip" title="${h.tooltip(repo['description'])}">
+                 ${h.truncate(repo['description'],60)}</span>
+              </td>
+              ##LAST CHANGE
+              <td>
+                <span class="tooltip" title="${repo['last_change']}">${h.age(repo['last_change'])}</span>
+              </td>
+              ##LAST REVISION
+              <td>
+                  ${dt.revision(repo['name'],repo['rev'],repo['tip'],repo['author'],repo['last_msg'])}
+              </td>
+            <td title="${repo['contact']}">${h.person(repo['contact'])}</td>
+              <td>
+                ${h.form(url('repo', repo_name=repo['name']),method='delete')}
+                  ${h.submit('remove_%s' % repo['name'],_('delete'),class_="delete_icon action_button",onclick="return confirm('"+_('Confirm to delete this repository: %s') % repo['name']+"');")}
+                ${h.end_form()}
+              </td>
+          </tr>
+          %endfor
+        </table>
+        </div>
+    </div>
+</div>
+<script>
+
+  // main table sorting
+  var myColumnDefs = [
+      {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+      {key:"name",label:"${_('Name')}",sortable:true,
+          sortOptions: { sortFunction: nameSort }},
+      {key:"desc",label:"${_('Description')}",sortable:true},
+      {key:"last_change",label:"${_('Last Change')}",sortable:true,
+          sortOptions: { sortFunction: ageSort }},
+      {key:"tip",label:"${_('Tip')}",sortable:true,
+          sortOptions: { sortFunction: revisionSort }},
+      {key:"owner",label:"${_('Owner')}",sortable:true},
+      {key:"action",label:"${_('Action')}",sortable:false},
+  ];
+
+  var myDataSource = new YAHOO.util.DataSource(YUD.get("repos_list"));
+
+  myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+
+  myDataSource.responseSchema = {
+      fields: [
+          {key:"menu"},
+          {key:"name"},
+          {key:"desc"},
+          {key:"last_change"},
+          {key:"tip"},
+          {key:"owner"},
+          {key:"action"},
+      ]
+  };
+
+  var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,
+          {
+            sortedBy:{key:"name",dir:"asc"},
+            MSG_SORTASC:"${_('Click to sort ascending')}",
+            MSG_SORTDESC:"${_('Click to sort descending')}",
+            MSG_EMPTY:"${_('No records found.')}",
+            MSG_ERROR:"${_('Data error.')}",
+            MSG_LOADING:"${_('Loading...')}",
+          }
+  );
+  myDataTable.subscribe('postRenderEvent',function(oArgs) {
+      tooltip_activate();
+      quick_repo_menu();
+  });
+</script>
+</%def>

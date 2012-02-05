@@ -1,0 +1,47 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${c.repo_name} ${_('File diff')} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(u'Home',h.url('/'))}
+    &raquo;
+    ${h.link_to(c.repo_name,h.url('summary_home',repo_name=c.repo_name))}
+    &raquo;
+    ${_('File diff')} r${c.changeset_1.revision}:${h.short_id(c.changeset_1.raw_id)} &rarr; r${c.changeset_2.revision}:${h.short_id(c.changeset_2.raw_id)}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('files')}
+</%def>
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <div>
+    ## diff block
+    <%namespace name="diff_block" file="/changeset/diff_block.html"/>
+    ${diff_block.diff_block(c.changes)}
+    </div>
+</div>
+<script>
+YUE.onDOMReady(function(){
+
+    YUE.on(YUQ('.diff-menu-activate'),'click',function(e){
+        var act = e.currentTarget.nextElementSibling;
+
+        if(YUD.hasClass(act,'active')){
+            YUD.removeClass(act,'active');
+            YUD.setStyle(act,'display','none');
+        }else{
+            YUD.addClass(act,'active');
+            YUD.setStyle(act,'display','');
+        }
+    });
+
+})
+</script>
+</%def>
