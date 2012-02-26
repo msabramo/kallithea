@@ -26,7 +26,7 @@
 import sys
 import platform
 
-VERSION = (1, 3, 1, 'beta')
+VERSION = (1, 3, 1)
 __version__ = '.'.join((str(each) for each in VERSION[:4]))
 __dbversion__ = 5  # defines current db version for migrations
 __platform__ = platform.system()
@@ -67,7 +67,7 @@ else:
 
 try:
     from rhodecode.lib import get_current_revision
-    _rev = get_current_revision()
+    _rev = get_current_revision(quiet=True)
 except ImportError:
     # this is needed when doing some setup.py operations
     _rev = False
