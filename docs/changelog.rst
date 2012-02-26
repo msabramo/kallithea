@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-1.3.0 (**XXXX-XX-XX**)
+1.3.0 (**2012-02-XX**)
 ----------------------
 
 :status: in-progress

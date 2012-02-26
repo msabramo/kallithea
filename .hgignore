@@ -2,7 +2,8 @@ syntax: glob
 *.pyc
 *.swp
 *.sqlite
-Paste*.egg
+*.egg-info
+*.egg
 
 syntax: regexp
 ^build
