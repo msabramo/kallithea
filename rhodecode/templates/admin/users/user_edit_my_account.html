@@ -1,0 +1,313 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('My account')} ${c.rhodecode_user.username} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('My Account')}
+</%def>
+
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    <div>
+    ${h.form(url('admin_settings_my_account_update'),method='put')}
+	    <div class="form">
+
+             <div class="field">
+                <div class="gravatar_box">
+                    <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(c.user.email)}"/></div>
+                    <p>
+                    %if c.use_gravatar:
+                    <strong>${_('Change your avatar at')} <a href="http://gravatar.com">gravatar.com</a></strong>
+                    <br/>${_('Using')} ${c.user.email}
+                    %else:
+                    <br/>${c.user.email}
+                    %endif
+                    </p>
+                </div>
+             </div>
+	        <div class="field">
+	            <div class="label">
+	                <label>${_('API key')}</label> ${c.user.api_key}
+	            </div>
+	        </div>
+	        <div class="fields">
+	             <div class="field">
+	                <div class="label">
+	                    <label for="username">${_('Username')}:</label>
+	                </div>
+	                <div class="input">
+	                    ${h.text('username',class_="medium")}
+	                </div>
+	             </div>
+
+	             <div class="field">
+	                <div class="label">
+	                    <label for="new_password">${_('New password')}:</label>
+	                </div>
+	                <div class="input">
+	                    ${h.password('new_password',class_="medium",autocomplete="off")}
+	                </div>
+	             </div>
+
+                 <div class="field">
+                    <div class="label">
+                        <label for="password_confirmation">${_('New password confirmation')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.password('password_confirmation',class_="medium",autocomplete="off")}
+                    </div>
+                 </div>
+
+	             <div class="field">
+	                <div class="label">
+	                    <label for="name">${_('First Name')}:</label>
+	                </div>
+	                <div class="input">
+	                    ${h.text('name',class_="medium")}
+	                </div>
+	             </div>
+
+	             <div class="field">
+	                <div class="label">
+	                    <label for="lastname">${_('Last Name')}:</label>
+	                </div>
+	                <div class="input">
+	                    ${h.text('lastname',class_="medium")}
+	                </div>
+	             </div>
+
+	             <div class="field">
+	                <div class="label">
+	                    <label for="email">${_('Email')}:</label>
+	                </div>
+	                <div class="input">
+	                    ${h.text('email',class_="medium")}
+	                </div>
+	             </div>
+
+	            <div class="buttons">
+	              ${h.submit('save',_('Save'),class_="ui-button")}
+	              ${h.reset('reset',_('Reset'),class_="ui-button")}
+	            </div>
+	    	</div>
+	    </div>
+    ${h.end_form()}
+    </div>
+</div>
+
+<div class="box box-right">
+    <!-- box / title -->
+    <div class="title">
+        <h5>
+        <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" value="${_('quick filter...')}"/>
+        <a id="show_my" class="link-white" href="#my">${_('My repos')}</a> / <a id="show_perms" class="link-white" href="#perms">${_('My permissions')}</a>
+        </h5>
+         %if h.HasPermissionAny('hg.admin','hg.create.repository')():
+         <ul class="links">
+           <li>
+             <span>${h.link_to(_('ADD'),h.url('admin_settings_create_repository'))}</span>
+           </li>
+         </ul>
+         %endif
+    </div>
+    <!-- end box / title -->
+    <div id="my" class="table">
+        <div id='repos_list_wrap' class="yui-skin-sam">
+        <table id="repos_list">
+	    <thead>
+            <tr>
+            <th></th>
+            <th class="left">${_('Name')}</th>
+            <th class="left">${_('Revision')}</th>
+            <th class="left">${_('Action')}</th>
+            <th class="left">${_('Action')}</th>
+	    </thead>
+	     <tbody>
+         <%namespace name="dt" file="/_data_table/_dt_elements.html"/>
+	     %if c.user_repos:
+		     %for repo in c.user_repos:
+		        <tr>
+                    ##QUICK MENU
+                    <td class="quick_repo_menu">
+                      ${dt.quick_menu(repo['name'])}
+                    </td>
+                    ##REPO NAME AND ICONS
+                    <td class="reponame">
+                      ${dt.repo_name(repo['name'],repo['dbrepo']['repo_type'],repo['dbrepo']['private'],repo['dbrepo_fork'].get('repo_name'))}
+                    </td>
+                    ##LAST REVISION
+                    <td>
+                        ${dt.revision(repo['name'],repo['rev'],repo['tip'],repo['author'],repo['last_msg'])}
+                    </td>
+		            <td><a href="${h.url('repo_settings_home',repo_name=repo['name'])}" title="${_('edit')}"><img class="icon" alt="${_('private')}" src="${h.url('/images/icons/application_form_edit.png')}"/></a></td>
+		            <td>
+	                  ${h.form(url('repo_settings_delete', repo_name=repo['name']),method='delete')}
+	                    ${h.submit('remove_%s' % repo['name'],'',class_="delete_icon action_button",onclick="return confirm('"+_('Confirm to delete this repository: %s') % repo['name']+"');")}
+	                  ${h.end_form()}
+		            </td>
+		        </tr>
+		     %endfor
+	     %else:
+            <div style="padding:5px 0px 10px 0px;">
+	     	${_('No repositories yet')}
+	     	%if h.HasPermissionAny('hg.admin','hg.create.repository')():
+	     		${h.link_to(_('create one now'),h.url('admin_settings_create_repository'),class_="ui-btn")}
+	     	%endif
+            </div>
+	     %endif
+	     </tbody>
+	     </table>
+       </div>
+    </div>
+    <div id="perms" class="table" style="display:none">
+           %for section in sorted(c.rhodecode_user.permissions.keys()):
+            <div class="perms_section_head">${section.replace("_"," ").capitalize()}</div>
+
+            <div id='tbl_list_wrap_${section}' class="yui-skin-sam">
+            <table id="tbl_list_${section}">
+              <thead>
+                  <tr>
+                  <th class="left">${_('Name')}</th>
+                  <th class="left">${_('Permission')}</th>
+              </thead>
+              <tbody>
+            %for k in c.rhodecode_user.permissions[section]:
+           <%
+           if section != 'global':
+               section_perm = c.rhodecode_user.permissions[section].get(k)
+               _perm = section_perm.split('.')[-1]
+           else:
+               _perm = section_perm = None
+           %>
+            %if _perm not in ['none']:
+                <tr>
+                    <td>
+                        %if section == 'repositories':
+                            <a href="${h.url('summary_home',repo_name=k)}">${k}</a>
+                        %elif section == 'repositories_groups':
+                            <a href="${h.url('repos_group_home',group_name=k)}">${k}</a>
+                        %else:
+                            ${k}
+                        %endif
+                    </td>
+                    <td>
+                        %if section == 'global':
+                         ${h.bool2icon(True)}
+                        %else:
+                        <span class="perm_tag ${_perm}">${section_perm}</span>
+                        %endif
+                     </td>
+                </tr>
+             %endif
+            %endfor
+            </tbody>
+            </table>
+            </div>
+           %endfor
+    </div>
+</div>
+<script type="text/javascript">
+var filter_activate = function(){
+    var nodes = YUQ('#my tr td a.repo_name');
+    var func = function(node){
+        return node.parentNode.parentNode.parentNode.parentNode;
+    }
+    q_filter('q_filter',YUQ('#my tr td a.repo_name'),func);
+}
+
+YUE.on('show_my','click',function(e){
+    YUD.setStyle('perms','display','none');
+    YUD.setStyle('my','display','');
+    YUD.get('q_filter').removeAttribute('disabled');
+    filter_activate();
+    YUE.preventDefault(e);
+})
+YUE.on('show_perms','click',function(e){
+    YUD.setStyle('my','display','none');
+    YUD.setStyle('perms','display','');
+    YUD.setAttribute('q_filter','disabled','disabled');
+    YUE.preventDefault(e);
+})
+
+
+// main table sorting
+var myColumnDefs = [
+    {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+    {key:"name",label:"${_('Name')}",sortable:true,
+        sortOptions: { sortFunction: nameSort }},
+    {key:"tip",label:"${_('Tip')}",sortable:true,
+        sortOptions: { sortFunction: revisionSort }},
+    {key:"action1",label:"",sortable:false},
+    {key:"action2",label:"",sortable:false},
+];
+
+var myDataSource = new YAHOO.util.DataSource(YUD.get("repos_list"));
+myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+myDataSource.responseSchema = {
+    fields: [
+        {key:"menu"},
+        {key:"name"},
+        {key:"tip"},
+        {key:"action1"},
+        {key:"action2"},
+    ]
+};
+var trans_defs =  {
+    sortedBy:{key:"name",dir:"asc"},
+    MSG_SORTASC:"${_('Click to sort ascending')}",
+    MSG_SORTDESC:"${_('Click to sort descending')}",
+    MSG_EMPTY:"${_('No records found.')}",
+    MSG_ERROR:"${_('Data error.')}",
+    MSG_LOADING:"${_('Loading...')}",
+}
+var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,trans_defs);
+myDataTable.subscribe('postRenderEvent',function(oArgs) {
+    tooltip_activate();
+    quick_repo_menu();
+    filter_activate();
+});
+
+var permsColumnDefs = [
+    {key:"name",label:"${_('Name')}",sortable:true, sortOptions: { sortFunction: permNameSort }},
+    {key:"perm",label:"${_('Permission')}",sortable:false,},
+];
+
+// perms repos table
+var myDataSource2 = new YAHOO.util.DataSource(YUD.get("tbl_list_repositories"));
+myDataSource2.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+myDataSource2.responseSchema = {
+    fields: [
+        {key:"name"},
+        {key:"perm"},
+    ]
+};
+
+new YAHOO.widget.DataTable("tbl_list_wrap_repositories", permsColumnDefs, myDataSource2, trans_defs);
+
+//perms groups table
+var myDataSource3 = new YAHOO.util.DataSource(YUD.get("tbl_list_repositories_groups"));
+myDataSource3.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+myDataSource3.responseSchema = {
+    fields: [
+        {key:"name"},
+        {key:"perm"},
+    ]
+};
+
+new YAHOO.widget.DataTable("tbl_list_wrap_repositories_groups", permsColumnDefs, myDataSource3, trans_defs);
+
+</script>
+</%def>
