@@ -4,23 +4,6 @@
 Changelog
 =========
 
-1.4.0 (**2012-XX-XX**)
-----------------------
-
-:status: in-progress
-:branch: beta
-
-news
-++++
- 
-- new codereview system
-- changed setup-app into setup-rhodecode and added default options to it.
- 
-fixes
-+++++
-
-
-
 1.3.6 (**2012-05-17**)
 ----------------------
 

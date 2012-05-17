@@ -26,11 +26,11 @@
 import sys
 import platform
 
-VERSION = (1, 4, 0, 'b')
+VERSION = (1, 3, 6)
 
 try:
     from rhodecode.lib import get_current_revision
-    _rev = get_current_revision()
+    _rev = get_current_revision(quiet=True)
     if _rev and len(VERSION) > 3:
         VERSION += ('dev%s' % _rev[0],)
 except ImportError:
