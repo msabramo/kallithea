@@ -1,0 +1,145 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Edit users group')} ${c.users_group.users_group_name} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))}
+    &raquo;
+    ${h.link_to(_('UsersGroups'),h.url('users_groups'))}
+    &raquo;
+    ${_('edit')} "${c.users_group.users_group_name}"
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    ${h.form(url('users_group', id=c.users_group.users_group_id),method='put', id='edit_users_group')}
+    <div class="form">
+        <!-- fields -->
+	        <div class="fields">
+	             <div class="field">
+	                <div class="label">
+	                    <label for="users_group_name">${_('Group name')}:</label>
+	                </div>
+	                <div class="input">
+	                    ${h.text('users_group_name',class_='small')}
+	                </div>
+	             </div>
+
+	             <div class="field">
+	                <div class="label label-checkbox">
+	                    <label for="users_group_active">${_('Active')}:</label>
+	                </div>
+	                <div class="checkboxes">
+	                    ${h.checkbox('users_group_active',value=True)}
+	                </div>
+	             </div>
+	            <div class="field">
+                    <div class="label">
+                        <label for="users_group_active">${_('Members')}:</label>
+                    </div>
+                    <div class="select">
+	                    <table>
+	                            <tr>
+	                                <td>
+	                                    <div>
+	                                        <div style="float:left">
+	                                            <div class="text" style="padding: 0px 0px 6px;">${_('Choosen group members')}</div>
+	                                            ${h.select('users_group_members',[x[0] for x in c.group_members],c.group_members,multiple=True,size=8,style="min-width:210px")}
+	                                           <div  id="remove_all_elements" style="cursor:pointer;text-align:center">
+	                                               ${_('Remove all elements')}
+	                                               <img alt="remove" style="vertical-align:text-bottom" src="${h.url('/images/icons/arrow_right.png')}"/>
+	                                           </div>
+	                                        </div>
+	                                        <div style="float:left;width:20px;padding-top:50px">
+	                                            <img alt="add" id="add_element"
+	                                                style="padding:2px;cursor:pointer"
+	                                                src="${h.url('/images/icons/arrow_left.png')}"/>
+	                                            <br />
+	                                            <img alt="remove" id="remove_element"
+	                                                style="padding:2px;cursor:pointer"
+	                                                src="${h.url('/images/icons/arrow_right.png')}"/>
+	                                        </div>
+	                                        <div style="float:left">
+	                                             <div class="text" style="padding: 0px 0px 6px;">${_('Available members')}</div>
+	                                             ${h.select('available_members',[],c.available_members,multiple=True,size=8,style="min-width:210px")}
+	                                             <div id="add_all_elements" style="cursor:pointer;text-align:center">
+	                                                   <img alt="add" style="vertical-align:text-bottom" src="${h.url('/images/icons/arrow_left.png')}"/>
+	                                                    ${_('Add all elements')}
+	                                             </div>
+	                                        </div>
+	                                    </div>
+	                                </td>
+	                            </tr>
+	                    </table>
+                    </div>
+
+                </div>
+                <div class="buttons">
+                  ${h.submit('save',_('save'),class_="ui-btn large")}
+                </div>
+            </div>
+    </div>
+${h.end_form()}
+</div>
+
+<div class="box box-right">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Permissions')}</h5>
+    </div>
+    ${h.form(url('users_group_perm', id=c.users_group.users_group_id), method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="create_repo_perm">${_('Create repositories')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('create_repo_perm',value=True)}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Save'),class_="ui-btn large")}
+              ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+
+<div class="box box-right">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Group members')}</h5>
+    </div>
+    <div class="group_members_wrap">
+      <ul class="group_members">
+      %for user in c.group_members_obj:
+        <li>
+          <div class="group_member">
+            <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(user.email,24)}"/> </div>
+            <div>${user.username}</div>
+            <div>${user.full_name}</div>
+          </div>
+        </li>
+      %endfor
+      </ul>
+    </div>
+</div>
+<script type="text/javascript">
+  MultiSelectWidget('users_group_members','available_members','edit_users_group');
+</script>
+</%def>

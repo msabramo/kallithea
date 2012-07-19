@@ -1,0 +1,23 @@
+syntax: glob
+*.pyc
+*.swp
+*.sqlite
+*.tox
+Paste*.egg
+
+syntax: regexp
+^rcextensions
+^build
+^docs/build/
+^docs/_build/
+^data$
+^\.settings$
+^\.project$
+^\.pydevproject$
+^\.coverage$
+^rhodecode\.db$
+^test\.db$
+^RhodeCode\.egg-info$
+^rc\.ini$
+^fabfile.py
+^\.rhodecode$
