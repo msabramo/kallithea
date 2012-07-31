@@ -1,0 +1,94 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Branches') % c.repo_name} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    <input class="q_filter_box" id="q_filter_branches" size="15" type="text" name="filter" value="${_('quick filter...')}"/>
+    ${h.link_to(_(u'Home'),h.url('/'))}
+    &raquo;
+    ${h.link_to(c.repo_name,h.url('summary_home',repo_name=c.repo_name))}
+    &raquo;
+    ${_('branches')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('branches')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    %if c.repo_branches:
+    <div class="info_box" id="compare_branches" style="clear: both;padding: 10px 19px;vertical-align: right;text-align: right;"><a href="#" class="ui-btn small">${_('Compare branches')}</a></div>
+    %endif
+    <div class="table">
+        <%include file='branches_data.html'/>
+    </div>
+</div>
+<script type="text/javascript">
+YUE.on('compare_branches','click',function(e){
+	YUE.preventDefault(e);
+	var org = YUQ('input[name=compare_org]:checked')[0];
+	var other = YUQ('input[name=compare_other]:checked')[0];
+
+	if(org && other){
+	    var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='branch',org_ref='__ORG__',other_ref_type='branch',other_ref='__OTHER__')}";
+		var u = compare_url.replace('__ORG__',org.value)
+		                   .replace('__OTHER__',other.value);
+		window.location=u;
+	}
+
+})
+// main table sorting
+var myColumnDefs = [
+    {key:"name",label:"${_('Name')}",sortable:true},
+    {key:"date",label:"${_('Date')}",sortable:true,
+        sortOptions: { sortFunction: dateSort }},
+    {key:"author",label:"${_('Author')}",sortable:true},
+    {key:"revision",label:"${_('Revision')}",sortable:true,
+        sortOptions: { sortFunction: revisionSort }},
+    {key:"compare",label:"${_('Compare')}",sortable:false,},
+];
+
+var myDataSource = new YAHOO.util.DataSource(YUD.get("branches_data"));
+
+myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+
+myDataSource.responseSchema = {
+    fields: [
+        {key:"name"},
+        {key:"date"},
+        {key:"author"},
+        {key:"revision"},
+        {key:"compare"},
+    ]
+};
+
+var myDataTable = new YAHOO.widget.DataTable("table_wrap", myColumnDefs, myDataSource,
+        {
+         sortedBy:{key:"name",dir:"asc"},
+         MSG_SORTASC:"${_('Click to sort ascending')}",
+         MSG_SORTDESC:"${_('Click to sort descending')}",
+         MSG_EMPTY:"${_('No records found.')}",
+         MSG_ERROR:"${_('Data error.')}",
+         MSG_LOADING:"${_('Loading...')}",
+        }
+);
+myDataTable.subscribe('postRenderEvent',function(oArgs) {
+    tooltip_activate();
+    var func = function(node){
+        return node.parentNode.parentNode.parentNode.parentNode.parentNode;
+    }
+    q_filter('q_filter_branches',YUQ('div.table tr td .logtags .branchtag a'),func);
+});
+
+</script>
+
+</%def>
