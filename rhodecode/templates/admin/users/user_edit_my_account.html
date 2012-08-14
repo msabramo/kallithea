@@ -1,0 +1,219 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('My account')} ${c.rhodecode_user.username} - ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('My Account')}
+</%def>
+
+<%def name="page_nav()">
+	${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    ${c.form|n}
+</div>
+
+<div class="box box-right">
+    <!-- box / title -->
+    <div class="title">
+        <h5>
+        <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" value="${_('quick filter...')}" style="display: none"/>
+        </h5>
+         <ul class="links" style="color:#DADADA">
+           <li>
+             <span><a id="show_perms" class="link-white current" href="#perms">${_('My permissions')}</a> </span>
+           </li>
+           <li>
+             <span><a id="show_my" class="link-white" href="#my">${_('My repos')}</a> </span>
+           </li>
+           <li>
+             <span><a id="show_pullrequests" class="link-white" href="#perms">${_('My pull requests')}</a> </span>
+           </li>
+           %if h.HasPermissionAny('hg.admin','hg.create.repository')():
+             <li>
+               <span>${h.link_to(_('Add repo'),h.url('admin_settings_create_repository'))}</span>
+             </li>
+           %endif
+         </ul>
+    </div>
+    <!-- end box / title -->
+    <div id="perms" class="table">
+           %for section in sorted(c.rhodecode_user.permissions.keys()):
+            <div class="perms_section_head">${section.replace("_"," ").capitalize()}</div>
+
+            <div id='tbl_list_wrap_${section}' class="yui-skin-sam">
+            <table id="tbl_list_${section}">
+              <thead>
+                  <tr>
+                  <th class="left">${_('Name')}</th>
+                  <th class="left">${_('Permission')}</th>
+              </thead>
+              <tbody>
+            %for k in c.rhodecode_user.permissions[section]:
+           <%
+           if section != 'global':
+               section_perm = c.rhodecode_user.permissions[section].get(k)
+               _perm = section_perm.split('.')[-1]
+           else:
+               _perm = section_perm = None
+           %>
+            %if _perm not in ['none']:
+                <tr>
+                    <td>
+                        %if section == 'repositories':
+                            <a href="${h.url('summary_home',repo_name=k)}">${k}</a>
+                        %elif section == 'repositories_groups':
+                            <a href="${h.url('repos_group_home',group_name=k)}">${k}</a>
+                        %else:
+                            ${k}
+                        %endif
+                    </td>
+                    <td>
+                        %if section == 'global':
+                         ${h.bool2icon(True)}
+                        %else:
+                        <span class="perm_tag ${_perm}">${section_perm}</span>
+                        %endif
+                     </td>
+                </tr>
+             %endif
+            %endfor
+            </tbody>
+            </table>
+            </div>
+           %endfor
+    </div>
+    <div id="my" class="table" style="display:none">
+    </div>
+    <div id="pullrequests" class="table" style="display:none">
+</div>
+<script type="text/javascript">
+var filter_activate = function(){
+    var nodes = YUQ('#my tr td a.repo_name');
+    var func = function(node){
+        return node.parentNode.parentNode.parentNode.parentNode;
+    }
+    q_filter('q_filter',YUQ('#my tr td a.repo_name'),func);
+}
+YUE.on('show_perms','click',function(e){
+	YUD.addClass('show_perms', 'current');
+	YUD.removeClass('show_my','current');
+	YUD.removeClass('show_pullrequests','current');
+
+    YUD.setStyle('my','display','none');
+    YUD.setStyle('pullrequests','display','none');
+    YUD.setStyle('perms','display','');
+    YUD.setStyle('q_filter','display','none');
+    YUE.preventDefault(e);
+})
+YUE.on('show_my','click',function(e){
+    YUD.addClass('show_my', 'current');
+    YUD.removeClass('show_perms','current');
+    YUD.removeClass('show_pullrequests','current');
+
+    YUD.setStyle('perms','display','none');
+    YUD.setStyle('pullrequests','display','none');
+    YUD.setStyle('my','display','');
+    YUD.setStyle('q_filter','display','');
+
+    YUE.preventDefault(e);
+    var url = "${h.url('admin_settings_my_repos')}";
+    ypjax(url, 'my', function(){
+    	table_sort();
+    	filter_activate();
+    });
+})
+YUE.on('show_pullrequests','click',function(e){
+    YUD.addClass('show_pullrequests', 'current');
+    YUD.removeClass('show_my','current');
+    YUD.removeClass('show_perms','current');
+
+    YUD.setStyle('my','display','none');
+    YUD.setStyle('perms','display','none');
+    YUD.setStyle('pullrequests','display','');
+    YUD.setStyle('q_filter','display','none');
+    YUE.preventDefault(e);
+    var url = "${h.url('admin_settings_my_pullrequests')}";
+    ypjax(url, 'pullrequests');
+})
+
+// main table sorting
+var myColumnDefs = [
+    {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+    {key:"name",label:"${_('Name')}",sortable:true,
+        sortOptions: { sortFunction: nameSort }},
+    {key:"tip",label:"${_('Tip')}",sortable:true,
+        sortOptions: { sortFunction: revisionSort }},
+    {key:"action1",label:"",sortable:false},
+    {key:"action2",label:"",sortable:false},
+];
+
+function table_sort(){
+var myDataSource = new YAHOO.util.DataSource(YUD.get("repos_list"));
+myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+myDataSource.responseSchema = {
+    fields: [
+        {key:"menu"},
+        {key:"name"},
+        {key:"tip"},
+        {key:"action1"},
+        {key:"action2"},
+    ]
+};
+var trans_defs =  {
+    sortedBy:{key:"name",dir:"asc"},
+    MSG_SORTASC:"${_('Click to sort ascending')}",
+    MSG_SORTDESC:"${_('Click to sort descending')}",
+    MSG_EMPTY:"${_('No records found.')}",
+    MSG_ERROR:"${_('Data error.')}",
+    MSG_LOADING:"${_('Loading...')}",
+}
+var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,trans_defs);
+myDataTable.subscribe('postRenderEvent',function(oArgs) {
+    tooltip_activate();
+    quick_repo_menu();
+    filter_activate();
+});
+
+var permsColumnDefs = [
+    {key:"name",label:"${_('Name')}",sortable:true, sortOptions: { sortFunction: permNameSort }},
+    {key:"perm",label:"${_('Permission')}",sortable:false,},
+];
+
+// perms repos table
+var myDataSource2 = new YAHOO.util.DataSource(YUD.get("tbl_list_repositories"));
+myDataSource2.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+myDataSource2.responseSchema = {
+    fields: [
+        {key:"name"},
+        {key:"perm"},
+    ]
+};
+
+new YAHOO.widget.DataTable("tbl_list_wrap_repositories", permsColumnDefs, myDataSource2, trans_defs);
+
+//perms groups table
+var myDataSource3 = new YAHOO.util.DataSource(YUD.get("tbl_list_repositories_groups"));
+myDataSource3.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+myDataSource3.responseSchema = {
+    fields: [
+        {key:"name"},
+        {key:"perm"},
+    ]
+};
+
+new YAHOO.widget.DataTable("tbl_list_wrap_repositories_groups", permsColumnDefs, myDataSource3, trans_defs);
+}
+</script>
+</%def>
