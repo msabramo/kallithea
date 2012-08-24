@@ -203,19 +203,24 @@ def get_repos(path, recursive=False):
     return _get_repos(path)
 
 
-def is_valid_repo(repo_name, base_path):
+def is_valid_repo(repo_name, base_path, scm=None):
     """
-    Returns True if given path is a valid repository False otherwise
+    Returns True if given path is a valid repository False otherwise.
+    If scm param is given also compare if given scm is the same as expected 
+    from scm parameter
 
     :param repo_name:
     :param base_path:
+    :param scm:
 
     :return True: if given path is a valid repository
     """
     full_path = os.path.join(safe_str(base_path), safe_str(repo_name))
 
     try:
-        get_scm(full_path)
+        scm_ = get_scm(full_path)
+        if scm:
+            return scm_[0] == scm
         return True
     except VCSError:
         return False
@@ -275,7 +280,7 @@ ui_sections = ['alias', 'auth',
                 'ui', 'web', ]
 
 
-def make_ui(read_from='file', path=None, checkpaths=True):
+def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
     """
     A function that will read python rc files or database
     and make an mercurial ui object from read options
@@ -320,8 +325,8 @@ def make_ui(read_from='file', path=None, checkpaths=True):
                 # force set push_ssl requirement to False, rhodecode
                 # handles that
                 baseui.setconfig(ui_.ui_section, ui_.ui_key, False)
-
-        meta.Session.remove()
+        if clear_session:
+            meta.Session.remove()
     return baseui
 
 

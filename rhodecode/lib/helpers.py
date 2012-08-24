@@ -41,7 +41,7 @@ from webhelpers.html.tags import _set_input_attrs, _set_id_attr, \
 from rhodecode.lib.annotate import annotate_highlight
 from rhodecode.lib.utils import repo_name_slug
 from rhodecode.lib.utils2 import str2bool, safe_unicode, safe_str, \
-    get_changeset_safe
+    get_changeset_safe, datetime_to_time, time_to_datetime
 from rhodecode.lib.markup_renderer import MarkupRenderer
 from rhodecode.lib.vcs.exceptions import ChangesetDoesNotExistError
 from rhodecode.lib.vcs.backends.base import BaseChangeset
@@ -396,8 +396,14 @@ def is_hg(repository):
 
 
 def email_or_none(author):
+    # extract email from the commit string
     _email = email(author)
     if _email != '':
+        # check it against RhodeCode database, and use the MAIN email for this
+        # user
+        user = User.get_by_email(_email, case_insensitive=True, cache=True)
+        if user is not None:
+            return user.email
         return _email
 
     # See if it contains a username we can get an email from
@@ -410,9 +416,9 @@ def email_or_none(author):
     return None
 
 
-def person(author):
+def person(author, show_attr="username_and_name"):
     # attr to return from fetched user
-    person_getter = lambda usr: usr.username
+    person_getter = lambda usr: getattr(usr, show_attr)
 
     # Valid email in the attribute passed, see if they're in the system
     _email = email(author)
@@ -431,6 +437,19 @@ def person(author):
 
     # Still nothing?  Just pass back the author name then
     return _author
+
+
+def person_by_id(id_, show_attr="username_and_name"):
+    # attr to return from fetched user
+    person_getter = lambda usr: getattr(usr, show_attr)
+
+    #maybe it's an ID ?
+    if str(id_).isdigit() or isinstance(id_, int):
+        id_ = int(id_)
+        user = User.get(id_)
+        if user is not None:
+            return person_getter(user)
+    return id_
 
 
 def desc_stylize(value):
