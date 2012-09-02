@@ -4,11 +4,8 @@
 Changelog
 =========
 
-1.4.0 (**2012-XX-XX**)
+1.4.0 (**2012-09-03**)
 ----------------------
-
-:status: in-progress
-:branch: beta
 
 news
 ++++
