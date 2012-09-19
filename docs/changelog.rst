@@ -8,9 +8,6 @@ Changelog
 1.4.2 (**2012-09-12**)
 ----------------------
 
-:status: in-progress
-:branch: beta
-
 news
 ++++
 
