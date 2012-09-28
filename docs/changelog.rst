@@ -8,14 +8,11 @@ Changelog
 1.4.3 (**2012-09-28**)
 ----------------------
 
-:status: in-progress
-:branch: beta
-
 news
 ++++
 
 - #558 Added config file to hooks extra data
-- bumbped mercurial version to 2.3.1
+- bumped mercurial version to 2.3.1
 - #518 added possibility of specifying multiple patterns for issues
 
 fixes
