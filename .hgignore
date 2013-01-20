@@ -3,7 +3,8 @@ syntax: glob
 *.swp
 *.sqlite
 *.tox
-Paste*.egg
+*.egg-info
+*.egg
 
 syntax: regexp
 ^rcextensions

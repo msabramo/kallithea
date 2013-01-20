@@ -7,9 +7,6 @@ Changelog
 1.5.2 (**2013-01-14**)
 ----------------------
 
-:status: in-progress
-:branch: beta
-
 news
 ++++
 
@@ -57,7 +54,6 @@ fixes
 - fixed changeset status labels, they now select radio buttons
 - #682 translation difficult for multi-line text
 - #683 fixed difference between messages about not mapped repositories
-- email: fail nicely when no SMTP server has been configured
 
 1.5.0 (**2012-12-12**)
 ----------------------
