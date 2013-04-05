@@ -1,0 +1,336 @@
+## -*- coding: utf-8 -*-
+<%inherit file="root.html"/>
+
+<!-- HEADER -->
+<div id="header-dd"></div>
+<div id="header">
+    <div id="header-inner" class="title">
+        <div id="logo">
+            <h1><a href="${h.url('home')}">${c.rhodecode_name}</a></h1>
+        </div>
+        <!-- MENU -->
+        ${self.page_nav()}
+        <!-- END MENU -->
+        ${self.body()}
+    </div>
+</div>
+<!-- END HEADER -->
+
+<!-- CONTENT -->
+<div id="content">
+    <div class="flash_msg">
+        <% messages = h.flash.pop_messages() %>
+        % if messages:
+        <ul id="flash-messages">
+            % for message in messages:
+            <li class="${message.category}_msg">${message}</li>
+            % endfor
+        </ul>
+        % endif
+    </div>
+    <div id="main">
+        ${next.main()}
+    </div>
+</div>
+<!-- END CONTENT -->
+
+<!-- FOOTER -->
+<div id="footer">
+   <div id="footer-inner" class="title">
+       <div>
+           <p class="footer-link">
+                <a href="${h.url('bugtracker')}">${_('Submit a bug')}</a>
+           </p>
+           <p class="footer-link-right">
+               <a href="${h.url('rhodecode_official')}">RhodeCode ${c.rhodecode_version}</a>
+               &copy; 2010-${h.datetime.today().year} by Marcin Kuzminski and others
+               ${'(%s)' % c.rhodecode_instanceid if c.rhodecode_instanceid else ''}
+           </p>
+       </div>
+   </div>
+</div>
+
+<!-- END FOOTER -->
+
+### MAKO DEFS ###
+<%def name="breadcrumbs()">
+    <div class="breadcrumbs">
+    ${self.breadcrumbs_links()}
+    </div>
+</%def>
+
+<%def name="context_bar(current)">
+    ${repo_context_bar(current)}
+</%def>
+
+<%def name="admin_menu()">
+  <ul class="admin_menu">
+      <li>${h.link_to(_('Admin journal'),h.url('admin_home'),class_='journal ')}</li>
+      <li>${h.link_to(_('Repositories'),h.url('repos'),class_='repos')}</li>
+      <li>${h.link_to(_('Repository groups'),h.url('repos_groups'),class_='repos_groups')}</li>
+      <li>${h.link_to(_('Users'),h.url('users'),class_='users')}</li>
+      <li>${h.link_to(_('User groups'),h.url('users_groups'),class_='groups')}</li>
+      <li>${h.link_to(_('Permissions'),h.url('edit_permission',id='default'),class_='permissions')}</li>
+      <li>${h.link_to(_('LDAP'),h.url('ldap_home'),class_='ldap')}</li>
+      <li>${h.link_to(_('Defaults'),h.url('defaults'),class_='defaults')}</li>
+      <li class="last">${h.link_to(_('Settings'),h.url('admin_settings'),class_='settings')}</li>
+  </ul>
+</%def>
+
+<%def name="admin_menu_simple()">
+  <ul>
+      <li>${h.link_to(_('Repository groups'),h.url('repos_groups'),class_='repos_groups')}</li>
+  </ul>
+</%def>
+
+<%def name="repo_context_bar(current=None)">
+  <%
+      def follow_class():
+          if c.repository_following:
+              return h.literal('following')
+          else:
+              return h.literal('follow')
+  %>
+  <%
+    def is_current(selected):
+        if selected == current:
+            return h.literal('class="current"')
+    %>
+
+  <!--- CONTEXT BAR -->
+  <div id="context-bar" class="box">
+      <div id="breadcrumbs">
+        ${h.link_to(_(u'Repositories'),h.url('home'))}
+        &raquo;
+        ${h.repo_link(c.rhodecode_db_repo.groups_and_repo)}
+      </div>
+      <ul id="context-pages" class="horizontal-list">
+        <li ${is_current('summary')}><a href="${h.url('summary_home', repo_name=c.repo_name)}" class="summary">${_('Summary')}</a></li>
+        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}" class="changelogs">${_('Changelog')}</a></li>
+        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name)}" class="files"></span>${_('Files')}</a></li>
+        <li ${is_current('switch-to')}>
+          <a href="#" id="branch_tag_switcher_2" class="dropdown switch-to"></span>${_('Switch To')}</a>
+          <ul id="switch_to_list_2" class="switch_to submenu">
+            <li><a href="#">${_('loading...')}</a></li>
+          </ul>
+        </li>
+        <li ${is_current('options')}>
+          <a href="#" class="dropdown options"></span>${_('Options')}</a>
+          <ul>
+             %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
+                   <li>${h.link_to(_('Settings'),h.url('edit_repo',repo_name=c.repo_name),class_='settings')}</li>
+             %endif
+              %if c.rhodecode_db_repo.fork:
+               <li>${h.link_to(_('Compare fork'),h.url('compare_url',repo_name=c.rhodecode_db_repo.fork.repo_name,org_ref_type='branch',org_ref='default',other_repo=c.repo_name,other_ref_type='branch',other_ref=request.GET.get('branch') or 'default', merge=1),class_='compare_request')}</li>
+              %endif
+              <li>${h.link_to(_('Lightweight changelog'),h.url('shortlog_home',repo_name=c.repo_name),class_='shortlog')}</li>
+              <li>${h.link_to(_('Search'),h.url('search_repo',repo_name=c.repo_name),class_='search')}</li>
+
+              %if h.HasRepoPermissionAny('repository.write','repository.admin')(c.repo_name) and c.rhodecode_db_repo.enable_locking:
+                %if c.rhodecode_db_repo.locked[0]:
+                  <li>${h.link_to(_('Unlock'), h.url('toggle_locking',repo_name=c.repo_name),class_='locking_del')}</li>
+                %else:
+                  <li>${h.link_to(_('Lock'), h.url('toggle_locking',repo_name=c.repo_name),class_='locking_add')}</li>
+                %endif
+              %endif
+              ## TODO: this check feels wrong, it would be better to have a check for permissions
+              ## also it feels like a job for the controller
+              %if c.rhodecode_user.username != 'default':
+                  <li>
+                   <a class="${follow_class()}" onclick="javascript:toggleFollowingRepo(this,${c.rhodecode_db_repo.repo_id},'${str(h.get_token())}');">
+                    <span class="show-follow">${_('Follow')}</span>
+                    <span class="show-following">${_('Unfollow')}</span>
+                  </a>
+                  </li>
+                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}" class="fork">${_('Fork')}</a></li>
+                  %if h.is_hg(c.rhodecode_repo):
+                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}" class="pull-request">${_('Create Pull Request')}</a></li>
+                  %endif
+              %endif
+             </ul>
+        </li>
+        <li ${is_current('showpullrequest')}>
+          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests')}" class="pull-request">${_('Pull Requests')}
+            %if c.repository_pull_requests:
+              <span>${c.repository_pull_requests}</span>
+            %endif
+          </a>
+        </li>
+      </ul>
+  </div>
+  <script type="text/javascript">
+      YUE.on('branch_tag_switcher_2','mouseover',function(){
+         var loaded = YUD.hasClass('branch_tag_switcher_2','loaded');
+         if(!loaded){
+             YUD.addClass('branch_tag_switcher_2','loaded');
+             ypjax("${h.url('branch_tag_switcher',repo_name=c.repo_name)}",'switch_to_list_2',
+                 function(o){},
+                 function(o){YUD.removeClass('branch_tag_switcher_2','loaded');}
+                 ,null);
+         }
+         return false;
+      });
+  </script>
+  <!--- END CONTEXT BAR -->
+</%def>
+
+<%def name="usermenu()">
+    ## USER MENU
+    <li>
+      <a class="menu_link childs" id="quick_login_link">
+          <span class="icon">
+             <img src="${h.gravatar_url(c.rhodecode_user.email,20)}" alt="avatar">
+          </span>
+          %if c.rhodecode_user.username != 'default':
+            <span class="menu_link_user">${c.rhodecode_user.username}</span>
+            %if c.unread_notifications != 0:
+              <span class="menu_link_notifications">${c.unread_notifications}</span>
+            %endif
+          %else:
+              <span>${_('Not logged in')}</span>
+          %endif
+      </a>
+
+  <div class="user-menu">
+      <div id="quick_login">
+        %if c.rhodecode_user.username == 'default':
+            <h4>${_('Login to your account')}</h4>
+            ${h.form(h.url('login_home',came_from=h.url.current()))}
+            <div class="form">
+                <div class="fields">
+                    <div class="field">
+                        <div class="label">
+                            <label for="username">${_('Username')}:</label>
+                        </div>
+                        <div class="input">
+                            ${h.text('username',class_='focus')}
+                        </div>
+
+                    </div>
+                    <div class="field">
+                        <div class="label">
+                            <label for="password">${_('Password')}:</label>
+                        </div>
+                        <div class="input">
+                            ${h.password('password',class_='focus')}
+                        </div>
+
+                    </div>
+                    <div class="buttons">
+                        <div class="password_forgoten">${h.link_to(_('Forgot password ?'),h.url('reset_password'))}</div>
+                        <div class="register">
+                        %if h.HasPermissionAny('hg.admin', 'hg.register.auto_activate', 'hg.register.manual_activate')():
+                         ${h.link_to(_("Don't have an account ?"),h.url('register'))}
+                        %endif
+                        </div>
+                        <div class="submit">
+                            ${h.submit('sign_in',_('Log In'),class_="ui-btn xsmall")}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ${h.end_form()}
+        %else:
+            <div class="links_left">
+                <div class="big_gravatar"><img alt="gravatar" src="${h.gravatar_url(c.rhodecode_user.email,48)}" /></div>
+                <div class="full_name">${c.rhodecode_user.full_name_or_username}</div>
+                <div class="email">${c.rhodecode_user.email}</div>
+            </div>
+            <div class="links_right">
+            <ol class="links">
+              <li><a href="${h.url('notifications')}">${_('Notifications')}: ${c.unread_notifications}</a></li>
+              <li>${h.link_to(_(u'My account'),h.url('admin_settings_my_account'))}</li>
+              <li class="logout">${h.link_to(_(u'Log Out'),h.url('logout_home'))}</li>
+            </ol>
+            </div>
+        %endif
+      </div>
+  </div>
+
+    </li>
+</%def>
+
+<%def name="menu(current=None)">
+        <%
+        def is_current(selected):
+            if selected == current:
+                return h.literal('class="current"')
+        %>
+        <ul id="quick" class="horizontal-list">
+          <!-- repo switcher -->
+          <li ${is_current('repositories')}>
+              <a class="menu_link repo_switcher childs" id="repo_switcher" title="${_('Switch repository')}" href="${h.url('home')}">
+              ${_('Repositories')}
+              </a>
+              <ul id="repo_switcher_list" class="repo_switcher">
+                  <li>
+                      <a href="#">${_('loading...')}</a>
+                  </li>
+              </ul>
+          </li>
+          ##ROOT MENU
+          %if c.rhodecode_user.username != 'default':
+            <li ${is_current('journal')}>
+              <a class="menu_link journal" title="${_('Show recent activity')}"  href="${h.url('journal')}">
+              ${_('Journal')}
+              </a>
+            </li>
+          %else:
+            <li ${is_current('journal')}>
+              <a class="menu_link journal" title="${_('Public journal')}"  href="${h.url('public_journal')}">
+              ${_('Public journal')}
+              </a>
+            </li>
+          %endif
+          <li ${is_current('search')}>
+              <a class="menu_link search" title="${_('Search in repositories')}"  href="${h.url('search')}">
+              ${_('Search')}
+              </a>
+          </li>
+          % if h.HasPermissionAll('hg.admin')('access admin main page'):
+            <li ${is_current('admin')}>
+              <a class="menu_link admin childs" title="${_('Admin')}" href="${h.url('admin_home')}">
+                ${_('Admin')}
+              </a>
+              ${admin_menu()}
+            </li>
+          % elif c.rhodecode_user.groups_admin:
+          <li ${is_current('admin')}>
+              <a class="menu_link admin childs" title="${_('Admin')}">
+                ${_('Admin')}
+              </a>
+              ${admin_menu_simple()}
+          </li>
+          % endif
+          ${usermenu()}
+<script type="text/javascript">
+    YUE.on('repo_switcher','mouseover',function(){
+      var target = 'q_filter_rs';
+      var qfilter_activate = function(){
+          var nodes = YUQ('ul#repo_switcher_list li a.repo_name');
+          var func = function(node){
+              return node.parentNode;
+          }
+          q_filter(target,nodes,func);
+      }
+
+      var loaded = YUD.hasClass('repo_switcher','loaded');
+      if(!loaded){
+         YUD.addClass('repo_switcher','loaded');
+         ypjax("${h.url('repo_switcher')}",'repo_switcher_list',
+             function(o){qfilter_activate();YUD.get(target).focus()},
+             function(o){YUD.removeClass('repo_switcher','loaded');}
+             ,null);
+      }else{
+         YUD.get(target).focus();
+      }
+      return false;
+     });
+
+     YUE.on('header-dd', 'click',function(e){
+         YUD.addClass('header-inner', 'hover');
+         YUD.addClass('content', 'hover');
+     });
+
+</script>
+</%def>

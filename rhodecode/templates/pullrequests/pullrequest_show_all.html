@@ -1,0 +1,26 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Pull Requests') % c.repo_name} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Pull requests')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.context_bar('showpullrequest')}
+
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    ${c.pullrequest_data}
+</div>
+
+</%def>
