@@ -26,7 +26,7 @@
 import sys
 import platform
 
-VERSION = (1, 7, 0, 'dev')
+VERSION = (1, 7, 0)
 BACKENDS = {
     'hg': 'Mercurial repository',
     'git': 'Git repository',
@@ -43,7 +43,7 @@ EXTENSIONS = {}
 
 try:
     from rhodecode.lib import get_current_revision
-    _rev = get_current_revision()
+    _rev = get_current_revision(quiet=True)
     if _rev and len(VERSION) > 3:
         VERSION += ('%s' % _rev[0],)
 except ImportError:
