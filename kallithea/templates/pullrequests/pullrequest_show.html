@@ -69,14 +69,24 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
           <div class="input">
               <div>
+              <span><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
 
               ## branch link is only valid if it is a branch
               <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.pull_request.org_ref_parts[1])}">${c.pull_request.org_ref_parts[0]}: ${c.pull_request.org_ref_parts[1]}</a></span>
-              <span>
+              </div>
+          </div>
+         </div>
+         <div class="field">
+          <div class="label-summary">
+              <label>${_('Pull changes')}:</label>
+          </div>
+          <div class="input">
+              <div>
+               ## TODO: use cs_ranges[-1] or org_ref_parts[1] in both cases?
                %if h.is_hg(c.pull_request.org_repo):
-                 | ${_('Pull changes')} <span style="font-family: monospace">hg pull -r ${h.short_id(c.cs_ranges[-1].raw_id)} <a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
+                 <span style="font-family: monospace">hg pull ${c.pull_request.org_repo.clone_url()} -r ${h.short_id(c.cs_ranges[-1].raw_id)}</span>
                %elif h.is_git(c.pull_request.org_repo):
-                 | ${_('Pull changes')} <span style="font-family: monospace">git pull <a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a> ${c.pull_request.org_ref_parts[1]} </span>
+                 <span style="font-family: monospace">git pull ${c.pull_request.org_repo.clone_url()} ${c.pull_request.org_ref_parts[1]}</span>
                %endif
               </div>
           </div>
