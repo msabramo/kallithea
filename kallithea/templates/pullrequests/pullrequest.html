@@ -99,8 +99,8 @@ ${self.repo_context_bar('showpullrequest')}
                       <div class="gravatar"><img alt="gravatar" src="${member['gravatar_link']}"/> </div>
                       <div style="float:left">${member['firstname']} ${member['lastname']} (${_('owner')})</div>
                       <input type="hidden" value="${member['user_id']}" name="review_members" />
-                      <span class="action_button" style="padding: 3px" onclick="removeReviewMember(${member['user_id']})">
-                          <i class="icon-remove-sign"  style="color: #FF4444;"></i>
+                      <span class="action_button" style="padding: 3px" onclick="removeReviewMember(${member['user_id']})" title="${_('Remove reviewer')}>
+                          <i class="icon-remove-sign" style="color: #FF4444;"></i>
                       </span>
                     </div>
                   </li>
