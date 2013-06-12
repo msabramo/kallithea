@@ -18,7 +18,7 @@
 </%def>
 
 <%def name="main()">
-${self.repo_context_bar('changelog')}
+${self.repo_context_bar('changelog', c.changeset.raw_id)}
 <div class="box">
     <!-- box / title -->
     <div class="title">

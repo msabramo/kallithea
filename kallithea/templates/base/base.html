@@ -98,7 +98,8 @@
   </ul>
 </%def>
 
-<%def name="repo_context_bar(current=None)">
+<%def name="repo_context_bar(current=None, rev=None)">
+  <% rev = None if rev == 'tip' else rev %>
   <%
       def follow_class():
           if c.repository_following:
@@ -143,8 +144,12 @@
       -->
       <ul id="context-pages" class="horizontal-list">
         <li ${is_current('summary')}><a href="${h.url('summary_home', repo_name=c.repo_name)}"><i class="icon-file-text"></i> ${_('Summary')}</a></li>
+        %if rev:
+        <li ${is_current('changelog')}><a href="${h.url('changelog_file_home', repo_name=c.repo_name, revision=rev, f_path='')}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
+        %else:
         <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
-        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name)}"><i class="icon-file"></i> ${_('Files')}</a></li>
+        %endif
+        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name, revision=rev or 'tip')}"><i class="icon-file"></i> ${_('Files')}</a></li>
         <li ${is_current('switch-to')}>
           <a href="#" id="branch_tag_switcher_2" class="dropdown"><i class="icon-random"></i> ${_('Switch To')}</a>
           <ul id="switch_to_list_2" class="switch_to submenu">

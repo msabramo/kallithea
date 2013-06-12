@@ -18,6 +18,9 @@
     %if c.changelog_for_path:
      - /${c.changelog_for_path}
     %endif
+    %if c.revision:
+    @ ${h.short_id(c.first_revision.raw_id)}
+    %endif
     - ${ungettext('showing %d out of %d revision', 'showing %d out of %d revisions', size) % (size, c.total_cs)}
 </%def>
 
@@ -26,7 +29,7 @@
 </%def>
 
 <%def name="main()">
-${self.repo_context_bar('changelog')}
+${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision else None)}
 <div class="box">
     <!-- box / title -->
     <div class="title">
@@ -41,7 +44,11 @@ ${self.repo_context_bar('changelog')}
                        <div class="info_box" style="text-align: right; float: right">
                             <a href="#" class="btn btn-mini" id="rev_range_container" style="display:none"></a>
                             <a href="#" class="btn btn-mini" id="rev_range_clear" style="display:none">${_('Clear selection')}</a>
-
+                            %if c.revision:
+                                <a class="btn btn-mini" href="${h.url('changelog_home', repo_name=c.repo_name)}">
+                                    ${_('Go to tip of repository')}
+                                </a>
+                            %endif
                             %if c.db_repo.fork:
                                 <a id="compare_fork"
                                    title="${_('Compare fork with %s' % c.db_repo.fork.repo_name)}"

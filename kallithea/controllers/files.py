@@ -136,11 +136,11 @@ class FilesController(BaseRepoController):
         if post_revision:
             cs = self.__get_cs_or_redirect(post_revision, repo_name)
 
+        c.revision = revision
         c.changeset = self.__get_cs_or_redirect(revision, repo_name)
         c.branch = request.GET.get('branch', None)
         c.f_path = f_path
         c.annotate = annotate
-        c.changeset = self.__get_cs_or_redirect(revision, repo_name)
         cur_rev = c.changeset.revision
 
         # prev link

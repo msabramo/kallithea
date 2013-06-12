@@ -145,6 +145,9 @@ class ChangelogController(BaseRepoController):
             return redirect(url('changelog_file_home', repo_name=c.repo_name,
                                     revision=branch_name, f_path=f_path or ''))
 
+        if revision == 'tip':
+            revision = None
+
         c.changelog_for_path = f_path
         try:
 
@@ -164,13 +167,13 @@ class ChangelogController(BaseRepoController):
                         redirect(h.url('changelog_home', repo_name=repo_name))
                 collection = list(reversed(collection))
             else:
-                collection = c.db_repo_scm_instance.get_changesets(start=0,
+                collection = c.db_repo_scm_instance.get_changesets(start=0, end=revision,
                                                         branch_name=branch_name)
             c.total_cs = len(collection)
 
             c.pagination = RepoPage(collection, page=p, item_count=c.total_cs,
                                     items_per_page=c.size, branch=branch_name,)
-            collection = list(c.pagination)
+
             page_revisions = [x.raw_id for x in c.pagination]
             c.comments = c.db_repo.get_comments(page_revisions)
             c.statuses = c.db_repo.statuses(page_revisions)
@@ -194,6 +197,8 @@ class ChangelogController(BaseRepoController):
             _revs = [x.revision for x in c.pagination]
         self._graph(c.db_repo_scm_instance, _revs, c.total_cs, c.size, p)
 
+        c.revision = revision # requested revision ref
+        c.first_revision = c.pagination[0] # pagination is never empty here!
         return render('changelog/changelog.html')
 
     @LoginRequired()
