@@ -19,7 +19,7 @@
             <td>
                 <span class="logtags">
                     <span class="branchtag">${h.link_to(branch[0],
-                    h.url('files_home',repo_name=c.repo_name,revision=branch[1].raw_id))}</span>
+                    h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id))}</span>
                 </span>
             </td>
             <td>${branch[1]._timestamp}</td>
@@ -28,7 +28,7 @@
             <td>${branch[1].revision}</td>
             <td>
                 <div>
-                    <pre><a href="${h.url('files_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">r${branch[1].revision}:${h.short_id(branch[1].raw_id)}</a></pre>
+                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">r${branch[1].revision}:${h.short_id(branch[1].raw_id)}</a></pre>
                 </div>
             </td>
             <td>
@@ -54,7 +54,7 @@
               <td>${branch[1].revision}</td>
               <td>
                 <div>
-                    <pre><a href="${h.url('files_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">r${branch[1].revision}:${h.short_id(branch[1].raw_id)}</a></pre>
+                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">r${branch[1].revision}:${h.short_id(branch[1].raw_id)}</a></pre>
                 </div>
               </td>
               <td></td>

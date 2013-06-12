@@ -34,7 +34,7 @@
                </div>
               %endif
             </div>
-            <pre><a href="${h.url('files_home',repo_name=c.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a></pre>
+            <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a></pre>
          </div>
         </td>
         <td>
@@ -48,13 +48,13 @@
             %if h.is_hg(c.db_repo_scm_instance):
                 %for book in cs.bookmarks:
                     <div class="booktag" title="${_('Bookmark %s') % book}">
-                        ${h.link_to(h.shorter(book),h.url('files_home',repo_name=c.repo_name,revision=cs.raw_id))}
+                        ${h.link_to(h.shorter(book),h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
                     </div>
                 %endfor
             %endif
             %for tag in cs.tags:
              <div class="tagtag" title="${_('Tag %s') % tag}">
-                 ${h.link_to(h.shorter(tag),h.url('files_home',repo_name=c.repo_name,revision=cs.raw_id))}
+                 ${h.link_to(h.shorter(tag),h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
              </div>
             %endfor
             %if cs.branch:

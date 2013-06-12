@@ -19,7 +19,7 @@
             <td>
                 <span class="logbooks">
                     <span class="booktag">${h.link_to(book[0],
-                    h.url('files_home',repo_name=c.repo_name,revision=book[1].raw_id))}</span>
+                    h.url('changeset_home',repo_name=c.repo_name,revision=book[1].raw_id))}</span>
                 </span>
             </td>
             <td>${book[1]._timestamp}</td>
@@ -28,7 +28,7 @@
             <td>${book[1].revision}</td>
             <td>
               <div>
-                  <pre><a href="${h.url('files_home',repo_name=c.repo_name,revision=book[1].raw_id)}">r${book[1].revision}:${h.short_id(book[1].raw_id)}</a></pre>
+                  <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=book[1].raw_id)}">r${book[1].revision}:${h.short_id(book[1].raw_id)}</a></pre>
               </div>
             </td>
             <td>
