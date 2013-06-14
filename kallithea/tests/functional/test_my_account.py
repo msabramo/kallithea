@@ -40,12 +40,6 @@ class TestMyAccountController(TestController):
                             User.get_by_username(TEST_USER_ADMIN_LOGIN)).count()
         response.mustcontain('"totalRecords": %s' % cnt)
 
-    def test_my_account_my_pullrequests(self):
-        self.log_user()
-        response = self.app.get(url('my_account_pullrequests'))
-
-        response.mustcontain('Nothing here yet')
-
     def test_my_account_my_emails(self):
         self.log_user()
         response = self.app.get(url('my_account_emails'))

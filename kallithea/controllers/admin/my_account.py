@@ -230,27 +230,6 @@ class MyAccountController(BaseController):
         h.flash(_("Removed email from user"), category='success')
         return redirect(url('my_account_emails'))
 
-    def my_account_pullrequests(self):
-        c.active = 'pullrequests'
-        self.__load_data()
-        c.show_closed = request.GET.get('pr_show_closed')
-
-        def _filter(pr):
-            s = sorted(pr, key=lambda o: o.created_on, reverse=True)
-            if not c.show_closed:
-                s = filter(lambda p: p.status != PullRequest.STATUS_CLOSED, s)
-            return s
-
-        c.my_pull_requests = _filter(PullRequest.query()\
-                                .filter(PullRequest.user_id ==
-                                        self.authuser.user_id)\
-                                .all())
-        my_prs = [x.pull_request for x in PullRequestReviewers.query()
-                    .filter(PullRequestReviewers.user_id ==
-                        self.authuser.user_id).all()]
-        c.participate_in_pull_requests = _filter(my_prs)
-        return render('admin/my_account/my_account.html')
-
     def my_account_api_keys(self):
         c.active = 'api_keys'
         self.__load_data()

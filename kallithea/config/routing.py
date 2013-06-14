@@ -367,9 +367,6 @@ def make_map(config):
         m.connect("my_account_watched", "/my_account/watched",
                   action="my_account_watched", conditions=dict(method=["GET"]))
 
-        m.connect("my_account_pullrequests", "/my_account/pull_requests",
-                  action="my_account_pullrequests", conditions=dict(method=["GET"]))
-
         m.connect("my_account_perms", "/my_account/perms",
                   action="my_account_perms", conditions=dict(method=["GET"]))
 
