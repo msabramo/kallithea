@@ -803,6 +803,9 @@ var _placeAddButton = function($line_tr){
  */
 var _placeInline = function(target_id, lineno, html){
     var $td = $("#{0}_{1}".format(target_id, lineno));
+    if (!$td.length){
+        return false;
+    }
 
     // check if there are comments already !
     var $line_tr = $td.parent(); // the tr
@@ -815,6 +818,7 @@ var _placeInline = function(target_id, lineno, html){
 
     // scan nodes, and attach add button to last one
     _placeAddButton($line_tr);
+    return true;
 }
 
 /**
@@ -824,7 +828,7 @@ var _renderInlineComment = function(json_data){
     var html =  json_data['rendered_text'];
     var lineno = json_data['line_no'];
     var target_id = json_data['target_id'];
-    _placeInline(target_id, lineno, html);
+    return _placeInline(target_id, lineno, html);
 }
 
 /**
@@ -844,8 +848,17 @@ var renderInlineComments = function(file_comments){
                 'line_no': $(comments[i]).attr('line'),
                 'target_id': target_id
             }
-            _renderInlineComment(data);
+            if (_renderInlineComment(data)) {
+                $(comments[i]).hide();
+            }else{
+                var txt = document.createTextNode(
+                        "Comment to " + YUD.getAttribute(comments[i].parentNode,'path') +
+                        " line " + data.line_no +
+                        " which is outside the diff context:");
+                comments[i].insertBefore(txt, comments[i].firstChild);
+            }
         }
+        $(box).show();
     }
 }
 
