@@ -98,7 +98,7 @@ class CompareController(BaseRepoController):
                 redirect(h.url('summary_home', repo_name=repo.repo_name))
             raise HTTPBadRequest()
 
-    def _get_changesets(self, alias, org_repo, org_rev, other_repo, other_rev, merge):
+    def _get_changesets(self, alias, org_repo, org_rev, other_repo, other_rev):
         """
         Returns a list of changesets that can be merged from org_repo at org_rev
         to other_repo at other_rev ... and the ancestor that would be used for merge.
@@ -108,13 +108,11 @@ class CompareController(BaseRepoController):
         :param other_repo: repo object, mostl likely the fork of org_repo. It hass
             all changesets that we need to obtain
         :param other_rev: revision we want out compare to be made on other_repo
-
         """
         ancestor = None
         if org_rev == other_rev:
             changesets = []
-            if merge:
-                ancestor = org_rev
+            ancestor = org_rev
 
         elif alias == 'hg':
             #case two independent repos
@@ -129,20 +127,14 @@ class CompareController(BaseRepoController):
             else:
                 hgrepo = other_repo._repo
 
-            if merge:
-                revs = hgrepo.revs(
-                    "ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
-                    other_rev, org_rev, org_rev)
+            ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
+            if ancestors:
+                # pick arbitrary ancestor - but there is usually only one
+                ancestor = hgrepo[ancestors[0]].hex()
 
-                ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev,
-                                        other_rev)
-                if ancestors:
-                    # pick arbitrary ancestor - but there is usually only one
-                    ancestor = hgrepo[ancestors[0]].hex()
-            else:
-                # TODO: have both + and - changesets
-                revs = hgrepo.revs("id(%s) :: id(%s) - id(%s)",
-                                   org_rev, other_rev, org_rev)
+            # TODO: have both + and - changesets
+            revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
+                               other_rev, org_rev, org_rev)
 
             changesets = [other_repo.get_changeset(rev) for rev in revs]
 
@@ -261,14 +253,13 @@ class CompareController(BaseRepoController):
 
         c.cs_ranges, c.ancestor = self._get_changesets(
             org_repo.scm_instance.alias, org_repo.scm_instance, c.org_rev,
-            other_repo.scm_instance, c.other_rev, merge)
+            other_repo.scm_instance, c.other_rev)
         c.statuses = c.db_repo.statuses(
             [x.raw_id for x in c.cs_ranges])
 
         if partial:
             return render('compare/compare_cs.html')
-        if c.ancestor:
-            assert merge
+        if merge and c.ancestor:
             # case we want a simple diff without incoming changesets,
             # previewing what will be merged.
             # Make the diff on the other repo (which is known to have other_rev)
