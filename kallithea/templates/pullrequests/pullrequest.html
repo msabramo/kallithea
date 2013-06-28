@@ -56,9 +56,12 @@ ${self.repo_context_bar('showpullrequest')}
                             <div style="padding:5px 3px 3px 3px;">
                             <b>${_('Origin repository')}:</b> ${c.db_repo.description}
                             </div>
-                            <span style="font-size: 20px">
+                            <div>
                             ${h.select('org_repo','',c.org_repos,class_='refs')}:${h.select('org_ref',c.default_org_ref,c.org_refs,class_='refs')}
-                            </span>
+                            </div>
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Revision')}:</b> <span id="org_rev_span">-</span>
+                            </div>
                         </div>
                     </div>
 
@@ -68,9 +71,12 @@ ${self.repo_context_bar('showpullrequest')}
                             ## filled with JS
                             <div id="other_repo_desc" style="padding:5px 3px 3px 3px;">
                             </div>
-                            <span style="font-size: 20px">
+                            <div>
                             ${h.select('other_repo',c.default_other_repo,c.other_repos,class_='refs')}:${c.default_other_repo_info['revs']}
-                            </span>
+                            </div>
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Revision')}:</b> <span id="other_rev_span">-</span>
+                            </div>
                         </div>
                     </div>
                     <div style="clear:both"></div>
@@ -178,9 +184,12 @@ ${self.repo_context_bar('showpullrequest')}
                          )}";
       var org_repo = YUQ('#pull_request_form #org_repo')[0].value;
       var org_ref = YUQ('#pull_request_form #org_ref')[0].value.split(':');
+      ## TODO: make nice link like link_to_ref() do
+      YUD.get('org_rev_span').innerHTML = org_ref[2].substr(0,12);
 
       var other_repo = YUQ('#pull_request_form #other_repo')[0].value;
       var other_ref = YUQ('#pull_request_form #other_ref')[0].value.split(':');
+      YUD.get('other_rev_span').innerHTML = other_ref[2].substr(0,12);
 
       var select_refs = YUQ('#pull_request_form select.refs')
       var rev_data = {
