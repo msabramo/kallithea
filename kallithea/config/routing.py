@@ -551,7 +551,7 @@ def make_map(config):
     rmap.connect('repo_refs_data', '/{repo_name:.*?}/refs-data',
                  controller='home', action='repo_refs_data')
 
-    rmap.connect('changeset_home', '/{repo_name:.*?}/changeset/{revision}',
+    rmap.connect('changeset_home', '/{repo_name:.*?}/changeset/{revision:.*}',
                 controller='changeset', revision='tip',
                 conditions=dict(function=check_repo))
     rmap.connect('changeset_children', '/{repo_name:.*?}/changeset_children/{revision}',
@@ -652,17 +652,17 @@ def make_map(config):
                  revision='tip', conditions=dict(function=check_repo))
 
     rmap.connect('changeset_comment',
-                 '/{repo_name:.*?}/changeset/{revision}/comment',
+                 '/{repo_name:.*?}/changeset-comment/{revision}',
                 controller='changeset', revision='tip', action='comment',
                 conditions=dict(function=check_repo))
 
     rmap.connect('changeset_comment_preview',
-                 '/{repo_name:.*?}/changeset/comment/preview',
+                 '/{repo_name:.*?}/changeset-comment-preview',
                 controller='changeset', action='preview_comment',
                 conditions=dict(function=check_repo, method=["POST"]))
 
     rmap.connect('changeset_comment_delete',
-                 '/{repo_name:.*?}/changeset/comment/{comment_id}/delete',
+                 '/{repo_name:.*?}/changeset-comment-delete/{comment_id}',
                 controller='changeset', action='delete_comment',
                 conditions=dict(function=check_repo, method=["DELETE"]))
 
