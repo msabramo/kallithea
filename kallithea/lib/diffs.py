@@ -438,9 +438,9 @@ class DiffProcessor(object):
                 chunks = []
 
             if op == 'D' and chunks:
-                # if not full diff mode show deleted file contents
-                if self.diff_limit is not None:
-                    chunks = []
+                # a way of seeing deleted content could perhaps be nice - but
+                # not with the current UI
+                chunks = []
 
             chunks.insert(0, [{
                 'old_lineno': '',
