@@ -100,8 +100,10 @@ class CompareController(BaseRepoController):
 
     def _get_changesets(self, alias, org_repo, org_rev, other_repo, other_rev):
         """
-        Returns a list of changesets that can be merged from org_repo at org_rev
-        to other_repo at other_rev ... and the ancestor that would be used for merge.
+        Returns lists of changesets that can be merged from org_repo@org_rev
+        to other_repo@other_rev
+        ... and the other way
+        ... and the ancestor that would be used for merge
 
         :param org_repo: repo object, that is most likely the orginal repo we forked from
         :param org_rev: the revision we want our compare to be made
@@ -111,7 +113,8 @@ class CompareController(BaseRepoController):
         """
         ancestor = None
         if org_rev == other_rev:
-            changesets = []
+            org_changesets = []
+            other_changesets = []
             ancestor = org_rev
 
         elif alias == 'hg':
@@ -120,8 +123,8 @@ class CompareController(BaseRepoController):
                 hgrepo = unionrepo.unionrepository(other_repo.baseui,
                                                    other_repo.path,
                                                    org_repo.path)
-                # all the changesets we are looking for will be in other_repo,
-                # so rev numbers from hgrepo can be used in other_repo
+                # all ancestors of other_rev will be in other_repo and
+                # rev numbers from hgrepo can be used in other_repo - org_rev ancestors cannot
 
             #no remote compare do it on the same repository
             else:
@@ -132,11 +135,13 @@ class CompareController(BaseRepoController):
                 # pick arbitrary ancestor - but there is usually only one
                 ancestor = hgrepo[ancestors[0]].hex()
 
-            # TODO: have both + and - changesets
-            revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
-                               other_rev, org_rev, org_rev)
+            other_revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
+                                     other_rev, org_rev, org_rev)
+            other_changesets = [other_repo.get_changeset(rev) for rev in other_revs]
+            org_revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
+                                   org_rev, other_rev, other_rev)
 
-            changesets = [other_repo.get_changeset(rev) for rev in revs]
+            org_changesets = [org_repo.get_changeset(hgrepo[rev].hex()) for rev in org_revs]
 
         elif alias == 'git':
             if org_repo != other_repo:
@@ -154,9 +159,9 @@ class CompareController(BaseRepoController):
                                                    exclude=[org_rev]):
                     revs.append(x.commit.id)
 
-                changesets = [other_repo.get_changeset(rev) for rev in reversed(revs)]
-                if changesets:
-                    ancestor = changesets[0].parents[0].raw_id
+                other_changesets = [other_repo.get_changeset(rev) for rev in reversed(revs)]
+                if other_changesets:
+                    ancestor = other_changesets[0].parents[0].raw_id
                 else:
                     # no changesets from other repo, ancestor is the other_rev
                     ancestor = other_rev
@@ -166,13 +171,14 @@ class CompareController(BaseRepoController):
                     'log --reverse --pretty="format: %%H" -s %s..%s'
                         % (org_rev, other_rev)
                 )
-                changesets = [org_repo.get_changeset(cs)
+                other_changesets = [org_repo.get_changeset(cs)
                               for cs in re.findall(r'[0-9a-fA-F]{40}', so)]
+            org_changesets = []
 
         else:
             raise Exception('Bad alias only git and hg is allowed')
 
-        return changesets, ancestor
+        return other_changesets, org_changesets, ancestor
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
@@ -251,7 +257,7 @@ class CompareController(BaseRepoController):
         c.org_ref_type = org_ref_type
         c.other_ref_type = other_ref_type
 
-        c.cs_ranges, c.ancestor = self._get_changesets(
+        c.cs_ranges, c.cs_ranges_org, c.ancestor = self._get_changesets(
             org_repo.scm_instance.alias, org_repo.scm_instance, c.org_rev,
             other_repo.scm_instance, c.other_rev)
         c.statuses = c.db_repo.statuses(

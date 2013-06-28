@@ -49,6 +49,16 @@
       ${h.hidden('ancestor_rev',c.ancestor)}
       ${h.hidden('merge_rev',c.cs_ranges[-1].raw_id)}
     %endif
+    %if c.cs_ranges_org is not None:
+      ## TODO: list actual changesets?
+      <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+        ${h.link_to_ref(c.other_repo.repo_name, c.other_ref_type, c.other_ref_name, c.other_rev)}
+        ${_('is')}
+        <a href="${c.swap_url}">${_('%s changesets') % (len(c.cs_ranges_org))}</a>
+        ${_('behind')}
+        ${h.link_to_ref(c.org_repo.repo_name, c.org_ref_type, c.org_ref_name, c.org_rev)}
+      </div>
+    %endif
   %endif
 </div>
 

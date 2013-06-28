@@ -190,6 +190,7 @@ class PullrequestsController(BaseRepoController):
          c.other_rev) = pull_request.other_ref.split(':')
 
         c.cs_ranges = [c.org_repo.get_changeset(x) for x in pull_request.revisions]
+        c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
 
         c.statuses = c.org_repo.statuses([x.raw_id for x in c.cs_ranges])
 

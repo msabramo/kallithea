@@ -316,6 +316,7 @@ class ChangesetController(BaseRepoController):
             if len(c.cs_ranges) == 1:
                 return render('changeset/changeset.html')
             else:
+                c.cs_ranges_org = None
                 return render('changeset/changeset_range.html')
 
     @LoginRequired()
