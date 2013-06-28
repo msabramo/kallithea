@@ -265,9 +265,6 @@ class CompareController(BaseRepoController):
         c.statuses = c.db_repo.statuses(
             [x.raw_id for x in c.cs_ranges])
 
-        if merge and not c.ancestor:
-            log.error('Unable to find ancestor revision')
-
         if partial:
             return render('compare/compare_cs.html')
         if c.ancestor:
@@ -280,6 +277,11 @@ class CompareController(BaseRepoController):
             rev1 = c.ancestor
             org_repo = other_repo
         else: # comparing tips, not necessarily linearly related
+            if merge:
+                log.error('Unable to find ancestor revision')
+            if org_repo != other_repo:
+                log.error('cannot compare across repos %s and %s', org_repo, other_repo)
+                raise HTTPNotFound
             rev1 = c.org_rev
 
         diff_limit = self.cut_off_limit if not c.fulldiff else None
