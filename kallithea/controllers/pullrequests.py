@@ -370,7 +370,12 @@ class PullrequestsController(BaseRepoController):
         org_repo = _form['org_repo']
         org_ref = _form['org_ref'] # will end with merge_rev but have symbolic name
         other_repo = _form['other_repo']
-        other_ref = 'rev:ancestor:%s' % _form['ancestor_rev'] # could be calculated from other_ref ...
+        other_ref = _form['other_ref'] # will have symbolic name and head revision
+        ancestor_rev = _form['ancestor_rev'] # revision number of ancestor
+        # hack: ancestor_rev is not an other_ref but we want to show the
+        # requested destination and have the exact ancestor
+        other_ref = other_ref.rsplit(':', 1)[0] + ':' + ancestor_rev
+
         revisions = [x for x in reversed(_form['revisions'])]
         reviewers = _form['review_members']
 
