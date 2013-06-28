@@ -675,7 +675,7 @@ def make_map(config):
                  conditions=dict(function=check_repo))
 
     rmap.connect('compare_url',
-                 '/{repo_name:.*?}/compare/{org_ref_type}@{org_ref:.*?}...{other_ref_type}@{other_ref:.*?}',
+                 '/{repo_name:.*?}/compare/{org_ref_type}@{org_ref_name:.*?}...{other_ref_type}@{other_ref_name:.*?}',
                  controller='compare', action='compare',
                  conditions=dict(function=check_repo),
                  requirements=dict(

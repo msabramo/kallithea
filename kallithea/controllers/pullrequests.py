@@ -179,41 +179,27 @@ class PullrequestsController(BaseRepoController):
 
         :param pull_request:
         """
-        org_repo = pull_request.org_repo
-        (org_ref_type,
-         org_ref_name,
-         org_ref_rev) = pull_request.org_ref.split(':')
+        c.org_repo = pull_request.org_repo
+        (c.org_ref_type,
+         c.org_ref_name,
+         c.org_rev) = pull_request.org_ref.split(':')
 
-        other_repo = org_repo
-        (other_ref_type,
-         other_ref_name,
-         other_ref_rev) = pull_request.other_ref.split(':')
+        c.other_repo = c.org_repo
+        (c.other_ref_type,
+         c.other_ref_name,
+         c.other_rev) = pull_request.other_ref.split(':')
 
-        # despite opening revisions for bookmarks/branches/tags, we always
-        # convert this to rev to prevent changes after bookmark or branch change
-        org_ref = ('rev', org_ref_rev)
-        other_ref = ('rev', other_ref_rev)
+        c.cs_ranges = [c.org_repo.get_changeset(x) for x in pull_request.revisions]
 
-        c.org_repo = org_repo
-        c.other_repo = other_repo
+        c.statuses = c.org_repo.statuses([x.raw_id for x in c.cs_ranges])
 
-        c.fulldiff = fulldiff = request.GET.get('fulldiff')
-
-        c.cs_ranges = [org_repo.get_changeset(x) for x in pull_request.revisions]
-
-        c.statuses = org_repo.statuses([x.raw_id for x in c.cs_ranges])
-
-        c.org_ref = org_ref[1]
-        c.org_ref_type = org_ref[0]
-        c.other_ref = other_ref[1]
-        c.other_ref_type = other_ref[0]
-
-        diff_limit = self.cut_off_limit if not fulldiff else None
+        c.fulldiff = request.GET.get('fulldiff')
+        diff_limit = self.cut_off_limit if not c.fulldiff else None
 
         # we swap org/other ref since we run a simple diff on one repo
         log.debug('running diff between %s and %s in %s'
-                  % (other_ref, org_ref, org_repo.scm_instance.path))
-        txtdiff = org_repo.scm_instance.get_diff(rev1=safe_str(other_ref[1]), rev2=safe_str(org_ref[1]))
+                  % (c.other_rev, c.org_rev, c.org_repo.scm_instance.path))
+        txtdiff = c.org_repo.scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev))
 
         diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
                                              diff_limit=diff_limit)

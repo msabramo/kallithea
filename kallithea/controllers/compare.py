@@ -191,18 +191,18 @@ class CompareController(BaseRepoController):
         other_repo = request.GET.get('other_repo', org_repo)
         c.org_repo = Repository.get_by_repo_name(org_repo)
         c.other_repo = Repository.get_by_repo_name(other_repo)
-        c.org_ref = c.other_ref = _('Select changeset')
+        c.org_ref_name = c.other_ref_name = _('Select changeset')
         return render('compare/compare_diff.html')
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
-    def compare(self, repo_name, org_ref_type, org_ref, other_ref_type, other_ref):
+    def compare(self, repo_name, org_ref_type, org_ref_name, other_ref_type, other_ref_name):
         # org_ref will be evaluated in org_repo
         org_repo = c.db_repo.repo_name
-        org_ref = (org_ref_type, org_ref)
+        org_ref = (org_ref_type, org_ref_name)
         # other_ref will be evaluated in other_repo
-        other_ref = (other_ref_type, other_ref)
+        other_ref = (other_ref_type, other_ref_name)
         other_repo = request.GET.get('other_repo', org_repo)
         # If merge is True:
         #   Show what org would get if merged with other:
@@ -222,9 +222,9 @@ class CompareController(BaseRepoController):
         # swap url for compare_diff page - never partial and never as_form
         c.swap_url = h.url('compare_url',
             repo_name=other_repo,
-            org_ref_type=other_ref[0], org_ref=other_ref[1],
+            org_ref_type=other_ref_type, org_ref_name=other_ref_name,
             other_repo=org_repo,
-            other_ref_type=org_ref[0], other_ref=org_ref[1],
+            other_ref_type=org_ref_type, other_ref_name=org_ref_name,
             merge=merge or '')
 
         org_repo = Repository.get_by_repo_name(org_repo)
@@ -248,20 +248,20 @@ class CompareController(BaseRepoController):
             h.flash(msg, category='error')
             return redirect(url('compare_home', repo_name=c.repo_name))
 
-        org_rev = self.__get_rev_or_redirect(ref=org_ref, repo=org_repo, partial=partial)
-        other_rev = self.__get_rev_or_redirect(ref=other_ref, repo=other_repo, partial=partial)
+        c.org_rev = self.__get_rev_or_redirect(ref=org_ref, repo=org_repo, partial=partial)
+        c.other_rev = self.__get_rev_or_redirect(ref=other_ref, repo=other_repo, partial=partial)
 
         c.compare_home = False
         c.org_repo = org_repo
         c.other_repo = other_repo
-        c.org_ref = org_ref[1]
-        c.other_ref = other_ref[1]
-        c.org_ref_type = org_ref[0]
-        c.other_ref_type = other_ref[0]
+        c.org_ref_name = org_ref_name
+        c.other_ref_name = other_ref_name
+        c.org_ref_type = org_ref_type
+        c.other_ref_type = other_ref_type
 
         c.cs_ranges, c.ancestor = self._get_changesets(
-            org_repo.scm_instance.alias, org_repo.scm_instance, org_rev,
-            other_repo.scm_instance, other_rev, merge)
+            org_repo.scm_instance.alias, org_repo.scm_instance, c.org_rev,
+            other_repo.scm_instance, c.other_rev, merge)
         c.statuses = c.db_repo.statuses(
             [x.raw_id for x in c.cs_ranges])
 
@@ -274,18 +274,20 @@ class CompareController(BaseRepoController):
             assert merge
             # case we want a simple diff without incoming changesets,
             # previewing what will be merged.
-            # Make the diff on the other repo (which is known to have other_ref)
-            log.debug('Using ancestor %s as org_ref instead of %s'
-                      % (c.ancestor, org_ref))
-            org_rev = c.ancestor
+            # Make the diff on the other repo (which is known to have other_rev)
+            log.debug('Using ancestor %s as rev1 instead of %s'
+                      % (c.ancestor, c.org_rev))
+            rev1 = c.ancestor
             org_repo = other_repo
+        else: # comparing tips, not necessarily linearly related
+            rev1 = c.org_rev
 
         diff_limit = self.cut_off_limit if not c.fulldiff else None
 
         log.debug('running diff between %s and %s in %s'
-                  % (org_rev, other_rev, org_repo.scm_instance.path))
+                  % (rev1, c.other_rev, org_repo.scm_instance.path))
+        txtdiff = org_repo.scm_instance.get_diff(rev1=rev1, rev2=c.other_rev)
 
-        txtdiff = org_repo.scm_instance.get_diff(rev1=org_rev, rev2=other_rev)
         diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
                                              diff_limit=diff_limit)
         _parsed = diff_processor.prepare()

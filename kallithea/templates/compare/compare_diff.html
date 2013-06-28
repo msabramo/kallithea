@@ -5,7 +5,7 @@
     %if c.compare_home:
         ${_('%s Compare') % c.repo_name}
     %else:
-        ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.org_repo.repo_name, c.org_ref)} &gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref)}
+        ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.org_repo.repo_name, c.org_ref_name)} &gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref_name)}
     %endif
     %if c.site_name:
         &middot; ${c.site_name}
@@ -93,7 +93,7 @@ ${self.repo_context_bar('changelog')}
    $(document).ready(function(){
     var cache = {}
     $("#compare_org").select2({
-        placeholder: "${'%s@%s' % (c.org_repo.repo_name, c.org_ref)}",
+        placeholder: "${'%s@%s' % (c.org_repo.repo_name, c.org_ref_name)}",
         formatSelection: function(obj){
             return '{0}@{1}'.format("${c.org_repo.repo_name}", obj.text)
         },
@@ -133,7 +133,7 @@ ${self.repo_context_bar('changelog')}
         },
     });
     $("#compare_other").select2({
-        placeholder: "${'%s@%s' % (c.other_repo.repo_name, c.other_ref)}",
+        placeholder: "${'%s@%s' % (c.other_repo.repo_name, c.other_ref_name)}",
         dropdownAutoWidth: true,
         formatSelection: function(obj){
             return '{0}@{1}'.format("${c.other_repo.repo_name}", obj.text)
@@ -177,7 +177,7 @@ ${self.repo_context_bar('changelog')}
         var org = $('#compare_org').select2('data');
         var other = $('#compare_other').select2('data');
 
-        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='__other_ref_type__',org_ref='__org__',other_ref_type='__org_ref_type__',other_ref='__other__', other_repo=c.other_repo.repo_name)}";
+        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='__other_ref_type__',org_ref_name='__org__',other_ref_type='__org_ref_type__',other_ref_name='__other__', other_repo=c.other_repo.repo_name)}";
         var u = compare_url.replace('__other_ref_type__',org.type)
                            .replace('__org__',org.text)
                            .replace('__org_ref_type__',other.type)

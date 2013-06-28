@@ -10,9 +10,9 @@ class TestCompareController(TestController):
         response = self.app.get(url('compare_url',
                                     repo_name=HG_REPO,
                                     org_ref_type="tag",
-                                    org_ref=tag1,
+                                    org_ref_name=tag1,
                                     other_ref_type="tag",
-                                    other_ref=tag2,
+                                    other_ref_name=tag2,
                                     ), status=200)
         response.mustcontain('%s@%s' % (HG_REPO, tag1))
         response.mustcontain('%s@%s' % (HG_REPO, tag2))
@@ -48,9 +48,9 @@ class TestCompareController(TestController):
         response = self.app.get(url('compare_url',
                                     repo_name=GIT_REPO,
                                     org_ref_type="tag",
-                                    org_ref=tag1,
+                                    org_ref_name=tag1,
                                     other_ref_type="tag",
-                                    other_ref=tag2,
+                                    other_ref_name=tag2,
                                     ), status=200)
         response.mustcontain('%s@%s' % (GIT_REPO, tag1))
         response.mustcontain('%s@%s' % (GIT_REPO, tag2))
@@ -84,9 +84,9 @@ class TestCompareController(TestController):
         response = self.app.get(url('compare_url',
                                     repo_name=HG_REPO,
                                     org_ref_type="branch",
-                                    org_ref='default',
+                                    org_ref_name='default',
                                     other_ref_type="branch",
-                                    other_ref='default',
+                                    other_ref_name='default',
                                     ))
 
         response.mustcontain('%s@default' % (HG_REPO))
@@ -100,9 +100,9 @@ class TestCompareController(TestController):
         response = self.app.get(url('compare_url',
                                     repo_name=GIT_REPO,
                                     org_ref_type="branch",
-                                    org_ref='master',
+                                    org_ref_name='master',
                                     other_ref_type="branch",
-                                    other_ref='master',
+                                    other_ref_name='master',
                                     ))
 
         response.mustcontain('%s@master' % (GIT_REPO))
@@ -119,9 +119,9 @@ class TestCompareController(TestController):
         response = self.app.get(url('compare_url',
                                     repo_name=HG_REPO,
                                     org_ref_type="rev",
-                                    org_ref=rev1,
+                                    org_ref_name=rev1,
                                     other_ref_type="rev",
-                                    other_ref=rev2,
+                                    other_ref_name=rev2,
                                     ))
         response.mustcontain('%s@%s' % (HG_REPO, rev1))
         response.mustcontain('%s@%s' % (HG_REPO, rev2))
@@ -141,9 +141,9 @@ class TestCompareController(TestController):
         response = self.app.get(url('compare_url',
                                     repo_name=GIT_REPO,
                                     org_ref_type="rev",
-                                    org_ref=rev1,
+                                    org_ref_name=rev1,
                                     other_ref_type="rev",
-                                    other_ref=rev2,
+                                    other_ref_name=rev2,
                                     ))
         response.mustcontain('%s@%s' % (GIT_REPO, rev1))
         response.mustcontain('%s@%s' % (GIT_REPO, rev2))

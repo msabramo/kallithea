@@ -72,7 +72,7 @@ ${self.repo_context_bar('showpullrequest')}
               <span><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
 
               ## branch link is only valid if it is a branch
-              <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.pull_request.org_ref_parts[1])}">${c.pull_request.org_ref_parts[0]}: ${c.pull_request.org_ref_parts[1]}</a></span>
+              <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.org_ref_name)}">${c.org_ref_type}: ${c.org_ref_name}</a></span>
               </div>
           </div>
          </div>

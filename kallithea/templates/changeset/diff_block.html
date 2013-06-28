@@ -59,13 +59,13 @@
           <div class="changeset_header">
               <div class="changeset_file">
                   ${h.safe_unicode(filenode_path)} |
-                  <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.org_ref)}" title="${_('Show file at latest version in this repo')}">${c.org_ref_type}@${h.short_id(c.org_ref) if c.org_ref_type=='rev' else c.org_ref}</a>
+                  <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.org_rev)}" title="${_('Show file at latest version in this repo')}">${c.org_ref_type}@${h.short_id(c.org_ref_name) if c.org_ref_type=='rev' else c.org_ref_name}</a>
                   <i class="icon-arrow-right" style="font-size: 12px;color:#577632"></i>
-                  <a class="spantag" href="${h.url('files_home', repo_name=c.repo_name, f_path=filenode_path, revision=c.other_ref)}" title="${_('Show file at initial version in this repo')}">${c.other_ref_type}@${h.short_id(c.other_ref) if c.other_ref_type=='rev' else c.other_ref}</a>
+                  <a class="spantag" href="${h.url('files_home', repo_name=c.repo_name, f_path=filenode_path, revision=c.other_rev)}" title="${_('Show file at initial version in this repo')}">${c.other_ref_type}@${h.short_id(c.other_ref_name) if c.other_ref_type=='rev' else c.other_ref_name}</a>
               </div>
                <div class="diff-actions">
                 %if c.other_repo.repo_name == c.repo_name:
-                  <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(filenode_path),diff2=c.other_ref,diff1=c.org_ref,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
+                  <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(filenode_path),diff2=c.other_rev,diff1=c.org_rev,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
                       <img class="icon" src="${h.url('/images/icons/application_double.png')}"/>
                   </a>
                 %endif

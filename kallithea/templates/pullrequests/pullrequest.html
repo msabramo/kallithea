@@ -171,11 +171,11 @@ ${self.repo_context_bar('showpullrequest')}
       //url template
       var url = "${h.url('compare_url',
                          repo_name='__other_repo__',
-                         org_ref_type='__other_ref_type__',
-                         org_ref='__other_ref__',
+                         org_ref_type='rev',
+                         org_ref_name='__other_ref_name__',
                          other_repo='__org_repo__',
-                         other_ref_type='__org_ref_type__',
-                         other_ref='__org_ref__',
+                         other_ref_type='rev',
+                         other_ref_name='__org_ref_name__',
                          as_form=True,
                          merge=True,
                          )}";
@@ -187,16 +187,14 @@ ${self.repo_context_bar('showpullrequest')}
 
       var select_refs = YUQ('#pull_request_form select.refs')
       var rev_data = {
-          'org_repo': org_repo,
-          'org_ref': org_ref[2],
-          'org_ref_type': 'rev',
-          'other_repo': other_repo,
-          'other_ref': other_ref[2],
-          'other_ref_type': 'rev',
+          '__org_repo__': org_repo,
+          '__org_ref_name__': org_ref[2],
+          '__other_repo__': other_repo,
+          '__other_ref_name__': other_ref[2],
       }; // gather the org/other ref and repo here
 
       for (k in rev_data){
-          url = url.replace('__'+k+'__',rev_data[k]);
+          url = url.replace(k,rev_data[k]);
       }
 
       YUD.get('pull_request_overview').innerHTML = "${_('Loading ...')}";

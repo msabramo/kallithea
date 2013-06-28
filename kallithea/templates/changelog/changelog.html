@@ -52,7 +52,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                             %if c.db_repo.fork:
                                 <a id="compare_fork"
                                    title="${_('Compare fork with %s' % c.db_repo.fork.repo_name)}"
-                                   href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
+                                   href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref_name=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref_name=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
                                    class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
                             %endif
                             ## text and href of open_new_pr is controlled from javascript

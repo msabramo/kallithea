@@ -39,7 +39,7 @@ YUE.on('compare_branches','click',function(e){
     var other = YUQ('input[name=compare_other]:checked')[0];
 
     if(org && other){
-        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='branch',org_ref='__ORG__',other_ref_type='branch',other_ref='__OTHER__')}";
+        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='branch',org_ref_name='__ORG__',other_ref_type='branch',other_ref_name='__OTHER__')}";
         var u = compare_url.replace('__ORG__',org.value)
                            .replace('__OTHER__',other.value);
         window.location=u;

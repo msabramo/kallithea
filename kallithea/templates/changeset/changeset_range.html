@@ -33,7 +33,7 @@ ${self.repo_context_bar('changelog')}
                     r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)}
                     <i class="icon-arrow-right"></i>
                     r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
-                    <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-loop"></i> Compare Revisions</a>
+                    <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref_name=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref_name=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-loop"></i> Compare Revisions</a>
                 </div>
             </div>
         </div>
