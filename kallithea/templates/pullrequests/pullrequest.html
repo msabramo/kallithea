@@ -124,9 +124,6 @@ ${self.repo_context_bar('showpullrequest')}
         <div style="float:left;padding:0px 30px 30px 30px">
            ## overview pulled by ajax
            <div style="float:left" id="pull_request_overview"></div>
-           <div style="float:left;clear:both;padding:10px 10px 10px 0px;display:none">
-                <a id="pull_request_overview_url" href="#">${_('Detailed compare view')}</a>
-           </div>
         </div>
         <div style="clear:both;"></div>
 
@@ -199,9 +196,6 @@ ${self.repo_context_bar('showpullrequest')}
 
       YUD.get('pull_request_overview').innerHTML = "${_('Loading ...')}";
       ypjax(url,'pull_request_overview');
-
-      YUD.get('pull_request_overview_url').href = url; // shouldn't have as_form ... but ...
-      YUD.setStyle(YUD.get('pull_request_overview_url').parentElement,'display','');
   }
 
   ## refresh automatically when something changes (org_repo can't change)
