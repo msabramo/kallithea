@@ -55,7 +55,8 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                                    href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
                                    class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
                             %endif
-                            <a id="open_new_pr" href="${h.url('pullrequest_home',repo_name=c.repo_name)}" class="btn btn-mini">${_('Open new pull request')}</a>
+                            ## text and href of open_new_pr is controlled from javascript
+                            <a id="open_new_pr" class="btn btn-mini"></a>
                        </div>
 
                        ${h.form(h.url.current(),method='get')}
@@ -161,10 +162,9 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
         <script type="text/javascript">
             YAHOO.util.Event.onDOMReady(function(){
 
-                //Monitor range checkboxes and build a link to changesets
-                //ranges
+                //Monitor range checkboxes and build a link to changesets ranges
                 var checkboxes = YUD.getElementsByClassName('changeset_range');
-                // register our routes needed for this view
+                // register extra routes needed for this view
                 pyroutes.register('changeset_home', "${h.url('changeset_home', repo_name='%(repo_name)s', revision='%(revision)s')}", ['repo_name', 'revision']);
 
                 var checkbox_checker = function(e){
@@ -213,13 +213,14 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                     }else{
                         YUD.setStyle('rev_range_container','display','none');
                         YUD.setStyle('rev_range_clear','display','none');
-                        %if c.branch_name:
+                        %if c.revision:
                             YUD.get('open_new_pr').href = pyroutes.url('pullrequest_home',
                                                                        {'repo_name': '${c.repo_name}',
-                                                                        'branch':'${c.branch_name}'});
+                                                                        'rev_end':'${c.first_revision.raw_id}'});
                         %else:
                             YUD.get('open_new_pr').href = pyroutes.url('pullrequest_home',
-                                                                       {'repo_name': '${c.repo_name}'});
+                                                                       {'repo_name': '${c.repo_name}',
+                                                                        'branch':'${c.first_revision.branch}'});
                         %endif
                         YUD.setStyle('compare_fork','display','');
                     }
