@@ -100,6 +100,9 @@ listen = 256
 <%text>## (avoid memory leaks).</%text>
 max-requests = 1000
 
+<%text>## enable large buffers</%text>
+buffer-size=65535
+
 <%text>## Log requests slower than the specified number of milliseconds.</%text>
 log-slow = 10
 

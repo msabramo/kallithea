@@ -91,6 +91,9 @@ max_request_body_size = 107374182400
 ## (avoid memory leaks).
 #max-requests = 1000
 
+## enable large buffers
+#buffer-size=65535
+
 ## Log requests slower than the specified number of milliseconds.
 #log-slow = 10
 
