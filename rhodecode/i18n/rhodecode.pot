@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RhodeCode 1.7.1\n"
 "Report-Msgid-Bugs-To: marcin@maq.io\n"
-"POT-Creation-Date: 2013-06-30 05:59-0700\n"
+"POT-Creation-Date: 2013-07-09 05:02-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: rhodecode/controllers/changelog.py:88 rhodecode/controllers/compare.py:88
+#: rhodecode/controllers/changelog.py:88 rhodecode/controllers/compare.py:87
 #: rhodecode/controllers/pullrequests.py:258
 msgid "There are no changesets yet"
 msgstr ""
@@ -110,7 +110,7 @@ msgstr ""
 msgid "There are no files yet %s"
 msgstr ""
 
-#: rhodecode/controllers/files.py:271 rhodecode/controllers/files.py:339
+#: rhodecode/controllers/files.py:271 rhodecode/controllers/files.py:338
 #, python-format
 msgid "This repository is has been locked by %s on %s"
 msgstr ""
@@ -128,64 +128,64 @@ msgstr ""
 msgid "No changes"
 msgstr ""
 
-#: rhodecode/controllers/files.py:322 rhodecode/controllers/files.py:394
+#: rhodecode/controllers/files.py:322 rhodecode/controllers/files.py:397
 #, python-format
 msgid "Successfully committed to %s"
 msgstr ""
 
-#: rhodecode/controllers/files.py:327 rhodecode/controllers/files.py:405
+#: rhodecode/controllers/files.py:326 rhodecode/controllers/files.py:408
 msgid "Error occurred during commit"
 msgstr ""
 
-#: rhodecode/controllers/files.py:351
+#: rhodecode/controllers/files.py:350
 msgid "Added file via RhodeCode"
 msgstr ""
 
-#: rhodecode/controllers/files.py:368
+#: rhodecode/controllers/files.py:371
 msgid "No content"
 msgstr ""
 
-#: rhodecode/controllers/files.py:372
+#: rhodecode/controllers/files.py:375
 msgid "No filename"
 msgstr ""
 
-#: rhodecode/controllers/files.py:397
+#: rhodecode/controllers/files.py:400
 msgid "Location must be relative path and must not contain .. in path"
 msgstr ""
 
-#: rhodecode/controllers/files.py:431
+#: rhodecode/controllers/files.py:434
 msgid "Downloads disabled"
 msgstr ""
 
-#: rhodecode/controllers/files.py:442
+#: rhodecode/controllers/files.py:445
 #, python-format
 msgid "Unknown revision %s"
 msgstr ""
 
-#: rhodecode/controllers/files.py:444
+#: rhodecode/controllers/files.py:447
 msgid "Empty repository"
 msgstr ""
 
-#: rhodecode/controllers/files.py:446
+#: rhodecode/controllers/files.py:449
 msgid "Unknown archive type"
 msgstr ""
 
-#: rhodecode/controllers/files.py:702
+#: rhodecode/controllers/files.py:705
 #: rhodecode/templates/changeset/changeset_range.html:9
 #: rhodecode/templates/email_templates/pull_request.html:12
 #: rhodecode/templates/pullrequests/pullrequest.html:124
 msgid "Changesets"
 msgstr ""
 
-#: rhodecode/controllers/files.py:703 rhodecode/controllers/pullrequests.py:149
-#: rhodecode/controllers/summary.py:76 rhodecode/model/scm.py:685
+#: rhodecode/controllers/files.py:706 rhodecode/controllers/pullrequests.py:149
+#: rhodecode/controllers/summary.py:76 rhodecode/model/scm.py:689
 #: rhodecode/templates/switch_to_list.html:3
 #: rhodecode/templates/branches/branches.html:10
 msgid "Branches"
 msgstr ""
 
-#: rhodecode/controllers/files.py:704 rhodecode/controllers/pullrequests.py:150
-#: rhodecode/controllers/summary.py:77 rhodecode/model/scm.py:696
+#: rhodecode/controllers/files.py:707 rhodecode/controllers/pullrequests.py:150
+#: rhodecode/controllers/summary.py:77 rhodecode/model/scm.py:700
 #: rhodecode/templates/switch_to_list.html:25
 #: rhodecode/templates/tags/tags.html:10
 msgid "Tags"
@@ -210,15 +210,15 @@ msgstr ""
 msgid "journal"
 msgstr ""
 
-#: rhodecode/controllers/login.py:138
+#: rhodecode/controllers/login.py:145
 msgid "You have successfully registered into RhodeCode"
 msgstr ""
 
-#: rhodecode/controllers/login.py:159
+#: rhodecode/controllers/login.py:172
 msgid "Your password reset link was sent"
 msgstr ""
 
-#: rhodecode/controllers/login.py:179
+#: rhodecode/controllers/login.py:192
 msgid "Your password reset was successful, new password has been sent to your email"
 msgstr ""
 
@@ -236,7 +236,7 @@ msgstr ""
 msgid "Peer branches"
 msgstr ""
 
-#: rhodecode/controllers/pullrequests.py:148 rhodecode/model/scm.py:691
+#: rhodecode/controllers/pullrequests.py:148 rhodecode/model/scm.py:695
 #: rhodecode/templates/switch_to_list.html:38
 #: rhodecode/templates/bookmarks/bookmarks.html:10
 msgid "Bookmarks"
@@ -247,7 +247,8 @@ msgid "Pull request requires a title with min. 3 chars"
 msgstr ""
 
 #: rhodecode/controllers/pullrequests.py:325
-msgid "Error creating pull request"
+#, python-format
+msgid "Error creating pull request: %s"
 msgstr ""
 
 #: rhodecode/controllers/pullrequests.py:347
@@ -713,7 +714,7 @@ msgid "Your account was updated successfully"
 msgstr ""
 
 #: rhodecode/controllers/admin/settings.py:475
-#: rhodecode/controllers/admin/users.py:198
+#: rhodecode/controllers/admin/users.py:200
 #, python-format
 msgid "Error occurred during update of user %s"
 msgstr ""
@@ -723,60 +724,60 @@ msgstr ""
 msgid "Created user %s"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:142
+#: rhodecode/controllers/admin/users.py:144
 #, python-format
 msgid "Error occurred during creation of user %s"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:176
+#: rhodecode/controllers/admin/users.py:178
 msgid "User updated successfully"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:214
+#: rhodecode/controllers/admin/users.py:216
 msgid "Successfully deleted user"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:219
+#: rhodecode/controllers/admin/users.py:221
 msgid "An error occurred during deletion of user"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:234
+#: rhodecode/controllers/admin/users.py:236
 msgid "You can't edit this user"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:293
+#: rhodecode/controllers/admin/users.py:295
 #: rhodecode/controllers/admin/users_groups.py:372
 msgid "Updated permissions"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:297
+#: rhodecode/controllers/admin/users.py:299
 #: rhodecode/controllers/admin/users_groups.py:376
 msgid "An error occurred during permissions saving"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:311
+#: rhodecode/controllers/admin/users.py:313
 #, python-format
 msgid "Added email %s to user"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:317
+#: rhodecode/controllers/admin/users.py:319
 msgid "An error occurred during email saving"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:327
+#: rhodecode/controllers/admin/users.py:329
 msgid "Removed email from user"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:340
+#: rhodecode/controllers/admin/users.py:342
 #, python-format
 msgid "Added ip %s to user"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:346
+#: rhodecode/controllers/admin/users.py:348
 msgid "An error occurred during ip saving"
 msgstr ""
 
-#: rhodecode/controllers/admin/users.py:358
+#: rhodecode/controllers/admin/users.py:360
 msgid "Removed ip from user"
 msgstr ""
 
@@ -1356,36 +1357,36 @@ msgstr ""
 msgid "%(user)s wants you to review pull request #%(pr_id)s: %(pr_title)s"
 msgstr ""
 
-#: rhodecode/model/scm.py:677
+#: rhodecode/model/scm.py:681
 msgid "latest tip"
 msgstr ""
 
-#: rhodecode/model/user.py:256
+#: rhodecode/model/user.py:294
 msgid "New user registration"
 msgstr ""
 
-#: rhodecode/model/user.py:280 rhodecode/model/user.py:304
+#: rhodecode/model/user.py:318 rhodecode/model/user.py:342
 msgid "You can't Edit this user since it's crucial for entire application"
 msgstr ""
 
-#: rhodecode/model/user.py:328
+#: rhodecode/model/user.py:366
 msgid "You can't remove this user since it's crucial for entire application"
 msgstr ""
 
-#: rhodecode/model/user.py:334
+#: rhodecode/model/user.py:372
 #, python-format
 msgid "user \"%s\" still owns %s repositories and cannot be removed. Switch owners or remove those repositories. %s"
 msgstr ""
 
-#: rhodecode/model/user.py:362
+#: rhodecode/model/user.py:400
 msgid "Password reset link"
 msgstr ""
 
-#: rhodecode/model/user.py:394
+#: rhodecode/model/user.py:430
 msgid "Your new password"
 msgstr ""
 
-#: rhodecode/model/user.py:395
+#: rhodecode/model/user.py:431
 #, python-format
 msgid "Your new RhodeCode password:%s"
 msgstr ""
@@ -1731,7 +1732,7 @@ msgstr ""
 msgid "Log In to %s"
 msgstr ""
 
-#: rhodecode/templates/login.html:31 rhodecode/templates/register.html:20
+#: rhodecode/templates/login.html:31 rhodecode/templates/register.html:29
 #: rhodecode/templates/admin/admin_log.html:5
 #: rhodecode/templates/admin/users/user_add.html:32
 #: rhodecode/templates/admin/users/user_edit.html:57
@@ -1742,7 +1743,7 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: rhodecode/templates/login.html:40 rhodecode/templates/register.html:29
+#: rhodecode/templates/login.html:40 rhodecode/templates/register.html:38
 #: rhodecode/templates/admin/ldap/ldap.html:46
 #: rhodecode/templates/admin/users/user_add.html:41
 #: rhodecode/templates/base/base.html:222
@@ -1785,33 +1786,33 @@ msgstr ""
 msgid "Password reset link will be send to matching email address"
 msgstr ""
 
-#: rhodecode/templates/register.html:5 rhodecode/templates/register.html:74
+#: rhodecode/templates/register.html:5 rhodecode/templates/register.html:83
 msgid "Sign Up"
 msgstr ""
 
-#: rhodecode/templates/register.html:11
+#: rhodecode/templates/register.html:20
 msgid "Sign Up to"
 msgstr ""
 
-#: rhodecode/templates/register.html:38
+#: rhodecode/templates/register.html:47
 msgid "Re-enter password"
 msgstr ""
 
-#: rhodecode/templates/register.html:47
+#: rhodecode/templates/register.html:56
 #: rhodecode/templates/admin/users/user_add.html:59
 #: rhodecode/templates/admin/users/user_edit.html:97
 #: rhodecode/templates/admin/users/user_edit_my_account_form.html:63
 msgid "First Name"
 msgstr ""
 
-#: rhodecode/templates/register.html:56
+#: rhodecode/templates/register.html:65
 #: rhodecode/templates/admin/users/user_add.html:68
 #: rhodecode/templates/admin/users/user_edit.html:106
 #: rhodecode/templates/admin/users/user_edit_my_account_form.html:72
 msgid "Last Name"
 msgstr ""
 
-#: rhodecode/templates/register.html:65
+#: rhodecode/templates/register.html:74
 #: rhodecode/templates/admin/users/user_add.html:77
 #: rhodecode/templates/admin/users/user_edit.html:115
 #: rhodecode/templates/admin/users/user_edit_my_account_form.html:81
@@ -1819,11 +1820,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: rhodecode/templates/register.html:76
+#: rhodecode/templates/register.html:85
 msgid "Your account will be activated right after registration"
 msgstr ""
 
-#: rhodecode/templates/register.html:78
+#: rhodecode/templates/register.html:87
 msgid "Your account must wait for activation by administrator"
 msgstr ""
 
@@ -2035,33 +2036,33 @@ msgid "There are no gists yet"
 msgstr ""
 
 #: rhodecode/templates/admin/gists/new.html:5
-#: rhodecode/templates/admin/gists/new.html:18
+#: rhodecode/templates/admin/gists/new.html:19
 msgid "New gist"
 msgstr ""
 
-#: rhodecode/templates/admin/gists/new.html:39
+#: rhodecode/templates/admin/gists/new.html:40
 msgid "Gist description ..."
 msgstr ""
 
-#: rhodecode/templates/admin/gists/new.html:41
+#: rhodecode/templates/admin/gists/new.html:42
 msgid "Gist lifetime"
 msgstr ""
 
-#: rhodecode/templates/admin/gists/new.html:50
+#: rhodecode/templates/admin/gists/new.html:51
 #: rhodecode/templates/files/files_add.html:75
 #: rhodecode/templates/files/files_edit.html:60
 msgid "plain"
 msgstr ""
 
-#: rhodecode/templates/admin/gists/new.html:58
+#: rhodecode/templates/admin/gists/new.html:59
 msgid "Create private gist"
 msgstr ""
 
-#: rhodecode/templates/admin/gists/new.html:59
+#: rhodecode/templates/admin/gists/new.html:60
 msgid "Create public gist"
 msgstr ""
 
-#: rhodecode/templates/admin/gists/new.html:60
+#: rhodecode/templates/admin/gists/new.html:61
 #: rhodecode/templates/admin/permissions/permissions.html:123
 #: rhodecode/templates/admin/permissions/permissions.html:185
 #: rhodecode/templates/admin/repos/repo_edit.html:142
@@ -3463,6 +3464,7 @@ msgstr ""
 
 #: rhodecode/templates/base/root.html:53
 #: rhodecode/templates/changelog/changelog.html:45
+#: rhodecode/templates/pullrequests/pullrequest_show_all.html:31
 msgid "Open new pull request"
 msgstr ""
 
@@ -4463,21 +4465,21 @@ msgstr ""
 msgid "Pull requests to %s"
 msgstr ""
 
-#: rhodecode/templates/pullrequests/pullrequest_show_all.html:31
+#: rhodecode/templates/pullrequests/pullrequest_show_all.html:42
 #, python-format
 msgid "Instead, show pull requests to %s"
 msgstr ""
 
-#: rhodecode/templates/pullrequests/pullrequest_show_all.html:33
+#: rhodecode/templates/pullrequests/pullrequest_show_all.html:44
 #, python-format
 msgid "Instead, show pull requests from %s"
 msgstr ""
 
-#: rhodecode/templates/pullrequests/pullrequest_show_all.html:39
+#: rhodecode/templates/pullrequests/pullrequest_show_all.html:50
 msgid "Hide closed pull requests"
 msgstr ""
 
-#: rhodecode/templates/pullrequests/pullrequest_show_all.html:41
+#: rhodecode/templates/pullrequests/pullrequest_show_all.html:52
 msgid "Show closed pull requests too"
 msgstr ""
 
