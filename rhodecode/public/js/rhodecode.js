@@ -1964,12 +1964,8 @@ var lastLoginSort = function(a, b, desc, field) {
 };
 
 var nameSort = function(a, b, desc, field) {
-    var a_ = fromHTML(a.getData(field));
-    var b_ = fromHTML(b.getData(field));
-
-    // extract name from table
-    a_ = get_name(a_)
-    b_ = get_name(b_)
+    var a_ = a.getData('raw_name') || 0;
+    var b_ = b.getData('raw_name') || 0;
 
     var comp = YAHOO.util.Sort.compare;
     var compState = comp(a_, b_, desc);
