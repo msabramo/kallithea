@@ -22,7 +22,7 @@ def main():
     push_data = sys.stdin.readlines()
     # os.environ is modified here by a subprocess call that
     # runs git and later git executes this hook.
-    # Environ get's some additional info from rhodecode system
+    # Environ gets some additional info from rhodecode system
     # like IP or username from basic-auth
     handle_git_post_receive(repo_path, push_data, os.environ)
     sys.exit(0)

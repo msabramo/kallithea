@@ -83,7 +83,7 @@ class RepoModel(BaseModel):
     @LazyProperty
     def repos_path(self):
         """
-        Get's the repositories root path from database
+        Gets the repositories root path from database
         """
 
         q = self.sa.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key == '/').one()
@@ -112,7 +112,7 @@ class RepoModel(BaseModel):
 
     def get_all_user_repos(self, user):
         """
-        Get's all repositories that user have at least read access
+        Gets all repositories that user have at least read access
 
         :param user:
         """
@@ -250,7 +250,7 @@ class RepoModel(BaseModel):
 
     def _get_defaults(self, repo_name):
         """
-        Get's information about repository, and returns a dict for
+        Gets information about repository, and returns a dict for
         usage in forms
 
         :param repo_name:

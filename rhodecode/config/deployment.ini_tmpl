@@ -59,7 +59,7 @@ max_request_body_size = 107374182400
 ## recommended for bigger setup is using of of other than sync one
 #worker_class = sync
 #max_requests = 5
-## ammount of time a worker can handle request before it get's killed and
+## ammount of time a worker can handle request before it gets killed and
 ## restarted
 #timeout = 3600
 

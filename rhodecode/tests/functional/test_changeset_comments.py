@@ -122,7 +122,7 @@ class TestChangeSetCommentsController(TestController):
         self.assertEqual(Notification.query().count(), 2)
         users = [x.user.username for x in UserNotification.query().all()]
 
-        # test_regular get's notification by @mention
+        # test_regular gets notification by @mention
         self.assertEqual(sorted(users), [u'test_admin', u'test_regular'])
 
     def test_delete(self):

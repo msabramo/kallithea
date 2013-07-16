@@ -250,7 +250,7 @@ class ScmModel(BaseModel):
     @LazyProperty
     def repos_path(self):
         """
-        Get's the repositories root path from database
+        Gets the repositories root path from database
         """
 
         q = self.sa.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key == '/').one()

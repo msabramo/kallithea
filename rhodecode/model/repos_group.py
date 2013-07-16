@@ -53,7 +53,7 @@ class ReposGroupModel(BaseModel):
     @LazyProperty
     def repos_path(self):
         """
-        Get's the repositories root path from database
+        Gets the repositories root path from database
         """
 
         q = RhodeCodeUi.get_by_key('/')

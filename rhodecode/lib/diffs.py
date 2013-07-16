@@ -243,7 +243,7 @@ class DiffProcessor(object):
 
         self.cur_diff_size += len(string)
 
-        # escaper get's iterated on each .next() call and it checks if each
+        # escaper gets iterated on each .next() call and it checks if each
         # parsed line doesn't exceed the diff limit
         if self.diff_limit is not None and self.cur_diff_size > self.diff_limit:
             raise DiffLimitExceeded('Diff Limit Exceeded')

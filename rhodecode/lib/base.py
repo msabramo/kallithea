@@ -124,7 +124,7 @@ class BaseVCSController(object):
 
     def _get_by_id(self, repo_name):
         """
-        Get's a special pattern _<ID> from clone url and tries to replace it
+        Gets a special pattern _<ID> from clone url and tries to replace it
         with a repository_name for support of _<ID> non changable urls
 
         :param repo_name:

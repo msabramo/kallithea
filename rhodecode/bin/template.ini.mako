@@ -67,7 +67,7 @@ proc_name = rhodecode
 <%text>## recommended for bigger setup is using of of other than sync one</%text>
 worker_class = sync
 max_requests = 1000
-<%text>## ammount of time a worker can handle request before it get's killed and</%text>
+<%text>## ammount of time a worker can handle request before it gets killed and</%text>
 <%text>## restarted</%text>
 timeout = 3600
 %endif

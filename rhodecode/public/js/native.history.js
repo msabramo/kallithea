@@ -342,7 +342,7 @@
 
 		/**
 		 * History.getInternetExplorerMajorVersion()
-		 * Get's the major version of Internet Explorer
+		 * Gets the major version of Internet Explorer
 		 * @return {integer}
 		 * @license Public Domain
 		 * @author Benjamin Arthur Lupton <contact@balupton.com>

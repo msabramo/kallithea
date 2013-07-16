@@ -435,7 +435,7 @@ class GitRepository(BaseRepository):
     @LazyProperty
     def bookmarks(self):
         """
-        Get's bookmarks for this repository
+        Gets bookmarks for this repository
         """
         return {}
 

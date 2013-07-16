@@ -22,7 +22,7 @@ EXTRA_LEXERS = {}
 INDEX_EXTENSIONS = []
 
 # additional extensions for indexing besides the default from pygments
-# those get's added to INDEX_EXTENSIONS
+# those gets added to INDEX_EXTENSIONS
 EXTRA_INDEX_EXTENSIONS = []
 
 

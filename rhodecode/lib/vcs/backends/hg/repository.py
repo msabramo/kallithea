@@ -113,7 +113,7 @@ class MercurialRepository(BaseRepository):
 
     def _get_branches(self, normal=True, closed=False):
         """
-        Get's branches for this repository
+        Gets branches for this repository
         Returns only not closed branches by default
 
         :param closed: return also closed branches for mercurial
@@ -155,7 +155,7 @@ class MercurialRepository(BaseRepository):
     @LazyProperty
     def tags(self):
         """
-        Get's tags for this repository
+        Gets tags for this repository
         """
         return self._get_tags()
 
@@ -234,7 +234,7 @@ class MercurialRepository(BaseRepository):
     @LazyProperty
     def bookmarks(self):
         """
-        Get's bookmarks for this repository
+        Gets bookmarks for this repository
         """
         return self._get_bookmarks()
 
@@ -411,7 +411,7 @@ class MercurialRepository(BaseRepository):
 
     def _get_revision(self, revision):
         """
-        Get's an ID revision given as str. This will always return a fill
+        Gets an ID revision given as str. This will always return a fill
         40 char revision number
 
         :param revision: str or int or None
