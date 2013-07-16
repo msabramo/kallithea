@@ -433,6 +433,13 @@ class GitRepository(BaseRepository):
             raise RepositoryError(e.strerror)
 
     @LazyProperty
+    def bookmarks(self):
+        """
+        Get's bookmarks for this repository
+        """
+        return {}
+
+    @LazyProperty
     def _parsed_refs(self):
         return self._get_parsed_refs()
 
