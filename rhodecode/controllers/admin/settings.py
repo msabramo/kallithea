@@ -41,6 +41,7 @@ from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
     HasReposGroupPermissionAll, HasReposGroupPermissionAny, AuthUser
 from rhodecode.lib.base import BaseController, render
 from rhodecode.lib.celerylib import tasks, run_task
+from rhodecode.lib.exceptions import HgsubversionImportError
 from rhodecode.lib.utils import repo2db_mapper, set_rhodecode_config, \
     check_git_version
 from rhodecode.model.db import RhodeCodeUi, Repository, RepoGroup, \
@@ -287,6 +288,11 @@ class SettingsController(BaseController):
                     sett.ui_section = 'extensions'
 
                 sett.ui_active = form_result['extensions_hgsubversion']
+                if sett.ui_active:
+                    try:
+                        import hgsubversion
+                    except ImportError:
+                        raise HgsubversionImportError
                 Session().add(sett)
 
 #                sett = RhodeCodeUi.get_by_key('hggit')
@@ -302,6 +308,12 @@ class SettingsController(BaseController):
                 Session().commit()
 
                 h.flash(_('Updated VCS settings'), category='success')
+
+            except HgsubversionImportError:
+                log.error(traceback.format_exc())
+                h.flash(_('Unable to activate hgsubversion support. '
+                          'The "hgsubversion" library is missing'),
+                        category='error')
 
             except Exception:
                 log.error(traceback.format_exc())
