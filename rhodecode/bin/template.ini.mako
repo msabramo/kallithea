@@ -103,6 +103,10 @@ max-requests = 1000
 <%text>## enable large buffers</%text>
 buffer-size=65535
 
+<%text>## socket and http timeouts ##</%text>
+http-timeout=3600
+socket-timeout=3600
+
 <%text>## Log requests slower than the specified number of milliseconds.</%text>
 log-slow = 10
 
