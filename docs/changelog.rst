@@ -4,6 +4,42 @@
 Changelog
 =========
 
+
+1.7.2 (**2013-07-XX**)
+----------------------
+
+news
+++++
+
+- Added handling of copied files in diffs
+- Implemented issue #387 side-by-side diffs view
+- Added option to specify other than official bugtracker url to post issues
+  with RhodeCode.
+- Markdown renderer now uses github flavored syntax with a better newline handling
+- Added User pre-create, create and delete hooks for rcextensions.
+- Branch selectors: show closed branches too for Mercurial
+- Updated codemirror to latest version and added syntax coloring dropdown for
+  various languages CodeMirror supports
+- Added --no-public-access / --public-access flags into setup-rhodecode
+  command to enable setup without public access
+- Various small updates to pull requests
+- Bumped Mercurial version to latest
+- Diffs view doesn't show content of delete files anymore.
+
+fixes
++++++
+
+- Added missing __get_cs_or_redirect method for file history.
+  Fixes issue with displaying a history of file that is not present at tip.
+- Pull request: urlify description and fix javascript injection
+- Fixed some missing IP extraction for action logger
+- Fixed bug with log_delete hook didn't properly store
+  user who triggered delete action
+- Fixed show as raw link for private gists
+- Fixes issue #860. IMC web commits poisoned caches when they failed with commit.
+- Fixes issue #856 file upload >1000 bytes on windows throws exception.
+
+
 1.7.1 (**2013-06-13**)
 ----------------------
 
@@ -22,6 +58,7 @@ fixes
 - Fixed issues with how mysql handles float values. Caused gists with
   expiration dates not work properly on mysql.
 - Fixed issue with ldap enable/disable flag
+
 
 1.7.0 (**2013-06-08**)
 ----------------------
@@ -62,6 +99,7 @@ fixes
 - Fixed #851 and #563 make-index crashes on non-ascii files.
 - Fixes #852, flash messages had issies with non-ascii messages
 
+
 1.6.0 (**2013-05-12**)
 ----------------------
 
@@ -81,6 +119,7 @@ fixes
 - Fixed redirection loop on changelog for empty repository
 - Fixed issue with web-editor that didn't preserve executable bit
   after editing files
+
 
 1.6.0rc1 (**2013-04-07**)
 -------------------------
@@ -158,6 +197,7 @@ fixes
  - Fixed multiple IP addresses in each of extracted IP.
  - Lot of other small bug fixes and improvements.
 
+
 1.5.4 (**2013-03-13**)
 ----------------------
 
@@ -179,6 +219,7 @@ fixes
 - disallow cloning from file:/// URIs
 - handle all cases with multiple IP addresses in proxy headers
 
+
 1.5.3 (**2013-02-12**)
 ----------------------
 
@@ -198,6 +239,7 @@ fixes
 - fixes for issue #731, update-repoinfo sometimes failed to update data when changesets
   were initial commits
 - recursive mode of setting permission skips private repositories
+
 
 1.5.2 (**2013-01-14**)
 ----------------------
@@ -232,6 +274,7 @@ fixes
 - fixed issue #702 API methods without arguments fail when "args":null
 - set the status of changesets initially on pull request. Fixes issues #690 and #587
 
+
 1.5.1 (**2012-12-13**)
 ----------------------
 
@@ -250,6 +293,7 @@ fixes
 - #682 translation difficult for multi-line text
 - #683 fixed difference between messages about not mapped repositories
 - email: fail nicely when no SMTP server has been configured
+
 
 1.5.0 (**2012-12-12**)
 ----------------------
@@ -315,6 +359,7 @@ fixes
 - fixed issues with recursive scans on removed repositories that could take
   long time on instance start
 
+
 1.4.4 (**2012-10-08**)
 ----------------------
 
@@ -345,6 +390,7 @@ fixes
 - fixed #597 commits in future get negative age.
 - fixed #598 API docs methods had wrong members parameter as returned data
 
+
 1.4.3 (**2012-09-28**)
 ----------------------
 
@@ -363,6 +409,7 @@ fixes
 - fixed #578 set proper PATH with current Python for Git
   hooks to execute within same Python as RhodeCode
 - fixed issue with Git bare repos that ends with .git in name
+
 
 1.4.2 (**2012-09-12**)
 ----------------------
@@ -387,6 +434,7 @@ fixes
 - fixed issues with generating pull-request overview for repos with
   bookmarks and tags, also preview doesn't loose chosen revision from
   select dropdown
+
 
 1.4.1 (**2012-09-07**)
 ----------------------
@@ -422,6 +470,7 @@ fixes
 - fixed #559
 - fixed issue #559 fixed bug in routing that mapped repo names with <name>_<num> in name as
   if it was a request to url by repository ID
+
 
 1.4.0 (**2012-09-03**)
 ----------------------
@@ -483,6 +532,7 @@ fixes
   new chunk in html diff
 - full text search now works also for commit messages
 
+
 1.3.6 (**2012-05-17**)
 ----------------------
 
@@ -501,6 +551,7 @@ fixes
 - made simplejson required lib for speedup on JSON encoding
 - fixes #449 bad regex could get more than revisions from parsing history
 - don't clear DB session when CELERY_EAGER is turned ON
+
 
 1.3.5 (**2012-05-10**)
 ----------------------
@@ -535,6 +586,7 @@ fixes
   with submodules
 - fixed issue with empty APIKEYS for users after registration ref. #438
 - fixed issue with getting README files from git repositories
+
 
 1.3.4 (**2012-03-28**)
 ----------------------
@@ -575,6 +627,7 @@ fixes
   utf8 charset
 - #406 trim long branch/tag names in changelog to not break UI
 
+
 1.3.3 (**2012-03-02**)
 ----------------------
 
@@ -600,6 +653,7 @@ fixes
 - fixed #372 issues with git operation detection that caused a security issue
   for git repos
 
+
 1.3.2 (**2012-02-28**)
 ----------------------
 
@@ -619,6 +673,7 @@ fixes
 - fixes #371 fixed issues with beaker/sqlalchemy and non-ascii cache keys
 - fixed #373 missing cascade drop on user_group_to_perm table
 
+
 1.3.1 (**2012-02-27**)
 ----------------------
 
@@ -632,6 +687,7 @@ fixes
 - redirection loop occurs when remember-me wasn't checked during login
 - fixes issues with git blob history generation
 - don't fetch branch for git in file history dropdown. Causes unneeded slowness
+
 
 1.3.0 (**2012-02-26**)
 ----------------------
@@ -689,6 +745,7 @@ fixes
   contains the "full path" to the repositories
 - #355 RhodeCode doesn't store encrypted LDAP passwords
 
+
 1.2.5 (**2012-01-28**)
 ----------------------
 
@@ -707,6 +764,7 @@ fixes
 - fixed missing email in account page.
 - Reverted Mercurial to 2.0.1 for windows due to bug in Mercurial that makes
   forking on windows impossible
+
 
 1.2.4 (**2012-01-19**)
 ----------------------
@@ -736,6 +794,7 @@ fixes
   doesn't work
 - #316 fixes issues with web description in hgrc files
 
+
 1.2.3 (**2011-11-02**)
 ----------------------
 
@@ -758,6 +817,7 @@ fixes
 - #276 issue with adding a single user with id>10 to usergroups
 - #277 fixes windows LDAP settings in which missing values breaks the ldap auth
 - #288 fixes managing of repos in a group for non admin user
+
 
 1.2.2 (**2011-10-17**)
 ----------------------
@@ -782,6 +842,7 @@ fixes
 - fixes #248 cannot edit repos inside a group on windows
 - fixes #219 forking problems on windows
 
+
 1.2.1 (**2011-10-08**)
 ----------------------
 
@@ -795,6 +856,7 @@ fixes
 - fixed problems with basic auth and push problems
 - gui fixes
 - fixed logger
+
 
 1.2.0 (**2011-10-07**)
 ----------------------
@@ -868,6 +930,7 @@ fixes
 - improved rendering of dag (they are not trimmed anymore when number of
   heads exceeds 5)
 
+
 1.1.8 (**2011-04-12**)
 ----------------------
 
@@ -923,6 +986,7 @@ fixes
 - fixed #136 installation support for FreeBSD
 - RhodeCode will check for python version during installation
 
+
 1.1.5 (**2011-03-17**)
 ----------------------
 
@@ -944,6 +1008,7 @@ fixes
 - fixed returned rawfiles attachment names with international character
 - cleaned out docs, big thanks to Jason Harris
 
+
 1.1.4 (**2011-02-19**)
 ----------------------
 
@@ -957,6 +1022,7 @@ fixes
   when that page was accessed as first after server start
 - journal fixes
 - fixed option to access repository just by entering http://server/<repo_name>
+
 
 1.1.3 (**2011-02-16**)
 ----------------------
@@ -984,6 +1050,7 @@ fixes
 - fixed #106 relation issues on databases different than sqlite
 - fixed static files paths links to use of url() method
 
+
 1.1.2 (**2011-01-12**)
 ----------------------
 
@@ -997,6 +1064,7 @@ fixes
 - fixes #98 protection against float division of percentage stats
 - fixed graph bug
 - forced webhelpers version since it was making troubles during installation
+
 
 1.1.1 (**2011-01-06**)
 ----------------------
@@ -1016,6 +1084,7 @@ fixes
   and server crashed with errors
 - fixed large tooltips problems on main page
 - fixed #92 whoosh indexer is more error proof
+
 
 1.1.0 (**2010-12-18**)
 ----------------------
@@ -1101,6 +1170,12 @@ fixes
 1.0.0 (**2010-11-02**)
 ----------------------
 
+news
+++++
+
+
+fixes
++++++
 - security bugfix simplehg wasn't checking for permissions on commands
   other than pull or push.
 - fixed doubled messages after push or pull in admin journal
@@ -1108,9 +1183,16 @@ fixes
 - admin menu accessible from options menu on repository view
 - permissions cached queries
 
+
 1.0.0rc4  (**2010-10-12**)
 --------------------------
 
+news
+++++
+
+
+fixes
++++++
 - fixed python2.5 missing simplejson imports (thanks to Jens Bäckman)
 - removed cache_manager settings from sqlalchemy meta
 - added sqlalchemy cache settings to ini files
@@ -1121,10 +1203,25 @@ fixes
 1.0.0rc3 (**2010-10-11**)
 -------------------------
 
+news
+++++
+
+
+fixes
++++++
+
 - fixed i18n during installation.
+
 
 1.0.0rc2 (**2010-10-11**)
 -------------------------
+
+news
+++++
+
+
+fixes
++++++
 
 - Disabled dirsize in file browser, it's causing nasty bug when dir renames
   occure. After vcs is fixed it'll be put back again.
