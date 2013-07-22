@@ -115,6 +115,9 @@ class LoginController(BaseController):
                     raise HTTPFound(location=url('home'), headers=headers)
 
             except formencode.Invalid, errors:
+                defaults = errors.value
+                # remove password from filling in form again
+                del defaults['password']
                 return htmlfill.render(
                     render('/login.html'),
                     defaults=errors.value,
