@@ -9,6 +9,7 @@ syntax: glob
 syntax: regexp
 ^rcextensions
 ^build
+^dist/
 ^docs/build/
 ^docs/_build/
 ^data$
