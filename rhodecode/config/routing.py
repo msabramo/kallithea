@@ -98,7 +98,8 @@ def make_map(config):
     rmap.connect('rst_help',
                  "http://docutils.sourceforge.net/docs/user/rst/quickref.html",
                  _static=True)
-    rmap.connect('rhodecode_official', "http://rhodecode.org", _static=True)
+    rmap.connect('rhodecode_official', "https://rhodecode.com", _static=True)
+    rmap.connect('rc_issue_tracker', 'https://rhodecode.com/help/', _static=True)
 
     #ADMIN REPOSITORY REST ROUTES
     with rmap.submapper(path_prefix=ADMIN_PREFIX,
