@@ -146,7 +146,7 @@ class LoginController(BaseController):
                 form_result['active'] = c.auto_active
                 UserModel().create_registration(form_result)
                 h.flash(_('You have successfully registered into RhodeCode'),
-                            category='success')
+                        category='success')
                 Session().commit()
                 return redirect(url('login_home'))
 
