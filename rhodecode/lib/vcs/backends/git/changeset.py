@@ -294,17 +294,15 @@ class GitChangeset(BaseChangeset):
         f_path = safe_str(path)
 
         if limit:
-            cmd = 'log -n %s --pretty="format: %%H" -s -p %s -- "%s"' % (
-                      safe_int(limit, 0), cs_id, f_path
-                   )
+            cmd = 'log -n %s --pretty="format: %%H" -s %s -- "%s"' % (
+                      safe_int(limit, 0), cs_id, f_path)
 
         else:
-            cmd = 'log --pretty="format: %%H" -s -p %s -- "%s"' % (
-                      cs_id, f_path
-                   )
+            cmd = 'log --pretty="format: %%H" -s %s -- "%s"' % (
+                      cs_id, f_path)
         so, se = self.repository.run_git_command(cmd)
         ids = re.findall(r'[0-9a-fA-F]{40}', so)
-        return [self.repository.get_changeset(id) for id in ids]
+        return [self.repository.get_changeset(sha) for sha in ids]
 
     def get_file_history_2(self, path):
         """

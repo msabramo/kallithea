@@ -142,7 +142,7 @@ class CompareController(BaseRepoController):
                                 'allowed. Got %s != %s' % (org_repo, other_repo))
 
             so, se = org_repo.run_git_command(
-                'log --reverse --pretty="format: %%H" -s -p %s..%s'
+                'log --reverse --pretty="format: %%H" -s %s..%s'
                     % (org_rev, other_rev)
             )
             changesets = [org_repo.get_changeset(cs)
