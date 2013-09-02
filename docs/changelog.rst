@@ -5,7 +5,7 @@ Changelog
 =========
 
 
-1.7.2 (**2013-07-XX**)
+1.7.2 (**2013-10-01**)
 ----------------------
 
 news
@@ -23,7 +23,7 @@ news
 - Added --no-public-access / --public-access flags into setup-rhodecode
   command to enable setup without public access
 - Various small updates to pull requests
-- Bumped Mercurial version to latest
+- Bumped Mercurial version to 2.6.3
 - Diffs view doesn't show content of delete files anymore.
 
 fixes
@@ -38,7 +38,10 @@ fixes
 - Fixed show as raw link for private gists
 - Fixes issue #860. IMC web commits poisoned caches when they failed with commit.
 - Fixes issue #856 file upload >1000 bytes on windows throws exception.
-
+- Login form does not refill passwords on for re-render
+- Fixed rss repo links for repos in groups
+- Fixed issue #884 Pull Request fails when setting the lang=ja
+- Fixed issue with latest git version and usage of -s -p flags.
 
 1.7.1 (**2013-06-13**)
 ----------------------
