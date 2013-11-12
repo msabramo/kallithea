@@ -422,6 +422,14 @@ class FileNode(Node):
         _bin = '\0' in self._get_content()
         return _bin
 
+    def is_browser_compatible_image(self):
+        return self.mimetype in [
+            "image/gif",
+            "image/jpeg",
+            "image/png",
+            "image/bmp"
+        ]
+
     @LazyProperty
     def extension(self):
         """Returns filenode extension"""

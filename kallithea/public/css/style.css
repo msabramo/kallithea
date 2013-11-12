@@ -5122,6 +5122,12 @@ div.comment:target>.comment-wrapp {
     margin: -2px;
 }
 
+.img-preview {
+    max-width: 100%;
+    height: auto;
+    margin: 5px;
+}
+
 div.prev-next-comment div.prev-comment,
 div.prev-next-comment div.next-comment {
     display: inline-block;

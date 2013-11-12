@@ -56,12 +56,14 @@
         <div class="commit">${h.urlify_commit(c.file_changeset.message,c.repo_name)}</div>
     </div>
     <div class="code-body">
-       %if c.file.is_binary:
-           <div style="padding:5px">
-           ${_('Binary file (%s)') % c.file.mimetype}
-           </div>
-       %else:
-        % if c.file.size < c.cut_off_limit:
+      %if c.file.is_browser_compatible_image():
+        <img src="${h.url('files_raw_home',repo_name=c.repo_name,revision=c.file_changeset.raw_id,f_path=c.f_path)}" class="img-preview"/>
+      %elif c.file.is_binary:
+        <div style="padding:5px">
+          ${_('Binary file (%s)') % c.file.mimetype}
+        </div>
+      %else:
+        %if c.file.size < c.cut_off_limit:
             %if c.annotate:
               ${h.pygmentize_annotation(c.repo_name,c.file,linenos=True,anchorlinenos=True,lineanchors='L',cssclass="code-highlight")}
             %else:
@@ -71,7 +73,7 @@
             ${_('File is too big to display')} ${h.link_to(_('Show as raw'),
             h.url('files_raw_home',repo_name=c.repo_name,revision=c.file_changeset.raw_id,f_path=c.f_path))}
         %endif
-     %endif
+      %endif
     </div>
 </div>
 
