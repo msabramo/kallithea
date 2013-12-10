@@ -45,7 +45,8 @@ from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
 from kallithea.lib import diffs
 from kallithea.model.db import Repository
 from kallithea.lib.diffs import LimitedDiffContainer
-
+from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
+    _context_url, get_line_ctx, get_ignore_ws
 
 log = logging.getLogger(__name__)
 
@@ -225,6 +226,12 @@ class CompareController(BaseRepoController):
             other_ref_type=org_ref_type, other_ref_name=org_ref_name,
             merge=merge or '')
 
+        # set callbacks for generating markup for icons
+        c.ignorews_url = _ignorews_url
+        c.context_url = _context_url
+        ignore_whitespace = request.GET.get('ignorews') == '1'
+        line_context = request.GET.get('context', 3)
+
         org_repo = Repository.get_by_repo_name(org_repo)
         other_repo = Repository.get_by_repo_name(other_repo)
 
@@ -285,7 +292,9 @@ class CompareController(BaseRepoController):
 
         log.debug('running diff between %s and %s in %s'
                   % (rev1, c.other_rev, org_repo.scm_instance.path))
-        txtdiff = org_repo.scm_instance.get_diff(rev1=rev1, rev2=c.other_rev)
+        txtdiff = org_repo.scm_instance.get_diff(rev1=rev1, rev2=c.other_rev,
+                                      ignore_whitespace=ignore_whitespace,
+                                      context=line_context)
 
         diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
                                              diff_limit=diff_limit)

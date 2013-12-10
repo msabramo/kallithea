@@ -57,6 +57,8 @@ from kallithea.model.comment import ChangesetCommentsModel
 from kallithea.model.changeset_status import ChangesetStatusModel
 from kallithea.model.forms import PullRequestForm
 from kallithea.lib.utils2 import safe_int
+from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
+    _context_url, get_line_ctx, get_ignore_ws
 
 log = logging.getLogger(__name__)
 
@@ -194,13 +196,19 @@ class PullrequestsController(BaseRepoController):
 
         c.statuses = c.org_repo.statuses([x.raw_id for x in c.cs_ranges])
 
+        ignore_whitespace = request.GET.get('ignorews') == '1'
+        line_context = request.GET.get('context', 3)
+        c.ignorews_url = _ignorews_url
+        c.context_url = _context_url
         c.fulldiff = request.GET.get('fulldiff')
         diff_limit = self.cut_off_limit if not c.fulldiff else None
 
         # we swap org/other ref since we run a simple diff on one repo
         log.debug('running diff between %s and %s in %s'
                   % (c.other_rev, c.org_rev, c.org_repo.scm_instance.path))
-        txtdiff = c.org_repo.scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev))
+        txtdiff = c.org_repo.scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev),
+                                      ignore_whitespace=ignore_whitespace,
+                                      context=line_context)
 
         diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
                                              diff_limit=diff_limit)

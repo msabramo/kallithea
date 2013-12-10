@@ -59,6 +59,9 @@ ${self.repo_context_bar('changelog')}
                     ${ungettext('%s file changed with %s insertions and %s deletions','%s files changed with %s insertions and %s deletions', len(c.files)) % (len(c.files),c.lines_added,c.lines_deleted)}:
                 %endif
 
+                ${c.ignorews_url(request.GET)}
+                ${c.context_url(request.GET)}
+
                 </div>
                 <div class="cs_files">
                   %if not c.files:
