@@ -24,9 +24,6 @@
         <td><div class="gravatar" commit_id="${cs.raw_id}"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
         <td><div class="author">${h.person(cs.author)}</div></td>
         <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id))}
-        %if c.as_form:
-          ${h.hidden('revisions',cs.raw_id)}
-        %endif
         </td>
         <td>
         %if cs.branch:
@@ -60,8 +57,6 @@
         ${_('No common ancestor found - repositories are unrelated')}
         %endif
       </div>
-      ${h.hidden('ancestor_rev',c.ancestor)}
-      ${h.hidden('merge_rev',c.cs_ranges[-1].raw_id)}
     %endif
     %if c.cs_ranges_org is not None:
       ## TODO: list actual changesets?

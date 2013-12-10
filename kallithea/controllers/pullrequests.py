@@ -59,6 +59,7 @@ from kallithea.model.forms import PullRequestForm, PullRequestPostForm
 from kallithea.lib.utils2 import safe_int
 from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
+from kallithea.controllers.compare import CompareController
 
 log = logging.getLogger(__name__)
 
@@ -357,35 +358,45 @@ class PullrequestsController(BaseRepoController):
             _form = PullRequestForm(repo.repo_id)().to_python(request.POST)
         except formencode.Invalid, errors:
             log.error(traceback.format_exc())
-            if errors.error_dict.get('revisions'):
-                msg = 'Revisions: %s' % errors.error_dict['revisions']
-            elif errors.error_dict.get('pullrequest_title'):
-                msg = _('Pull request requires a title with min. 3 chars')
-            else:
-                msg = _('Error creating pull request: %s') % errors.msg
-
+            msg = _('Error creating pull request: %s') % errors.msg
             h.flash(msg, 'error')
             return redirect(url('pullrequest_home', repo_name=repo_name)) ## would rather just go back to form ...
 
-        org_repo = _form['org_repo']
-        org_ref = _form['org_ref'] # will end with merge_rev but have symbolic name
-        other_repo = _form['other_repo']
+        # heads up: org and other might seem backward here ...
+        org_repo_name = _form['org_repo']
+        org_ref = _form['org_ref'] # will have merge_rev as rev but symbolic name
+        org_repo = RepoModel()._get_repo(org_repo_name)
+        (_org_ref_type,
+         org_ref_name,
+         org_rev) = org_ref.split(':')
+
+        other_repo_name = _form['other_repo']
         other_ref = _form['other_ref'] # will have symbolic name and head revision
-        ancestor_rev = _form['ancestor_rev'] # revision number of ancestor
+        other_repo = RepoModel()._get_repo(other_repo_name)
+        (other_ref_type,
+         other_ref_name,
+         other_rev) = other_ref.split(':')
+
+        cs_ranges, _cs_ranges_not, ancestor_rev = \
+            CompareController._get_changesets(org_repo.scm_instance.alias,
+                                              other_repo.scm_instance, other_rev, # org and other "swapped"
+                                              org_repo.scm_instance, org_rev,
+                                              )
+        revisions = [cs.raw_id for cs in cs_ranges]
+
         # hack: ancestor_rev is not an other_ref but we want to show the
         # requested destination and have the exact ancestor
-        other_ref = other_ref.rsplit(':', 1)[0] + ':' + ancestor_rev
+        other_ref = '%s:%s:%s' % (other_ref_type, other_ref_name, ancestor_rev)
 
-        revisions = [x for x in reversed(_form['revisions'])]
         reviewers = _form['review_members']
 
         title = _form['pullrequest_title']
         if not title:
-            title = '%s#%s to %s' % (org_repo, org_ref.split(':', 2)[1], other_repo)
+            title = '%s#%s to %s#%s' % (org_repo_name, org_ref_name, other_repo_name, other_ref_name)
         description = _form['pullrequest_desc'].strip() or _('No description')
         try:
             pull_request = PullRequestModel().create(
-                self.authuser.user_id, org_repo, org_ref, other_repo,
+                self.authuser.user_id, org_repo_name, org_ref, other_repo_name,
                 other_ref, revisions, reviewers, title, description
             )
             Session().commit()
@@ -397,7 +408,7 @@ class PullrequestsController(BaseRepoController):
             log.error(traceback.format_exc())
             return redirect(url('pullrequest_home', repo_name=repo_name))
 
-        return redirect(url('pullrequest_show', repo_name=other_repo,
+        return redirect(url('pullrequest_show', repo_name=other_repo_name,
                             pull_request_id=pull_request.pull_request_id))
 
     @LoginRequired()

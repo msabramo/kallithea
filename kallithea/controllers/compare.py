@@ -99,7 +99,8 @@ class CompareController(BaseRepoController):
                 redirect(h.url('summary_home', repo_name=repo.repo_name))
             raise HTTPBadRequest()
 
-    def _get_changesets(self, alias, org_repo, org_rev, other_repo, other_rev):
+    @staticmethod
+    def _get_changesets(alias, org_repo, org_rev, other_repo, other_rev):
         """
         Returns lists of changesets that can be merged from org_repo@org_rev
         to other_repo@other_rev
