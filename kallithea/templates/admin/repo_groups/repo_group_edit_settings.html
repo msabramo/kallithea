@@ -46,6 +46,16 @@ ${h.form(url('repos_group',group_name=c.repo_group.group_name),method='put')}
 </div>
 ${h.end_form()}
 
+${h.form(url('delete_repo_group', group_name=c.repo_group.group_name),method='delete')}
+<div class="form">
+    <div class="fields">
+        <div class="field" style="border:none;color:#888">
+            ${h.submit('remove_%s' % c.repo_group.group_name,_('Remove this group'),class_="btn red",onclick="return confirm('"+_('Confirm to delete this group')+"');")}
+        </div>
+    </div>
+</div>
+${h.end_form()}
+
 <script>
     $(document).ready(function(){
         $("#group_parent_id").select2({
