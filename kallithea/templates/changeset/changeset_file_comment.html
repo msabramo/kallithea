@@ -149,35 +149,34 @@
                 ${(_('Comments parsed using %s syntax with %s support.') % (('<a href="%s">RST</a>' % h.url('rst_help')),
                   '<span style="color:#577632" class="tooltip" title="%s">@mention</span>' %
                   _('Use @username inside this text to send notification to this Kallithea user')))|n}
-              %if change_status:
-                | <a id="show_changeset_link" onClick="change_status_show();">
-                  %if is_pr:
-                    ${_('Vote for pull request status')}
-                  %else:
-                    ${_('Change changeset status')}
-                  %endif
-                  </a>
-                  <input id="show_changeset_status_box" type="checkbox" name="change_changeset_status" style="display: none;" />
-              %endif
-              <div id="preview-btn" class="preview-btn btn btn-mini">${_('Preview')}</div>
+                <div id="preview-btn" class="preview-btn btn btn-mini">${_('Preview')}</div>
             </div>
+            <div class="mentions-container" id="mentions_container"></div>
+            ${h.textarea('text', class_="comment-block-ta")}
             %if change_status:
-            <div id="status_block_container" class="status-block" style="display:none">
+              <div id="status_block_container" class="status-block">
+                %if is_pr:
+                  ${_('Vote for pull request status')}:
+                %else:
+                  ${_('Set changeset status')}:
+                %endif
+                <input id="show_changeset_status_box" type="checkbox" name="change_changeset_status" style="display: none;" />
+                <input type="radio" class="status_change_radio" name="changeset_status" id="changeset_status_unchanged" value="" checked="checked" />
+                <label for="changeset_status_unchanged">
+                  ${_('No change')}
+                </label>
                 %for status,lbl in c.changeset_statuses:
-                    <div class="">
-                        <img src="${h.url('/images/icons/flag_status_%s.png' % status)}" />
-                        <input ${'checked="checked"' if status == cur_status else ''}" type="radio" class="status_change_radio" name="changeset_status" id="${status}" value="${status}">
-                        <label for="${status}">${lbl}</label>
-                    </div>
+                    <span style="margin-left: 15px;">
+                        <input type="radio" class="status_change_radio" name="changeset_status" id="${status}" value="${status}">
+                        <label for="${status}"><img src="${h.url('/images/icons/flag_status_%s.png' % status)}" />${lbl}</label>
+                    </span>
                 %endfor
                 %if is_pr and change_status:
                 <input id="save_close" type="checkbox" name="save_close" disabled="${'1' if cur_status in ['not_reviewed','under_review'] else ''}">
                 <label id="save_close_label" for="save_close" class="${'disabled' if cur_status in ['not_reviewed','under_review'] else ''}">${_("Close (when approved or rejected)")}</label>
                 %endif
-            </div>
+              </div>
             %endif
-            <div class="mentions-container" id="mentions_container"></div>
-             ${h.textarea('text', class_="comment-block-ta")}
         </div>
 
         <div id="preview-container" class="clearfix" style="display:none">
@@ -195,32 +194,33 @@
     </div>
     %endif
 </div>
+
 <script>
-var change_status_show = function(){
-    var show = ! YUD.get('show_changeset_status_box').checked;
-    YUD.get('show_changeset_status_box').checked = show;
-    YUD.setStyle('status_block_container', 'display', show?'':'none');
-};
 
 YUE.onDOMReady(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
    var set_close_button_state = function(cur_val){
+     YUD.get('show_changeset_status_box').checked = (cur_val != '');
+     %if is_pr and change_status:
        if (cur_val == 'approved' || cur_val == 'rejected') {
            YUD.removeClass('save_close_label', 'disabled');
            YUD.get('save_close').disabled = false;
        }else{
            YUD.addClass('save_close_label', 'disabled');
            YUD.get('save_close').disabled = true;
+           YUD.get('save_close').checked = false;
        }
+     %endif
    }
    YUE.on(YUQ('.status_change_radio'), 'change',function(e){
        var val = e.currentTarget.value;
-       set_close_button_state(val)
+       set_close_button_state(val);
    })
    // if currect checked status is approved or rejected we should unlock the close button
    var cur_val = YUQ('.status_change_radio[checked]')[0].value;
    set_close_button_state(cur_val)
+
    YUE.on('preview-btn', 'click', function(e){
        var _text = YUD.get('text').value;
        if(!_text){

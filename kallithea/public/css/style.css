@@ -4460,7 +4460,7 @@ div.rst-block  pre {
 /** comment form **/
 
 .status-block {
-    min-height: 80px;
+    margin: 5px;
     clear: both
 }
 
