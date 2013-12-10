@@ -197,7 +197,8 @@ class PullrequestsController(BaseRepoController):
          c.other_ref_name,
          c.other_rev) = pull_request.other_ref.split(':')
 
-        c.cs_ranges = [c.org_repo.get_changeset(x) for x in pull_request.revisions]
+        org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
+        c.cs_ranges = [org_scm_instance.get_changeset(x) for x in pull_request.revisions]
         c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
 
         c.statuses = c.org_repo.statuses([x.raw_id for x in c.cs_ranges])
@@ -211,8 +212,8 @@ class PullrequestsController(BaseRepoController):
 
         # we swap org/other ref since we run a simple diff on one repo
         log.debug('running diff between %s and %s in %s'
-                  % (c.other_rev, c.org_rev, c.org_repo.scm_instance.path))
-        txtdiff = c.org_repo.scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev),
+                  % (c.other_rev, c.org_rev, org_scm_instance.path))
+        txtdiff = org_scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev),
                                       ignore_whitespace=ignore_whitespace,
                                       context=line_context)
 
