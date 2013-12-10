@@ -31,7 +31,8 @@ def _first_known_ancestors(parentrev_func, minrev, knownrevs, head):
     while pending:
         r = pending.pop()
         if r < minrev:
-            pass
+            if r > nullrev: # ignore -1 returned from parentrev_func
+                ancestors.add(-head) # fake unique unknown parent for this rev
         elif r in knownrevs:
             ancestors.add(r)
         elif r not in seen:
@@ -106,12 +107,17 @@ def _colored(dag):
             colors[rev] = newcolor
             newcolor += 1
 
-        nextrow = row[:]
+        col = row.index(rev)
+        addparents = [p for p in dagparents if p not in row]
 
         # Add unknown parents to nextrow
-        addparents = [p for p in dagparents if p not in nextrow]
-        col = nextrow.index(rev)
-        nextrow[col:col + 1] = addparents
+        tmprow = row[:]
+        tmprow[col:col + 1] = addparents
+        # Stop looking for non-existing ancestors
+        nextrow = []
+        for r in tmprow:
+            if r > nullrev or r in dagparents:
+                nextrow.append(r)
 
         # Set colors for the parents
         color = colors.pop(rev)
