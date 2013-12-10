@@ -219,7 +219,7 @@ class ChangesetController(BaseRepoController):
         c.lines_deleted = 0  # count of lines removes
 
         c.changeset_statuses = ChangesetStatus.STATUSES
-        c.comments = []
+        comments = dict()
         c.statuses = []
         c.inline_comments = []
         c.inline_cnt = 0
@@ -231,22 +231,18 @@ class ChangesetController(BaseRepoController):
                 c.statuses.extend([ChangesetStatusModel().get_status(
                             c.db_repo.repo_id, changeset.raw_id)])
 
-                c.comments.extend(ChangesetCommentsModel()\
-                                  .get_comments(c.db_repo.repo_id,
-                                                revision=changeset.raw_id))
+                # Changeset comments
+                comments.update((com.comment_id, com)
+                                for com in ChangesetCommentsModel()
+                                .get_comments(c.db_repo.repo_id,
+                                              revision=changeset.raw_id))
 
-                #comments from PR
-                st = ChangesetStatusModel().get_statuses(
-                            c.db_repo.repo_id, changeset.raw_id,
-                            with_revisions=True)
-                # from associated statuses, check the pull requests, and
-                # show comments from them
+                # Status change comments - mostly from pull requests
+                comments.update((st.changeset_comment_id, st.comment)
+                                for st in ChangesetStatusModel()
+                                .get_statuses(c.db_repo.repo_id,
+                                              changeset.raw_id, with_revisions=True))
 
-                prs = set([x.pull_request for x in
-                           filter(lambda x: x.pull_request is not None, st)])
-
-                for pr in prs:
-                    c.comments.extend(pr.comments)
                 inlines = ChangesetCommentsModel()\
                             .get_inline_comments(c.db_repo.repo_id,
                                                  revision=changeset.raw_id)
@@ -287,8 +283,8 @@ class ChangesetController(BaseRepoController):
                 cs_changes[''] = [None, None, None, None, diff, None]
             c.changes[changeset.raw_id] = cs_changes
 
-        #sort comments by how they were generated
-        c.comments = sorted(c.comments, key=lambda x: x.comment_id)
+        #sort comments in creation order
+        c.comments = [com for com_id, com in sorted(comments.items())]
 
         # count inline comments
         for __, lines in c.inline_comments:
