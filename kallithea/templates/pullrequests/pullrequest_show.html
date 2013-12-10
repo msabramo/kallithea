@@ -78,6 +78,18 @@ ${self.repo_context_bar('showpullrequest')}
          </div>
          <div class="field">
           <div class="label-summary">
+              <label>${_('Target repository')}:</label>
+          </div>
+          <div class="input">
+              <div>
+              <span><a href="${h.url('summary_home', repo_name=c.pull_request.other_repo.repo_name)}">${c.pull_request.other_repo.clone_url()}</a></span>
+              ## branch link is only valid if it is a branch
+              <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.other_repo.repo_name, anchor=c.other_ref_name)}">${c.other_ref_type}: ${c.other_ref_name}</a></span>
+              </div>
+          </div>
+         </div>
+         <div class="field">
+          <div class="label-summary">
               <label>${_('Pull changes')}:</label>
           </div>
           <div class="input">
@@ -105,6 +117,20 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
           <div class="input">
               <div>${h.fmt_date(c.pull_request.created_on)}</div>
+          </div>
+         </div>
+         <div class="field">
+          <div class="label-summary">
+              <label>${_('Created by')}:</label>
+          </div>
+          <div class="input">
+              <div class="author">
+                  <div class="gravatar">
+                      <img alt="gravatar" src="${h.gravatar_url(c.pull_request.author.email,20)}"/>
+                  </div>
+                  <span>${c.pull_request.author.username_and_name}</span><br/>
+                  <span><a href="mailto:${c.pull_request.author.email}">${c.pull_request.author.email}</a></span><br/>
+              </div>
           </div>
          </div>
       </div>
@@ -164,6 +190,11 @@ ${self.repo_context_bar('showpullrequest')}
               ##CS
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}</div>
               <%include file="/compare/compare_cs.html" />
+
+              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+              ${_('Common ancestor')}:
+              ${h.link_to(h.short_id(c.other_rev),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=c.other_rev))}
+              </div>
 
               ## FILES
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
