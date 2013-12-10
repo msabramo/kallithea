@@ -91,15 +91,15 @@ class PullrequestsController(BaseRepoController):
             branch_rev = safe_str(branch_rev)
             # not restricting to merge() would also get branch point and be better
             # (especially because it would get the branch point) ... but is currently too expensive
-            otherbranches = {}
+            peerbranches = set()
             for i in repo._repo.revs(
-                "sort(parents(branch(id(%s)) and merge()) - branch(id(%s)))",
+                "sort(parents(branch(id(%s)) and merge()) - branch(id(%s)), -rev)",
                 branch_rev, branch_rev):
-                cs = repo.get_changeset(i)
-                otherbranches[cs.branch] = repo.get_changeset(cs.branch).raw_id
-            for abranch, node in otherbranches.iteritems():
-                selected = 'branch:%s:%s' % (abranch, node)
-                peers.append((selected, abranch))
+                abranch = repo.get_changeset(i).branch
+                if abranch not in peerbranches:
+                    n = 'branch:%s:%s' % (abranch, repo.get_changeset(abranch).raw_id)
+                    peers.append((n, abranch))
+                    peerbranches.add(abranch)
 
         selected = None
 
