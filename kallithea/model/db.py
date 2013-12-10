@@ -1362,18 +1362,19 @@ class Repository(Base, BaseModel):
             grouped[cmt.revision].append(cmt)
         return grouped
 
-    def statuses(self, revisions=None):
+    def statuses(self, revisions):
         """
         Returns statuses for this repository
 
         :param revisions: list of revisions to get statuses for
         """
+        if not revisions:
+            return {}
 
         statuses = ChangesetStatus.query()\
             .filter(ChangesetStatus.repo == self)\
-            .filter(ChangesetStatus.version == 0)
-        if revisions:
-            statuses = statuses.filter(ChangesetStatus.revision.in_(revisions))
+            .filter(ChangesetStatus.version == 0)\
+            .filter(ChangesetStatus.revision.in_(revisions))
         grouped = {}
 
         #maybe we have open new pullrequest without a status ?
