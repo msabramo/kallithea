@@ -96,7 +96,7 @@ class PullrequestsController(BaseRepoController):
                 "sort(parents(branch(id(%s)) and merge()) - branch(id(%s)))",
                 branch_rev, branch_rev):
                 cs = repo.get_changeset(i)
-                otherbranches[cs.branch] = cs.raw_id
+                otherbranches[cs.branch] = repo.get_changeset(cs.branch).raw_id
             for abranch, node in otherbranches.iteritems():
                 selected = 'branch:%s:%s' % (abranch, node)
                 peers.append((selected, abranch))
