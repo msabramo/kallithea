@@ -261,8 +261,8 @@ def send_email(recipients, subject, body='', html_body=''):
     """
     Sends an email with defined parameters from the .ini files.
 
-    :param recipients: list of recipients, it this is empty the defined email
-        address from field 'email_to' is used instead
+    :param recipients: list of recipients, if this is None, the defined email
+        address from field 'email_to' and all admins is used instead
     :param subject: subject of the mail
     :param body: body of the mail
     :param html_body: html version of body
@@ -272,13 +272,18 @@ def send_email(recipients, subject, body='', html_body=''):
     assert isinstance(recipients, list), recipients
 
     email_config = config
-    subject = "%s %s" % (email_config.get('email_prefix', ''), subject)
-    if not recipients:
+    email_prefix = email_config.get('email_prefix', '')
+    if email_prefix:
+        subject = "%s %s" % (email_prefix, subject)
+    if recipients is None:
         # if recipients are not defined we send to email_config + all admins
         admins = [u.email for u in User.query()
                   .filter(User.admin == True).all()]
         recipients = [email_config.get('email_to')] + admins
         log.warning("recipients not specified for '%s' - sending to admins %s", subject, ' '.join(recipients))
+    elif not recipients:
+        log.error("No recipients specified")
+        return False
 
     mail_from = email_config.get('app_email_from', 'Kallithea')
     user = email_config.get('smtp_username')

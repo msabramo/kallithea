@@ -82,8 +82,8 @@ class NotificationModel(BaseModel):
 
         created_by_obj = self._get_user(created_by)
 
+        recipients_objs = []
         if recipients:
-            recipients_objs = []
             for u in recipients:
                 obj = self._get_user(u)
                 if obj:
@@ -95,12 +95,14 @@ class NotificationModel(BaseModel):
             log.debug('sending notifications %s to %s' % (
                 type_, recipients_objs)
             )
-        else:
+        elif recipients is None:
             # empty recipients means to all admins
             recipients_objs = User.query().filter(User.admin == True).all()
             log.debug('sending notifications %s to admins: %s' % (
                 type_, recipients_objs)
             )
+        #else: silently skip notification mails?
+
         # TODO: inform user who are notified
         notif = Notification.create(
             created_by=created_by_obj, subject=subject,
