@@ -75,10 +75,12 @@ def get_scms_for_path(path):
 
     result = []
     for key in ALIASES:
+        # find .hg / .git
         dirname = os.path.join(path, '.' + key)
         if os.path.isdir(dirname):
             result.append(key)
             continue
+        # find rm__.hg / rm__.git too - left overs from old method for deleting
         dirname = os.path.join(path, 'rm__.' + key)
         if os.path.isdir(dirname):
             return result

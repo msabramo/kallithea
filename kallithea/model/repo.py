@@ -762,26 +762,14 @@ class RepoModel(BaseModel):
 
     def _delete_filesystem_repo(self, repo):
         """
-        removes repo from filesystem, the removal is acctually made by
-        added rm__ prefix into dir, and rename internat .hg/.git dirs so this
-        repository is no longer valid for kallithea, can be undeleted later on
-        by reverting the renames on this repository
+        removes repo from filesystem, the removal is actually done by
+        renaming dir to a 'rm__*' prefix which Kallithea will skip.
+        It can be undeleted later by reverting the rename.
 
         :param repo: repo object
         """
         rm_path = os.path.join(self.repos_path, repo.repo_name)
-        log.info("Removing repository %s" % (rm_path,))
-        # disable hg/git internal that it doesn't get detected as repo
-        alias = repo.repo_type
-
-        bare = getattr(repo.scm_instance, 'bare', False)
-
-        # skip this for bare git repos
-        if not bare:
-            # disable VCS repo
-            vcs_path = os.path.join(rm_path, '.%s' % alias)
-            if os.path.exists(vcs_path):
-                shutil.move(vcs_path, os.path.join(rm_path, 'rm__.%s' % alias))
+        log.info("Removing %s" % (rm_path))
 
         _now = datetime.now()
         _ms = str(_now.microsecond).rjust(6, '0')
@@ -790,6 +778,4 @@ class RepoModel(BaseModel):
         if repo.group:
             args = repo.group.full_path_splitted + [_d]
             _d = os.path.join(*args)
-
-        if os.path.isdir(rm_path):
-            shutil.move(rm_path, os.path.join(self.repos_path, _d))
+        shutil.move(rm_path, os.path.join(self.repos_path, _d))
