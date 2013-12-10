@@ -3599,6 +3599,16 @@ div.gravatar img {
     display: inline-block;
 }
 
+ul.nav-stacked {
+    margin: 20px;
+    color: #393939;
+    font-weight: 700;
+}
+
+ul.nav-stacked a {
+    color: inherit;
+}
+
 /* make .btn inputs and buttons and divs look the same */
 button.btn,
 input.btn {
