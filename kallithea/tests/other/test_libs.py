@@ -113,9 +113,8 @@ class TestLibs(BaseTestCase):
         )
 
         s = sorted([
-        'first', 'marcink', 'lukaszb', 'one_more22', 'MARCIN', 'maRCiN', 'john',
-        'marian.user', 'marco-polo', 'marco_polo'
-        ], key=lambda k: k.lower())
+            '2one_more22', 'first', 'marcink', 'lukaszb', 'one', 'one_more22', 'MARCIN', 'maRCiN', 'john',
+            'marian.user', 'marco-polo', 'marco_polo'], key=lambda k: k.lower())
         self.assertEqual(s, extract_mentioned_users(sample))
 
     @parameterized.expand([

@@ -553,17 +553,22 @@ def time_to_datetime(tm):
                 return
         return datetime.datetime.fromtimestamp(tm)
 
-MENTIONS_REGEX = r'(?:^@|\s@)([a-zA-Z0-9]{1}[a-zA-Z0-9\-\_\.]+)(?:\s{1})'
-
+# Must match regexp in kallithea/public/js/base.js MentionsAutoComplete()
+# Eat char before @ - it must not look like we are in an email addresses.
+# Matching is gready so we don't have to look beyond the end.
+MENTIONS_REGEX = re.compile(r'(?:^|[^a-zA-Z0-9])@([a-zA-Z0-9][-_.a-zA-Z0-9]*[a-zA-Z0-9])')
 
 def extract_mentioned_users(s):
-    """
+    r"""
     Returns unique usernames from given string s that have @mention
 
     :param s: string to get mentions
+
+    >>> extract_mentioned_users('@1-2.a_X,@1234 not@not @ddd@not @n @ee @ff @gg, @gg;@hh @n\n@zz,')
+    ['1-2.a_X', '1234', 'ddd', 'ee', 'ff', 'gg', 'hh', 'zz']
     """
     usrs = set()
-    for username in re.findall(MENTIONS_REGEX, s):
+    for username in MENTIONS_REGEX.findall(s):
         usrs.add(username)
 
     return sorted(list(usrs), key=lambda k: k.lower())

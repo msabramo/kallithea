@@ -1449,10 +1449,12 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 
     ownerAC.get_mention = function(msg, max_pos) {
         var org = msg;
-        var re = new RegExp('(?:^@|\s@)([a-zA-Z0-9]{1}[a-zA-Z0-9\-\_\.]+)$')
+        // Must match utils2.py MENTIONS_REGEX.
+        // Only matching on string up to cursor, so it must end with $
+        var re = new RegExp('(?:^|[^a-zA-Z0-9])@([a-zA-Z0-9][-_.a-zA-Z0-9]*[a-zA-Z0-9])$')
         var chunks  = [];
 
-        // cut first chunk until curret pos
+        // cut first chunk until current pos
         var to_max = msg.substr(0, max_pos);
         var at_pos = Math.max(0,to_max.lastIndexOf('@')-1);
         var msg2 = to_max.substr(at_pos);
