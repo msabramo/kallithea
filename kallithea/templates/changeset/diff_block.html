@@ -59,9 +59,20 @@
           <div class="changeset_header">
               <div class="changeset_file">
                   ${h.safe_unicode(filenode_path)} |
-                  <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.org_rev)}" title="${_('Show file at latest version in this repo')}">${c.org_ref_type}@${h.short_id(c.org_ref_name) if c.org_ref_type=='rev' else c.org_ref_name}</a>
-                  <i class="icon-arrow-right" style="font-size: 12px;color:#577632"></i>
-                  <a class="spantag" href="${h.url('files_home', repo_name=c.repo_name, f_path=filenode_path, revision=c.other_rev)}" title="${_('Show file at initial version in this repo')}">${c.other_ref_type}@${h.short_id(c.other_ref_name) if c.other_ref_type=='rev' else c.other_ref_name}</a>
+                  ## TODO: link to ancestor and head of other instead of exactly other
+                  %if op == 'A':
+                    ${_('Added')}
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.org_repo.repo_name, f_path=filenode_path, revision=c.org_rev)}">${h.short_id(c.org_ref_name) if c.org_ref_type=='rev' else c.org_ref_name}</a>
+                  %elif op == 'M':
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.org_repo.repo_name, f_path=filenode_path, revision=c.org_rev)}">${h.short_id(c.org_ref_name) if c.org_ref_type=='rev' else c.org_ref_name}</a>
+                    <i class="icon-arrow-right"></i>
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.other_rev)}">${h.short_id(c.other_ref_name) if c.other_ref_type=='rev' else c.other_ref_name}</a>
+                  %elif op == 'D':
+                    ${_('Deleted')}
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.other_rev)}">${h.short_id(c.other_ref_name) if c.other_ref_type=='rev' else c.other_ref_name}</a>
+                  %else:
+                    ${op}???
+                  %endif
               </div>
                <div class="diff-actions">
                 %if c.other_repo.repo_name == c.repo_name:
