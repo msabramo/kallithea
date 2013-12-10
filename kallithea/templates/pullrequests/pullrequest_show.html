@@ -78,18 +78,18 @@ ${self.repo_context_bar('showpullrequest')}
 
         <div class="field">
           <div class="label-summary">
-              <label>${_('Review status')}:</label>
+              <label>${_('Reviewer voting result')}:</label>
           </div>
           <div class="input">
             <div class="changeset-status-container" style="float:none;clear:both">
-            %if c.current_changeset_status:
+            %if c.current_voting_result:
               <div class="changeset-status-ico" style="padding:0px 4px 0px 0px">
-                  <img src="${h.url('/images/icons/flag_status_%s.png' % c.current_changeset_status)}" title="${_('Pull request status calculated from votes')}"/></div>
+                  <img src="${h.url('/images/icons/flag_status_%s.png' % c.current_voting_result)}" title="${_('Pull request status calculated from votes')}"/></div>
               <div class="changeset-status-lbl tooltip" title="${_('Pull request status calculated from votes')}">
                 %if c.pull_request.is_closed():
                     ${_('Closed')},
                 %endif
-                ${h.changeset_status_lbl(c.current_changeset_status)}
+                ${h.changeset_status_lbl(c.current_voting_result)}
               </div>
 
             %endif
@@ -103,8 +103,10 @@ ${self.repo_context_bar('showpullrequest')}
           <div class="input">
             % if len(c.pull_request_pending_reviewers) > 0:
                 <div class="tooltip" title="${h.tooltip(', '.join([x.username for x in c.pull_request_pending_reviewers]))}">${ungettext('%d reviewer', '%d reviewers',len(c.pull_request_pending_reviewers)) % len(c.pull_request_pending_reviewers)}</div>
-            %else:
+            % elif len(c.pull_request_reviewers) > 0:
                 <div>${_('Pull request was reviewed by all reviewers')}</div>
+            %else:
+                <div>${_('There are no reviewers')}</div>
             %endif
           </div>
         </div>
@@ -182,8 +184,8 @@ ${self.repo_context_bar('showpullrequest')}
             %for member,status in c.pull_request_reviewers:
               <li id="reviewer_${member.user_id}">
                 <div class="reviewers_member">
-                    <div class="reviewer_status tooltip" title="${h.tooltip(h.changeset_status_lbl(status[0][1].status if status else 'not_reviewed'))}">
-                      <img src="${h.url(str('/images/icons/flag_status_%s.png' % (status[0][1].status if status else 'not_reviewed')))}"/>
+                    <div class="reviewer_status tooltip" title="${h.tooltip(h.changeset_status_lbl(status.status if status else 'not_reviewed'))}">
+                      <img src="${h.url(str('/images/icons/flag_status_%s.png' % (status.status if status else 'not_reviewed')))}"/>
                     </div>
                   <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email,14)}"/> </div>
                   <div style="float:left;">${member.full_name} (${_('owner') if c.pull_request.user_id == member.user_id else _('reviewer')})</div>
@@ -293,7 +295,7 @@ ${self.repo_context_bar('showpullrequest')}
       ## main comment form and it status
       ${comment.comments(h.url('pullrequest_comment', repo_name=c.repo_name,
                                 pull_request_id=c.pull_request.pull_request_id),
-                         c.current_changeset_status,
+                         c.current_voting_result,
                          is_pr=True, change_status=c.allowed_to_change_status)}
     %endif
 

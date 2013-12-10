@@ -65,26 +65,39 @@ class ChangesetStatusModel(BaseModel):
         q = q.order_by(ChangesetStatus.version.asc())
         return q
 
-    def calculate_status(self, statuses_by_reviewers):
+    def calculate_pull_request_result(self, pull_request):
         """
-        approved if consensus
-        (old description: leading one wins, if number of occurrences are equal than weaker wins)
-
-        :param statuses_by_reviewers:
+        Policy: approve if consensus. Only approve and reject counts as valid votes.
         """
-        votes = defaultdict(int)
-        reviewers_number = len(statuses_by_reviewers)
-        for user, statuses in statuses_by_reviewers:
-            if statuses:
-                ver, latest = statuses[0]
-                votes[latest.status] += 1
-            else:
-                votes[ChangesetStatus.DEFAULT] += 1
 
-        if votes.get(ChangesetStatus.STATUS_APPROVED) == reviewers_number:
-            return ChangesetStatus.STATUS_APPROVED
-        else:
-            return ChangesetStatus.STATUS_UNDER_REVIEW
+        # collect latest votes from all voters
+        cs_statuses = dict()
+        for st in reversed(self.get_statuses(pull_request.org_repo,
+                                             pull_request=pull_request,
+                                             with_revisions=True)):
+            cs_statuses[st.author.username] = st
+        # collect votes from official reviewers
+        pull_request_reviewers = []
+        pull_request_pending_reviewers = []
+        approved_votes = 0
+        for r in pull_request.reviewers:
+            st = cs_statuses.get(r.user.username)
+            if st and st.status == ChangesetStatus.STATUS_APPROVED:
+                approved_votes += 1
+            if not st or st.status in (ChangesetStatus.STATUS_NOT_REVIEWED,
+                                       ChangesetStatus.STATUS_UNDER_REVIEW):
+                st = None
+                pull_request_pending_reviewers.append(r.user)
+            pull_request_reviewers.append((r.user, st))
+
+        # calculate result
+        result = ChangesetStatus.STATUS_UNDER_REVIEW
+        if approved_votes and approved_votes == len(pull_request.reviewers):
+            result = ChangesetStatus.STATUS_APPROVED
+
+        return (pull_request_reviewers,
+                pull_request_pending_reviewers,
+                result)
 
     def get_statuses(self, repo, revision=None, pull_request=None,
                      with_revisions=False):
@@ -156,6 +169,7 @@ class ChangesetStatusModel(BaseModel):
 
         def _create_status(user, repo, status, comment, revision, pull_request):
             new_status = ChangesetStatus()
+            new_status.version = 0 # default
             new_status.author = self._get_user(user)
             new_status.repo = self._get_repo(repo)
             new_status.status = status
