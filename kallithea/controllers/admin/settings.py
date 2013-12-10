@@ -395,6 +395,7 @@ class SettingsController(BaseController):
                 hook_id = request.POST.get('hook_id')
 
                 try:
+                    ui_key = ui_key and ui_key.strip()
                     if ui_value and ui_key:
                         Ui.create_or_update_hook(ui_key, ui_value)
                         h.flash(_('Added new hook'), category='success')
