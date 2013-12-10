@@ -55,7 +55,7 @@ from kallithea.model.meta import Session
 from kallithea.model.repo import RepoModel
 from kallithea.model.comment import ChangesetCommentsModel
 from kallithea.model.changeset_status import ChangesetStatusModel
-from kallithea.model.forms import PullRequestForm
+from kallithea.model.forms import PullRequestForm, PullRequestPostForm
 from kallithea.lib.utils2 import safe_int
 from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
@@ -382,7 +382,7 @@ class PullrequestsController(BaseRepoController):
         title = _form['pullrequest_title']
         if not title:
             title = '%s#%s to %s' % (org_repo, org_ref.split(':', 2)[1], other_repo)
-        description = _form['pullrequest_desc']
+        description = _form['pullrequest_desc'].strip() or _('No description')
         try:
             pull_request = PullRequestModel().create(
                 self.authuser.user_id, org_repo, org_ref, other_repo,
@@ -399,6 +399,25 @@ class PullrequestsController(BaseRepoController):
 
         return redirect(url('pullrequest_show', repo_name=other_repo,
                             pull_request_id=pull_request.pull_request_id))
+
+    @LoginRequired()
+    @NotAnonymous()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    def post(self, repo_name, pull_request_id):
+        repo = RepoModel()._get_repo(repo_name)
+        pull_request = PullRequest.get_or_404(pull_request_id)
+
+        _form = PullRequestPostForm()().to_python(request.POST)
+
+        pull_request.title = _form['pullrequest_title']
+        pull_request.description = _form['pullrequest_desc'].strip() or _('No description')
+
+        Session().commit()
+        h.flash(_('Pull request updated'), category='success')
+
+        return redirect(url('pullrequest_show', repo_name=repo.repo_name,
+                            pull_request_id=pull_request_id))
 
     @LoginRequired()
     @NotAnonymous()

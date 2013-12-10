@@ -502,6 +502,17 @@ def PullRequestForm(repo_id):
     return _PullRequestForm
 
 
+def PullRequestPostForm():
+    class _PullRequestPostForm(formencode.Schema):
+        allow_extra_fields = True
+        filter_extra_fields = True
+
+        pullrequest_title = v.UnicodeString(strip=True, required=True)
+        pullrequest_desc = v.UnicodeString(strip=True, required=False)
+
+    return _PullRequestPostForm
+
+
 def GistForm(lifetime_options):
     class _GistForm(formencode.Schema):
 

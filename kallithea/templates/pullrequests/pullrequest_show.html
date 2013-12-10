@@ -24,14 +24,59 @@ ${self.repo_context_bar('showpullrequest')}
     </div>
 
     <div class="form pr-box" style="float: left">
-        <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
-            ${_('Title')}: ${c.pull_request.title}
-            %if c.pull_request.is_closed():
-                (${_('Closed')})
+      <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
+          ${_('Title')}: ${c.pull_request.title}
+          %if c.pull_request.is_closed():
+              (${_('Closed')})
+          %endif
+      </div>
+      <div id="pr-summary" class="fields">
+
+        <div class="field pr-not-edit" style="min-height:37px">
+          <div class="label-summary">
+            <label>${_('Description')}:</label>
+            %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.author.user_id == c.authuser.user_id):
+            <div style="margin: 5px">
+              <a class="btn btn-mini" onclick="YUD.setStyle('pr-edit-form','display','');YUD.setStyle(YUD.getElementsByClassName('pr-not-edit'),'display','none')">${_("Edit")}</a>
+            </div>
             %endif
+          </div>
+          <div class="input">
+            <div style="white-space:pre-wrap; line-height: 14px">${h.urlify_commit(c.pull_request.description, c.pull_request.org_repo.repo_name)}</div>
+          </div>
         </div>
-      <div id="summary" class="fields">
-         <div class="field">
+
+        %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.author.user_id == c.authuser.user_id):
+        <div id="pr-edit-form" style="display:none">
+          ${h.form(url('pullrequest_post', repo_name=c.repo_name, pull_request_id=c.pull_request.pull_request_id), method='post', id='pull_request_form')}
+
+          <div class="field">
+              <div class="label-summary">
+                  <label for="pullrequest_title">${_('Title')}:</label>
+              </div>
+              <div class="input">
+                  ${h.text('pullrequest_title',class_="large",value=c.pull_request.title,placeholder=_('Summarize the changes'))}
+              </div>
+          </div>
+
+          <div class="field">
+              <div class="label-summary label-textarea">
+                  <label for="pullrequest_desc">${_('Description')}:</label>
+              </div>
+              <div class="textarea text-area editor">
+                  ${h.textarea('pullrequest_desc',size=30,content=c.pull_request.description,placeholder=_('Write a short description on this pull request'))}
+              </div>
+              <div class="buttons">
+                  ${h.submit('save',_('Save'),class_="btn btn-mini")}
+                  ${h.reset('reset',_('Cancel'),class_="btn btn-mini",onclick="YUD.setStyle('pr-edit-form','display','none');YUD.setStyle(YUD.getElementsByClassName('pr-not-edit'),'display','')")}
+             </div>
+          </div>
+
+          ${h.end_form()}
+        </div>
+        %endif
+
+        <div class="field">
           <div class="label-summary">
               <label>${_('Review status')}:</label>
           </div>
@@ -50,8 +95,8 @@ ${self.repo_context_bar('showpullrequest')}
             %endif
             </div>
           </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
           <div class="label-summary">
               <label>${_('Still not reviewed by')}:</label>
           </div>
@@ -62,8 +107,8 @@ ${self.repo_context_bar('showpullrequest')}
                 <div>${_('Pull request was reviewed by all reviewers')}</div>
             %endif
           </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
           <div class="label-summary">
               <label>${_('Origin repository')}:</label>
           </div>
@@ -75,8 +120,8 @@ ${self.repo_context_bar('showpullrequest')}
               <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.org_ref_name)}">${c.org_ref_type}: ${c.org_ref_name}</a></span>
               </div>
           </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
           <div class="label-summary">
               <label>${_('Target repository')}:</label>
           </div>
@@ -87,8 +132,8 @@ ${self.repo_context_bar('showpullrequest')}
               <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.other_repo.repo_name, anchor=c.other_ref_name)}">${c.other_ref_type}: ${c.other_ref_name}</a></span>
               </div>
           </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
           <div class="label-summary">
               <label>${_('Pull changes')}:</label>
           </div>
@@ -102,24 +147,16 @@ ${self.repo_context_bar('showpullrequest')}
                %endif
               </div>
           </div>
-         </div>
-         <div class="field">
-          <div class="label-summary">
-              <label>${_('Description')}:</label>
-          </div>
-          <div class="input">
-              <div style="white-space:pre-wrap">${h.urlify_commit(c.pull_request.description, c.pull_request.org_repo.repo_name)}</div>
-          </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
           <div class="label-summary">
               <label>${_('Created on')}:</label>
           </div>
           <div class="input">
               <div>${h.fmt_date(c.pull_request.created_on)}</div>
           </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
           <div class="label-summary">
               <label>${_('Created by')}:</label>
           </div>
@@ -132,7 +169,7 @@ ${self.repo_context_bar('showpullrequest')}
                   <span><a href="mailto:${c.pull_request.author.email}">${c.pull_request.author.email}</a></span><br/>
               </div>
           </div>
-         </div>
+        </div>
       </div>
     </div>
     ## REVIEWERS
