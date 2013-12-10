@@ -2176,7 +2176,7 @@ class ChangesetComment(Base, BaseModel):
     author = relationship('User', lazy='joined')
     repo = relationship('Repository')
     status_change = relationship('ChangesetStatus', cascade="all, delete, delete-orphan")
-    pull_request = relationship('PullRequest', lazy='joined')
+    pull_request = relationship('PullRequest')
 
     @classmethod
     def get_users(cls, revision=None, pull_request_id=None):
@@ -2230,7 +2230,7 @@ class ChangesetStatus(Base, BaseModel):
     author = relationship('User', lazy='joined')
     repo = relationship('Repository')
     comment = relationship('ChangesetComment', lazy='joined')
-    pull_request = relationship('PullRequest', lazy='joined')
+    pull_request = relationship('PullRequest')
 
     def __unicode__(self):
         return u"<%s('%s:%s')>" % (
