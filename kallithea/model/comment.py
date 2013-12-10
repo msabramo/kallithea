@@ -160,19 +160,19 @@ class ChangesetCommentsModel(BaseModel):
                send_email=True):
         """
         Creates new comment for changeset or pull request.
-        IF status_change is not none this comment is associated with a
+        If status_change is not None this comment is associated with a
         status change of changeset or changesets associated with pull request
 
         :param text:
         :param repo:
         :param user:
         :param revision:
-        :param pull_request:
+        :param pull_request: (for emails, not for comments)
         :param f_path:
         :param line_no:
-        :param status_change:
-        :param closing_pr:
-        :param send_email:
+        :param status_change: (for emails, not for comments)
+        :param closing_pr: (for emails, not for comments)
+        :param send_email: also send email
         """
         if not text:
             log.warning('Missing text for comment, skipping...')

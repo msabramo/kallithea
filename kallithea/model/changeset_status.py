@@ -132,10 +132,11 @@ class ChangesetStatusModel(BaseModel):
         version, leaving the current status at
 
         :param repo:
-        :param revision:
         :param status:
         :param user:
         :param comment:
+        :param revision:
+        :param pull_request:
         :param dont_allow_on_closed_pull_request: don't allow a status change
             if last status was for pull request and it's closed. We shouldn't
             mess around this manually
@@ -143,13 +144,18 @@ class ChangesetStatusModel(BaseModel):
         repo = self._get_repo(repo)
 
         q = ChangesetStatus.query()
-        if revision:
+        if revision is not None:
+            assert pull_request is None
             q = q.filter(ChangesetStatus.repo == repo)
             q = q.filter(ChangesetStatus.revision == revision)
-        elif pull_request:
+            revisions = [revision]
+        else:
+            assert pull_request is not None
             pull_request = self.__get_pull_request(pull_request)
-            q = q.filter(ChangesetStatus.repo == pull_request.org_repo)
+            repo = pull_request.org_repo
+            q = q.filter(ChangesetStatus.repo == repo)
             q = q.filter(ChangesetStatus.revision.in_(pull_request.revisions))
+            revisions = pull_request.revisions
         cur_statuses = q.all()
 
         #if statuses exists and last is associated with a closed pull request
@@ -162,38 +168,20 @@ class ChangesetStatusModel(BaseModel):
             )
 
         #update all current statuses with older version
-        if cur_statuses:
-            for st in cur_statuses:
-                st.version += 1
-                self.sa.add(st)
+        for st in cur_statuses:
+            st.version += 1
+            self.sa.add(st)
 
-        def _create_status(user, repo, status, comment, revision, pull_request):
+        new_statuses = []
+        for rev in revisions:
             new_status = ChangesetStatus()
             new_status.version = 0 # default
             new_status.author = self._get_user(user)
             new_status.repo = self._get_repo(repo)
             new_status.status = status
             new_status.comment = comment
-            new_status.revision = revision
+            new_status.revision = rev
             new_status.pull_request = pull_request
-            return new_status
-
-        if revision:
-            new_status = _create_status(user=user, repo=repo, status=status,
-                           comment=comment, revision=revision,
-                           pull_request=None)
+            new_statuses.append(new_status)
             self.sa.add(new_status)
-            return new_status
-        elif pull_request:
-            #pull request can have more than one revision associated to it
-            #we need to create new version for each one
-            new_statuses = []
-            repo = pull_request.org_repo
-            for rev in pull_request.revisions:
-                new_status = _create_status(user=user, repo=repo,
-                                            status=status, comment=comment,
-                                            revision=rev,
-                                            pull_request=pull_request)
-                new_statuses.append(new_status)
-                self.sa.add(new_status)
-            return new_statuses
+        return new_statuses
