@@ -99,18 +99,6 @@ ${self.repo_context_bar('showpullrequest')}
               ## members goes here !
               <div>
                 <ul id="review_members" class="group_members">
-                %for member in [c.a_repo.user]:
-                  <li id="reviewer_${member.user_id}">
-                    <div class="reviewers_member">
-                      <div class="gravatar">${h.gravatar(member.email, 14)}</div>
-                      <div style="float:left">${member.firstname} ${member.lastname} (${_('owner')})</div>
-                      <input type="hidden" value="${member.user_id}" name="review_members" />
-                      <span class="action_button" style="padding: 3px" onclick="removeReviewMember(${member.user_id})" title="${_('Remove reviewer')}">
-                          <i class="icon-minus-circled"></i>
-                      </span>
-                    </div>
-                  </li>
-                %endfor
                 </ul>
               </div>
 
@@ -174,12 +162,6 @@ ${self.repo_context_bar('showpullrequest')}
                 $other_ref.append($optgroup);
               }
               $other_ref.val(data.selected_ref);
-
-              // reset && add the reviewer based on selected repo
-              $('#review_members').html('');
-              addReviewMember(data.user.user_id, data.user.firstname,
-                              data.user.lastname, data.user.username,
-                              data.user.gravatar_link, data.user_gravatar_size);
 
               // re-populate the select2 thingie
               $("#other_ref").select2({

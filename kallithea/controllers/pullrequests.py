@@ -295,12 +295,6 @@ class PullrequestsController(BaseRepoController):
             'description': repo.description.split('\n', 1)[0],
             'selected_ref': selected_ref,
             'refs': refs,
-            'user': dict(user_id=repo.user.user_id,
-                         username=repo.user.username,
-                         firstname=repo.user.firstname,
-                         lastname=repo.user.lastname,
-                         gravatar_link=h.gravatar_url(repo.user.email, 28),
-                         gravatar_size=14),
             }
 
     @LoginRequired()
