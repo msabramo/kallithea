@@ -37,7 +37,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
     </div>
     <div class="table">
         % if c.pagination:
-            <div id="graph">
+            <div>
                 <div style="overflow:auto; display:${'none' if c.changelog_for_path else ''}">
                     <div class="container_header">
                        <div style="float:right; margin: 0px 0px 0px 4px">${h.select('branch_filter',c.branch_name,c.branch_filters)}</div>
@@ -262,11 +262,9 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                     $(this).children('i').hide();
                     var cid = $(this).attr('commit_id');
                     $('#C-'+cid).css({'height': 'auto', 'margin': '4px 0px 4px 0px'})
-                    //redraw the graph, line_count and jsdata are global vars
-                    set_canvas(100);
 
-                    var r = new BranchRenderer();
-                    r.render(jsdata,100,line_count);
+                    //redraw the graph, r and jsdata are bound outside function
+                    r.render(jsdata,100);
                 });
 
                 // change branch filter
@@ -280,31 +278,9 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                     }
                 });
 
-                function set_canvas(width) {
-                    var c = document.getElementById('graph_nodes');
-                    var t = document.getElementById('graph_content');
-                    canvas = document.getElementById('graph_canvas');
-                    var div_h = t.clientHeight;
-                    canvas.setAttribute('height',div_h);
-                    canvas.setAttribute('width',width);
-                };
-                var heads = 1;
-                var line_count = 0;
                 var jsdata = ${c.jsdata|n};
-
-                for (var i=0;i<jsdata.length;i++) {
-                    var in_l = jsdata[i][2];
-                    for (var j in in_l) {
-                        var m = in_l[j][1];
-                        if (m > line_count)
-                            line_count = m;
-                    }
-                }
-                set_canvas(100);
-
-                var r = new BranchRenderer();
-                r.render(jsdata,100,line_count);
-
+                var r = new BranchRenderer('graph_canvas', 'graph_content');
+                r.render(jsdata,100);
             });
 
         </script>

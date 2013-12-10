@@ -22,9 +22,11 @@ var colors = [
 	[ 0.0, 0.0, 0.0 ]
 ];
 
-function BranchRenderer() {
-	
-	this.canvas = document.getElementById("graph_canvas");
+function BranchRenderer(canvas_id, content_id) {
+
+	this.canvas = document.getElementById(canvas_id);
+	var t = document.getElementById(content_id);
+	this.canvas.setAttribute('height',t.clientHeight);
 	
 	if (!document.createElement("canvas").getContext)
 		this.canvas = window.G_vmlCanvasManager.initElement(this.canvas);
@@ -48,12 +50,21 @@ function BranchRenderer() {
 		this.ctx.fillStyle = s;
 	}
 
-	this.render = function(data,canvasWidth,lineCount) {
+	this.render = function(data,canvasWidth) {
 		var idx = 1;
-		var rela = document.getElementById('graph');
+		var rela = this.canvas;
 
-		if (lineCount == 0)
-			lineCount = 1;
+		this.canvas.setAttribute('width',canvasWidth);
+
+		var lineCount = 1;
+		for (var i=0;i<data.length;i++) {
+			var in_l = data[i][1];
+			for (var j in in_l) {
+				var m = in_l[j][0];
+				if (m > lineCount)
+					lineCount = m;
+			}
+		}
 
 		var edge_pad = this.dot_radius + 2;
 		var box_size = Math.min(18, Math.floor((canvasWidth - edge_pad*2)/(lineCount)));
@@ -68,8 +79,8 @@ function BranchRenderer() {
 			var extra = 0;
 			
 			cur = data[i];
-			node = cur[1];
-			in_l = cur[2];
+			node = cur[0];
+			in_l = cur[1];
 
 			var rowY = row.offsetTop + row.offsetHeight/2 - rela.offsetTop;
 			var nextY = (next == null) ? rowY + row.offsetHeight/2 : next.offsetTop + next.offsetHeight/2 - rela.offsetTop;

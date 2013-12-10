@@ -39,6 +39,21 @@ def grandparent(parentrev_func, lowestrev, roots, head):
             seen.add(r)
     return sorted(kept)
 
+def graph_data(repo, revs):
+    """Return a DAG with colored edge information for revs
+
+    For each DAG node this function emits tuples::
+
+      ((col, color), [(col, nextcol, color)])
+
+    with the following new elements:
+
+      - Tuple (col, color) with column and color index for the current node
+      - A list of tuples indicating the edges between the current node and its
+        parents.
+    """
+    dag = _dagwalker(repo, revs, repo.alias)
+    return [(vtx, edges) for (_id, _type, ctx, vtx, edges) in _colored(dag)]
 
 def _dagwalker(repo, revs, alias):
     if not revs:

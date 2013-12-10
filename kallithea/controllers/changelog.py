@@ -38,7 +38,7 @@ from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
 from kallithea.lib.base import BaseRepoController, render
 from kallithea.lib.helpers import RepoPage
 from kallithea.lib.compat import json
-from kallithea.lib.graphmod import _colored, _dagwalker
+from kallithea.lib.graphmod import graph_data
 from kallithea.lib.vcs.exceptions import RepositoryError, ChangesetDoesNotExistError,\
     ChangesetError, NodeDoesNotExistError, EmptyRepositoryError
 from kallithea.lib.utils2 import safe_int, safe_str
@@ -97,30 +97,6 @@ class ChangelogController(BaseRepoController):
             if not partial:
                 redirect(h.url('changelog_home', repo_name=repo.repo_name))
             raise HTTPBadRequest()
-
-    def _graph(self, repo, revs_int, repo_size, size, p):
-        """
-        Generates a DAG graph for repo
-
-        :param repo:
-        :param revs_int:
-        :param repo_size:
-        :param size:
-        :param p:
-        """
-        if not revs_int:
-            c.jsdata = json.dumps([])
-            return
-
-        data = []
-        revs = revs_int
-
-        dag = _dagwalker(repo, revs, repo.alias)
-        dag = _colored(dag)
-        for (_id, _type, ctx, vtx, edges) in dag:
-            data.append(['', vtx, edges])
-
-        c.jsdata = json.dumps(data)
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
@@ -192,10 +168,10 @@ class ChangelogController(BaseRepoController):
             prefix = _('(closed)') + ' '
             c.branch_filters += [('-', '-')] + \
                 [(k, prefix + k) for k in c.db_repo_scm_instance.closed_branches.keys()]
-        _revs = []
+        revs = []
         if not f_path:
-            _revs = [x.revision for x in c.pagination]
-        self._graph(c.db_repo_scm_instance, _revs, c.total_cs, c.size, p)
+            revs = [x.revision for x in c.pagination]
+        c.jsdata = json.dumps(graph_data(c.db_repo_scm_instance, revs))
 
         c.revision = revision # requested revision ref
         c.first_revision = c.pagination[0] # pagination is never empty here!
