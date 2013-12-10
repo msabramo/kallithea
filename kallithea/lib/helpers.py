@@ -1268,7 +1268,7 @@ def urlify_changesets(text_, repository):
     return newtext
 
 
-def urlify_commit(text_, repository=None, link_=None):
+def urlify_commit(text_, repository, link_=None):
     """
     Parses given text message and makes proper links.
     issues are linked to given issue-server, and rest is a changeset link
@@ -1295,7 +1295,7 @@ def urlify_commit(text_, repository=None, link_=None):
 
         return ''.join(links)
 
-    # urlify changesets - extrac revisions and make link out of them
+    # urlify changesets - extract revisions and make link out of them
     newtext = urlify_changesets(escaper(text_), repository)
 
     # extract http/https links and make them real urls
