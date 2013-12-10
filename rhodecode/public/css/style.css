@@ -2982,10 +2982,7 @@ table.code-browser .browser-file {
     height: 16px;
 }
 .diffblock .changeset_file {
-    background: url("../images/icons/file.png") no-repeat scroll 3px;
-    text-align: left;
     float: left;
-    padding: 2px 0px 2px 22px;
 }
 .diffblock .diff-menu-wrapper {
     float: left;

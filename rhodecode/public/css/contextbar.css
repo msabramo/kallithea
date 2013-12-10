@@ -2,46 +2,70 @@
  * Stylesheets for the context bar
  */
 
-#quick .repo_switcher { background-image: url("../images/icons/database.png"); }
-#quick .journal { background-image: url("../images/icons/book.png"); }
-#quick .gists { background-image: url("../images/icons/note.png"); }
-#quick .gists-private { background-image: url("../images/icons/note_error.png"); }
-#quick .gists-new { background-image: url("../images/icons/note_add.png"); }
-#quick .search { background-image: url("../images/icons/search_16.png"); }
-#quick .admin { background-image: url("../images/icons/cog_edit.png"); }
+i.icon-archive { background-image: url("../images/icons/database_edit.png"); }
+i.icon-arrow-right { background-image: url('../images/icons/arrow_right.png');}
+i.icon-ban-circle { background-image: url("../images/icons/cancel.png"); }
+i.icon-bar-chart { background-image: url("../images/icons/chart_bar.png"); }
+i.icon-book { background-image: url("../images/icons/book.png"); }
+i.icon-bookmark { background-image: url("../images/icons/tag_green.png"); }
+i.icon-code-fork { background-image: url("../images/icons/arrow_branch.png"); }
+i.icon-code-merge { background-image: url("../images/icons/arrow_merge.png"); } /* unused! */
+i.icon-cog { background-image: url("../images/icons/cog_edit.png"); }
+i.icon-cog { background-image: url("../images/icons/cog.png"); }
+i.icon-cogs { background-image: url("../images/icons/table_gear.png"); }
+i.icon-ellipsis-horizontal:after { content: ' ...';}
+i.icon-eye-open { background-image: url("../images/icons/eye.png"); }
+i.icon-file-2 { background-image: url("../images/icons/note.png"); }
+i.icon-file-alt { background-image: url("../images/icons/note_add.png"); }
+i.icon-file { background-image: url("../images/icons/file.png"); }
+i.icon-file-text { background-image: url("../images/icons/clipboard_16.png"); }
+i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
+i.icon-folder-close { background-image: url("../images/icons/database_link.png"); }
+i.icon-git { background-image: url('../images/icons/giticon.png');}
+i.icon-group { background-image: url("../images/icons/group_edit.png"); }
+i.icon-heart { background-image: url("../images/icons/heart_delete.png"); }
+i.icon-heart-empty { background-image: url("../images/icons/heart.png"); }
+i.icon-hg { background-image: url('../images/icons/hgicon.png');}
+i.icon-key { background-image: url("../images/icons/server_key.png"); }
+i.icon-lock { background-image: url('../images/icons/lock.png');}
+i.icon-lock-alt { background-image: url('../images/icons/private_repo.png');}
+i.icon-loop { background-image: url('../images/icons/arrow_inout.png');}
+i.icon-loop-2 { background-image: url('../images/icons/arrow_inout.png');}
+i.icon-private { background-image: url('../images/icons/private_repo.png');}
+i.icon-public { background-image: url('../images/icons/public_repo.png');}
+i.icon-random { background-image: url("../images/icons/arrow_switch.png"); }
+i.icon-refresh { background-image: url('../images/icons/arrow_refresh.png');}
+i.icon-search { background-image: url("../images/icons/search_16.png"); }
+i.icon-tag { background-image: url("../images/icons/tag_blue.png"); }
+i.icon-time { background-image: url("../images/icons/time.png"); }
+i.icon-list-alt { background-image: url("../images/icons/time.png"); }
+i.icon-unlock { background-image: url('../images/icons/lock_open.png');}
+i.icon-unlock-alt { background-image: url('../images/icons/public_repo.png');}
+i.icon-user { background-image: url("../images/icons/user_edit.png"); }
+i.icon-wrench { background-image: url("../images/icons/wrench.png"); }
+i.icon-rss-sign { background-image: url('../images/icons/rss_16.png');}
+i.icon-plus-sign { background-image: url('../images/icons/add.png');}
+i.icon-chevron-left:after { content: "\00AB";}
+i.icon-chevron-right:after { content: "\00BB";}
+i.icon-copy { background-image: url('../images/icons/note_add.png');}
+i.icon-pencil { background-image: url('../images/icons/application_form_edit.png');}
+i.icon-remove { background-image: url('../images/icons/delete.png');}
+i.icon-remove-sign { background-image: url('../images/icons/delete.png');}
+i.icon-plus { background-image: url('../images/icons/plus_16.png');}
+i.icon-resize-vertical { background-image: url('../images/icons/text_align_left.png');}
+i.icon-ok-sign { background-image: url('../images/icons/tick.png');}
+i.icon-minus-sign { background-image: url('../images/icons/delete.png');}
+i.icon-disabled { background-image: url('../images/icons/shading.png');} /* todo: use instead of minus sign */
 
-#context-bar a.follow { background-image: url("../images/icons/heart.png"); }
-#context-bar a.following { background-image: url("../images/icons/heart_delete.png"); }
-#context-bar a.fork { background-image: url("../images/icons/arrow_divide.png"); }
-#context-bar a.summary { background-image: url("../images/icons/clipboard_16.png"); }
-#context-bar a.changelogs { background-image: url("../images/icons/time.png"); }
-#context-bar a.files { background-image: url("../images/icons/file.png"); }
-#context-bar a.switch-to { background-image: url("../images/icons/arrow_switch.png"); }
-#context-bar a.options { background-image: url("../images/icons/table_gear.png"); }
-#context-bar a.forks { background-image: url("../images/icons/arrow_divide.png"); }
-#context-bar a.pull-request { background-image: url("../images/icons/arrow_join.png"); }
-#context-bar a.branches { background-image: url("../images/icons/arrow_branch.png"); }
-#context-bar a.tags { background-image: url("../images/icons/tag_blue.png"); }
-#context-bar a.bookmarks { background-image: url("../images/icons/tag_green.png"); }
-#context-bar a.settings { background-image: url("../images/icons/cog.png"); }
-#context-bar a.search { background-image: url("../images/icons/search_16.png"); }
-#context-bar a.admin { background-image: url("../images/icons/cog_edit.png"); }
-
-#context-bar a.journal { background-image: url("../images/icons/book.png"); }
-#context-bar a.gists { background-image: url("../images/icons/note.png"); }
-#context-bar a.gists-private { background-image: url("../images/icons/note_error.png"); }
-#context-bar a.gists-new { background-image: url("../images/icons/note_add.png"); }
-#context-bar a.repos { background-image: url("../images/icons/database_edit.png"); }
-#context-bar a.repos_groups { background-image: url("../images/icons/database_link.png"); }
-#context-bar a.users { background-image: url("../images/icons/user_edit.png"); }
-#context-bar a.groups { background-image: url("../images/icons/group_edit.png"); }
-#context-bar a.permissions { background-image: url("../images/icons/key.png"); }
-#context-bar a.ldap { background-image: url("../images/icons/server_key.png"); }
-#context-bar a.defaults { background-image: url("../images/icons/wrench.png"); }
-#context-bar a.settings { background-image: url("../images/icons/cog_edit.png"); }
-#context-bar a.compare_request { background-image: url('../images/icons/arrow_inout.png')}
-#context-bar a.locking_del { background-image: url('../images/icons/lock_delete.png')}
-#context-bar a.locking_add { background-image: url('../images/icons/lock_add.png')}
+i[class^='icon-'] {
+    background-repeat: no-repeat;
+    background-position: center;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: -2px 0 -4px 0;
+    /* background-color: red; /* for debugging */
+}
 
 #content #context-bar {
     position: relative;
