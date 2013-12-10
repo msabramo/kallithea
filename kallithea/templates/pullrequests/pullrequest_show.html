@@ -220,7 +220,7 @@ ${self.repo_context_bar('showpullrequest')}
     ${comment.comment_inline_form()}
 
     ## render comments and inlines
-    ${comment.generate_comments(include_pr=True)}
+    ${comment.generate_comments()}
 
     % if not c.pull_request.is_closed():
       ## main comment form and it status
