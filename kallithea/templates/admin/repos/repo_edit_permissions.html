@@ -13,7 +13,7 @@ ${h.form(url('edit_repo_perms_update', repo_name=c.repo_name), method='put')}
                     <td></td>
                 </tr>
                 ## USERS
-                %for r2p in c.repo_info.repo_to_perm:
+                %for r2p in sorted(c.repo_info.repo_to_perm, key=lambda x: x.user.username != 'default' and x.user.username):
                     %if r2p.user.username =='default' and c.repo_info.private:
                         <tr>
                             <td colspan="4">
@@ -49,7 +49,7 @@ ${h.form(url('edit_repo_perms_update', repo_name=c.repo_name), method='put')}
                 %endfor
 
                 ## USER GROUPS
-                %for g2p in c.repo_info.users_group_to_perm:
+                %for g2p in sorted(c.repo_info.users_group_to_perm, key=lambda x:x.users_group.users_group_name):
                     <tr id="id${id(g2p.users_group.users_group_name)}">
                         <td>${h.radio('g_perm_%s' % g2p.users_group.users_group_name,'repository.none')}</td>
                         <td>${h.radio('g_perm_%s' % g2p.users_group.users_group_name,'repository.read')}</td>
