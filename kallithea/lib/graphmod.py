@@ -52,20 +52,18 @@ def graph_data(repo, revs):
       - A list of tuples indicating the edges between the current node and its
         parents.
     """
-    dag = _dagwalker(repo, revs, repo.alias)
-    return [(vtx, edges) for (_id, _type, ctx, vtx, edges) in _colored(dag)]
+    dag = _dagwalker(repo, revs)
+    return list(_colored(dag))
 
-def _dagwalker(repo, revs, alias):
+def _dagwalker(repo, revs):
     if not revs:
         return
 
-    if alias == 'hg':
+    if repo.alias == 'hg':
         cl = repo._repo.changelog.parentrevs
-        repo = repo
-    elif alias == 'git':
+    elif repo.alias == 'git':
         def cl(rev):
             return [x.revision for x in repo[rev].parents]
-        repo = repo
 
     lowestrev = min(revs)
     gpcache = {}
@@ -87,7 +85,7 @@ def _dagwalker(repo, revs, alias):
             else:
                 parents.extend(g for g in gp if g not in parents)
 
-        yield (ctx.revision, 'C', ctx, parents)
+        yield (ctx.revision, parents)
 
 
 def _colored(dag):
@@ -95,7 +93,7 @@ def _colored(dag):
 
     For each DAG node this function emits tuples::
 
-      (id, type, data, (col, color), [(col, nextcol, color)])
+      ((col, color), [(col, nextcol, color)])
 
     with the following new elements:
 
@@ -107,9 +105,7 @@ def _colored(dag):
     colors = {}
     newcolor = 1
 
-    getconf = lambda rev: {}
-
-    for (cur, type, data, parents) in dag:
+    for (cur, parents) in dag:
 
         # Compute seen and next
         if cur not in seen:
@@ -137,19 +133,11 @@ def _colored(dag):
         edges = []
         for ecol, eid in enumerate(seen):
             if eid in next:
-                bconf = getconf(eid)
-                edges.append((
-                    ecol, next.index(eid), colors[eid],
-                    bconf.get('width', -1),
-                    bconf.get('color', '')))
+                edges.append((ecol, next.index(eid), colors[eid]))
             elif eid == cur:
                 for p in parents:
-                    bconf = getconf(p)
-                    edges.append((
-                        ecol, next.index(p), colors[p] if len(parents) > 1 else color,
-                        bconf.get('width', -1),
-                        bconf.get('color', '')))
+                    edges.append((ecol, next.index(p), colors[p] if len(parents) > 1 else color))
 
         # Yield and move on
-        yield (cur, type, data, (col, color), edges)
+        yield ((col, color), edges)
         seen = next
