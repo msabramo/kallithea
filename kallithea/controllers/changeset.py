@@ -39,6 +39,7 @@ from kallithea.lib.utils import jsonify
 from kallithea.lib.vcs.exceptions import RepositoryError, \
     ChangesetDoesNotExistError
 
+from kallithea.lib.compat import json
 import kallithea.lib.helpers as h
 from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
     NotAnonymous
@@ -55,6 +56,7 @@ from kallithea.lib.diffs import LimitedDiffContainer
 from kallithea.lib.exceptions import StatusChangeOnClosedPullRequestError
 from kallithea.lib.vcs.backends.base import EmptyChangeset
 from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.graphmod import graph_data
 
 log = logging.getLogger(__name__)
 
@@ -313,6 +315,8 @@ class ChangesetController(BaseRepoController):
                 return render('changeset/changeset.html')
             else:
                 c.cs_ranges_org = None
+                revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
+                c.jsdata = json.dumps(graph_data(c.db_repo_scm_instance, revs))
                 return render('changeset/changeset_range.html')
 
     @LoginRequired()

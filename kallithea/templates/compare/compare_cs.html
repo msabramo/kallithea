@@ -10,9 +10,15 @@
     </div>
     %endif
 
+    <div id="graph_nodes">
+        <canvas id="graph_canvas"></canvas>
+    </div>
+
+    <div id="graph_content_pr" style="margin-left: 100px;">
+
     <table class="compare_view_commits noborder">
-    %for cs in reversed(c.cs_ranges):
-        <tr id="row-${cs.raw_id}">
+    %for cnt, cs in enumerate(c.cs_ranges):
+        <tr id="chg_${cnt+1}">
         <td style="width:50px">
           %if cs.raw_id in c.statuses:
             <div title="${_('Changeset status: %s') % c.statuses[cs.raw_id][1]}" class="changeset-status-ico">
@@ -36,6 +42,9 @@
         </tr>
     %endfor
     </table>
+
+    </div>
+
     %if c.as_form:
       <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
       ## links should perhaps use ('rev', c.org_rev) instead ...
@@ -70,13 +79,29 @@
   %endif
 </div>
 
-<script>
-$('.expand_commit').on('click',function(e){
-    var cid = $(this).attr('commit_id');
-    $('#C-'+cid).toggleClass('expanded');
-});
-$('.gravatar').on('click',function(e){
-    var cid = $(this).attr('commit_id');
-    $('#row-'+cid).toggleClass('hl', !$('#row-'+cid).hasClass('hl'));
-});
+%if not c.as_form:
+<script type="text/javascript" src="${h.url('/js/graph.js')}"></script>
+%endif
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+%if not c.as_form:
+        var jsdata = ${c.jsdata|n};
+        var r = new BranchRenderer('graph_canvas', 'graph_content_pr');
+        r.render(jsdata,100);
+%endif
+
+        $('.expand_commit').click(function(e){
+            var cid = $(this).attr('commit_id');
+            $('#C-'+cid).toggleClass('expanded');
+            r.render(jsdata,100);
+        });
+
+        $('.gravatar').click(function(e){
+            var cid = $(this).attr('commit_id');
+            $('#row-'+cid).toggleClass('hl', !$('#row-'+cid).hasClass('hl'));
+        });
+    });
+
 </script>

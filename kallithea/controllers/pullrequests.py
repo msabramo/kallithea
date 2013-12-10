@@ -60,6 +60,7 @@ from kallithea.lib.utils2 import safe_int
 from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
 from kallithea.controllers.compare import CompareController
+from kallithea.lib.graphmod import graph_data
 
 log = logging.getLogger(__name__)
 
@@ -200,6 +201,8 @@ class PullrequestsController(BaseRepoController):
         org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
         c.cs_ranges = [org_scm_instance.get_changeset(x) for x in pull_request.revisions]
         c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
+        revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
+        c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
 
         c.statuses = c.org_repo.statuses([x.raw_id for x in c.cs_ranges])
 
