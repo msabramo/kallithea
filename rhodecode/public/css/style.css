@@ -249,8 +249,20 @@ div:hover > a.permalink {
     visibility: visible;
 }
 
-#header {
+#header #logo {
+    padding-left: 20px;
 }
+
+#header #logo div.header,
+#header #logo div.branding {
+    font-size: 20px;
+    color: white;
+    float: left;
+    height: 44px;
+    line-height: 44px;
+    margin-right: 10px;
+}
+
 #header ul#logged-user {
     margin-bottom: 5px !important;
     -webkit-border-radius: 0px 0px 8px 8px;
