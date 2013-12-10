@@ -307,6 +307,8 @@ class RepoGroupsController(BaseController):
             h.flash(_('Error occurred during deletion of repository group %s')
                     % group_name, category='error')
 
+        if gr.parent_group:
+            return redirect(url('repos_group_home', group_name=gr.parent_group.group_name))
         return redirect(url('repos_groups'))
 
     def show_by_name(self, group_name):

@@ -350,6 +350,8 @@ class ReposController(BaseRepoController):
             h.flash(_('An error occurred during deletion of %s') % repo_name,
                     category='error')
 
+        if repo.group:
+            return redirect(url('repos_group_home', group_name=repo.group.group_name))
         return redirect(url('repos'))
 
     @HasPermissionAllDecorator('hg.admin')
