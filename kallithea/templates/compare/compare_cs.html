@@ -17,7 +17,7 @@
     <div id="graph_content_pr" style="margin-left: 100px;">
 
     <table class="compare_view_commits noborder">
-    %for cnt, cs in enumerate(c.cs_ranges):
+    %for cnt, cs in enumerate(reversed(c.cs_ranges)):
         <tr id="chg_${cnt+1}">
         <td style="width:50px">
           %if cs.raw_id in c.statuses:
@@ -79,7 +79,9 @@
   %endif
 </div>
 
-%if not c.as_form:
+%if c.as_form:
+<div id="jsdata" style="display:none">${c.jsdata|n}</div>
+%else:
 <script type="text/javascript" src="${h.url('/js/graph.js')}"></script>
 %endif
 

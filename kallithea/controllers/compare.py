@@ -47,6 +47,8 @@ from kallithea.model.db import Repository
 from kallithea.lib.diffs import LimitedDiffContainer
 from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
+from kallithea.lib.graphmod import graph_data
+from kallithea.lib.compat import json
 
 log = logging.getLogger(__name__)
 
@@ -270,6 +272,12 @@ class CompareController(BaseRepoController):
             other_repo.scm_instance, c.other_rev)
         c.statuses = c.db_repo.statuses(
             [x.raw_id for x in c.cs_ranges])
+
+        revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
+        c.jsdata = json.dumps(graph_data(c.other_repo.scm_instance, revs))
+
+        c.statuses = c.db_repo.statuses([x.raw_id for x in
+                                                   c.cs_ranges])
 
         if partial:
             return render('compare/compare_cs.html')

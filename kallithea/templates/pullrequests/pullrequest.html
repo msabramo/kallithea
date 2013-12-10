@@ -137,6 +137,7 @@ ${self.repo_context_bar('showpullrequest')}
 
 </div>
 
+<script type="text/javascript" src="${h.url('/js/graph.js')}"></script>
 <script type="text/javascript">
   var _USERS_AC_DATA = ${c.users_array|n};
   var _GROUPS_AC_DATA = ${c.user_groups_array|n};
@@ -202,7 +203,11 @@ ${self.repo_context_bar('showpullrequest')}
       }
 
       YUD.get('pull_request_overview').innerHTML = "${_('Loading ...')}";
-      ypjax(url,'pull_request_overview');
+      ypjax(url,'pull_request_overview', function(o){
+          var jsdata = eval('('+YUD.get('jsdata').innerHTML+')');
+          var r = new BranchRenderer('graph_canvas', 'graph_content_pr');
+          r.render(jsdata,100);
+      });
   }
 
   ## refresh automatically when something changes (org_repo can't change)
