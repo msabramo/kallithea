@@ -9,14 +9,17 @@
       <img src="${h.url('/images/icons/flag_status_not_reviewed.png')}" title="${_("Nobody voted")}"/>
     %endif
       <a href="${h.url('pullrequest_show',repo_name=pr.other_repo.repo_name,pull_request_id=pr.pull_request_id)}">
-      ${_('Pull request #%s opened by %s on %s') % (pr.pull_request_id, pr.author.full_name, h.fmt_date(pr.created_on))}
-      </a>
+      ${pr.title or _("(no title)")}
        %if pr.is_closed():
          <span class="pr-closed-tag">${_('Closed')}</span>
        %endif
+      </a>
+            ${_('opened on %s from') % (h.fmt_date(pr.created_on))}
+            <% org_ref_name=pr.org_ref.rsplit(':', 2)[-2] %>
+            <a href="${h.url('summary_home', repo_name=pr.org_repo.repo_name, anchor=org_ref_name)}">
+              ${pr.org_repo.repo_name}#${org_ref_name}
+            </a>
     </div>
-    <h5 style="border:0px;padding-bottom:0px">${_('Title')}: ${pr.title}</h5>
-    <div class="pr-desc">${pr.description}</div>
   </div>
 % endfor
 

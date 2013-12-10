@@ -4746,7 +4746,7 @@ PULL REQUESTS
 }
 
 div.pr-details-title.closed,
-#pullrequests_container li.closed a
+#pullrequests_container li.closed div div
  {
     color: #555;
     background: #eee;
@@ -4761,9 +4761,8 @@ div.pr-details-title {
 }
 
 div.pr {
-    border-bottom: 1px solid #DDD;
     margin: 0px 20px;
-    padding: 10px 4px;
+    padding: 4px 4px;
 }
 div.pr-desc {
     margin: 0px 20px;
