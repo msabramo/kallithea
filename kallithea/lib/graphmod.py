@@ -28,14 +28,14 @@ def _first_known_ancestors(parentrev_func, minrev, knownrevs, head):
     pending = set([head])
     seen = set()
     ancestors = set()
-    minrev = max(nullrev, minrev)
     while pending:
         r = pending.pop()
-        if r >= minrev and r not in seen:
-            if r in knownrevs:
-                ancestors.add(r)
-            else:
-                pending.update(parentrev_func(r))
+        if r < minrev:
+            pass
+        elif r in knownrevs:
+            ancestors.add(r)
+        elif r not in seen:
+            pending.update(parentrev_func(r))
             seen.add(r)
     return ancestors
 
@@ -65,7 +65,7 @@ def _dagwalker(repo, revs):
         def parentrev_func(rev):
             return [x.revision for x in repo[rev].parents]
 
-    minrev = min(revs)
+    minrev = revs[-1] # assuming sorted reverse
     knownrevs = set(revs)
     acache = {}
     for rev in revs:
@@ -76,10 +76,7 @@ def _dagwalker(repo, revs):
             ancestors = acache.get(p)
             if ancestors is None:
                 ancestors = acache[p] = _first_known_ancestors(parentrev_func, minrev, knownrevs, p)
-            if ancestors: # some indirect known ancestors found - use them and ignore unknown ancestors
-                dagparents.update(ancestors)
-            else: # no known ancestors - use the real but unknown parent
-                dagparents.add(p)
+            dagparents.update(ancestors)
 
         yield (rev, sorted(dagparents))
 
