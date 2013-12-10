@@ -46,7 +46,7 @@ ${self.repo_context_bar('changelog')}
                                 <a id="compare_fork"
                                    title="${_('Compare fork with %s' % c.db_repo.fork.repo_name)}"
                                    href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
-                                   class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with Parent(%s)' % c.db_repo.fork.repo_name)}</a>
+                                   class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
                             %endif
                             <a id="open_new_pr" href="${h.url('pullrequest_home',repo_name=c.repo_name)}" class="btn btn-mini">${_('Open new pull request')}</a>
                        </div>
@@ -188,7 +188,7 @@ ${self.repo_context_bar('changelog')}
 
                         var link = (rev_start == rev_end)
                             ? _TM['Show selected changeset __S']
-                            : _TM['Show selected changesets __S -> __E'];
+                            : _TM['Show selected changesets __S &rarr; __E'];
 
                         link = link.replace('__S',rev_start.substr(0,6));
                         link = link.replace('__E',rev_end.substr(0,6));

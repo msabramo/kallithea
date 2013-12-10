@@ -150,7 +150,7 @@ class NotificationModel(BaseModel):
 
     def get_for_user(self, user, filter_=None):
         """
-        Get mentions for given user, filter them if filter dict is given
+        Get notifications for given user, filter them if filter dict is given
 
         :param user:
         :param filter:

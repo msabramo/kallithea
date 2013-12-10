@@ -1707,7 +1707,7 @@ function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data)
             $('#' + field_id).remove();
         },
         failure: function (o) {
-            alert(_TM['Failed to remoke permission'] + ": " + o.status);
+            alert(_TM['Failed to revoke permission'] + ": " + o.status);
         },
     };
     query_params = {

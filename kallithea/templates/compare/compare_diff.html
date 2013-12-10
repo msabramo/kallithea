@@ -115,7 +115,7 @@ ${self.repo_context_bar('changelog')}
                 data.results.push({'text': section, 'children': children})
             });
             //push the typed in changeset
-            data.results.push({'text':_TM['specify changeset'],
+            data.results.push({'text':_TM['Specify changeset'],
                                'children': [{'id': query.term, 'text': query.term, 'type': 'rev'}]})
             query.callback(data);
           }else{
@@ -126,7 +126,7 @@ ${self.repo_context_bar('changelog')}
                 type: 'GET',
                 success: function(data) {
                   cache[key] = data;
-                  query.callback({results: data.results});
+                  query.callback(data);
                 }
               })
           }
@@ -155,7 +155,7 @@ ${self.repo_context_bar('changelog')}
                 data.results.push({'text': section, 'children': children})
             });
             //push the typed in changeset
-            data.results.push({'text':_TM['specify changeset'],
+            data.results.push({'text':_TM['Specify changeset'],
                                'children': [{'id': query.term, 'text': query.term, 'type': 'rev'}]})
             query.callback(data);
           }else{

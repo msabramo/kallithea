@@ -1431,7 +1431,7 @@ class Repository(Base, BaseModel):
             log.debug('Cache for %s invalidated, getting new object' % (rn))
             region_invalidate(_c, None, rn)
         else:
-            log.debug('Getting obj for %s from cache' % (rn))
+            log.debug('Getting scm_instance of %s from cache' % (rn))
         return _c(rn)
 
     def __get_instance(self):
@@ -2256,7 +2256,6 @@ class PullRequest(Base, BaseModel):
 
     # values for .status
     STATUS_NEW = u'new'
-    STATUS_OPEN = u'open'
     STATUS_CLOSED = u'closed'
 
     pull_request_id = Column('pull_request_id', Integer(), nullable=False, primary_key=True)
