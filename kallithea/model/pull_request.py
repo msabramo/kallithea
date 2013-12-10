@@ -89,49 +89,51 @@ class PullRequestModel(BaseModel):
         new.author = created_by_user
         Session().add(new)
         Session().flush()
-        #members
-        for member in set(reviewers):
-            _usr = self._get_user(member)
-            reviewer = PullRequestReviewers(_usr, new)
-            Session().add(reviewer)
 
         #reset state to under-review
         ChangesetStatusModel().set_status(
             repo=org_repo,
             status=ChangesetStatus.STATUS_UNDER_REVIEW,
-            user=created_by_user,
+            user=new.author,
             pull_request=new
         )
+        self.__add_reviewers(new, reviewers)
+        return new
+
+    def __add_reviewers(self, pr, reviewers):
+        #members
+        for member in set(reviewers):
+            _usr = self._get_user(member)
+            reviewer = PullRequestReviewers(_usr, pr)
+            Session().add(reviewer)
+
         revision_data = [(x.raw_id, x.message)
-                         for x in map(org_repo.get_changeset, revisions)]
+                         for x in map(pr.org_repo.get_changeset, pr.revisions)]
+
         #notification to reviewers
-        pr_url = h.url('pullrequest_show', repo_name=other_repo.repo_name,
-                       pull_request_id=new.pull_request_id,
-                       qualified=True,
-        )
+        pr_url = h.url('pullrequest_show', repo_name=pr.other_repo.repo_name,
+                       pull_request_id=pr.pull_request_id,
+                       qualified=True)
         subject = safe_unicode(
             h.link_to(
               _('%(user)s wants you to review pull request #%(pr_id)s: %(pr_title)s') % \
-                {'user': created_by_user.username,
-                 'pr_title': new.title,
-                 'pr_id': new.pull_request_id},
-                pr_url
+                {'user': pr.author.username,
+                 'pr_title': pr.title,
+                 'pr_id': pr.pull_request_id},
+                pr_url)
             )
-        )
-        body = description
+        body = pr.description
         kwargs = {
-            'pr_title': title,
-            'pr_user_created': h.person(created_by_user.email),
-            'pr_repo_url': h.url('summary_home', repo_name=other_repo.repo_name,
+            'pr_title': pr.title,
+            'pr_user_created': h.person(pr.author.email),
+            'pr_repo_url': h.url('summary_home', repo_name=pr.other_repo.repo_name,
                                  qualified=True,),
             'pr_url': pr_url,
-            'pr_revisions': revision_data
-        }
+            'pr_revisions': revision_data}
 
-        NotificationModel().create(created_by=created_by_user, subject=subject, body=body,
+        NotificationModel().create(created_by=pr.author, subject=subject, body=body,
                                    recipients=reviewers,
                                    type_=Notification.TYPE_PULL_REQUEST, email_kwargs=kwargs)
-        return new
 
     def update_reviewers(self, pull_request, reviewers_ids):
         reviewers_ids = set(reviewers_ids)
@@ -146,13 +148,9 @@ class PullRequestModel(BaseModel):
         to_remove = current_reviewers_ids.difference(reviewers_ids)
 
         log.debug("Adding %s reviewers" % to_add)
+        self.__add_reviewers(pull_request, to_add)
+
         log.debug("Removing %s reviewers" % to_remove)
-
-        for uid in to_add:
-            _usr = self._get_user(uid)
-            reviewer = PullRequestReviewers(_usr, pull_request)
-            Session().add(reviewer)
-
         for uid in to_remove:
             reviewer = PullRequestReviewers.query()\
                     .filter(PullRequestReviewers.user_id==uid,
