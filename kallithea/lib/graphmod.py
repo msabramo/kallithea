@@ -131,7 +131,7 @@ def _colored(dag):
                 for p in parents:
                     bconf = getconf(p)
                     edges.append((
-                        ecol, next.index(p), color,
+                        ecol, next.index(p), colors[p] if len(parents) > 1 else color,
                         bconf.get('width', -1),
                         bconf.get('color', '')))
 
