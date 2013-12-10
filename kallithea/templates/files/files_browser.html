@@ -83,7 +83,7 @@
                      <td>
                          %if node.is_file():
                              <div class="tooltip" title="${h.tooltip(node.last_changeset.message)}">
-                              <pre>${'r%s:%s' % (node.last_changeset.revision,node.last_changeset.short_id)}</pre>
+                              <pre>${h.show_id(node.last_changeset)}</pre>
                              </div>
                          %endif
                      </td>

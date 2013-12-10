@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Changesets') % c.repo_name} - r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)} &gt; r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
+    ${_('%s Changesets') % c.repo_name} - ${h.show_id(c.cs_ranges[0])} &gt; ${h.show_id(c.cs_ranges[-1])}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -10,9 +10,9 @@
 
 <%def name="breadcrumbs_links()">
     ${_('Changesets')} -
-    r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)}
+    ${h.link_to(h.show_id(c.cs_ranges[0]),h.url('changeset_home',repo_name=c.repo_name,revision=c.cs_ranges[0]))}</td>
     <i class="icon-arrow-right"></i>
-    r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
+    ${h.link_to(h.show_id(c.cs_ranges[-1]),h.url('changeset_home',repo_name=c.repo_name,revision=c.cs_ranges[-1]))}</td>
 </%def>
 
 <%def name="page_nav()">
@@ -30,9 +30,9 @@ ${self.repo_context_bar('changelog')}
         <div id="body" class="diffblock">
             <div class="code-header">
                 <div>
-                    r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)}
+                    ${h.show_id(c.cs_ranges[0])}
                     <i class="icon-arrow-right"></i>
-                    r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
+                    ${h.show_id(c.cs_ranges[-1])}
                     <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref_name=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref_name=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-loop"></i> Compare Revisions</a>
                 </div>
             </div>
@@ -58,17 +58,17 @@ ${self.repo_context_bar('changelog')}
             </div>
             <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${_('Files affected')}</div>
             <div class="cs_files">
-                   %for cs in c.cs_ranges:
-                       <div class="cur_cs">${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}</div>
-                      %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[cs.raw_id].iteritems():
-                         <div class="cs_${change}">
-                               <div class="node">
-                                   ${h.link_to(h.safe_unicode(path),h.url.current(anchor=FID))}
-                               </div>
-                           <div class="changes">${h.fancy_file_stats(stats)}</div>
-                         </div>
-                      %endfor
-                   %endfor
+                %for cs in c.cs_ranges:
+                    <div class="cur_cs">${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}</div>
+                    %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[cs.raw_id].iteritems():
+                        <div class="cs_${change}">
+                            <div class="node">
+                                ${h.link_to(h.safe_unicode(path),h.url.current(anchor=FID))}
+                            </div>
+                            <div class="changes">${h.fancy_file_stats(stats)}</div>
+                        </div>
+                    %endfor
+                %endfor
             </div>
         </div>
 
@@ -79,7 +79,7 @@ ${self.repo_context_bar('changelog')}
           ##${comment.comment_inline_form(cs)}
           ## diff block
           <div class="h3">
-          <a class="tooltip" title="${h.tooltip(cs.message)}" href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id)}">${'r%s:%s' % (cs.revision,h.short_id(cs.raw_id))}</a>
+          <a class="tooltip" title="${h.tooltip(cs.message)}" href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a>
              <div class="gravatar">
                  <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),20)}"/>
              </div>

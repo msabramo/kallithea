@@ -29,7 +29,7 @@
             <td>${branch[1].revision}</td>
             <td>
                 <div>
-                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">r${branch[1].revision}:${h.short_id(branch[1].raw_id)}</a></pre>
+                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">${h.show_id(branch[1])}</a></pre>
                 </div>
             </td>
             <td>
@@ -56,7 +56,7 @@
               <td>${branch[1].revision}</td>
               <td>
                 <div>
-                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">r${branch[1].revision}:${h.short_id(branch[1].raw_id)}</a></pre>
+                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id)}">${h.show_id(branch[1])}</a></pre>
                 </div>
               </td>
               <td></td>

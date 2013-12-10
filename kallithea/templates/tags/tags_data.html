@@ -29,7 +29,7 @@
             <td>${tag[1].revision}</td>
             <td>
                 <div>
-                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=tag[1].raw_id)}">r${tag[1].revision}:${h.short_id(tag[1].raw_id)}</a></pre>
+                    <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=tag[1].raw_id)}">${h.show_id(tag[1])}</a></pre>
                 </div>
             </td>
             <td>

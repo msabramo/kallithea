@@ -23,8 +23,7 @@
         <td style="width: 140px"><span class="tooltip" title="${h.tooltip(h.age(cs.date))}">${cs.date}</span></td>
         <td><div class="gravatar" commit_id="${cs.raw_id}"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
         <td><div class="author">${h.person(cs.author)}</div></td>
-        <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id))}
-        </td>
+        <td>${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id))}</td>
         <td>
         %if cs.branch:
         <span class="branchtag">${cs.branch}</span>

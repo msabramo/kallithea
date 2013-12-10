@@ -358,8 +358,7 @@ def pygmentize_annotation(repo_name, filenode, **kwargs):
                             "</b> %s<br/></div>")
 
             tooltip_html = tooltip_html % (author, date, message)
-            lnk_format = '%5s:%s' % ('r%s' % changeset.revision,
-                                     short_id(changeset.raw_id))
+            lnk_format = show_id(changeset)
             uri = link_to(
                     lnk_format,
                     url('changeset_home', repo_name=repo_name,

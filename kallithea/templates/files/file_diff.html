@@ -8,7 +8,7 @@
 </%def>
 
 <%def name="breadcrumbs_links()">
-    ${_('File diff')} r${c.changeset_1.revision}:${h.short_id(c.changeset_1.raw_id)} &rarr; r${c.changeset_2.revision}:${h.short_id(c.changeset_2.raw_id)}
+    ${_('File diff')} ${h.show_id(c.changeset_1)} &rarr; ${h.show_id(c.changeset_2)}
 </%def>
 
 <%def name="page_nav()">

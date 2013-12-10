@@ -28,7 +28,7 @@
             <td>${book[1].revision}</td>
             <td>
               <div>
-                  <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=book[1].raw_id)}">r${book[1].revision}:${h.short_id(book[1].raw_id)}</a></pre>
+                  <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=book[1].raw_id)}">${h.show_id(book[1])}</a></pre>
               </div>
             </td>
             <td>

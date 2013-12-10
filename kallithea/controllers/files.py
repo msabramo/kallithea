@@ -779,7 +779,7 @@ class FilesController(BaseRepoController):
         for chs in changesets:
             #_branch = '(%s)' % chs.branch if _hg else ''
             _branch = chs.branch
-            n_desc = 'r%s:%s (%s)' % (chs.revision, chs.short_id, _branch)
+            n_desc = '%s (%s)' % (h.show_id(chs), _branch)
             changesets_group[0].append((chs.raw_id, n_desc,))
         hist_l.append(changesets_group)
 
