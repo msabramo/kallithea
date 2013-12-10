@@ -68,6 +68,9 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                        ${h.end_form()}
                     </div>
                 </div>
+
+                <div style="clear:both">
+
                 <div id="graph_nodes">
                     <canvas id="graph_canvas"></canvas>
                 </div>
@@ -151,6 +154,8 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                 %endfor
                 </tbody>
                 </table>
+
+                </div>
 
                 <div class="pagination-wh pagination-left">
                     ${c.pagination.pager('$link_previous ~2~ $link_next')}
