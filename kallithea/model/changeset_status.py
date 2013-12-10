@@ -62,7 +62,7 @@ class ChangesetStatusModel(BaseModel):
             q = q.filter(ChangesetStatus.pull_request == pull_request)
         else:
             raise Exception('Please specify revision or pull_request')
-        q.order_by(ChangesetStatus.version.asc())
+        q = q.order_by(ChangesetStatus.version.asc())
         return q
 
     def calculate_status(self, statuses_by_reviewers):
