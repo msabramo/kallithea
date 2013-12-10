@@ -37,7 +37,7 @@ def _first_known_ancestors(parentrev_func, minrev, knownrevs, head):
             else:
                 pending.update(parentrev_func(r))
             seen.add(r)
-    return sorted(ancestors)
+    return ancestors
 
 def graph_data(repo, revs):
     """Return a DAG with colored edge information for revs
@@ -69,21 +69,19 @@ def _dagwalker(repo, revs):
     knownrevs = set(revs)
     acache = {}
     for rev in revs:
-        ctx = repo[rev]
-        parents = [p.revision for p in ctx.parents]
-        dagparents = sorted(set(parents) & knownrevs)
-        mpars = sorted(set(parents) - knownrevs - set([nullrev]))
+        parents = set(parentrev_func(rev)) - set([nullrev])
+        dagparents = parents & knownrevs
         # Calculate indirect parents
-        for p in mpars:
+        for p in parents - dagparents:
             ancestors = acache.get(p)
             if ancestors is None:
-                ancestors = acache[p] = _first_known_ancestors(parentrev_func, minrev, revs, p)
+                ancestors = acache[p] = _first_known_ancestors(parentrev_func, minrev, knownrevs, p)
             if ancestors: # some indirect known ancestors found - use them and ignore unknown ancestors
-                dagparents.extend(g for g in ancestors if g not in dagparents)
+                dagparents.update(ancestors)
             else: # no known ancestors - use the real but unknown parent
-                dagparents.append(p)
+                dagparents.add(p)
 
-        yield (ctx.revision, dagparents)
+        yield (rev, sorted(dagparents))
 
 
 def _colored(dag):
