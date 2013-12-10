@@ -54,7 +54,7 @@ def graph_data(repo, revs):
         parents.
     """
     dag = _dagwalker(repo, revs)
-    return list(_colored(dag))
+    return list(_colored(repo, dag))
 
 def _dagwalker(repo, revs):
     if not revs:
@@ -82,7 +82,7 @@ def _dagwalker(repo, revs):
         yield (rev, sorted(dagparents))
 
 
-def _colored(dag):
+def _colored(repo, dag):
     """annotates a DAG with colored edge information
 
     For each DAG node this function emits tuples::
@@ -95,6 +95,12 @@ def _colored(dag):
       - A list of tuples indicating the edges between the current node and its
         parents.
     """
+    branch_cache = {}
+    def branch(rev):
+        if rev not in branch_cache:
+            branch_cache[rev] = repo[rev].branch
+        return branch_cache[rev]
+
     row = []
     colors = {}
     newcolor = 1
@@ -118,15 +124,20 @@ def _colored(dag):
         for r in tmprow:
             if r > nullrev or r in dagparents:
                 nextrow.append(r)
+            else:
+                colors.pop(r)
 
         # Set colors for the parents
         color = colors.pop(rev)
-        for i, p in enumerate(addparents):
-            if not i:
-                colors[p] = color
-            else:
-                colors[p] = newcolor
-                newcolor += 1
+        if addparents:
+            b = branch(rev)
+            for p in reversed(addparents):
+                if b and branch(abs(p)) == b:
+                    colors[p] = color
+                    b = None
+                else:
+                    colors[p] = newcolor
+                    newcolor += 1
 
         # Add edges to the graph
         edges = []
@@ -135,7 +146,7 @@ def _colored(dag):
                 edges.append((ecol, nextrow.index(ep), colors[ep]))
             elif ep == rev:
                 for p in dagparents:
-                    edges.append((ecol, nextrow.index(p), colors[p] if len(dagparents) > 1 else color))
+                    edges.append((ecol, nextrow.index(p), colors[p]))
 
         # Yield and move on
         yield ((col, color), edges)
