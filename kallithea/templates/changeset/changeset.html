@@ -113,7 +113,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                          <div class="gravatar">
                              <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.changeset.author),20)}"/>
                          </div>
-                         <span><b>${h.person(c.changeset.author)}</b> - ${h.age(c.changeset.date,True)} ${h.fmt_date(c.changeset.date)}</span><br/>
+                         <span><b>${h.person(c.changeset.author,'username_and_name')}</b> - ${h.age(c.changeset.date,True)} ${h.fmt_date(c.changeset.date)}</span><br/>
                          <span>${h.email_or_none(c.changeset.author)}</span><br/>
                      </div>
                      <div class="message">${h.urlify_commit(c.changeset.message, c.repo_name)}</div>

@@ -497,7 +497,7 @@ def email_or_none(author):
     return None
 
 
-def person(author, show_attr="username_and_name"):
+def person(author, show_attr="username"):
     # attr to return from fetched user
     person_getter = lambda usr: getattr(usr, show_attr)
 
@@ -523,7 +523,7 @@ def person(author, show_attr="username_and_name"):
     return _author or _email
 
 
-def person_by_id(id_, show_attr="username_and_name"):
+def person_by_id(id_, show_attr="username"):
     # attr to return from fetched user
     person_getter = lambda usr: getattr(usr, show_attr)
 
