@@ -269,6 +269,7 @@ def send_email(recipients, subject, body='', html_body=''):
     """
     log = get_logger(send_email)
     DBS = get_session()
+    assert isinstance(recipients, list), recipients
 
     email_config = config
     subject = "%s %s" % (email_config.get('email_prefix', ''), subject)
@@ -277,6 +278,7 @@ def send_email(recipients, subject, body='', html_body=''):
         admins = [u.email for u in User.query()
                   .filter(User.admin == True).all()]
         recipients = [email_config.get('email_to')] + admins
+        log.warning("recipients not specified for '%s' - sending to admins %s", subject, ' '.join(recipients))
 
     mail_from = email_config.get('app_email_from', 'Kallithea')
     user = email_config.get('smtp_username')
@@ -289,7 +291,9 @@ def send_email(recipients, subject, body='', html_body=''):
     smtp_auth = email_config.get('smtp_auth')
 
     if not mail_server:
-        log.error("SMTP mail server not configured - cannot send mail")
+        log.error("SMTP mail server not configured - cannot send mail '%s' to %s", subject, ' '.join(recipients))
+        log.warning("body:\n%s", body)
+        log.warning("html:\n%s", html_body)
         return False
 
     try:

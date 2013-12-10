@@ -126,7 +126,7 @@ class NotificationModel(BaseModel):
             email_body_html = EmailNotificationModel()\
                                 .get_email_tmpl(type_, **kwargs)
 
-            run_task(tasks.send_email, rec.email, email_subject, email_body,
+            run_task(tasks.send_email, [rec.email], email_subject, email_body,
                      email_body_html)
 
         return notif

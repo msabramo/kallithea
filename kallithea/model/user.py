@@ -300,7 +300,7 @@ class UserModel(BaseModel):
                                                     **{'user': user.short_contact,
                                                        'reset_url': link})
                 log.debug('sending email')
-                run_task(tasks.send_email, user_email,
+                run_task(tasks.send_email, [user_email],
                          _("Password reset link"), body, body)
                 log.info('send new password mail to %s' % user_email)
             else:
@@ -329,7 +329,7 @@ class UserModel(BaseModel):
                 raise Exception('unable to generate new password')
 
             pre_db = False
-            run_task(tasks.send_email, user_email,
+            run_task(tasks.send_email, [user_email],
                      _('Your new password'),
                      _('Your new Kallithea password:%s') % (new_passwd,))
             log.info('send new password mail to %s' % user_email)
