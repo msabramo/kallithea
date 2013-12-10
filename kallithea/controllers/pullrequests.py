@@ -89,8 +89,10 @@ class PullrequestsController(BaseRepoController):
 
         if branch_rev:
             branch_rev = safe_str(branch_rev)
-            # not restricting to merge() would also get branch point and be better
-            # (especially because it would get the branch point) ... but is currently too expensive
+            # a revset not restricting to merge() would be better
+            # (especially because it would get the branch point)
+            # ... but is currently too expensive
+            # including branches of children could be nice too
             peerbranches = set()
             for i in repo._repo.revs(
                 "sort(parents(branch(id(%s)) and merge()) - branch(id(%s)), -rev)",
@@ -110,15 +112,18 @@ class PullrequestsController(BaseRepoController):
             if rev == branchrev:
                 selected = n
             if branch == abranch:
+                if not rev:
+                    selected = n
+                branch = None
+        if branch:  # branch not in list - it is probably closed
+            branchrev = repo.closed_branches.get(branch)
+            if branchrev:
+                n = 'branch:%s:%s' % (branch, branchrev)
+                branches.append((n, _('%s (closed)') % branch))
                 selected = n
                 branch = None
-
-        if branch:  # branch not in list - it is probably closed
-            revs = repo._repo.revs('max(branch(%s))', branch)
-            if revs:
-                cs = repo.get_changeset(revs[0])
-                selected = 'branch:%s:%s' % (branch, cs.raw_id)
-                branches.append((selected, branch))
+            if branch:
+                log.error('branch %r not found in %s', branch, repo)
 
         bookmarks = []
         for bookmark, bookmarkrev in repo.bookmarks.iteritems():
