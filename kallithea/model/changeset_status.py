@@ -109,9 +109,7 @@ class ChangesetStatusModel(BaseModel):
         # returned from pull_request
         status = q.first()
         if as_str:
-            status = status.status if status else status
-            st = status or ChangesetStatus.DEFAULT
-            return str(st)
+            return str(status.status) if status else ChangesetStatus.DEFAULT
         return status
 
     def set_status(self, repo, status, user, comment=None, revision=None,
