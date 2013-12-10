@@ -428,6 +428,8 @@ class ChangesetController(BaseRepoController):
     @jsonify
     def delete_comment(self, repo_name, comment_id):
         co = ChangesetComment.get(comment_id)
+        if not co:
+            raise HTTPBadRequest()
         owner = co.author.user_id == c.authuser.user_id
         repo_admin = h.HasRepoPermissionAny('repository.admin')
         if h.HasPermissionAny('hg.admin')() or repo_admin or owner:
