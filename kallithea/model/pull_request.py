@@ -91,10 +91,19 @@ class PullRequestModel(BaseModel):
         Session().flush()
 
         #reset state to under-review
-        ChangesetStatusModel().set_status(
+        from kallithea.model.comment import ChangesetCommentsModel
+        comment = ChangesetCommentsModel().create(
+            text=u'Auto status change to %s' % (ChangesetStatus.get_status_lbl(ChangesetStatus.STATUS_UNDER_REVIEW)),
             repo=org_repo,
-            status=ChangesetStatus.STATUS_UNDER_REVIEW,
             user=new.author,
+            pull_request=new,
+            send_email=False
+        )
+        ChangesetStatusModel().set_status(
+            org_repo,
+            ChangesetStatus.STATUS_UNDER_REVIEW,
+            new.author,
+            comment,
             pull_request=new
         )
         self.__add_reviewers(new, reviewers)

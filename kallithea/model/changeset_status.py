@@ -112,7 +112,7 @@ class ChangesetStatusModel(BaseModel):
             return str(status.status) if status else ChangesetStatus.DEFAULT
         return status
 
-    def set_status(self, repo, status, user, comment=None, revision=None,
+    def set_status(self, repo, status, user, comment, revision=None,
                    pull_request=None, dont_allow_on_closed_pull_request=False):
         """
         Creates new status for changeset or updates the old ones bumping their
@@ -130,15 +130,6 @@ class ChangesetStatusModel(BaseModel):
         repo = self._get_repo(repo)
 
         q = ChangesetStatus.query()
-        if not comment:
-            from kallithea.model.comment import ChangesetCommentsModel
-            comment = ChangesetCommentsModel().create(
-                text=u'Auto status change to %s' % (ChangesetStatus.get_status_lbl(status)),
-                repo=repo,
-                user=user,
-                pull_request=pull_request,
-                send_email=False
-            )
         if revision:
             q = q.filter(ChangesetStatus.repo == repo)
             q = q.filter(ChangesetStatus.revision == revision)
