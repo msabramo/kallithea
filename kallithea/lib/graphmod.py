@@ -19,25 +19,25 @@ It allows to have a shared codebase for DAG generation for hg and git repos
 
 nullrev = -1
 
-
-def grandparent(parentrev_func, lowestrev, roots, head):
+def _first_known_ancestors(parentrev_func, minrev, knownrevs, head):
     """
-    Return all ancestors of head in roots which revision is
-    greater or equal to lowestrev.
+    Walk DAG defined by parentrev_func.
+    Return most immediate ancestors of head that are in knownrevs.
+    minrev is lower bound on knownrevs.
     """
     pending = set([head])
     seen = set()
-    kept = set()
-    llowestrev = max(nullrev, lowestrev)
+    ancestors = set()
+    minrev = max(nullrev, minrev)
     while pending:
         r = pending.pop()
-        if r >= llowestrev and r not in seen:
-            if r in roots:
-                kept.add(r)
+        if r >= minrev and r not in seen:
+            if r in knownrevs:
+                ancestors.add(r)
             else:
-                pending.update([p for p in parentrev_func(r)])
+                pending.update(parentrev_func(r))
             seen.add(r)
-    return sorted(kept)
+    return sorted(ancestors)
 
 def graph_data(repo, revs):
     """Return a DAG with colored edge information for revs
@@ -60,32 +60,30 @@ def _dagwalker(repo, revs):
         return
 
     if repo.alias == 'hg':
-        cl = repo._repo.changelog.parentrevs
+        parentrev_func = repo._repo.changelog.parentrevs
     elif repo.alias == 'git':
-        def cl(rev):
+        def parentrev_func(rev):
             return [x.revision for x in repo[rev].parents]
 
-    lowestrev = min(revs)
-    gpcache = {}
-
+    minrev = min(revs)
     knownrevs = set(revs)
+    acache = {}
     for rev in revs:
         ctx = repo[rev]
-        parents = sorted(set([p.revision for p in ctx.parents
-                              if p.revision in knownrevs]))
-        mpars = [p.revision for p in ctx.parents if
-                 p.revision != nullrev and p.revision not in parents]
+        parents = [p.revision for p in ctx.parents]
+        dagparents = sorted(set(parents) & knownrevs)
+        mpars = sorted(set(parents) - knownrevs - set([nullrev]))
+        # Calculate indirect parents
+        for p in mpars:
+            ancestors = acache.get(p)
+            if ancestors is None:
+                ancestors = acache[p] = _first_known_ancestors(parentrev_func, minrev, revs, p)
+            if ancestors: # some indirect known ancestors found - use them and ignore unknown ancestors
+                dagparents.extend(g for g in ancestors if g not in dagparents)
+            else: # no known ancestors - use the real but unknown parent
+                dagparents.append(p)
 
-        for mpar in mpars:
-            gp = gpcache.get(mpar)
-            if gp is None:
-                gp = gpcache[mpar] = grandparent(cl, lowestrev, revs, mpar)
-            if not gp:
-                parents.append(mpar)
-            else:
-                parents.extend(g for g in gp if g not in parents)
-
-        yield (ctx.revision, parents)
+        yield (ctx.revision, dagparents)
 
 
 def _colored(dag):
@@ -101,27 +99,27 @@ def _colored(dag):
       - A list of tuples indicating the edges between the current node and its
         parents.
     """
-    seen = []
+    row = []
     colors = {}
     newcolor = 1
 
-    for (cur, parents) in dag:
+    for (rev, dagparents) in dag:
 
-        # Compute seen and next
-        if cur not in seen:
-            seen.append(cur)  # new head
-            colors[cur] = newcolor
+        # Compute row and nextrow
+        if rev not in row:
+            row.append(rev)  # new head
+            colors[rev] = newcolor
             newcolor += 1
 
-        col = seen.index(cur)
-        color = colors.pop(cur)
-        next = seen[:]
+        nextrow = row[:]
 
-        # Add parents to next
-        addparents = [p for p in parents if p not in next]
-        next[col:col + 1] = addparents
+        # Add unknown parents to nextrow
+        addparents = [p for p in dagparents if p not in nextrow]
+        col = nextrow.index(rev)
+        nextrow[col:col + 1] = addparents
 
         # Set colors for the parents
+        color = colors.pop(rev)
         for i, p in enumerate(addparents):
             if not i:
                 colors[p] = color
@@ -131,13 +129,13 @@ def _colored(dag):
 
         # Add edges to the graph
         edges = []
-        for ecol, eid in enumerate(seen):
-            if eid in next:
-                edges.append((ecol, next.index(eid), colors[eid]))
-            elif eid == cur:
-                for p in parents:
-                    edges.append((ecol, next.index(p), colors[p] if len(parents) > 1 else color))
+        for ecol, ep in enumerate(row):
+            if ep in nextrow:
+                edges.append((ecol, nextrow.index(ep), colors[ep]))
+            elif ep == rev:
+                for p in dagparents:
+                    edges.append((ecol, nextrow.index(p), colors[p] if len(dagparents) > 1 else color))
 
         # Yield and move on
         yield ((col, color), edges)
-        seen = next
+        row = nextrow
