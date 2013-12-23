@@ -36,8 +36,8 @@ function BranchRenderer(canvas_id, content_id) {
 	this.cur = [0, 0];
 	this.line_width = 2.0;
 	this.dot_radius = 3.5;
-	
-	this.setColor = function(color, bg, fg) {
+
+	this.calcColor = function(color, bg, fg) {
 		color %= colors.length;
 		var red = (colors[color][0] * fg) || bg;
 		var green = (colors[color][1] * fg) || bg;
@@ -46,6 +46,11 @@ function BranchRenderer(canvas_id, content_id) {
 		green = Math.round(green * 255);
 		blue = Math.round(blue * 255);
 		var s = 'rgb(' + red + ', ' + green + ', ' + blue + ')';
+		return s;
+	}
+
+	this.setColor = function(color, bg, fg) {
+		var s = this.calcColor(color, bg, fg);
 		this.ctx.strokeStyle = s;
 		this.ctx.fillStyle = s;
 	}
@@ -91,11 +96,24 @@ function BranchRenderer(canvas_id, content_id) {
 				start = line[0];
 				end = line[1];
 				color = line[2];
-
-				this.setColor(color, 0.0, 0.65);
-
 				
 				x = base_x - box_size * start;
+
+				// if this is a merge of differently
+				// colored line, make it a gradient towards
+				// the merged color
+				if (color != node[1] && start == node[0])
+				{
+					var gradient = this.ctx.createLinearGradient(x,rowY,x,nextY);
+					gradient.addColorStop(0,this.calcColor(node[1], 0.0, 0.65));
+					gradient.addColorStop(1,this.calcColor(color, 0.0, 0.65));
+					this.ctx.strokeStyle = gradient;
+					this.ctx.fillStyle = gradient;
+				}
+				else
+				{
+					this.setColor(color, 0.0, 0.65);
+				}
 				
 				this.ctx.lineWidth=this.line_width;
 				this.ctx.beginPath();
