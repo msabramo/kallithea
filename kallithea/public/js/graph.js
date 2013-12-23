@@ -75,7 +75,7 @@ function BranchRenderer(canvas_id, content_id) {
 		var box_size = Math.min(18, Math.floor((canvasWidth - edge_pad*2)/(lineCount)));
 		var base_x = canvasWidth - edge_pad;
 
-		for (var i in data) {
+		for (var i=0; i < data.length; ++i) {
 
 			var row = document.getElementById("chg_"+idx);
 			if (row == null)
@@ -91,7 +91,6 @@ function BranchRenderer(canvas_id, content_id) {
 			var nextY = (next == null) ? rowY + row.offsetHeight/2 : next.offsetTop + next.offsetHeight/2 - rela.offsetTop;
 
 			for (var j in in_l) {
-				
 				line = in_l[j];
 				start = line[0];
 				end = line[1];
@@ -99,10 +98,32 @@ function BranchRenderer(canvas_id, content_id) {
 				
 				x = base_x - box_size * start;
 
+				// figure out if this is a dead-end;
+				// we want to fade away this line
+				var dead_end = true;
+				if (next != null) {
+					nextdata = data[i+1];
+					next_l = nextdata[1];
+					found = false;
+					for (var k=0; k < next_l.length; ++k) {
+						if (next_l[k][0] == end) {
+							dead_end = false;
+							break;
+						}
+					}
+				}
+
+				if (dead_end) {
+					var gradient = this.ctx.createLinearGradient(x,rowY,x,nextY);
+					gradient.addColorStop(0,this.calcColor(color, 0.0, 0.65));
+					gradient.addColorStop(1,this.calcColor(color, 1.0, 0.0));
+					this.ctx.strokeStyle = gradient;
+					this.ctx.fillStyle = gradient;
+				}
 				// if this is a merge of differently
 				// colored line, make it a gradient towards
 				// the merged color
-				if (color != node[1] && start == node[0])
+				else if (color != node[1] && start == node[0])
 				{
 					var gradient = this.ctx.createLinearGradient(x,rowY,x,nextY);
 					gradient.addColorStop(0,this.calcColor(node[1], 0.0, 0.65));
