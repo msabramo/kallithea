@@ -157,6 +157,15 @@ div.options a {
     padding: 3px 8px;
 }
 
+code,
+.code pre,
+div.readme .readme_box pre,
+div.rst-block pre,
+.CodeMirror .CodeMirror-code pre {
+    font-size: 12px;
+    font-family: Consolas, Monaco, Inconsolata, Liberation Mono, monospace;
+}
+
 .top-left-rounded-corner {
     -webkit-border-top-left-radius: 8px;
     -khtml-border-radius-topleft: 8px;
@@ -4261,10 +4270,6 @@ div.readme .readme_box ol {
     margin: 1em 0 1em 2em !important;
 }
 
-div.readme .readme_box pre, code {
-    font: 12px "Bitstream Vera Sans Mono","Courier",monospace;
-}
-
 div.readme .readme_box code {
     font-size: 12px !important;
     background-color: ghostWhite !important;
@@ -4360,10 +4365,6 @@ div.rst-block  ul {
 div.rst-block  ol {
     list-style: decimal;
     margin: 1em 0 1em 2em !important;
-}
-
-div.rst-block  pre, code {
-    font: 12px "Bitstream Vera Sans Mono","Courier",monospace;
 }
 
 div.rst-block  code {
@@ -4464,7 +4465,7 @@ div.comment-form {
 .comment-form textarea {
     width: 100%;
     height: 100px;
-    font-family: 'Monaco', 'Courier', 'Courier New', monospace;
+    font-family: Consolas, Monaco, Inconsolata, Liberation Mono, monospace;
 }
 
 form.comment-form {
@@ -4565,7 +4566,7 @@ div.comment-inline-form {
 .comment-inline-form textarea {
     width: 100%;
     height: 100px;
-    font-family: 'Monaco', 'Courier', 'Courier New', monospace;
+    font-family: Consolas, Monaco, Inconsolata, Liberation Mono, monospace;
 }
 
 form.comment-inline-form {
@@ -4995,7 +4996,7 @@ table.code-difftable .lineno.old {
 }
 table.code-difftable .lineno a {
     color: #747474 !important;
-    font: 11px "Bitstream Vera Sans Mono",Monaco,"Courier New",Courier,monospace !important;
+    font: 11px Consolas, Monaco, Inconsolata, Liberation Mono, monospace !important;
     letter-spacing: -1px;
     text-align: right;
     padding-right: 2px;
