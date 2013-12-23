@@ -4958,6 +4958,7 @@ table.code-difftable td {
 }
 table.code-difftable .context {
     background: none repeat scroll 0 0 #DDE7EF;
+    color: #999;
 }
 table.code-difftable .add {
     background: none repeat scroll 0 0 #DDFFDD;
@@ -4976,11 +4977,10 @@ table.code-difftable .del del {
 
 /** LINE NUMBERS **/
 table.code-difftable .lineno {
-
     padding-left: 2px;
-    padding-right: 2px;
+    padding-right: 2px !important;
     text-align: right;
-    width: 32px;
+    width: 30px;
     -moz-user-select: none;
     -webkit-user-select: none;
     border-right: 1px solid #CCC !important;
@@ -4988,21 +4988,20 @@ table.code-difftable .lineno {
     border-top: 0px solid #CCC !important;
     border-bottom: none !important;
     vertical-align: middle !important;
-
 }
 table.code-difftable .lineno.new {
 }
 table.code-difftable .lineno.old {
 }
 table.code-difftable .lineno a {
-    color: #747474 !important;
+    color: #aaa !important;
     font: 11px Consolas, Monaco, Inconsolata, Liberation Mono, monospace !important;
     letter-spacing: -1px;
     text-align: right;
     padding-right: 2px;
     cursor: pointer;
     display: block;
-    width: 32px;
+    width: 30px;
 }
 
 table.code-difftable .lineno-inline {
