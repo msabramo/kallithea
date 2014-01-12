@@ -105,7 +105,7 @@ class ChangesetCommentsModel(BaseModel):
             recipients += [cs_author]
             email_kwargs = {
                 'status_change': status_change,
-                'cs_comment_user': h.person(user.email),
+                'cs_comment_user': h.person(user),
                 'cs_target_repo': h.url('summary_home', repo_name=repo.repo_name,
                                         qualified=True),
                 'cs_comment_url': _url,
@@ -147,7 +147,7 @@ class ChangesetCommentsModel(BaseModel):
                 'status_change': status_change,
                 'closing_pr': closing_pr,
                 'pr_comment_url': _url,
-                'pr_comment_user': h.person(user.email),
+                'pr_comment_user': h.person(user),
                 'pr_target_repo': h.url('summary_home',
                                    repo_name=pull_request.other_repo.repo_name,
                                    qualified=True)

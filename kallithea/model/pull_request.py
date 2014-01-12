@@ -134,7 +134,7 @@ class PullRequestModel(BaseModel):
         body = pr.description
         kwargs = {
             'pr_title': pr.title,
-            'pr_user_created': h.person(pr.author.email),
+            'pr_user_created': h.person(pr.author),
             'pr_repo_url': h.url('summary_home', repo_name=pr.other_repo.repo_name,
                                  qualified=True,),
             'pr_url': pr_url,

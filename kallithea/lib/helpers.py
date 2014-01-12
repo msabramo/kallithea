@@ -478,7 +478,7 @@ def is_hg(repository):
 def email_or_none(author):
     # extract email from the commit string
     _email = email(author)
-    if _email != '':
+    if _email:
         # check it against Kallithea database, and use the MAIN email for this
         # user
         user = User.get_by_email(_email, case_insensitive=True, cache=True)
@@ -506,7 +506,7 @@ def person(author, show_attr="username"):
 
     # Valid email in the attribute passed, see if they're in the system
     _email = email(author)
-    if _email != '':
+    if _email:
         user = User.get_by_email(_email, case_insensitive=True, cache=True)
         if user is not None:
             return person_getter(user)
