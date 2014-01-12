@@ -3780,6 +3780,42 @@ div#legend_data, div#legend_container, div#legend_choices {
     display: block;
 }
 
+.repo-switcher .select2-choice {
+    padding: 0px 8px 1px !important;
+    display: block;
+    height: 100%;
+}
+
+.repo-switcher .select2-container,
+.repo-switcher .select2-choice,
+.repo-switcher .select2-choice span {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #FFFFFF !important;
+}
+
+.repo-switcher .select2-arrow {
+    display: none !important;
+}
+
+.repo-switcher .select2-chosen:after {
+    content: ' \25BE';
+}
+
+.repo-switcher-dropdown.select2-drop.select2-drop-active {
+    xborder-color: black;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    color: #fff;
+    background-color: #316293;
+}
+
+.repo-switcher-dropdown.select2-drop.select2-drop-active .select2-results .select2-highlighted {
+    background-color: #6388ad;
+}
+
 #content div.graph {
     padding: 0 10px 10px;
 }
