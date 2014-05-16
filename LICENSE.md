@@ -107,4 +107,18 @@ Kallithea is GPLv3'd.
 
 
 
+Select2-Bootstrap-CSS
+---------------------
+
+Kallithea incorporates some CSS from a system called
+[Select2-bootstrap-css](https://github.com/t0m/select2-bootstrap-css), which
+is:
+
+Copyright &copy; 2013 Tom Terrace (and likely others)
+
+and licensed under the MIT-permissive license, which is
+[included in this distribution](MIT-Permissive-License.txt).
+
+
+
 EOF
