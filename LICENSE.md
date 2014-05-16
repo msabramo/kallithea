@@ -83,4 +83,28 @@ tri-license.
 
 
 
+Select2
+-------
+
+Kallithea incorporates parts of the Javascript system called
+[Select2](http://ivaynberg.github.io/select2/), which is:
+
+Copyright 2012 Igor Vaynberg (and probably others)
+
+and is licensed [under the following license](https://github.com/ivaynberg/select2/blob/master/LICENSE):
+
+> This software is licensed under the Apache License, Version 2.0 (the
+> "Apache License") or the GNU General Public License version 2 (the "GPL
+> License"). You may choose either license to govern your use of this
+> software only upon the condition that you accept all of the terms of either
+> the Apache License or the GPL License.
+
+A [copy of the Apache License 2.0](Apache-License-2.0.txt) is also included
+in this distribution.
+
+Kallithea will take the Apache license fork of the dual license, since
+Kallithea is GPLv3'd.
+
+
+
 EOF
