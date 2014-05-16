@@ -22,4 +22,23 @@ entirety in the file Apache-License-2.0.txt
 
 
 
+Codemirror
+----------
+
+Kallithea incorporates parts of the Javascript system called
+[Codemirror](http://codemirror.net/), which is primarily:
+
+Copyright &copy; 2013 by Marijn Haverbeke <marijnh@gmail.com>
+
+and licensed under the MIT-permissive license, which is
+[included in this distribution](MIT-Permissive-License.txt).
+
+Additional files from upstream Codemirror are copyrighted by various authors
+and licensed under other permissive licenses.  The sub-directories under
+[.../public/js/mode/](rhodecode/public/js/mode) include the copyright and
+license notice and information as they appeared in Codemirror's upstream
+release.
+
+
+
 EOF
