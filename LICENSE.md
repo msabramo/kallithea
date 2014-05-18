@@ -177,4 +177,20 @@ available on
 
 
 
+Flot
+----
+
+Kallithea incorporates some CSS from a system called
+[Flot](http://code.google.com/p/flot/), which is:
+
+Copyright 2006 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+
+A [copy of the Apache License 2.0](Apache-License-2.0.txt) is also included
+in this distribution.
+
+
+
 EOF
