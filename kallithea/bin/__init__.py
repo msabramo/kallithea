@@ -20,5 +20,5 @@ Binary scripts for RhodeCode
 :created_on: Jun 03, 2012
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """

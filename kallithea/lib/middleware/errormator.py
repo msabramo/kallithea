@@ -20,7 +20,7 @@ middleware to handle errormator publishing of errors
 :created_on: October 18, 2012
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 

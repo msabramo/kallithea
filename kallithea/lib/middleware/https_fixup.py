@@ -20,7 +20,7 @@ middleware to handle https correctly
 :created_on: May 23, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 

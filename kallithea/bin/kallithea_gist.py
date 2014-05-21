@@ -20,7 +20,7 @@ Gist CLI client for RhodeCode
 :created_on: May 9, 2013
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 from __future__ import with_statement

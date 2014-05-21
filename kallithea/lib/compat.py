@@ -21,7 +21,7 @@ Python backward compatibility functions and common libs
 :created_on: Oct 7, 2011
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 

@@ -20,7 +20,7 @@ Database Models for RhodeCode <=1.4.X
 :created_on: Apr 08, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 

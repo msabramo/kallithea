@@ -1,5 +1,22 @@
-Third-Party Code Included Herein
-================================
+Kallithea License
+=================
+
+Kallithea as a whole is copyrighted by various authors and is licensed under
+the terms of the GNU General Public License, version 3 (GPLv3), which is a
+license published by the Free Software Foundation,
+Inc. [A copy of GPLv3](/COPYING) is included herein.
+
+Some individual files have copyright notices and those who offer changes to
+those files should update the copyright notices in those specific files if
+they so chose.
+
+However, the definitive list of copyright holders for this project is kept in
+[the about page template](kallithea/templates/about.html) so that it is
+displayed appropriately when Kallithea is installed.  This is the most
+important place to update copyright notices. 
+
+Third-Party Code Incorporated in Kallithea
+==========================================
 
 Various third-party code under GPLv3-compatible licenses is included as part
 of Kallithea.

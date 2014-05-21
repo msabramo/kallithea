@@ -20,7 +20,7 @@ Set of custom exceptions used in RhodeCode
 :created_on: Nov 17, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 from webob.exc import HTTPClientError

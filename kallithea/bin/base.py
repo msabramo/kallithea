@@ -20,7 +20,7 @@ Base utils for shell scripts
 :created_on: May 09, 2013
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 import os

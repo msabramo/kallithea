@@ -20,7 +20,7 @@ authentication and permission libraries
 :created_on: Apr 4, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 from __future__ import with_statement
 import time

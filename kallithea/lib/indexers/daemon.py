@@ -20,7 +20,7 @@ A daemon will read from task table and run tasks
 :created_on: Jan 26, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 from __future__ import with_statement

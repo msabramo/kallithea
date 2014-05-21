@@ -21,7 +21,7 @@ of database as well as for migration operations
 :created_on: Apr 10, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 import os

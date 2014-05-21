@@ -20,7 +20,7 @@ uodate-repoinfo paster command for RhodeCode
 :created_on: Jul 14, 2012
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 from __future__ import with_statement

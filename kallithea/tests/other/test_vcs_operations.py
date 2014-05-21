@@ -24,7 +24,7 @@ You must have git > 1.8.1 for tests to work fine
 :created_on: Dec 30, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 
 """
 

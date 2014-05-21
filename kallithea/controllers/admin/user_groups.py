@@ -20,7 +20,7 @@ User Groups crud controller for pylons
 :created_on: Jan 25, 2011
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 import logging

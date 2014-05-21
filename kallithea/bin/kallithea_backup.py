@@ -21,7 +21,7 @@ repositories and send it to backup server using RSA key via ssh.
 :created_on: Feb 28, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 import os

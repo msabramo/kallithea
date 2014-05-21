@@ -21,7 +21,7 @@ versioning implementation: http://www.python.org/dev/peps/pep-0386/
 :created_on: Apr 9, 2010
 :author: marcink
 :copyright: (c) 2013 RhodeCode GmbH.
-:license: GPLv3, see LICENSE for more details.
+:license: GPLv3, see LICENSE.md for more details.
 """
 
 import sys
