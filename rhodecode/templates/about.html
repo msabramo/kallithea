@@ -1,0 +1,91 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+<%def name="title()">
+    ${_('About')}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+<%def name="breadcrumbs()">
+    ${c.site_name}
+</%def>
+<%def name="page_nav()">
+    ${self.menu('about')}
+</%def>
+<%def name="main()">
+
+<div class="box">
+  <!-- box / title -->
+  <div class="title">
+    <h5>${_('About')} Kallithea</h5>
+  </div>
+
+  <p><a href="https://kallithea-scm.org/">Kallithea</a> is a project of the
+  <a href="http://sfconservancy.org/">Software Freedom Conservancy, Inc.</a>
+  and is released under the terms of the
+  <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License,
+  v 3.0 (GPLv3)</a>.</p>
+
+  <p>Kallithea is copyrighted by various authors, including but not
+  necessarily limited to the following:
+  <ul style="margin: 0 0 0 50px;">
+  <li>Copyright &copy; 2010&ndash;2013, RhodeCode GmbH</li>
+  <li>Copyright &copy; 2011&ndash;2014, Unity Technologies</li>
+  <li>Copyright &copy; 2012, Andrew Shadura</li>
+  <li>Copyright &copy; 2012, Augusto Herrmann</li>
+  <li>Copyright &copy; 2012, Dan Sheridan</li>
+  <li>Copyright &copy; 2012, Dominik Ruf</li>
+  <li>Copyright &copy; 2012, Vincent Duvert</li>
+  <li>Copyright &copy; 2011, Liad Shani</li>
+  <li>Copyright &copy; 2013, Jonathan Sternberg</li>
+  <li>Copyright &copy; 2011, Jason F. Harris</li>
+  <li>Copyright &copy; 2011, Lorenzo M. Catucci</li>
+  <li>Copyright &copy; 2013, Grzegorz Rożniecki</li>
+  <li>Copyright &copy; 2011, Les Peabody</li>
+  <li>Copyright &copy; 2011, Nicolas VINOT</li>
+  <li>Copyright &copy; 2012, Indra Talip</li>
+  <li>Copyright &copy; 2012, H Waldo G</li>
+  <li>Copyright &copy; 2011, Aparkar</li>
+  <li>Copyright &copy; 2013, Dennis Brakhane</li>
+  <li>Copyright &copy; 2011, Matt Zuba</li>
+  <li>Copyright &copy; 2014, Bradley M. Kuhn</li>
+  <li>Copyright &copy; 2012&ndash;2013, xpol</li>
+  <li>Copyright &copy; 2012, hppj</li>
+  <li>Copyright &copy; 2013, Takumi IINO</li>
+  <li>Copyright &copy; 2011, Shawn K. O'Shea</li>
+  <li>Copyright &copy; 2012, Tony Bussieres</li>
+  <li>Copyright &copy; 2011, Simon Lopez</li>
+  <li>Copyright &copy; 2012, mikespook</li>
+  <li>Copyright &copy; 2012, nansenat16</li>
+  <li>Copyright &copy; 2012, Zachary Auclair</li>
+  <li>Copyright &copy; 2012, Raoul Thill</li>
+  <li>Copyright &copy; 2011, Jared Bunting</li>
+  <li>Copyright &copy; 2013, Magnus Ericmats</li>
+  <li>Copyright &copy; 2010, Lukasz Balcerzak</li>
+
+## We did not list the following copyright holders, given that they appeared
+## to use for-profit company affiliations in their contribution in the
+## Mercurial log and therefore I didn't know if copyright was theirs or
+## their company's.
+## Copyright &copy; 2011 Thayne Harbaugh <thayne@fusionio.com>
+## Copyright &copy; 2012 Dies Koper <diesk@fast.au.fujitsu.com>
+## Copyright &copy; 2012 Erwin Kroon <e.kroon@smartmetersolutions.nl>
+## Copyright &copy; 2012 Vincent Caron <vcaron@bearstech.com>
+##
+## These contributors' contributions may not be copyrightable:
+## philip.j@hostdime.com in 2012
+## Stefan Engel <mail@engel-stefan.de> in 2012
+## Ton Plomp <tcplomp@gmail.com> in 2013
+##
+</ul></p>
+
+<p>The above are the copyright holders who have submitted direct
+  contributions to the Kallithea repository.  In
+  the <a href="https://kallithea-scm.org/repos/kallithea">Kallithea source
+  code</a>, there is
+  a <a href="https://kallithea-scm.org/repos/kallithea/files/tip/LICENSE.md">list
+  of third-party libraries and code that Kallithea incorporates</a>.</p>
+
+</div>
+
+</%def>

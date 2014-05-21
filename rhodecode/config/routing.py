@@ -101,6 +101,7 @@ def make_map(config):
 
     #MAIN PAGE
     rmap.connect('home', '/', controller='home', action='index')
+    rmap.connect('about', '/about', controller='home', action='about')
     rmap.connect('repo_switcher_data', '/_repos', controller='home',
                  action='repo_switcher_data')
 

@@ -37,11 +37,14 @@
                ${_('Server instance: %s') % c.rhodecode_instanceid if c.rhodecode_instanceid else ''}
            </p>
            <p class="footer-link-right">
-               RhodeCode
+               This site is powered by
                %if c.visual.show_version:
-                   ${c.rhodecode_version}
+                   <a href="${h.url('rhodecode_official')}" target="_blank">Kallithea</a> ${c.kallithea_version},
+               %else:
+                   <a href="${h.url('rhodecode_official')}" target="_blank">Kallithea</a>,
                %endif
-               &copy; 2010-${h.datetime.today().year}, <a href="${h.url('rhodecode_official')}" target="_blank">RhodeCode GmbH</a>. All rights reserved.
+               which is
+               <a href="${h.url('about')}#copyright">&copy; 2010&ndash;2014 by various authors &amp; licensed under GPLv3</a>.
                %if c.rhodecode_bugtracker:
                    &ndash; <a href="${c.rhodecode_bugtracker}" target="_blank">${_('Support')}</a>
                %endif

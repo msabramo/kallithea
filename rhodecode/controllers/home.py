@@ -49,6 +49,9 @@ class HomeController(BaseController):
     def __before__(self):
         super(HomeController, self).__before__()
 
+    def about(self):
+        return render('/about.html')
+
     @LoginRequired()
     def index(self):
         c.groups = self.scm_model.get_repo_groups()
