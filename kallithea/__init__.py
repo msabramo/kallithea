@@ -22,7 +22,7 @@ This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
 :created_on: Apr 9, 2010
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH, and others.
+:copyright: (c) 2013 RhodeCode GmbH, (C) 2014 Bradley M. Kuhn, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 
@@ -43,6 +43,20 @@ CONFIG = {}
 
 # Linked module for extensions
 EXTENSIONS = {}
+
+# SETTINGS_PREFIX is the prefix to use for form fields and database table names.
+
+#  Ideally, SETTINGS_PREFIX would be in an ini file of some sort instead of
+#  in this code.  However, since this is used in kallithea/model/db.py as
+#  part of the database initialization in code that typically runs before
+#  CONFIG (above) is populated with settings from the ini file, it's instead
+#  hard-coded herein.
+
+SETTINGS_PREFIX = "kallithea_"
+# NOTE: If you want compatibility with a database that was originally created
+#  for use with the Rhodecode software product, changing SETTINGS_PREFIX to
+#  "rhodecode_" might work to make the old database and forms compatible with
+#  this application.
 
 try:
     from kallithea.lib import get_current_revision

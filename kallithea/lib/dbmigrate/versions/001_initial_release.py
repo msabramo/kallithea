@@ -12,10 +12,12 @@ from kallithea.model.meta import Base
 
 from kallithea.lib.dbmigrate.migrate import *
 
+from kallithea import SETTINGS_PREFIX
+
 log = logging.getLogger(__name__)
 
 class Setting(Base):
-    __tablename__ = 'rhodecode_settings'
+    __tablename__ = SETTINGS_PREFIX + 'settings'
     __table_args__ = (UniqueConstraint('app_settings_name'), {'useexisting':True})
     app_settings_id = Column("app_settings_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
     app_settings_name = Column("app_settings_name", String(length=None, convert_unicode=False, assert_unicode=None), nullable=True, unique=None, default=None)
@@ -30,7 +32,7 @@ class Setting(Base):
                                                 self.app_settings_value)
 
 class Ui(Base):
-    __tablename__ = 'rhodecode_ui'
+    __tablename__ = SETTINGS_PREFIX + 'ui'
     __table_args__ = {'useexisting':True}
     ui_id = Column("ui_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
     ui_section = Column("ui_section", String(length=None, convert_unicode=False, assert_unicode=None), nullable=True, unique=None, default=None)
