@@ -460,26 +460,22 @@ var toggleFollowingRepo = function(target,fallows_repo_id,token,user_id){
     if(user_id != undefined){
         args+="&amp;user_id="+user_id;
     }
-    YUC.asyncRequest('POST',TOGGLE_FOLLOW_URL,{
-        success:function(o){
+    $.post(TOGGLE_FOLLOW_URL, args, function(data){
             onSuccessFollow(target);
-        }
-    },args);
+        });
     return false;
 }
 
 var showRepoSize = function(target, repo_name, token){
     var args= 'auth_token='+token;
 
-    if(!YUD.hasClass(target, 'loaded')){
-        YUD.get(target).innerHTML = _TM['Loading ...'];
+    if(!$("#" + target).hasClass('loaded')){
+        $("#" + target).html(_TM['Loading ...']);
         var url = pyroutes.url('repo_size', {"repo_name":repo_name});
-        YUC.asyncRequest('POST',url,{
-            success:function(o){
-                YUD.get(target).innerHTML = JSON.parse(o.responseText);
-                YUD.addClass(target, 'loaded');
-            }
-        },args);
+        $.post(url, args, function(data) {
+            $("#" + target).html(data);
+            $("#" + target).addClass('loaded');
+        });
     }
     return false;
 }
@@ -666,7 +662,7 @@ var tableTr = function(cls, body){
 };
 
 var createInlineForm = function(parent_tr, f_path, line) {
-    var tmpl = YUD.get('comment-inline-form-template').innerHTML;
+    var tmpl = $('#comment-inline-form-template').html();
     tmpl = tmpl.format(f_path, line);
     var form = tableTr('comment-form-inline',tmpl)
 
@@ -693,16 +689,15 @@ var createInlineForm = function(parent_tr, f_path, line) {
  * block at the very bottom
  */
 var injectInlineForm = function(tr){
-    if(!YUD.hasClass(tr, 'line')){
+    if(!$(tr).hasClass('line')){
         return
     }
     var submit_url = AJAX_COMMENT_URL;
     var _td = YUD.getElementsByClassName('code',null,tr)[0];
-    if(YUD.hasClass(tr,'form-open') || YUD.hasClass(tr,'context') || YUD.hasClass(_td,'no-comment')){
+    if($(tr).hasClass('form-open') || $(tr).hasClass('context') || $(_td).hasClass('no-comment')){
         return
     }
-    YUD.addClass(tr,'form-open');
-    YUD.addClass(tr,'hl-comment');
+    $(tr).addClass('form-open hl-comment');
     var node = YUD.getElementsByClassName('full_f_path',null,tr.parentNode.parentNode.parentNode)[0];
     var f_path = YUD.getAttribute(node,'path');
     var lineno = getLineNo(tr);
@@ -712,7 +707,7 @@ var injectInlineForm = function(tr){
     while (1){
         var n = parent.nextElementSibling;
         // next element are comments !
-        if(YUD.hasClass(n,'inline-comments')){
+        if($(n).hasClass('inline-comments')){
             parent = n;
         }
         else{
@@ -855,7 +850,7 @@ var placeAddButton = function(target_tr){
     while (1){
         var n = last_node.nextElementSibling;
         // next element are comments !
-        if(YUD.hasClass(n,'inline-comments')){
+        if($(n).hasClass('inline-comments')){
             last_node = n;
             //also remove the comment button from previous
             var comment_add_buttons = YUD.getElementsByClassName('add-comment',null,last_node);
@@ -890,7 +885,7 @@ var placeInline = function(target_container,lineno,html){
     while (1){
         var n = parent.nextElementSibling;
         // next element are comments !
-        if(YUD.hasClass(n,'inline-comments')){
+        if($(n).hasClass('inline-comments')){
             parent = n;
         }
         else{
@@ -945,7 +940,7 @@ var renderInlineComments = function(file_comments){
 var fileBrowserListeners = function(current_url, node_list_url, url_base){
     var current_url_branch = +"?branch=__BRANCH__";
 
-    YUE.on('stay_at_branch','click',function(e){
+    $('#stay_at_branch').on('click',function(e){
         if(e.target.checked){
             var uri = current_url_branch;
             uri = uri.replace('__BRANCH__',e.target.value);
@@ -963,15 +958,15 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
     var nodes = null;
 
     F.initFilter = function(){
-        YUD.setStyle('node_filter_box_loading','display','');
-        YUD.setStyle('search_activate_id','display','none');
-        YUD.setStyle('add_node_id','display','none');
+        $('#node_filter_box_loading').css('display','');
+        $('#search_activate_id').css('display','none');
+        $('#add_node_id').css('display','none');
         YUC.initHeader('X-PARTIAL-XHR',true);
         YUC.asyncRequest('GET', node_list_url, {
             success:function(o){
                 nodes = JSON.parse(o.responseText).nodes;
-                YUD.setStyle('node_filter_box_loading','display','none');
-                YUD.setStyle('node_filter_box','display','');
+                $('#node_filter_box_loading').css('display','none');
+                $('#node_filter_box').css('display','');
                 n_filter.focus();
                 if(YUD.hasClass(n_filter,'init')){
                     n_filter.value = '';
@@ -1016,8 +1011,8 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
                 }
             }
             if(query != ""){
-                YUD.setStyle('tbody','display','none');
-                YUD.setStyle('tbody_filtered','display','');
+                $('#tbody').css('display','none');
+                $('#tbody_filtered').css('display','');
 
                 if (match.length==0){
                   match.push('<tr><td>{0}</td><td colspan="5"></td></tr>'.format(_TM['No matching files']));
@@ -1026,8 +1021,8 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
                 YUD.get('tbody_filtered').innerHTML = match.join("");
             }
             else{
-                YUD.setStyle('tbody','display','');
-                YUD.setStyle('tbody_filtered','display','none');
+                $('#tbody').css('display','');
+                $('#tbody_filtered').css('display','none');
             }
         }
     };
@@ -1059,15 +1054,15 @@ var initCodeMirror = function(textAreadId,resetUrl){
         });
 
     YUE.on('file_enable','click',function(){
-            YUD.setStyle('editor_container','display','');
-            YUD.setStyle('upload_file_container','display','none');
-            YUD.setStyle('filename_container','display','');
+            $('#editor_container').css('display','');
+            $('#upload_file_container').css('display','none');
+            $('#filename_container').css('display','');
         });
 
     YUE.on('upload_file_enable','click',function(){
-            YUD.setStyle('editor_container','display','none');
-            YUD.setStyle('upload_file_container','display','');
-            YUD.setStyle('filename_container','display','none');
+            $('#editor_container').css('display','none');
+            $('#upload_file_container').css('display','');
+            $('#filename_container').css('display','none');
         });
 
     return myCodeMirror
@@ -1134,13 +1129,13 @@ var getSelectionLink = function(e) {
             xy = YUD.getXY(till.id);
 
             YUD.addClass('linktt', 'hl-tip-box');
-            YUD.setStyle('linktt','top',xy[1]+offset+'px');
-            YUD.setStyle('linktt','left',xy[0]+'px');
-            YUD.setStyle('linktt','visibility','visible');
+            $('#linktt').css('top',xy[1]+offset+'px');
+            $('#linktt').css('left',xy[0]+'px');
+            $('#linktt').css('visibility','visible');
 
         }
         else{
-            YUD.setStyle('linktt','visibility','hidden');
+            $('#linktt').css('visibility','hidden');
         }
     }
 };
