@@ -41,4 +41,18 @@ release.
 
 
 
+jQuery
+------
+
+Kallithea incorporates the Javascript system called
+[jQuery](http://jquery.org/),
+[herein](rhodecode/public/js/jquery-1.10.2.min.js), and the Corresponding
+Source can be found in https://github.com/jquery/jquery at tag 1.10.2
+(mirrored at https://kallithea-scm.org/repos/mirror/jquery/files/1.10.2/ ).
+
+It is Copyright 2013 jQuery Foundation and other contributors http://jquery.com/ and is under an
+[MIT-permissive license](MIT-Permissive-License.txt).
+
+
+
 EOF
