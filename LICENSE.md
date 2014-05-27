@@ -55,4 +55,16 @@ It is Copyright 2013 jQuery Foundation and other contributors http://jquery.com/
 
 
 
+Mergely
+-------
+
+Kallithea incorporates some code from the Javascript system called
+[Mergely](http://http://www.mergely.com/).
+[Mergely's license](http://www.mergely.com/license.php), a
+[copy of which is included in this repository](LICENSE-MERGELY.html),
+is (GPL|LGPL|MPL).  Kallithea as GPLv3'd project chooses the GPL arm of that
+tri-license.
+
+
+
 EOF

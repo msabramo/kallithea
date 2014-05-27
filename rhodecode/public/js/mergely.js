@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2013 by Jamie Peabody, http://www.mergely.com
+ * All rights reserved.
+ * Version: 3.3.4 2013-11-02
+ *
+ * NOTE by bkuhn@sfconservancy.org for Kallithea:
+ * Mergely license appears at http://www.mergely.com/license.php and in LICENSE-MERGELY.html
+ */
 Mgly = {};
 
 Mgly.Timer = function(){
@@ -5,7 +13,7 @@ Mgly.Timer = function(){
 	self.start = function() { self.t0 = new Date().getTime(); }
 	self.stop = function() {
 		var t1 = new Date().getTime();
-		var d = t1 - self.t0;
+		var d = t1 - self.t0; 
 		self.t0 = t1;
 		return d;
 	}
@@ -54,18 +62,18 @@ Mgly.LCS = function(x, y) {
 jQuery.extend(Mgly.LCS.prototype, {
 	clear: function() { this.ready = 0; },
 	diff: function(added, removed) {
-		var d = new Mgly.diff(this.x, this.y, retain_lines = true, ignore_ws = false);
+		var d = new Mgly.diff(this.x, this.y, {ignorews: false});
 		var changes = Mgly.DiffParser(d.normal_form());
 		var li = 0, lj = 0;
 		for (var i = 0; i < changes.length; ++i) {
 			var change = changes[i];
 			if (change.op != 'a') {
 				// find the starting index of the line
-				li = d.lhs_lines.slice(0, change['lhs-line-from']).join(' ').length;
+				li = d.getLines('lhs').slice(0, change['lhs-line-from']).join(' ').length;
 				// get the index of the the span of the change
 				lj = change['lhs-line-to'] + 1;
 				// get the changed text
-				var lchange = d.lhs_lines.slice(change['lhs-line-from'], lj).join(' ');
+				var lchange = d.getLines('lhs').slice(change['lhs-line-from'], lj).join(' ');
 				if (change.op == 'd') lchange += ' ';// include the leading space
 				else if (li > 0 && change.op == 'c') li += 1; // ignore leading space if not first word
 				// output the changed index and text
@@ -73,11 +81,11 @@ jQuery.extend(Mgly.LCS.prototype, {
 			}
 			if (change.op != 'd') {
 				// find the starting index of the line
-				li = d.rhs_lines.slice(0, change['rhs-line-from']).join(' ').length;
+				li = d.getLines('lhs').slice(0, change['rhs-line-from']).join(' ').length;
 				// get the index of the the span of the change
 				lj = change['rhs-line-to'] + 1;
 				// get the changed text
-				var rchange = d.rhs_lines.slice(change['rhs-line-from'], lj).join(' ');
+				var rchange = d.getLines('lhs').slice(change['rhs-line-from'], lj).join(' ');
 				if (change.op == 'a') rchange += ' ';// include the leading space
 				else if (li > 0 && change.op == 'c') li += 1; // ignore leading space if not first word
 				// output the changed index and text
@@ -86,39 +94,83 @@ jQuery.extend(Mgly.LCS.prototype, {
 		}
 	}
 });
-Mgly.diff = function(lhs, rhs, retain_lines, ignore_ws) {
-	this.diff_codes = {};
-	this.max_code = 0;
-	var lhs_lines = lhs.split('\n');
-	var rhs_lines = rhs.split('\n');
-	if (lhs.length == 0) lhs_lines = [];
-	if (rhs.length == 0) rhs_lines = [];
 
-	var lhs_data = new Object();
-	lhs_data.data = this._diff_codes(lhs_lines, ignore_ws);
-	lhs_data.modified = {};
-	lhs_data.length = Mgly.sizeOf(lhs_data.data);
+Mgly.CodeifyText = function(settings) {
+    this._max_code = 0;
+    this._diff_codes = {};
+	this.ctxs = {};
+	this.options = {ignorews: false};
+	jQuery.extend(this, settings);
+	this.lhs = settings.lhs.split('\n');
+	this.rhs = settings.rhs.split('\n');
+}
 
-	var rhs_data = new Object();
-	rhs_data.data = this._diff_codes(rhs_lines, ignore_ws);
-	rhs_data.modified = {};
-	rhs_data.length = Mgly.sizeOf(rhs_data.data);
+jQuery.extend(Mgly.CodeifyText.prototype, {
+	getCodes: function(side) {
+		if (!this.ctxs.hasOwnProperty(side)) {
+			var ctx = this._diff_ctx(this[side]);
+			this.ctxs[side] = ctx;
+			ctx.codes.length = Object.keys(ctx.codes).length;
+		}
+		return this.ctxs[side].codes;
+	},
+	getLines: function(side) {
+		return this.ctxs[side].lines;
+	},
+	_diff_ctx: function(lines) {
+		var ctx = {i: 0, codes: {}, lines: lines};
+		this._codeify(lines, ctx);
+		return ctx;
+	},
+	_codeify: function(lines, ctx) {
+		var code = this._max_code;
+		for (var i = 0; i < lines.length; ++i) {
+			var line = lines[i];
+			if (this.options.ignorews) {
+				line = line.replace(/\s+/g, '');
+			}
+			var aCode = this._diff_codes[line];
+			if (aCode != undefined) {
+				ctx.codes[i] = aCode;
+			}
+			else {
+				this._max_code++;
+				this._diff_codes[line] = this._max_code;
+				ctx.codes[i] = this._max_code;
+			}
+		}
+	}
+});
 
-	var max = (lhs_data.length + rhs_data.length + 1);
+Mgly.diff = function(lhs, rhs, options) {
+	var opts = jQuery.extend({ignorews: false}, options);
+	this.codeify = new Mgly.CodeifyText({
+		lhs: lhs,
+		rhs: rhs,
+		options: opts
+	});
+	var lhs_ctx = {
+		codes: this.codeify.getCodes('lhs'),
+		modified: {}
+	};
+	var rhs_ctx = {
+		codes: this.codeify.getCodes('rhs'),
+		modified: {}
+	};
+	var max = (lhs_ctx.codes.length + rhs_ctx.codes.length + 1);
 	var vector_d = Array( 2 * max + 2 );
 	var vector_u = Array( 2 * max + 2 );
-
-	this._lcs(lhs_data, 0, lhs_data.length, rhs_data, 0, rhs_data.length, vector_u, vector_d);
-	this._optimize(lhs_data);
-	this._optimize(rhs_data);
-	this.items = this._create_diffs(lhs_data, rhs_data);
-	if (retain_lines) {
-		this.lhs_lines = lhs_lines;
-		this.rhs_lines = rhs_lines;
-	}
+	this._lcs(lhs_ctx, 0, lhs_ctx.codes.length, rhs_ctx, 0, rhs_ctx.codes.length, vector_u, vector_d);
+	this._optimize(lhs_ctx);
+	this._optimize(rhs_ctx);
+	this.items = this._create_diffs(lhs_ctx, rhs_ctx);
 };
+
 jQuery.extend(Mgly.diff.prototype, {
 	changes: function() { return this.items; },
+	getLines: function(side) {
+		return this.codeify.getLines(side);
+	},
 	normal_form: function() {
 		var nf = '';
 		for (var index = 0; index < this.items.length; ++index) {
@@ -128,11 +180,11 @@ jQuery.extend(Mgly.diff.prototype, {
 			var change = 'c';
 			if (item.lhs_deleted_count == 0 && item.rhs_inserted_count > 0) change = 'a';
 			else if (item.lhs_deleted_count > 0 && item.rhs_inserted_count == 0) change = 'd';
-
+			
 			if (item.lhs_deleted_count == 1) lhs_str = item.lhs_start + 1;
 			else if (item.lhs_deleted_count == 0) lhs_str = item.lhs_start;
 			else lhs_str = (item.lhs_start + 1) + ',' + (item.lhs_start + item.lhs_deleted_count);
-
+			
 			if (item.rhs_inserted_count == 1) rhs_str = item.rhs_start + 1;
 			else if (item.rhs_inserted_count == 0) rhs_str = item.rhs_start;
 			else rhs_str = (item.rhs_start + 1) + ',' + (item.rhs_start + item.rhs_inserted_count);
@@ -150,53 +202,33 @@ jQuery.extend(Mgly.diff.prototype, {
 		}
 		return nf;
 	},
-	_diff_codes: function(lines, ignore_ws) {
-		var code = this.max_code;
-		var codes = {};
-		for (var i = 0; i < lines.length; ++i) {
-			var line = lines[i];
-			if (ignore_ws) {
-				line = line.replace(/\s+/g, '');
-			}
-			var aCode = this.diff_codes[line];
-			if (aCode != undefined) {
-				codes[i] = aCode;
-			}
-			else {
-				this.max_code++;
-				this.diff_codes[line] = this.max_code;
-				codes[i] = this.max_code;
-			}
-		}
-		return codes;
-	},
-	_lcs: function(lhs, lhs_lower, lhs_upper, rhs, rhs_lower, rhs_upper, vector_u, vector_d) {
-		while ( (lhs_lower < lhs_upper) && (rhs_lower < rhs_upper) && (lhs.data[lhs_lower] == rhs.data[rhs_lower]) ) {
+	_lcs: function(lhs_ctx, lhs_lower, lhs_upper, rhs_ctx, rhs_lower, rhs_upper, vector_u, vector_d) {
+		while ( (lhs_lower < lhs_upper) && (rhs_lower < rhs_upper) && (lhs_ctx.codes[lhs_lower] == rhs_ctx.codes[rhs_lower]) ) {
 			++lhs_lower;
 			++rhs_lower;
 		}
-		while ( (lhs_lower < lhs_upper) && (rhs_lower < rhs_upper) && (lhs.data[lhs_upper - 1] == rhs.data[rhs_upper - 1]) ) {
+		while ( (lhs_lower < lhs_upper) && (rhs_lower < rhs_upper) && (lhs_ctx.codes[lhs_upper - 1] == rhs_ctx.codes[rhs_upper - 1]) ) {
 			--lhs_upper;
 			--rhs_upper;
 		}
 		if (lhs_lower == lhs_upper) {
 			while (rhs_lower < rhs_upper) {
-				rhs.modified[ rhs_lower++ ] = true;
+				rhs_ctx.modified[ rhs_lower++ ] = true;
 			}
 		}
 		else if (rhs_lower == rhs_upper) {
 			while (lhs_lower < lhs_upper) {
-				lhs.modified[ lhs_lower++ ] = true;
+				lhs_ctx.modified[ lhs_lower++ ] = true;
 			}
 		}
 		else {
-			var sms = this._sms(lhs, lhs_lower, lhs_upper, rhs, rhs_lower, rhs_upper, vector_u, vector_d);
-			this._lcs(lhs, lhs_lower, sms.x, rhs, rhs_lower, sms.y, vector_u, vector_d);
-			this._lcs(lhs, sms.x, lhs_upper, rhs, sms.y, rhs_upper, vector_u, vector_d);
+			var sms = this._sms(lhs_ctx, lhs_lower, lhs_upper, rhs_ctx, rhs_lower, rhs_upper, vector_u, vector_d);
+			this._lcs(lhs_ctx, lhs_lower, sms.x, rhs_ctx, rhs_lower, sms.y, vector_u, vector_d);
+			this._lcs(lhs_ctx, sms.x, lhs_upper, rhs_ctx, sms.y, rhs_upper, vector_u, vector_d);
 		}
 	},
-	_sms: function(lhs, lhs_lower, lhs_upper, rhs, rhs_lower, rhs_upper, vector_u, vector_d) {
-		var max = lhs.length + rhs.length + 1;
+	_sms: function(lhs_ctx, lhs_lower, lhs_upper, rhs_ctx, rhs_lower, rhs_upper, vector_u, vector_d) {
+		var max = lhs_ctx.codes.length + rhs_ctx.codes.length + 1;
 		var kdown = lhs_lower - rhs_lower;
 		var kup = lhs_upper - rhs_upper;
 		var delta = (lhs_upper - lhs_lower) - (rhs_upper - rhs_lower);
@@ -221,7 +253,7 @@ jQuery.extend(Mgly.diff.prototype, {
 				}
 				y = x - k;
 				// find the end of the furthest reaching forward D-path in diagonal k.
-				while ((x < lhs_upper) && (y < rhs_upper) && (lhs.data[x] == rhs.data[y])) {
+				while ((x < lhs_upper) && (y < rhs_upper) && (lhs_ctx.codes[x] == rhs_ctx.codes[y])) {
 					x++; y++;
 				}
 				vector_d[ offset_down + k ] = x;
@@ -246,7 +278,7 @@ jQuery.extend(Mgly.diff.prototype, {
 						x = vector_u[offset_up + k - 1]; // up
 				}
 				y = x - k;
-				while ((x > lhs_lower) && (y > rhs_lower) && (lhs.data[x - 1] == rhs.data[y - 1])) {
+				while ((x > lhs_lower) && (y > rhs_lower) && (lhs_ctx.codes[x - 1] == rhs_ctx.codes[y - 1])) {
 					// diagonal
 					x--;
 					y--;
@@ -264,33 +296,33 @@ jQuery.extend(Mgly.diff.prototype, {
 		}
 		throw "the algorithm should never come here.";
 	},
-	_optimize: function(data) {
+	_optimize: function(ctx) {
 		var start = 0, end = 0;
-		while (start < data.length) {
-			while ((start < data.length) && (data.modified[start] == undefined || data.modified[start] == false)) {
+		while (start < ctx.length) {
+			while ((start < ctx.length) && (ctx.modified[start] == undefined || ctx.modified[start] == false)) {
 				start++;
 			}
 			end = start;
-			while ((end < data.length) && (data.modified[end] == true)) {
+			while ((end < ctx.length) && (ctx.modified[end] == true)) {
 				end++;
 			}
-			if ((end < data.length) && (data.data[start] == data.data[end])) {
-				data.modified[start] = false;
-				data.modified[end] = true;
+			if ((end < ctx.length) && (ctx.ctx[start] == ctx.codes[end])) {
+				ctx.modified[start] = false;
+				ctx.modified[end] = true;
 			}
 			else {
 				start = end;
 			}
 		}
 	},
-	_create_diffs: function(lhs_data, rhs_data) {
+	_create_diffs: function(lhs_ctx, rhs_ctx) {
 		var items = [];
 		var lhs_start = 0, rhs_start = 0;
 		var lhs_line = 0, rhs_line = 0;
 
-		while (lhs_line < lhs_data.length || rhs_line < rhs_data.length) {
-			if ((lhs_line < lhs_data.length) && (!lhs_data.modified[lhs_line])
-				&& (rhs_line < rhs_data.length) && (!rhs_data.modified[rhs_line])) {
+		while (lhs_line < lhs_ctx.codes.length || rhs_line < rhs_ctx.codes.length) {
+			if ((lhs_line < lhs_ctx.codes.length) && (!lhs_ctx.modified[lhs_line])
+				&& (rhs_line < rhs_ctx.codes.length) && (!rhs_ctx.modified[rhs_line])) {
 				// equal lines
 				lhs_line++;
 				rhs_line++;
@@ -300,20 +332,20 @@ jQuery.extend(Mgly.diff.prototype, {
 				lhs_start = lhs_line;
 				rhs_start = rhs_line;
 
-				while (lhs_line < lhs_data.length && (rhs_line >= rhs_data.length || lhs_data.modified[lhs_line]))
+				while (lhs_line < lhs_ctx.codes.length && (rhs_line >= rhs_ctx.codes.length || lhs_ctx.modified[lhs_line]))
 					lhs_line++;
 
-				while (rhs_line < rhs_data.length && (lhs_line >= lhs_data.length || rhs_data.modified[rhs_line]))
+				while (rhs_line < rhs_ctx.codes.length && (lhs_line >= lhs_ctx.codes.length || rhs_ctx.modified[rhs_line]))
 					rhs_line++;
 
 				if ((lhs_start < lhs_line) || (rhs_start < rhs_line)) {
 					// store a new difference-item
-					var aItem = new Object();
-					aItem.lhs_start = lhs_start;
-					aItem.rhs_start = rhs_start;
-					aItem.lhs_deleted_count = lhs_line - lhs_start;
-					aItem.rhs_inserted_count = rhs_line - rhs_start;
-					items.push(aItem);
+					items.push({
+						lhs_start: lhs_start,
+						rhs_start: rhs_start,
+						lhs_deleted_count: lhs_line - lhs_start,
+						rhs_inserted_count: rhs_line - rhs_start
+					});
 				}
 			}
 		}
@@ -322,12 +354,6 @@ jQuery.extend(Mgly.diff.prototype, {
 });
 
 Mgly.mergely = function(el, options) {
-	CodeMirror.defineExtension('centerOnCursor', function() {
-		var coords = this.cursorCoords(null, 'local');
-		this.scrollTo(null,
-			(coords.y + coords.yBot) / 2 - (this.getScrollerElement().clientHeight / 2));
-	});
-
 	if (el) {
 		this.init(el, options);
 	}
@@ -336,6 +362,25 @@ Mgly.mergely = function(el, options) {
 jQuery.extend(Mgly.mergely.prototype, {
 	name: 'mergely',
 	//http://jupiterjs.com/news/writing-the-perfect-jquery-plugin
+	init: function(el, options) {
+		this.diffView = new Mgly.CodeMirrorDiffView(el, options);
+		this.bind(el);
+	},
+	bind: function(el) {
+		this.diffView.bind(el);
+	}
+});
+
+Mgly.CodeMirrorDiffView = function(el, options) {
+	CodeMirror.defineExtension('centerOnCursor', function() {
+		var coords = this.cursorCoords(null, 'local');
+		this.scrollTo(null, 
+			(coords.y + coords.yBot) / 2 - (this.getScrollerElement().clientHeight / 2));
+	});
+	this.init(el, options);
+};
+
+jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 	init: function(el, options) {
 		this.settings = {
 			autoupdate: true,
@@ -352,14 +397,14 @@ jQuery.extend(Mgly.mergely.prototype, {
 			change_timeout: 150,
 			fgcolor: {a:'#4ba3fa',c:'#a3a3a3',d:'#ff7f7f'},
 			bgcolor: '#eee',
-			vpcolor: 'rgba(0, 0, 200, 0.2)',
+			vpcolor: 'rgba(0, 0, 200, 0.5)',
 			lhs: function(setValue) { },
 			rhs: function(setValue) { },
 			loaded: function() { },
 			//_auto_height: function(h) { return h - 20; },
 			_auto_width: function(w) { return w; },
 			resize: function(init) {
-				var scrollbar = init ? -15 : 0;
+				var scrollbar = init ? 16 : 0;
 				var w = jQuery(el).parent().width() + scrollbar;
 				if (this.width == 'auto') {
 					w = this._auto_width(w);
@@ -403,65 +448,20 @@ jQuery.extend(Mgly.mergely.prototype, {
 		}
 		this.lhs_cmsettings = {};
 		this.rhs_cmsettings = {};
-
+		
 		// save this element for faster queries
 		this.element = jQuery(el);
-
+		
 		// save options if there are any
 		if (options && options.cmsettings) jQuery.extend(this.lhs_cmsettings, cmsettings, options.cmsettings, options.lhs_cmsettings);
 		if (options && options.cmsettings) jQuery.extend(this.rhs_cmsettings, cmsettings, options.cmsettings, options.rhs_cmsettings);
 		if (options) jQuery.extend(this.settings, options);
-
+		
 		// bind if the element is destroyed
 		this.element.bind('destroyed', jQuery.proxy(this.teardown, this));
 
-		// save this instance in jQuery data
-		jQuery.data(el, this.name, this);
-
-		this._setup(el);
-	},
-	// bind events to this instance's methods
-	bind: function() {
-		var rhstx = jQuery('#' + this.id + '-rhs').get(0);
-		if (!rhstx) {
-			console.error('rhs textarea not defined - Mergely not initialized properly');
-			return;
-		}
-		var lhstx = jQuery('#' + this.id + '-lhs').get(0);
-		if (!rhstx) {
-			console.error('lhs textarea not defined - Mergely not initialized properly');
-			return;
-		}
-		var self = this;
-		this.editor = [];
-
-		this.editor[this.id + '-lhs'] = CodeMirror.fromTextArea(lhstx, this.lhs_cmsettings);
-		this.editor[this.id + '-rhs'] = CodeMirror.fromTextArea(rhstx, this.rhs_cmsettings);
-		this.editor[this.id + '-lhs'].on('change', function(){ if (self.settings.autoupdate) self._changing(self.id + '-lhs', self.id + '-rhs'); });
-		this.editor[this.id + '-lhs'].on('scroll', function(){ self._scrolling(self.id + '-lhs'); });
-		this.editor[this.id + '-rhs'].on('change', function(){ if (self.settings.autoupdate) self._changing(self.id + '-lhs', self.id + '-rhs'); });
-		this.editor[this.id + '-rhs'].on('scroll', function(){ self._scrolling(self.id + '-rhs'); });
-
-		// resize
-		if (this.settings.autoresize) {
-			var sz_timeout1 = null;
-			var sz = function(init) {
-				//self.em_height = null; //recalculate
-				if (self.settings.resize) self.settings.resize(init);
-				self.editor[self.id + '-lhs'].refresh();
-				self.editor[self.id + '-rhs'].refresh();
-				if (self.settings.autoupdate) {
-					self._changing(self.id + '-lhs', self.id + '-rhs');
-				}
-			}
-			jQuery(window).resize(
-				function () {
-					if (sz_timeout1) clearTimeout(sz_timeout1);
-					sz_timeout1 = setTimeout(sz, self.settings.resize_timeout);
-				}
-			);
-			sz(true);
-		}
+		// save this instance in jQuery data, binding this view to the node
+		jQuery.data(el, 'mergely', this);
 	},
 	unbind: function() {
 		if (this.changed_timeout != null) clearTimeout(this.changed_timeout);
@@ -502,11 +502,11 @@ jQuery.extend(Mgly.mergely.prototype, {
 	options: function(opts) {
 		if (opts) {
 			jQuery.extend(this.settings, opts);
-			if (opts.autoresize) this.resize();
-			if (opts.autoupdate) this.update();
-			if (opts.hasOwnProperty('rhs_margin')) {
+			if (this.settings.autoresize) this.resize();
+			if (this.settings.autoupdate) this.update();
+			if (this.settings.hasOwnProperty('rhs_margin')) {
 				// dynamically swap the margin
-				if (opts.rhs_margin == 'left') {
+				if (this.settings.rhs_margin == 'left') {
 					this.element.find('.mergely-margin:last-child').insertAfter(
 						this.element.find('.mergely-canvas'));
 				}
@@ -515,9 +515,9 @@ jQuery.extend(Mgly.mergely.prototype, {
 					target.appendTo(target.parent());
 				}
 			}
-			if (opts.hasOwnProperty('sidebar')) {
+			if (this.settings.hasOwnProperty('sidebar')) {
 				// dynamically enable sidebars
-				if (opts.sidebar) {
+				if (this.settings.sidebar) {
 					jQuery(this.element).find('.mergely-margin').css({display: 'block'});
 				}
 				else {
@@ -570,7 +570,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			this.prev_query[side] = query;
 		}
 		var cursor = this.cursor[this.id];
-
+		
 		if (cursor[direction]()) {
 			editor.setSelection(cursor.from(), cursor.to());
 		}
@@ -581,14 +581,15 @@ jQuery.extend(Mgly.mergely.prototype, {
 	resize: function() {
 		this.settings.resize();
 		this._changing(this.id + '-lhs', this.id + '-rhs');
+		this._set_top_offset(this.id + '-lhs');
 	},
 	diff: function() {
 		var lhs = this.editor[this.id + '-lhs'].getValue();
 		var rhs = this.editor[this.id + '-rhs'].getValue();
-		var d = new Mgly.diff(lhs, rhs, retain_lines = true, ignore_ws = this.settings.ignorews);
+		var d = new Mgly.diff(lhs, rhs, this.settings);
 		return d.normal_form();
 	},
-	_setup: function(el) {
+	bind: function(el) {
 		jQuery(this.element).hide();//hide
 		this.id = jQuery(el).attr('id');
 		var height = this.settings.editor_height;
@@ -616,7 +617,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 		}
 		this.merge_rhs_button = jQuery(merge_rhs_button);
 		this.merge_lhs_button = jQuery(merge_lhs_button);
-
+		
 		// create the textarea and canvas elements
 		jQuery(this.element).append(jQuery('<div class="mergely-margin" style="height: ' + height + '"><canvas id="' + this.id + '-lhs-margin" width="8px" height="' + height + '"></canvas></div>'));
 		jQuery(this.element).append(jQuery('<div style="position:relative;width:' + width + '; height:' + height + '" id="' + this.id + '-editor-lhs" class="mergely-column"><textarea style="" id="' + this.id + '-lhs"></textarea></div>'));
@@ -640,7 +641,48 @@ jQuery.extend(Mgly.mergely.prototype, {
 			cmstyle += this.id + ' .CodeMirror-scroll { height: 100%; overflow: auto; }';
 		}
 		jQuery('<style type="text/css">' + cmstyle + '</style>').appendTo('head');
-		this.bind();
+
+		//bind
+		var rhstx = jQuery('#' + this.id + '-rhs').get(0);
+		if (!rhstx) {
+			console.error('rhs textarea not defined - Mergely not initialized properly');
+			return;
+		}
+		var lhstx = jQuery('#' + this.id + '-lhs').get(0);
+		if (!rhstx) {
+			console.error('lhs textarea not defined - Mergely not initialized properly');
+			return;
+		}
+		var self = this;
+		this.editor = [];
+		this.editor[this.id + '-lhs'] = CodeMirror.fromTextArea(lhstx, this.lhs_cmsettings);
+		this.editor[this.id + '-rhs'] = CodeMirror.fromTextArea(rhstx, this.rhs_cmsettings);
+		this.editor[this.id + '-lhs'].on('change', function(){ if (self.settings.autoupdate) self._changing(self.id + '-lhs', self.id + '-rhs'); });
+		this.editor[this.id + '-lhs'].on('scroll', function(){ self._scrolling(self.id + '-lhs'); });
+		this.editor[this.id + '-rhs'].on('change', function(){ if (self.settings.autoupdate) self._changing(self.id + '-lhs', self.id + '-rhs'); });
+		this.editor[this.id + '-rhs'].on('scroll', function(){ self._scrolling(self.id + '-rhs'); });
+		// resize
+		if (this.settings.autoresize) {
+			var sz_timeout1 = null;
+			var sz = function(init) {
+				//self.em_height = null; //recalculate
+				if (self.settings.resize) self.settings.resize(init);
+				self.editor[self.id + '-lhs'].refresh();
+				self.editor[self.id + '-rhs'].refresh();
+				if (self.settings.autoupdate) {
+					self._changing(self.id + '-lhs', self.id + '-rhs');
+				}
+			}
+			jQuery(window).resize(
+				function () {
+					if (sz_timeout1) clearTimeout(sz_timeout1);
+					sz_timeout1 = setTimeout(sz, self.settings.resize_timeout);
+				}
+			);
+			sz(true);
+		}
+		//bind
+		
 		if (this.settings.lhs) {
 			var setv = this.editor[this.id + '-lhs'].getDoc().setValue;
 			this.settings.lhs(setv.bind(this.editor[this.id + '-lhs'].getDoc()));
@@ -650,7 +692,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			this.settings.rhs(setv.bind(this.editor[this.id + '-rhs'].getDoc()));
 		}
 	},
-
+	
 	_scrolling: function(editor_name) {
 		if (this._skipscroll[editor_name] === true) {
 			// scrolling one side causes the other to event - ignore it
@@ -665,23 +707,23 @@ jQuery.extend(Mgly.mergely.prototype, {
 		var midline = this.editor[editor_name].coordsChar({left:0, top:this.midway});
 		var top_to = scroller.scrollTop();
 		var left_to = scroller.scrollLeft();
-
+		
 		this.trace('scroll', 'side', editor_name);
 		this.trace('scroll', 'midway', this.midway);
 		this.trace('scroll', 'midline', midline);
 		this.trace('scroll', 'top_to', top_to);
 		this.trace('scroll', 'left_to', left_to);
-
+		
 		var editor_name1 = this.id + '-lhs';
 		var editor_name2 = this.id + '-rhs';
-
+		
 		for (var name in this.editor) {
 			if (!this.editor.hasOwnProperty(name)) continue;
 			if (editor_name == name) continue; //same editor
 			var this_side = editor_name.replace(this.id + '-', '');
 			var other_side = name.replace(this.id + '-', '');
 			var top_adjust = 0;
-
+			
 			// find the last change that is less than or within the midway point
 			// do not move the rhs until the lhs end point is >= the rhs end point.
 			var last_change = null;
@@ -699,14 +741,14 @@ jQuery.extend(Mgly.mergely.prototype, {
 							force_scroll = true;
 						}
 						else {
-							top_adjust +=
-								(change[this_side+'-y-end'] - change[this_side+'-y-start']) -
+							top_adjust += 
+								(change[this_side+'-y-end'] - change[this_side+'-y-start']) - 
 								(change[other_side+'-y-end'] - change[other_side+'-y-start']);
 						}
 					}
 				}
 			}
-
+			
 			var vp = this.editor[name].getViewport();
 			var scroll = true;
 			if (last_change) {
@@ -724,7 +766,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 				scroller.scrollTop(top_to - top_adjust).scrollLeft(left_to);
 			}
 			else this.trace('scroll', 'not scrolling other side');
-
+			
 			if (this.settings.autoupdate) {
 				var timer = new Mgly.Timer();
 				this._calculate_offsets(editor_name1, editor_name2, this.changes);
@@ -777,12 +819,12 @@ jQuery.extend(Mgly.mergely.prototype, {
 			});
 		}
 		self.chfns[name] = [];
-
+		
 		var ex = this._draw_info(this.id + '-lhs', this.id + '-rhs');
 		var ctx_lhs = ex.clhs.get(0).getContext('2d');
 		var ctx_rhs = ex.crhs.get(0).getContext('2d');
 		var ctx = ex.dcanvas.getContext('2d');
-
+		
 		ctx_lhs.beginPath();
 		ctx_lhs.fillStyle = this.settings.bgcolor;
 		ctx_lhs.strokeStyle = '#888';
@@ -794,7 +836,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 		ctx_rhs.strokeStyle = '#888';
 		ctx_rhs.fillRect(0, 0, 6.5, ex.visible_page_height);
 		ctx_rhs.strokeRect(0, 0, 6.5, ex.visible_page_height);
-
+		
 		ctx.beginPath();
 		ctx.fillStyle = '#fff';
 		ctx.fillRect(0, 0, this.draw_mid_width, ex.visible_page_height);
@@ -803,7 +845,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 		var lhs = this.editor[editor_name1].getValue();
 		var rhs = this.editor[editor_name2].getValue();
 		var timer = new Mgly.Timer();
-		var d = new Mgly.diff(lhs, rhs, false, this.settings.ignorews);
+		var d = new Mgly.diff(lhs, rhs, this.settings);
 		this.trace('change', 'diff time', timer.stop());
 		this.changes = Mgly.DiffParser(d.normal_form());
 		this.trace('change', 'parse time', timer.stop());
@@ -861,13 +903,27 @@ jQuery.extend(Mgly.mergely.prototype, {
 		}
 		return true;
 	},
+	_set_top_offset: function (editor_name1) {
+		// save the current scroll position of the editor
+		var saveY = this.editor[editor_name1].getScrollInfo().top;
+		// temporarily scroll to top
+		this.editor[editor_name1].scrollTo(null, 0);
+		
+		// this is the distance from the top of the screen to the top of the 
+		// content of the first codemirror editor
+		var topnode = jQuery('#' + this.id + ' .CodeMirror-measure').first();
+		var top_offset = topnode.offset().top - 4;
+		if(!top_offset) return false;
+		
+		// restore editor's scroll position
+		this.editor[editor_name1].scrollTo(null, saveY);
+		
+		this.draw_top_offset = 0.5 - top_offset;
+		return true;
+	},
 	_calculate_offsets: function (editor_name1, editor_name2, changes) {
 		if (this.em_height == null) {
-			// this is the distance from the top of the screen
-			var topnode = jQuery('#' + this.id + ' .CodeMirror-measure').first();
-			var top_offset = topnode.offset().top - 4;
-			if (!top_offset) return;//try again
-			this.draw_top_offset = 0.5 - top_offset;
+			if(!this._set_top_offset(editor_name1)) return; //try again
 			this.em_height = this.editor[editor_name1].defaultTextHeight();
 			if (!this.em_height) {
 				console.warn('Failed to calculate offsets, using 18 by default');
@@ -886,15 +942,15 @@ jQuery.extend(Mgly.mergely.prototype, {
 			this.draw_rhs_max = this.draw_mid_width - 0.5; //24.5;
 			this.draw_lhs_width = 5;
 			this.draw_rhs_width = 5;
-			this.trace('calc', 'change offsets calculated', {top_offset: top_offset, lhs_min: this.draw_lhs_min, rhs_max: this.draw_rhs_max, lhs_width: this.draw_lhs_width, rhs_width: this.draw_rhs_width});
+			this.trace('calc', 'change offsets calculated', {top_offset: this.draw_top_offset, lhs_min: this.draw_lhs_min, rhs_max: this.draw_rhs_max, lhs_width: this.draw_lhs_width, rhs_width: this.draw_rhs_width});
 		}
 		var lhschc = this.editor[editor_name1].charCoords({line: 0});
 		var rhschc = this.editor[editor_name2].charCoords({line: 0});
 		var vp = this._get_viewport(editor_name1, editor_name2);
-
+		
 		for (var i = 0; i < changes.length; ++i) {
 			var change = changes[i];
-
+			
 			if (!this.settings.sidebar && !this._is_change_in_view(vp, change)) {
 				// if the change is outside the viewport, skip
 				delete change['lhs-y-start'];
@@ -907,7 +963,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			var llt = change['lhs-line-to'] >= 0 ? change['lhs-line-to'] : 0;
 			var rlf = change['rhs-line-from'] >= 0 ? change['rhs-line-from'] : 0;
 			var rlt = change['rhs-line-to'] >= 0 ? change['rhs-line-to'] : 0;
-
+			
 			var ls, le, rs, re;
 			if (this.editor[editor_name1].getOption('lineWrapping') || this.editor[editor_name1].getOption('lineWrapping')) {
 				// If using line-wrapping, we must get the height of the line
@@ -918,7 +974,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 				var tle = this.editor[editor_name1].cursorCoords({line: llt, ch: 0}, 'page');
 				var lhseh = this.editor[editor_name1].getLineHandle(llt);
 				le = { top: tle.top, bottom: tle.top + lhseh.height };
-
+				
 				var tls = this.editor[editor_name2].cursorCoords({line: rlf, ch: 0}, 'page');
 				var rhssh = this.editor[editor_name2].getLineHandle(rlf);
 				rs = { top: tls.top, bottom: tls.top + rhssh.height };
@@ -929,24 +985,24 @@ jQuery.extend(Mgly.mergely.prototype, {
 			}
 			else {
 				// If not using line-wrapping, we can calculate the line position
-				ls = {
-					top: lhschc.top + llf * this.em_height,
+				ls = { 
+					top: lhschc.top + llf * this.em_height, 
 					bottom: lhschc.bottom + llf * this.em_height + 2
 				};
 				le = {
-					top: lhschc.top + llt * this.em_height,
+					top: lhschc.top + llt * this.em_height, 
 					bottom: lhschc.bottom + llt * this.em_height + 2
 				};
 				rs = {
-					top: rhschc.top + rlf * this.em_height,
+					top: rhschc.top + rlf * this.em_height, 
 					bottom: rhschc.bottom + rlf * this.em_height + 2
 				};
 				re = {
-					top: rhschc.top + rlt * this.em_height,
+					top: rhschc.top + rlt * this.em_height, 
 					bottom: rhschc.bottom + rlt * this.em_height + 2
 				};
 			}
-
+			
 			if (change['op'] == 'a') {
 				// adds (right), normally start from the end of the lhs,
 				// except for the case when the start of the rhs is 0
@@ -985,7 +1041,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 	},
 	_markup_changes: function (editor_name1, editor_name2, changes) {
 		jQuery('.merge-button').remove(); // clear
-
+		
 		var self = this;
 		var led = this.editor[editor_name1];
 		var red = this.editor[editor_name2];
@@ -998,11 +1054,11 @@ jQuery.extend(Mgly.mergely.prototype, {
 				var llt = change['lhs-line-to'] >= 0 ? change['lhs-line-to'] : 0;
 				var rlf = change['rhs-line-from'] >= 0 ? change['rhs-line-from'] : 0;
 				var rlt = change['rhs-line-to'] >= 0 ? change['rhs-line-to'] : 0;
-
+				
 				var clazz = ['mergely', 'lhs', change['op'], 'cid-' + i];
 				led.addLineClass(llf, 'background', 'start');
 				led.addLineClass(llt, 'background', 'end');
-
+				
 				if (llf == 0 && llt == 0 && rlf == 0) {
 					led.addLineClass(llf, 'background', clazz.join(' '));
 					led.addLineClass(llf, 'background', 'first');
@@ -1014,7 +1070,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 						led.addLineClass(j, 'background', clazz.join(' '));
 					}
 				}
-
+				
 				if (!red.getOption('readOnly')) {
 					// add widgets to lhs, if rhs is not read only
 					var rhs_button = self.merge_rhs_button.clone();
@@ -1030,7 +1086,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 		});
 
 		var vp = this._get_viewport(editor_name1, editor_name2);
-
+		
 		this.trace('change', 'markup lhs-editor time', timer.stop());
 		red.operation(function() {
 			for (var i = 0; i < changes.length; ++i) {
@@ -1039,16 +1095,16 @@ jQuery.extend(Mgly.mergely.prototype, {
 				var llt = change['lhs-line-to'] >= 0 ? change['lhs-line-to'] : 0;
 				var rlf = change['rhs-line-from'] >= 0 ? change['rhs-line-from'] : 0;
 				var rlt = change['rhs-line-to'] >= 0 ? change['rhs-line-to'] : 0;
-
+				
 				if (!self._is_change_in_view(vp, change)) {
 					// if the change is outside the viewport, skip
 					continue;
 				}
-
+				
 				var clazz = ['mergely', 'rhs', change['op'], 'cid-' + i];
 				red.addLineClass(rlf, 'background', 'start');
 				red.addLineClass(rlt, 'background', 'end');
-
+				
 				if (rlf == 0 && rlt == 0 && llf == 0) {
 					red.addLineClass(rlf, 'background', clazz.join(' '));
 					red.addLineClass(rlf, 'background', 'first');
@@ -1075,7 +1131,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			}
 		});
 		this.trace('change', 'markup rhs-editor time', timer.stop());
-
+		
 		// mark text deleted, LCS changes
 		var marktext = [];
 		for (var i = 0; this.settings.lcs && i < changes.length; ++i) {
@@ -1084,7 +1140,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			var llt = change['lhs-line-to'] >= 0 ? change['lhs-line-to'] : 0;
 			var rlf = change['rhs-line-from'] >= 0 ? change['rhs-line-from'] : 0;
 			var rlt = change['rhs-line-to'] >= 0 ? change['rhs-line-to'] : 0;
-
+			
 			if (!this._is_change_in_view(vp, change)) {
 				// if the change is outside the viewport, skip
 				continue;
@@ -1100,7 +1156,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			}
 			else if (change['op'] == 'c') {
 				// apply LCS changes to each line
-				for (var j = llf, k = rlf, p = 0;
+				for (var j = llf, k = rlf, p = 0; 
 					 ((j >= 0) && (j <= llt)) || ((k >= 0) && (k <= rlt));
 					 ++j, ++k) {
 					if (k + p > rlt) {
@@ -1121,7 +1177,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 					var lhs_stop = { line: -1, ch: -1 };
 					var rhs_start = { line: -1, ch: -1 };
 					var rhs_stop = { line: -1, ch: -1 };
-
+					
 					var lcs = new Mgly.LCS(lhs_line, rhs_line);
 					lcs.diff(
 						function (from, to) {//added
@@ -1135,7 +1191,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			}
 		}
 		this.trace('change', 'LCS marktext time', timer.stop());
-
+		
 		// mark changes outside closure
 		led.operation(function() {
 			// apply lhs markup
@@ -1154,7 +1210,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 			}
 		});
 		this.trace('change', 'LCS markup time', timer.stop());
-
+		
 		// merge buttons
 		var ed = {lhs:led, rhs:red};
 		jQuery('.merge-button').on('click', function(ev){
@@ -1180,11 +1236,11 @@ jQuery.extend(Mgly.mergely.prototype, {
 			var change = self.changes[cid];
 
 			var line = {lhs: ed['lhs'].lineInfo(llt), rhs: ed['rhs'].lineInfo(rlt)};
-
+	
 			var text = ed[side].getRange(
 				CodeMirror.Pos(change[side + '-line-from'], 0),
 				CodeMirror.Pos(change[side + '-line-to'] + 1, 0));
-
+			
 			if (change['op'] == 'c') {
 				ed[oside].replaceRange(text,
 					CodeMirror.Pos(change[oside + '-line-from'], 0),
@@ -1260,14 +1316,14 @@ jQuery.extend(Mgly.mergely.prototype, {
 		this.trace('draw', 'visible_page_ratio', ex.visible_page_ratio);
 		this.trace('draw', 'lhs-scroller-top', ex.lhs_scroller.scrollTop());
 		this.trace('draw', 'rhs-scroller-top', ex.rhs_scroller.scrollTop());
-
+		
 		jQuery.each(jQuery.find('#' + this.id + ' canvas'), function () {
 			jQuery(this).get(0).height = ex.visible_page_height;
 		});
-
+		
 		ex.clhs.unbind('click');
 		ex.crhs.unbind('click');
-
+		
 		ctx_lhs.beginPath();
 		ctx_lhs.fillStyle = this.settings.bgcolor;
 		ctx_lhs.strokeStyle = '#888';
@@ -1295,39 +1351,39 @@ jQuery.extend(Mgly.mergely.prototype, {
 			ctx_lhs.beginPath();
 			ctx_lhs.fillStyle = this.settings.fgcolor[change['op']];
 			ctx_lhs.strokeStyle = '#000';
-			ctx_lhs.lineWidth = 1.0;
+			ctx_lhs.lineWidth = 0.5;
 			ctx_lhs.fillRect(1.5, lhs_y_start, 4.5, Math.max(lhs_y_end - lhs_y_start, 5));
 			ctx_lhs.strokeRect(1.5, lhs_y_start, 4.5, Math.max(lhs_y_end - lhs_y_start, 5));
 
 			ctx_rhs.beginPath();
 			ctx_rhs.fillStyle = this.settings.fgcolor[change['op']];
 			ctx_rhs.strokeStyle = '#000';
-			ctx_rhs.lineWidth = 1.0;
+			ctx_rhs.lineWidth = 0.5;
 			ctx_rhs.fillRect(1.5, rhs_y_start, 4.5, Math.max(rhs_y_end - rhs_y_start, 5));
 			ctx_rhs.strokeRect(1.5, rhs_y_start, 4.5, Math.max(rhs_y_end - rhs_y_start, 5));
-
+			
 			if (!this._is_change_in_view(vp, change)) {
 				continue;
 			}
-
+			
 			lhs_y_start = change['lhs-y-start'];
 			lhs_y_end = change['lhs-y-end'];
 			rhs_y_start = change['rhs-y-start'];
 			rhs_y_end = change['rhs-y-end'];
-
+			
 			var radius = 3;
-
+			
 			// draw left box
 			ctx.beginPath();
 			ctx.strokeStyle = this.settings.fgcolor[change['op']];
 			ctx.lineWidth = 1;
-
+			
 			var rectWidth = this.draw_lhs_width;
 			var rectHeight = lhs_y_end - lhs_y_start - 1;
 			var rectX = this.draw_lhs_min;
 			var rectY = lhs_y_start;
 			// top and top top-right corner
-
+			
 			// draw left box
 			ctx.moveTo(rectX, rectY);
 			if (navigator.appName == 'Microsoft Internet Explorer') {
@@ -1348,7 +1404,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 				ctx.lineTo(rectX, rectY + rectHeight);
 			}
 			ctx.stroke();
-
+			
 			rectWidth = this.draw_rhs_width;
 			rectHeight = rhs_y_end - rhs_y_start - 1;
 			rectX = this.draw_rhs_max;
@@ -1372,7 +1428,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 				ctx.lineTo(rectX, rectY + rectHeight);
 			}
 			ctx.stroke();
-
+			
 			// connect boxes
 			var cx = this.draw_lhs_min + this.draw_lhs_width;
 			var cy = lhs_y_start + (lhs_y_end + 1 - lhs_y_start) / 2.0;
@@ -1395,7 +1451,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 		// visible window feedback
 		ctx_lhs.fillStyle = this.settings.vpcolor;
 		ctx_rhs.fillStyle = this.settings.vpcolor;
-
+		
 		var lto = ex.clhs.height() * ex.visible_page_ratio;
 		var lfrom = (ex.lhs_scroller.scrollTop() / ex.gutter_height) * ex.clhs.height();
 		var rto = ex.crhs.height() * ex.visible_page_ratio;
@@ -1406,10 +1462,10 @@ jQuery.extend(Mgly.mergely.prototype, {
 		this.trace('draw', 'visible_page_ratio', ex.visible_page_ratio);
 		this.trace('draw', 'lhs from', lfrom, 'lhs to', lto);
 		this.trace('draw', 'rhs from', rfrom, 'rhs to', rto);
-
+		
 		ctx_lhs.fillRect(1.5, lfrom, 4.5, lto);
 		ctx_rhs.fillRect(1.5, rfrom, 4.5, rto);
-
+		
 		ex.clhs.click(function (ev) {
 			var y = ev.pageY - ex.lhs_xyoffset.top - (lto / 2);
 			var sto = Math.max(0, (y / mcanvas_lhs.height) * ex.lhs_scroller.get(0).scrollHeight);
@@ -1417,7 +1473,7 @@ jQuery.extend(Mgly.mergely.prototype, {
 		});
 		ex.crhs.click(function (ev) {
 			var y = ev.pageY - ex.rhs_xyoffset.top - (rto / 2);
-			var sto = Math.max(0, (y / mcanvas_rhs.height) * ex.rhs_scroller.get(0).scrollHeight);
+			var sto = Math.max(0, (y / mcanvas_rhs.height) * ex.rhs_scroller.get(0).scrollHeight);			
 			ex.rhs_scroller.scrollTop(sto);
 		});
 	},
@@ -1425,14 +1481,14 @@ jQuery.extend(Mgly.mergely.prototype, {
 		if(this.settings._debug.indexOf(name) >= 0) {
 			arguments[0] = name+':';
 			console.log([].slice.apply(arguments));
-		}
+		} 
 	}
 });
 
 jQuery.pluginMaker = function(plugin) {
 	// add the plugin function as a jQuery plugin
 	jQuery.fn[plugin.prototype.name] = function(options) {
-		// get the arguments
+		// get the arguments 
 		var args = jQuery.makeArray(arguments),
 		after = args.slice(1);
 		var rc = undefined;
