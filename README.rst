@@ -149,6 +149,50 @@ You may also build the documentation for yourself - go into ``docs/`` and run::
 have sphinx_ installed you can install it via the command:
 ``easy_install sphinx``)
 
+
+Converting from RhodeCode
+-------------------------
+
+Currently, you have two options for working with an existing RhodeCode database:
+ - keep the database unconverted (intended for testing and evaluation)
+ - convert the database in a one-time step
+
+Maintaining Interoperability
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Interoperability with RhodeCode 2.2.5 installations is provided so you don't
+have to immediately commit to switching to Kallithea. This option will most
+likely go away once the two projects have diverged significantly.
+
+To run Kallithea on a Rhodecode database, run::
+
+   echo "BRAND = 'rhodecode'" > kallithea/brand.py
+
+This location will depend on where you installed Kallithea. If you installed via::
+
+   python setup.py install
+
+then you will find this location at
+``$VIRTUAL_ENV/lib/python2.7/site-packages/Kallithea-2.2.5-py2.7.egg/kallithea``
+
+One-time Conversion
+~~~~~~~~~~~~~~~~~~~
+
+Alternatively, if you would like to convert the database for good, you can use
+a helper script provided by Kallithea. This script will operate directly on the
+database, using the database string you can find in your ``production.ini`` (or
+``development.ini``) file. For example, if using SQLite::
+
+   cd /path/to/kallithea
+   cp /path/to/rhodecode/rhodecode.db kallithea.db
+   pip install sqlalchemy-migrate
+   python kallithea/bin/rebranddb.py sqlite:///kallithea.db
+
+.. WARNING::
+
+   If you used the other method for interoperability, overwrite brand.py with
+   an empty file (or watch out for stray brand.pyc after removing brand.py).
+
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _python: http://www.python.org/
 .. _sphinx: http://sphinx.pocoo.org/
