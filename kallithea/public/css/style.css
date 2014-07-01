@@ -253,6 +253,10 @@ div:hover > a.permalink {
     padding-left: 20px;
 }
 
+div.header img {
+    padding-top: 5px;
+}
+
 #header #logo div.header,
 #header #logo div.branding {
     font-size: 20px;
