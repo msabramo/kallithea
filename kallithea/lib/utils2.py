@@ -615,7 +615,7 @@ def _extract_extras(env=None):
         env = os.environ
 
     try:
-        rc_extras = json.loads(env['RC_SCM_DATA'])
+        rc_extras = json.loads(env['KALLITHEA_EXTRAS'])
     except Exception:
         print os.environ
         print >> sys.stderr, traceback.format_exc()
@@ -632,7 +632,7 @@ def _extract_extras(env=None):
 
 
 def _set_extras(extras):
-    os.environ['RC_SCM_DATA'] = json.dumps(extras)
+    os.environ['KALLITHEA_EXTRAS'] = json.dumps(extras)
 
 
 def unique_id(hexlen=32):
