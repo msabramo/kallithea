@@ -41,6 +41,7 @@ from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
     HasReposGroupPermissionAll, HasReposGroupPermissionAny, AuthUser
 from rhodecode.lib.base import BaseController, render
 from rhodecode.lib.celerylib import tasks, run_task
+from rhodecode.lib.exceptions import HgsubversionImportError
 from rhodecode.lib.utils import repo2db_mapper, set_rhodecode_config, \
     check_git_version
 from rhodecode.model.db import RhodeCodeUi, Repository, RepoGroup, \
@@ -287,6 +288,11 @@ class SettingsController(BaseController):
                     sett.ui_section = 'extensions'
 
                 sett.ui_active = form_result['extensions_hgsubversion']
+                if sett.ui_active:
+                    try:
+                        import hgsubversion
+                    except ImportError:
+                        raise HgsubversionImportError
                 Session().add(sett)
 
 #                sett = RhodeCodeUi.get_by_key('hggit')
@@ -303,36 +309,43 @@ class SettingsController(BaseController):
 
                 h.flash(_('Updated VCS settings'), category='success')
 
+            except HgsubversionImportError:
+                log.error(traceback.format_exc())
+                h.flash(_('Unable to activate hgsubversion support. '
+                          'The "hgsubversion" library is missing'),
+                        category='error')
+
             except Exception:
                 log.error(traceback.format_exc())
                 h.flash(_('Error occurred during updating '
                           'application settings'), category='error')
 
         if setting_id == 'hooks':
-            ui_key = request.POST.get('new_hook_ui_key')
-            ui_value = request.POST.get('new_hook_ui_value')
-            try:
+            if c.visual.allow_custom_hooks_settings:
+                ui_key = request.POST.get('new_hook_ui_key')
+                ui_value = request.POST.get('new_hook_ui_value')
+                try:
 
-                if ui_value and ui_key:
-                    RhodeCodeUi.create_or_update_hook(ui_key, ui_value)
-                    h.flash(_('Added new hook'),
-                            category='success')
+                    if ui_value and ui_key:
+                        RhodeCodeUi.create_or_update_hook(ui_key, ui_value)
+                        h.flash(_('Added new hook'),
+                                category='success')
 
-                # check for edits
-                update = False
-                _d = request.POST.dict_of_lists()
-                for k, v in zip(_d.get('hook_ui_key', []),
-                                _d.get('hook_ui_value_new', [])):
-                    RhodeCodeUi.create_or_update_hook(k, v)
-                    update = True
+                    # check for edits
+                    update = False
+                    _d = request.POST.dict_of_lists()
+                    for k, v in zip(_d.get('hook_ui_key', []),
+                                    _d.get('hook_ui_value_new', [])):
+                        RhodeCodeUi.create_or_update_hook(k, v)
+                        update = True
 
-                if update:
-                    h.flash(_('Updated hooks'), category='success')
-                Session().commit()
-            except Exception:
-                log.error(traceback.format_exc())
-                h.flash(_('Error occurred during hook creation'),
-                        category='error')
+                    if update:
+                        h.flash(_('Updated hooks'), category='success')
+                    Session().commit()
+                except Exception:
+                    log.error(traceback.format_exc())
+                    h.flash(_('Error occurred during hook creation'),
+                            category='error')
 
             return redirect(url('admin_edit_setting', setting_id='hooks'))
 

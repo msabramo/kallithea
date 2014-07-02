@@ -226,7 +226,9 @@ class PullrequestsController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def show_all(self, repo_name):
-        c.pull_requests = PullRequestModel().get_all(repo_name)
+        c.from_ = request.GET.get('from_') or ''
+        c.closed = request.GET.get('closed') or ''
+        c.pull_requests = PullRequestModel().get_all(repo_name, from_=c.from_, closed=c.closed)
         c.repo_name = repo_name
         p = safe_int(request.GET.get('page', 1), 1)
 
@@ -320,19 +322,21 @@ class PullrequestsController(BaseRepoController):
             elif errors.error_dict.get('pullrequest_title'):
                 msg = _('Pull request requires a title with min. 3 chars')
             else:
-                msg = _('Error creating pull request')
+                msg = _('Error creating pull request: %s') % errors.msg
 
             h.flash(msg, 'error')
-            return redirect(url('pullrequest_home', repo_name=repo_name))
+            return redirect(url('pullrequest_home', repo_name=repo_name)) ## would rather just go back to form ...
 
         org_repo = _form['org_repo']
-        org_ref = 'rev:merge:%s' % _form['merge_rev']
+        org_ref = _form['org_ref'] # will end with merge_rev but have symbolic name
         other_repo = _form['other_repo']
-        other_ref = 'rev:ancestor:%s' % _form['ancestor_rev']
+        other_ref = 'rev:ancestor:%s' % _form['ancestor_rev'] # could be calculated from other_ref ...
         revisions = [x for x in reversed(_form['revisions'])]
         reviewers = _form['review_members']
 
         title = _form['pullrequest_title']
+        if not title:
+            title = '%s#%s to %s' % (org_repo, org_ref.split(':', 2)[1], other_repo)
         description = _form['pullrequest_desc']
         try:
             pull_request = PullRequestModel().create(
@@ -440,17 +444,9 @@ class PullrequestsController(BaseRepoController):
         c.comments = cc_model.get_comments(c.rhodecode_db_repo.repo_id,
                                            pull_request=pull_request_id)
 
-        try:
-            cur_status = c.statuses[c.pull_request.revisions[0]][0]
-        except Exception:
-            log.error(traceback.format_exc())
-            cur_status = 'undefined'
-        if c.pull_request.is_closed() and 0:
-            c.current_changeset_status = cur_status
-        else:
-            # changeset(pull-request) status calulation based on reviewers
-            c.current_changeset_status = cs_model.calculate_status(
-                                            c.pull_request_reviewers,
+        # (badly named) pull-request status calculation based on reviewer votes
+        c.current_changeset_status = cs_model.calculate_status(
+                                        c.pull_request_reviewers,
                                          )
         c.changeset_statuses = ChangesetStatus.STATUSES
 

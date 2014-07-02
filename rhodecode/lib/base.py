@@ -22,6 +22,7 @@ from rhodecode.lib.utils2 import str2bool, safe_unicode, AttributeDict,\
 from rhodecode.lib.auth import AuthUser, get_container_username, authfunc,\
     HasPermissionAnyMiddleware, CookieStoreWrapper
 from rhodecode.lib.utils import get_repo_slug
+from rhodecode.lib.exceptions import UserCreationError
 from rhodecode.model import meta
 
 from rhodecode.model.db import Repository, RhodeCodeUi, User, RhodeCodeSetting
@@ -34,7 +35,7 @@ log = logging.getLogger(__name__)
 
 def _filter_proxy(ip):
     """
-    HEADERS can have mutliple ips inside the left-most being the original
+    HEADERS can have multiple ips inside the left-most being the original
     client, and each successive proxy that passed the request adding the IP
     address where it received the request from.
 
@@ -123,7 +124,7 @@ class BaseVCSController(object):
 
     def _get_by_id(self, repo_name):
         """
-        Get's a special pattern _<ID> from clone url and tries to replace it
+        Gets a special pattern _<ID> from clone url and tries to replace it
         with a repository_name for support of _<ID> non changable urls
 
         :param repo_name:
@@ -262,6 +263,7 @@ class BaseController(WSGIController):
         c.rhodecode_version = __version__
         c.rhodecode_instanceid = config.get('instance_id')
         c.rhodecode_name = config.get('rhodecode_title')
+        c.rhodecode_bugtracker = config.get('bugtracker', 'http://bitbucket.org/marcinkuzminski/rhodecode/issues')
         c.use_gravatar = str2bool(config.get('use_gravatar'))
         c.ga_code = config.get('rhodecode_ga_code')
         # Visual options
@@ -278,6 +280,7 @@ class BaseController(WSGIController):
         ## INI stored
         self.cut_off_limit = int(config.get('cut_off_limit'))
         c.visual.allow_repo_location_change = str2bool(config.get('allow_repo_location_change', True))
+        c.visual.allow_custom_hooks_settings = str2bool(config.get('allow_custom_hooks_settings', True))
 
         c.repo_name = get_repo_slug(request)  # can be empty
         c.backends = BACKENDS.keys()
@@ -298,7 +301,17 @@ class BaseController(WSGIController):
             cookie_store = CookieStoreWrapper(session.get('rhodecode_user'))
             user_id = cookie_store.get('user_id', None)
             username = get_container_username(environ, config)
-            auth_user = AuthUser(user_id, api_key, username, self.ip_addr)
+            try:
+                auth_user = AuthUser(user_id, api_key, username, self.ip_addr)
+            except UserCreationError, e:
+                from rhodecode.lib import helpers as h
+                h.flash(e, 'error')
+                # container auth or other auth functions that create users on
+                # the fly can throw this exception signaling that there's issue
+                # with user creation, explanation should be provided in
+                # Exception itself
+                auth_user = AuthUser(ip_addr=self.ip_addr)
+
             request.user = auth_user
             self.rhodecode_user = c.rhodecode_user = auth_user
             if not self.rhodecode_user.is_authenticated and \

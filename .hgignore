@@ -3,11 +3,13 @@ syntax: glob
 *.swp
 *.sqlite
 *.tox
-Paste*.egg
+*.egg-info
+*.egg
 
 syntax: regexp
 ^rcextensions
 ^build
+^dist/
 ^docs/build/
 ^docs/_build/
 ^data$

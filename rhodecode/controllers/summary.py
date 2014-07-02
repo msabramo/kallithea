@@ -97,7 +97,7 @@ class SummaryController(BaseRepoController):
             readme_file = None
             log.debug('Looking for README file')
             try:
-                # get's the landing revision! or tip if fails
+                # gets the landing revision! or tip if fails
                 cs = db_repo.get_landing_changeset()
                 if isinstance(cs, EmptyChangeset):
                     raise EmptyRepositoryError()

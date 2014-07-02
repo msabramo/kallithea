@@ -30,6 +30,7 @@ import time
 import uuid
 import logging
 from os.path import dirname as dn, join as jn
+import datetime
 
 from rhodecode import __dbversion__, __py_version__
 
@@ -216,6 +217,13 @@ class UpgradeSteps(object):
     def step_13(self):
         pass
 
+    def step_14(self):
+        # fix nullable columns on last_update
+        for r in RepoModel().get_all():
+            if r.updated_on is None:
+                r.updated_on = datetime.datetime.fromtimestamp(0)
+                Session().add(r)
+        Session().commit()
 
 class DbManage(object):
     def __init__(self, log_sql, dbconf, root, tests=False, cli_args={}):
@@ -606,16 +614,24 @@ class DbManage(object):
         # check proper dir
         if not os.path.isdir(path):
             path_ok = False
-            log.error('Given path %s is not a valid directory' % path)
+            log.error('Given path %s is not a valid directory' % (path,))
 
         elif not os.path.isabs(path):
             path_ok = False
-            log.error('Given path %s is not an absolute path' % path)
+            log.error('Given path %s is not an absolute path' % (path,))
 
-        # check write access
-        elif not os.access(path, os.W_OK) and path_ok:
+        # check if path is at least readable.
+        if not os.access(path, os.R_OK):
             path_ok = False
-            log.error('No write permission to given path %s' % path)
+            log.error('Given path %s is not readable' % (path,))
+
+        # check write access, warn user about non writeable paths
+        elif not os.access(path, os.W_OK) and path_ok:
+            log.warn('No write permission to given path %s' % (path,))
+            if not ask_ok('Given path %s is not writeable, do you want to '
+                          'continue with read only mode ? [y/n]' % (path,)):
+                log.error('Canceled by user')
+                sys.exit(-1)
 
         if retries == 0:
             sys.exit('max retries reached')
@@ -627,7 +643,7 @@ class DbManage(object):
 
         if real_path != os.path.normpath(path):
             if not ask_ok(('Path looks like a symlink, Rhodecode will store '
-                           'given path as %s ? [y/n]') % (real_path)):
+                           'given path as %s ? [y/n]') % (real_path,)):
                 log.error('Canceled by user')
                 sys.exit(-1)
 
@@ -680,10 +696,18 @@ class DbManage(object):
     def create_default_user(self):
         log.info('creating default user')
         # create default user for handling default permissions.
-        UserModel().create_or_update(username='default',
-                              password=str(uuid.uuid1())[:8],
-                              email='anonymous@rhodecode.org',
-                              firstname='Anonymous', lastname='User')
+        user = UserModel().create_or_update(username=User.DEFAULT_USER,
+                                            password=str(uuid.uuid1())[:20],
+                                            email='anonymous@rhodecode.org',
+                                            firstname='Anonymous',
+                                            lastname='User')
+        # based on configuration options activate/deactive this user which
+        # controlls anonymous access
+        if self.cli_args.get('public_access') is False:
+            log.info('Public access disabled')
+            user.active = False
+            Session().add(user)
+            Session().commit()
 
     def create_permissions(self):
         """

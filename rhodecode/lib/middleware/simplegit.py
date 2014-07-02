@@ -70,7 +70,7 @@ dulserver.DEFAULT_HANDLERS = {
   'git-receive-pack': dulserver.ReceivePackHandler,
 }
 
-# not used for now until dulwich get's fixed
+# not used for now until dulwich gets fixed
 #from dulwich.repo import Repo
 #from dulwich.web import make_wsgi_chain
 
@@ -264,7 +264,7 @@ class SimpleGit(BaseVCSController):
 
     def __get_repository(self, environ):
         """
-        Get's repository name out of PATH_INFO header
+        Gets repository name out of PATH_INFO header
 
         :param environ: environ where PATH_INFO is stored
         """

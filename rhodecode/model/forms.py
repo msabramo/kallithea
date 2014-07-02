@@ -415,7 +415,7 @@ def PullRequestForm(repo_id):
                         v.UniqueList(not_empty=True))
         review_members = v.UniqueList(not_empty=True)
 
-        pullrequest_title = v.UnicodeString(strip=True, required=True, min=3)
+        pullrequest_title = v.UnicodeString(strip=True, required=True)
         pullrequest_desc = v.UnicodeString(strip=True, required=False)
 
         ancestor_rev = v.UnicodeString(strip=True, required=True)
@@ -431,6 +431,7 @@ def GistForm(lifetime_options):
                        v.UnicodeString(strip=True, required=False))
         description = v.UnicodeString(required=False, if_missing='')
         lifetime = v.OneOf(lifetime_options)
+        mimetype = v.UnicodeString(required=False, if_missing=None)
         content = v.UnicodeString(required=True, not_empty=True)
         public = v.UnicodeString(required=False, if_missing='')
         private = v.UnicodeString(required=False, if_missing='')

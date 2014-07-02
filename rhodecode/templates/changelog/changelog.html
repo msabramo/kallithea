@@ -24,7 +24,7 @@ ${c.rhodecode_name}
 </%def>
 
 <%def name="main()">
-${self.context_bar('changelog')}
+${self.repo_context_bar('changelog')}
 <div class="box">
     <!-- box / title -->
     <div class="title">
@@ -75,11 +75,13 @@ ${self.context_bar('changelog')}
                           %if c.statuses.get(cs.raw_id):
                             <div class="changeset-status-ico">
                             %if c.statuses.get(cs.raw_id)[2]:
-                              <a class="tooltip" title="${_('Click to open associated pull request #%s' % c.statuses.get(cs.raw_id)[2])}" href="${h.url('pullrequest_show',repo_name=c.statuses.get(cs.raw_id)[3],pull_request_id=c.statuses.get(cs.raw_id)[2])}">
+                              <a class="tooltip" title="${_('Changeset status: %s\nClick to open associated pull request #%s') % (h.changeset_status_lbl(c.statuses.get(cs.raw_id)[0]), c.statuses.get(cs.raw_id)[2])}" href="${h.url('pullrequest_show',repo_name=c.statuses.get(cs.raw_id)[3],pull_request_id=c.statuses.get(cs.raw_id)[2])}">
                                 <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
                               </a>
                             %else:
-                              <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
+                              <a class="tooltip" title="${_('Changeset status: %s') % h.changeset_status_lbl(c.statuses.get(cs.raw_id)[0])}" href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
+                                  <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
+                              </a>
                             %endif
                             </div>
                           %endif
@@ -103,7 +105,7 @@ ${self.context_bar('changelog')}
                                 <div class="extra-container">
                                     %if c.comments.get(cs.raw_id):
                                         <div class="comments-container">
-                                            <div class="comments-cnt" title="${('comments')}">
+                                            <div class="comments-cnt" title="${_('Changeset has comments')}">
                                                 <a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
                                                     ${len(c.comments[cs.raw_id])}
                                                 </a>
@@ -148,7 +150,10 @@ ${self.context_bar('changelog')}
                 //Monitor range checkboxes and build a link to changesets
                 //ranges
                 var checkboxes = YUD.getElementsByClassName('changeset_range');
-                var url_tmpl = "${h.url('changeset_home',repo_name=c.repo_name,revision='__REVRANGE__')}";
+                // register our routes needed for this view
+                pyroutes.register('changeset_home', "${h.url('changeset_home', repo_name='%(repo_name)s', revision='%(revision)s')}", ['repo_name', 'revision']);
+                pyroutes.register('changelog_home', "${h.url('changelog_home', repo_name='%(repo_name)s')}", ['repo_name']);
+                pyroutes.register('pullrequest_home', "${h.url('pullrequest_home', repo_name='%(repo_name)s')}", ['repo_name']);
 
                 var checkbox_checker = function(e){
                     var checked_checkboxes = [];
@@ -173,8 +178,8 @@ ${self.context_bar('changelog')}
                     if(checked_checkboxes.length>0){
                         var rev_end = checked_checkboxes[0].name;
                         var rev_start = checked_checkboxes[checked_checkboxes.length-1].name;
-                        var url = url_tmpl.replace('__REVRANGE__',
-                                rev_start+'...'+rev_end);
+                        var url = pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}',
+                                                                  'revision': rev_start+'...'+rev_end});
 
                         var link = (rev_start == rev_end)
                             ? _TM['Show selected changeset __S']
@@ -187,16 +192,22 @@ ${self.context_bar('changelog')}
                         YUD.setStyle('rev_range_container','display','');
                         YUD.setStyle('rev_range_clear','display','');
 
-                        var pr_tmpl = "${h.url('pullrequest_home',repo_name=c.repo_name,rev_start='{0}',rev_end='{1}')}";
-                        YUD.get('open_new_pr').href = pr_tmpl.format(rev_start,rev_end);
+                        YUD.get('open_new_pr').href = pyroutes.url('pullrequest_home',
+                                                                   {'repo_name': '${c.repo_name}',
+                                                                    'rev_start': rev_start,
+                                                                    'rev_end': rev_end})
+
                         YUD.setStyle('compare_fork','display','none');
                     }else{
                         YUD.setStyle('rev_range_container','display','none');
                         YUD.setStyle('rev_range_clear','display','none');
                         %if c.branch_name:
-                            YUD.get('open_new_pr').href = "${h.url('pullrequest_home',repo_name=c.repo_name,branch=c.branch_name)}";
+                            YUD.get('open_new_pr').href = pyroutes.url('pullrequest_home',
+                                                                       {'repo_name': '${c.repo_name}',
+                                                                        'branch':'${c.branch_name}'});
                         %else:
-                            YUD.get('open_new_pr').href = "${h.url('pullrequest_home',repo_name=c.repo_name)}";
+                            YUD.get('open_new_pr').href = pyroutes.url('pullrequest_home',
+                                                                       {'repo_name': '${c.repo_name}'});
                         %endif
                         YUD.setStyle('compare_fork','display','');
                     }
@@ -244,15 +255,12 @@ ${self.context_bar('changelog')}
                 // change branch filter
                 YUE.on(YUD.get('branch_filter'),'change',function(e){
                     var selected_branch = e.currentTarget.options[e.currentTarget.selectedIndex].value;
-                    var url_main = "${h.url('changelog_home',repo_name=c.repo_name)}";
-                    var url = "${h.url('changelog_home',repo_name=c.repo_name,branch='__BRANCH__')}";
-                    var url = url.replace('__BRANCH__', encodeURIComponent(selected_branch));
                     if(selected_branch != ''){
-                        window.location = url;
+                        window.location = pyroutes.url('changelog_home', {'repo_name': '${c.repo_name}',
+                                                                          'branch':selected_branch});
                     }else{
-                        window.location = url_main;
+                        window.location = pyroutes.url('changelog_home', {'repo_name': '${c.repo_name}'});
                     }
-
                 });
 
                 function set_canvas(width) {

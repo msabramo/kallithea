@@ -279,7 +279,7 @@ def login_container_auth(username):
 
 def get_container_username(environ, config, clean_username=False):
     """
-    Get's the container_auth username (or email). It tries to get username
+    Gets the container_auth username (or email). It tries to get username
     from REMOTE_USER if container_auth_enabled is enabled, if that fails
     it tries to get username from HTTP_X_FORWARDED_USER if proxypass_auth_enabled
     is enabled. clean_username extracts the username from this data if it's
@@ -501,12 +501,11 @@ def set_available_permissions(config):
     try:
         sa = meta.Session
         all_perms = sa.query(Permission).all()
+        config['available_permissions'] = [x.permission_name for x in all_perms]
     except Exception:
-        pass
+        log.error(traceback.format_exc())
     finally:
         meta.Session.remove()
-
-    config['available_permissions'] = [x.permission_name for x in all_perms]
 
 
 #==============================================================================

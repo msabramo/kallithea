@@ -355,7 +355,7 @@ class MercurialChangeset(BaseChangeset):
     @LazyProperty
     def affected_files(self):
         """
-        Get's a fast accessible file changes for given changeset
+        Gets a fast accessible file changes for given changeset
         """
         return self._ctx.files()
 

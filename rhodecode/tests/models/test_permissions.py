@@ -89,7 +89,7 @@ class TestPermissions(BaseTestCase):
         RepoModel().grant_user_permission(repo=HG_REPO, user=self.a1,
                                           perm=new_perm)
         Session().commit()
-        # cannot really downgrade admins permissions !? they still get's set as
+        # cannot really downgrade admins permissions !? they still gets set as
         # admin !
         u1_auth = AuthUser(user_id=self.a1.user_id)
         self.assertEqual(u1_auth.permissions['repositories'][HG_REPO],

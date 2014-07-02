@@ -64,11 +64,11 @@ class ChangesetStatusModel(BaseModel):
 
     def calculate_status(self, statuses_by_reviewers):
         """
-        leading one wins, if number of occurrences are equal than weaker wins
+        approved if consensus
+        (old description: leading one wins, if number of occurrences are equal than weaker wins)
 
         :param statuses_by_reviewers:
         """
-        status = None
         votes = defaultdict(int)
         reviewers_number = len(statuses_by_reviewers)
         for user, statuses in statuses_by_reviewers:
@@ -132,7 +132,7 @@ class ChangesetStatusModel(BaseModel):
         if not comment:
             from rhodecode.model.comment import ChangesetCommentsModel
             comment = ChangesetCommentsModel().create(
-                text='Auto status change to %s' % (ChangesetStatus.get_status_lbl(status)),
+                text=u'Auto status change to %s' % (ChangesetStatus.get_status_lbl(status)),
                 repo=repo,
                 user=user,
                 pull_request=pull_request,

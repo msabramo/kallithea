@@ -2,7 +2,7 @@ from __future__ import with_statement
 import os
 from rhodecode.tests import *
 from rhodecode.lib.diffs import DiffProcessor, NEW_FILENODE, DEL_FILENODE, \
-    MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE
+    MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE, COPIED_FILENODE
 
 dn = os.path.dirname
 FIXTURES = os.path.join(dn(dn(os.path.abspath(__file__))), 'fixtures')
@@ -217,6 +217,38 @@ DIFF_FIXTURES = {
           'binary': False,
           'ops': {MOD_FILENODE: 'modified file'}}),
     ],
+    'hg_diff_copy_file.diff': [
+        ('file2', 'M',
+         {'added': 0,
+          'deleted': 0,
+          'binary': True,
+          'ops': {COPIED_FILENODE: 'file copied from file1 to file2'}}),
+    ],
+    'hg_diff_copy_and_modify_file.diff': [
+        ('file3', 'M',
+         {'added': 1,
+          'deleted': 0,
+          'binary': False,
+          'ops': {COPIED_FILENODE: 'file copied from file2 to file3',
+                  MOD_FILENODE: 'modified file'}}),
+    ],
+    'hg_diff_copy_and_chmod_file.diff': [
+        ('file4', 'M',
+         {'added': 0,
+          'deleted': 0,
+          'binary': True,
+          'ops': {COPIED_FILENODE: 'file copied from file3 to file4',
+                  CHMOD_FILENODE: 'modified file chmod 100644 => 100755'}}),
+    ],
+    'hg_diff_copy_chmod_and_edit_file.diff': [
+        ('file5', 'M',
+         {'added': 2,
+          'deleted': 1,
+          'binary': False,
+          'ops': {COPIED_FILENODE: 'file copied from file4 to file5',
+                  CHMOD_FILENODE: 'modified file chmod 100755 => 100644',
+                  MOD_FILENODE: 'modified file'}}),
+    ]
 #     'large_diff.diff': [
 #         ('.hgignore', 'A', {'deleted': 0, 'binary': False, 'added': 3, 'ops': {1: 'new file 100644'}}),
 #         ('MANIFEST.in', 'A', {'deleted': 0, 'binary': False, 'added': 3, 'ops': {1: 'new file 100644'}}),

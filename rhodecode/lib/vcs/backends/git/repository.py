@@ -371,6 +371,10 @@ class GitRepository(BaseRepository):
         return OrderedDict(sorted(_branches, key=sortkey, reverse=False))
 
     @LazyProperty
+    def closed_branches(self):
+        return {}
+
+    @LazyProperty
     def tags(self):
         return self._get_tags()
 
@@ -427,6 +431,13 @@ class GitRepository(BaseRepository):
             self.tags = self._get_tags()
         except OSError, e:
             raise RepositoryError(e.strerror)
+
+    @LazyProperty
+    def bookmarks(self):
+        """
+        Gets bookmarks for this repository
+        """
+        return {}
 
     @LazyProperty
     def _parsed_refs(self):

@@ -29,6 +29,7 @@ import traceback
 from pylons import request, url, session, tmpl_context as c
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
+from webob.exc import HTTPNotFound, HTTPBadRequest
 
 import rhodecode.lib.helpers as h
 from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
@@ -38,8 +39,8 @@ from rhodecode.lib.compat import json
 from rhodecode.lib.graphmod import _colored, _dagwalker
 from rhodecode.lib.vcs.exceptions import RepositoryError, ChangesetDoesNotExistError,\
     ChangesetError, NodeDoesNotExistError, EmptyRepositoryError
-from rhodecode.lib.utils2 import safe_int
-from webob.exc import HTTPNotFound
+from rhodecode.lib.utils2 import safe_int, safe_str
+
 
 log = logging.getLogger(__name__)
 
@@ -68,6 +69,33 @@ class ChangelogController(BaseRepoController):
         super(ChangelogController, self).__before__()
         c.affected_files_cut_off = 60
 
+    def __get_cs_or_redirect(self, rev, repo, redirect_after=True,
+                             partial=False):
+        """
+        Safe way to get changeset if error occur it redirects to changeset with
+        proper message. If partial is set then don't do redirect raise Exception
+        instead
+
+        :param rev: revision to fetch
+        :param repo: repo instance
+        """
+
+        try:
+            return c.rhodecode_repo.get_changeset(rev)
+        except EmptyRepositoryError, e:
+            if not redirect_after:
+                return None
+            h.flash(h.literal(_('There are no changesets yet')),
+                    category='warning')
+            redirect(url('changelog_home', repo_name=repo.repo_name))
+
+        except RepositoryError, e:
+            log.error(traceback.format_exc())
+            h.flash(safe_str(e), category='warning')
+            if not partial:
+                redirect(h.url('changelog_home', repo_name=repo.repo_name))
+            raise HTTPBadRequest()
+
     def _graph(self, repo, revs_int, repo_size, size, p):
         """
         Generates a DAG graph for repo
@@ -87,7 +115,7 @@ class ChangelogController(BaseRepoController):
 
         dag = _dagwalker(repo, revs, repo.alias)
         dag = _colored(dag)
-        for (id, type, ctx, vtx, edges) in dag:
+        for (_id, _type, ctx, vtx, edges) in dag:
             data.append(['', vtx, edges])
 
         c.jsdata = json.dumps(data)
@@ -108,6 +136,13 @@ class ChangelogController(BaseRepoController):
         c.size = max(c.size, 1)
         p = safe_int(request.GET.get('page', 1), 1)
         branch_name = request.GET.get('branch', None)
+        if (branch_name and
+            branch_name not in c.rhodecode_repo.branches and
+            branch_name not in c.rhodecode_repo.closed_branches and
+            not revision):
+            return redirect(url('changelog_file_home', repo_name=c.repo_name,
+                                    revision=branch_name, f_path=f_path or ''))
+
         c.changelog_for_path = f_path
         try:
 
@@ -123,7 +158,7 @@ class ChangelogController(BaseRepoController):
                         cs = self.__get_cs_or_redirect(revision, repo_name)
                         collection = cs.get_file_history(f_path)
                     except RepositoryError, e:
-                        h.flash(str(e), category='warning')
+                        h.flash(safe_str(e), category='warning')
                         redirect(h.url('changelog_home', repo_name=repo_name))
                 collection = list(reversed(collection))
             else:
@@ -138,16 +173,20 @@ class ChangelogController(BaseRepoController):
             c.comments = c.rhodecode_db_repo.get_comments(page_revisions)
             c.statuses = c.rhodecode_db_repo.statuses(page_revisions)
         except (EmptyRepositoryError), e:
-            h.flash(str(e), category='warning')
+            h.flash(safe_str(e), category='warning')
             return redirect(url('summary_home', repo_name=c.repo_name))
         except (RepositoryError, ChangesetDoesNotExistError, Exception), e:
             log.error(traceback.format_exc())
-            h.flash(str(e), category='error')
+            h.flash(safe_str(e), category='error')
             return redirect(url('changelog_home', repo_name=c.repo_name))
 
         c.branch_name = branch_name
         c.branch_filters = [('', _('All Branches'))] + \
             [(k, k) for k in c.rhodecode_repo.branches.keys()]
+        if c.rhodecode_repo.closed_branches:
+            prefix = _('(closed)') + ' '
+            c.branch_filters += [('-', '-')] + \
+                [(k, prefix + k) for k in c.rhodecode_repo.closed_branches.keys()]
         _revs = []
         if not f_path:
             _revs = [x.revision for x in c.pagination]

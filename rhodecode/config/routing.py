@@ -95,9 +95,6 @@ def make_map(config):
                  action='repo_switcher')
     rmap.connect('branch_tag_switcher', '/branches-tags/{repo_name:.*?}',
                  controller='home', action='branch_tag_switcher')
-    rmap.connect('bugtracker',
-                 "http://bitbucket.org/marcinkuzminski/rhodecode/issues",
-                 _static=True)
     rmap.connect('rst_help',
                  "http://docutils.sourceforge.net/docs/user/rst/quickref.html",
                  _static=True)
@@ -653,6 +650,10 @@ def make_map(config):
 
     rmap.connect('files_diff_home', '/{repo_name:.*?}/diff/{f_path:.*}',
                 controller='files', action='diff', revision='tip', f_path='',
+                conditions=dict(function=check_repo))
+
+    rmap.connect('files_diff_2way_home', '/{repo_name:.*?}/diff-2way/{f_path:.*}',
+                controller='files', action='diff_2way', revision='tip', f_path='',
                 conditions=dict(function=check_repo))
 
     rmap.connect('files_rawfile_home',

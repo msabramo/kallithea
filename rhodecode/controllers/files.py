@@ -57,7 +57,7 @@ from rhodecode.model.db import Repository
 from rhodecode.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
 from webob.exc import HTTPNotFound
-from rhodecode.lib.exceptions import NonRelativePathError
+from rhodecode.lib.exceptions import NonRelativePathError, IMCCommitError
 
 
 log = logging.getLogger(__name__)
@@ -92,7 +92,7 @@ class FilesController(BaseRepoController):
             redirect(h.url('summary_home', repo_name=repo_name))
 
         except RepositoryError, e:  # including ChangesetDoesNotExistError
-            h.flash(str(e), category='error')
+            h.flash(safe_str(e), category='error')
             raise HTTPNotFound()
 
     def __get_filenode_or_redirect(self, repo_name, cs, path):
@@ -110,7 +110,7 @@ class FilesController(BaseRepoController):
             if file_node.is_dir():
                 raise RepositoryError('given path is a directory')
         except RepositoryError, e:
-            h.flash(str(e), category='error')
+            h.flash(safe_str(e), category='error')
             raise HTTPNotFound()
 
         return file_node
@@ -175,7 +175,7 @@ class FilesController(BaseRepoController):
             else:
                 c.authors = c.file_history = []
         except RepositoryError, e:
-            h.flash(str(e), category='error')
+            h.flash(safe_str(e), category='error')
             raise HTTPNotFound()
 
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
@@ -271,7 +271,7 @@ class FilesController(BaseRepoController):
             h.flash(_('This repository is has been locked by %s on %s')
                 % (h.person_by_id(repo.locked[0]),
                    h.fmt_date(h.time_to_datetime(repo.locked[1]))),
-                  'warning')
+                'warning')
             return redirect(h.url('files_home',
                                   repo_name=repo_name, revision='tip'))
 
@@ -293,7 +293,7 @@ class FilesController(BaseRepoController):
 
         if c.file.is_binary:
             return redirect(url('files_home', repo_name=c.repo_name,
-                         revision=c.cs.raw_id, f_path=f_path))
+                            revision=c.cs.raw_id, f_path=f_path))
         c.default_message = _('Edited file %s via RhodeCode') % (f_path)
         c.f_path = f_path
 
@@ -321,7 +321,6 @@ class FilesController(BaseRepoController):
                                              content=content, f_path=f_path)
                 h.flash(_('Successfully committed to %s') % f_path,
                         category='success')
-
             except Exception:
                 log.error(traceback.format_exc())
                 h.flash(_('Error occurred during commit'), category='error')
@@ -363,6 +362,10 @@ class FilesController(BaseRepoController):
             if file_obj is not None and hasattr(file_obj, 'filename'):
                 filename = file_obj.filename
                 content = file_obj.file
+
+                if hasattr(content, 'file'):
+                    # non posix systems store real file under file attr
+                    content = content.file
 
             if not content:
                 h.flash(_('No content'), category='warning')
@@ -608,6 +611,77 @@ class FilesController(BaseRepoController):
             c.changes = cs_changes
 
         return render('files/file_diff.html')
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    def diff_2way(self, repo_name, f_path):
+        diff1 = request.GET.get('diff1', '')
+        diff2 = request.GET.get('diff2', '')
+        try:
+            if diff1 not in ['', None, 'None', '0' * 12, '0' * 40]:
+                c.changeset_1 = c.rhodecode_repo.get_changeset(diff1)
+                try:
+                    node1 = c.changeset_1.get_node(f_path)
+                    if node1.is_dir():
+                        raise NodeError('%s path is a %s not a file'
+                                        % (node1, type(node1)))
+                except NodeDoesNotExistError:
+                    c.changeset_1 = EmptyChangeset(cs=diff1,
+                                                   revision=c.changeset_1.revision,
+                                                   repo=c.rhodecode_repo)
+                    node1 = FileNode(f_path, '', changeset=c.changeset_1)
+            else:
+                c.changeset_1 = EmptyChangeset(repo=c.rhodecode_repo)
+                node1 = FileNode(f_path, '', changeset=c.changeset_1)
+
+            if diff2 not in ['', None, 'None', '0' * 12, '0' * 40]:
+                c.changeset_2 = c.rhodecode_repo.get_changeset(diff2)
+                try:
+                    node2 = c.changeset_2.get_node(f_path)
+                    if node2.is_dir():
+                        raise NodeError('%s path is a %s not a file'
+                                        % (node2, type(node2)))
+                except NodeDoesNotExistError:
+                    c.changeset_2 = EmptyChangeset(cs=diff2,
+                                                   revision=c.changeset_2.revision,
+                                                   repo=c.rhodecode_repo)
+                    node2 = FileNode(f_path, '', changeset=c.changeset_2)
+            else:
+                c.changeset_2 = EmptyChangeset(repo=c.rhodecode_repo)
+                node2 = FileNode(f_path, '', changeset=c.changeset_2)
+        except (RepositoryError, NodeError):
+            log.error(traceback.format_exc())
+            return redirect(url('files_home', repo_name=c.repo_name,
+                                f_path=f_path))
+        if node2.is_binary:
+            node2_content = 'binary file'
+        else:
+            node2_content = node2.content
+
+        if node1.is_binary:
+            node1_content = 'binary file'
+        else:
+            node1_content = node1.content
+
+        html_escape_table = {
+            "&": "\u0026",
+            '"': "\u0022",
+            "'": "\u0027",
+            ">": "\u003e",
+            "<": "\u003c",
+            '\\': "\u005c",
+            '\n': '\\n'
+        }
+
+        c.orig1 = h.html_escape((node1_content), html_escape_table)
+        c.orig2 = h.html_escape((node2_content), html_escape_table)
+        c.node1 = node1
+        c.node2 = node2
+        c.cs1 = c.changeset_1
+        c.cs2 = c.changeset_2
+
+        return render('files/diff_2way.html')
 
     def _get_node_history(self, cs, f_path, changesets=None):
         """

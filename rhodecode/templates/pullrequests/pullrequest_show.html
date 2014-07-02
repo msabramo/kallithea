@@ -13,20 +13,19 @@
 </%def>
 
 <%def name="main()">
-${self.context_bar('showpullrequest')}
+${self.repo_context_bar('showpullrequest')}
 <div class="box">
     <!-- box / title -->
     <div class="title">
         ${self.breadcrumbs()}
     </div>
 
-    <h3 class="${'closed' if c.pull_request.is_closed() else ''}">
-        <img src="${h.url('/images/icons/flag_status_%s.png' % str(c.pull_request.last_review_status))}" />
+    <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
         ${_('Title')}: ${c.pull_request.title}
         %if c.pull_request.is_closed():
             (${_('Closed')})
         %endif
-    </h3>
+    </div>
 
     <div class="form">
       <div id="summary" class="fields">
@@ -37,13 +36,14 @@ ${self.context_bar('showpullrequest')}
           <div class="input">
             <div class="changeset-status-container" style="float:none;clear:both">
             %if c.current_changeset_status:
-              <div title="${_('Pull request status')}" class="changeset-status-lbl">
+              <div class="changeset-status-ico" style="padding:0px 4px 0px 0px"><img src="${h.url('/images/icons/flag_status_%s.png' % c.current_changeset_status)}" title="${_('Pull request status calculated from votes')}"/></div>
+              <div class="changeset-status-lbl tooltip" title="${_('Pull request status calculated from votes')}">
                 %if c.pull_request.is_closed():
                     ${_('Closed')},
                 %endif
                 ${h.changeset_status_lbl(c.current_changeset_status)}
               </div>
-              <div class="changeset-status-ico" style="padding:1px 4px"><img src="${h.url('/images/icons/flag_status_%s.png' % c.current_changeset_status)}" /></div>
+
             %endif
             </div>
           </div>
@@ -54,7 +54,7 @@ ${self.context_bar('showpullrequest')}
           </div>
           <div class="input">
             % if len(c.pull_request_pending_reviewers) > 0:
-                <div class="tooltip" title="${h.tooltip(','.join([x.username for x in c.pull_request_pending_reviewers]))}">${ungettext('%d reviewer', '%d reviewers',len(c.pull_request_pending_reviewers)) % len(c.pull_request_pending_reviewers)}</div>
+                <div class="tooltip" title="${h.tooltip(', '.join([x.username for x in c.pull_request_pending_reviewers]))}">${ungettext('%d reviewer', '%d reviewers',len(c.pull_request_pending_reviewers)) % len(c.pull_request_pending_reviewers)}</div>
             %else:
                 <div>${_('Pull request was reviewed by all reviewers')}</div>
             %endif
@@ -71,8 +71,15 @@ ${self.context_bar('showpullrequest')}
              ##%elif h.is_git(c.pull_request.org_repo):
              ##  <img class="icon" title="${_('Git repository')}" alt="${_('Git repository')}" src="${h.url('/images/icons/giticon.png')}"/>
              ##%endif
-              <span class="spantag">${c.pull_request.org_ref_parts[0]}: ${c.pull_request.org_ref_parts[1]}</span>
-              <span><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
+
+              ## branch link is only valid if it is a branch
+              <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.pull_request.org_ref_parts[1])}">${c.pull_request.org_ref_parts[0]}: ${c.pull_request.org_ref_parts[1]}</a></span>
+              <span>
+               %if h.is_hg(c.pull_request.org_repo):
+                 | ${_('Pull changes')} <span style="font-family: monospace">hg pull -r ${h.short_id(c.cs_ranges[-1].raw_id)} <a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
+               %elif h.is_git(c.pull_request.org_repo):
+                 | ${_('Pull changes')}
+               %endif
               </div>
           </div>
          </div>
@@ -81,7 +88,7 @@ ${self.context_bar('showpullrequest')}
               <label>${_('Description')}:</label>
           </div>
           <div class="input">
-              <div style="white-space:pre-wrap">${h.literal(c.pull_request.description)}</div>
+              <div style="white-space:pre-wrap">${h.urlify_commit(c.pull_request.description)}</div>
           </div>
          </div>
          <div class="field">
@@ -207,8 +214,8 @@ ${self.context_bar('showpullrequest')}
       ## main comment form and it status
       ${comment.comments(h.url('pullrequest_comment', repo_name=c.repo_name,
                                 pull_request_id=c.pull_request.pull_request_id),
-                                c.current_changeset_status,
-                                close_btn=True, change_status=c.allowed_to_change_status)}
+                         c.current_changeset_status,
+                         is_pr=True, change_status=c.allowed_to_change_status)}
     %endif
 
     <script type="text/javascript">

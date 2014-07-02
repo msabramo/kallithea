@@ -79,7 +79,7 @@ class BaseModel(object):
 
     def _get_instance(self, cls, instance, callback=None):
         """
-        Get's instance of given cls using some simple lookup mechanism.
+        Gets instance of given cls using some simple lookup mechanism.
 
         :param cls: class to fetch
         :param instance: int or Instance

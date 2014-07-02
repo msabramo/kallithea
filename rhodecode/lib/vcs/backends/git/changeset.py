@@ -470,7 +470,7 @@ class GitChangeset(BaseChangeset):
     @LazyProperty
     def affected_files(self):
         """
-        Get's a fast accessible file changes for given changeset
+        Gets a fast accessible file changes for given changeset
         """
         added, modified, deleted = self._changes_cache
         return list(added.union(modified).union(deleted))

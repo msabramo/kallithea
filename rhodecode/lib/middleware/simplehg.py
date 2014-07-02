@@ -218,7 +218,7 @@ class SimpleHg(BaseVCSController):
 
     def __get_repository(self, environ):
         """
-        Get's repository name out of PATH_INFO header
+        Gets repository name out of PATH_INFO header
 
         :param environ: environ where PATH_INFO is stored
         """

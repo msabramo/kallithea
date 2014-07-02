@@ -216,6 +216,19 @@ div.options a {
     color: #B9B9B9;
 }
 
+.truncate {
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+}
+
+.truncate.autoexpand:hover {
+    text-overflow: none;
+    overflow: visible;
+}
+
 a.permalink {
     visibility: hidden;
     position: absolute;
@@ -468,11 +481,11 @@ div:hover > a.permalink {
 }
 
 #header #header-inner #quick li ul li a.private_repo, #header #header-inner #quick li ul li a.private_repo:hover {
-    background-image: url("../images/icons/lock.png")
+    background-image: url("../images/icons/private_repo.png")
 }
 
 #header #header-inner #quick li ul li a.public_repo, #header #header-inner #quick li ul li a.public_repo:hover {
-    background-image: url("../images/icons/lock_open.png");
+    background-image: url("../images/icons/public_repo.png");
 }
 
 #header #header-inner #quick li ul li a.hg, #header #header-inner #quick li ul li a.hg:hover {
@@ -1298,7 +1311,7 @@ tbody .yui-dt-editable { cursor: pointer }
     border-right: 1px solid #eaeaea;
     border-bottom: 1px solid #eaeaea;
     color: #000;
-    font-size: 11px;
+    font-size: 12px;
     margin: 0;
     padding: 7px 7px 6px;
 }
@@ -1316,7 +1329,7 @@ tbody .yui-dt-editable { cursor: pointer }
     border-style: solid;
     border-width: 1px;
     color: #000000;
-    font-size: 11px;
+    font-size: 12px;
     margin: 0;
     padding: 7px 7px 6px;
 }
@@ -1357,7 +1370,7 @@ input.disabled {
     border-right: 1px solid #eaeaea;
     border-bottom: 1px solid #eaeaea;
     margin: 0 0 0 200px;
-    padding: 10px;
+    padding: 7px 7px 6px;
 }
 
 #content div.box div.form div.fields div.field div.textarea-editor {
@@ -1371,7 +1384,7 @@ input.disabled {
     overflow: hidden;
     background: #FFF;
     color: #000;
-    font-size: 11px;
+    font-size: 12px;
     outline: none;
     border-width: 0;
     margin: 0;
@@ -2684,7 +2697,6 @@ BIN_FILENODE = 6
     padding: 2px 0px 0px 2px;
 }
 .changeset-status-container .changeset-status-lbl {
-    color: rgb(136, 136, 136);
     float: left;
     padding: 3px 4px 0px 0px
 }
@@ -3099,6 +3111,7 @@ table.code-browser .submodule-dir {
     border-radius: 8px 8px 8px 8px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
     -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
+    z-index: 100000;
 }
 
 .hl-tip-box {
@@ -3686,6 +3699,10 @@ div.gravatar img {
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 
+label.disabled {
+    color: #aaa;
+}
+
 .ui-btn.blue.hidden {
     display: none;
 }
@@ -3753,7 +3770,7 @@ div#legend_data, div#legend_container, div#legend_choices {
     background: -o-linear-gradient(top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* IE10+ */
     background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* W3C */
-    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#88bfe8', endColorstr='#70b0e0',GradientType=0 ); /* IE6-9 */*/
+    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#88bfe8', endColorstr='#70b0e0',GradientType=0 ); /* IE6-9 */
 }
 
 #content div.box ol.lower-roman, #content div.box ol.upper-roman, #content div.box ol.lower-alpha, #content div.box ol.upper-alpha, #content div.box ol.decimal {
@@ -4034,7 +4051,6 @@ div#legend_container table td, div#legend_choices table td {
     -webkit-border-radius: 4px;
     border-radius: 4px;
     border: 0 none;
-    color: #AAAAAA;
     margin-bottom: -4px;
     margin-top: -4px;
     padding-left: 3px;
@@ -4642,7 +4658,7 @@ PULL REQUESTS
     font-weight: bold;
 }
 
-h3.closed,
+div.pr-details-title.closed,
 #pullrequests_container li.closed a
  {
     color: #555;
@@ -4652,14 +4668,22 @@ h3.closed,
 div.pr-title {
     font-size: 1.6em;
 }
+div.pr-details-title {
+    font-size: 1.6em;
+    margin: 0px 20px 0px 20px;
+    padding: 5px 0px 5px 10px;
+}
 
 div.pr {
     border-bottom: 1px solid #DDD;
     margin: 0px 20px;
     padding: 10px 4px;
 }
+div.pr-desc {
+    margin: 0px 20px;
+}
 div.pr-closed {
-    background-color: rgba(245,245,245,0.5);
+    background-color: #eee;
 }
 
 span.pr-closed-tag {

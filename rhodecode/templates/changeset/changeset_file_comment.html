@@ -14,27 +14,35 @@
           <div class="date">
               ${h.age(co.modified_at)}
           </div>
-        %if co.status_change:
-           <div  style="float:left" class="changeset-status-container">
-             <div style="float:left;padding:0px 2px 0px 2px"><span style="font-size: 18px;">&rsaquo;</span></div>
-             <div title="${_('Changeset status')}" class="changeset-status-lbl"> ${co.status_change[0].status_lbl}</div>
-             <div class="changeset-status-ico"><img src="${h.url(str('/images/icons/flag_status_%s.png' % co.status_change[0].status))}" /></div>
-           </div>
-        %endif
 
        <div style="float:left;padding:4px 0px 0px 5px">
         <span class="">
          %if co.pull_request:
             <a href="${h.url('pullrequest_show',repo_name=co.pull_request.other_repo.repo_name,pull_request_id=co.pull_request.pull_request_id)}">
             %if co.status_change:
-              ${_('Status change on pull request #%s') % co.pull_request.pull_request_id}
+              ${_('Vote on pull request #%s') % co.pull_request.pull_request_id}:
             %else:
               ${_('Comment on pull request #%s') % co.pull_request.pull_request_id}
             %endif
             </a>
+         %else:
+            %if co.status_change:
+              ${_('Status change on changeset')}:
+            %else:
+              ${_('Comment on changeset')}
+            %endif
          %endif
         </span>
        </div>
+
+        %if co.status_change:
+           <div  style="float:left" class="changeset-status-container">
+             <div style="float:left;padding:10px 2px 0px 2px"></div>
+             <div title="${_('Changeset status')}" class="changeset-status-lbl"> ${co.status_change[0].status_lbl}</div>
+             <div class="changeset-status-ico"><img src="${h.url(str('/images/icons/flag_status_%s.png' % co.status_change[0].status))}" /></div>
+           </div>
+        %endif
+
       <a class="permalink" href="#comment-${co.comment_id}">&para;</a>
       %if h.HasPermissionAny('hg.admin', 'repository.admin')() or co.author.user_id == c.rhodecode_user.user_id:
           <div onClick="deleteComment(${co.comment_id})" class="buttons delete-comment ui-btn small">${_('Delete')}</div>
@@ -134,7 +142,7 @@
 </%def>
 
 ## MAIN COMMENT FORM
-<%def name="comments(post_url, cur_status, close_btn=False, change_status=True)">
+<%def name="comments(post_url, cur_status, is_pr=False, change_status=True)">
 
 <div class="comments">
     %if c.rhodecode_user.username != 'default':
@@ -146,7 +154,13 @@
                   '<span style="color:#003367" class="tooltip" title="%s">@mention</span>' %
                   _('Use @username inside this text to send notification to this RhodeCode user')))|n}
               %if change_status:
-                | <a id="show_changeset_link" onClick="change_status_show();"> ${_('Change status')}</a>
+                | <a id="show_changeset_link" onClick="change_status_show();">
+                  %if is_pr:
+                    ${_('Vote for pull request status')}
+                  %else:
+                    ${_('Change changeset status')}
+                  %endif
+                  </a>
                   <input id="show_changeset_status_box" type="checkbox" name="change_changeset_status" style="display: none;" />
               %endif
               <div id="preview-btn" class="preview-btn ui-btn small">${_('Preview')}</div>
@@ -159,6 +173,10 @@
                         <label for="${status}">${lbl}</label>
                     </div>
                 %endfor
+                %if is_pr and change_status:
+                <input id="save_close" type="checkbox" name="save_close" disabled="${'1' if cur_status in ['not_reviewed','under_review'] else ''}">
+                <label id="save_close_label" for="save_close" class="${'disabled' if cur_status in ['not_reviewed','under_review'] else ''}">${_("Close (when approved or rejected)")}</label>
+                %endif
             </div>
             %endif
             <div class="mentions-container" id="mentions_container"></div>
@@ -175,9 +193,6 @@
 
         <div class="comment-button">
         ${h.submit('save', _('Comment'), class_="ui-btn large")}
-        %if close_btn and change_status:
-           ${h.submit('save_close', _('Comment and close'), class_='ui-btn blue large %s' % ('hidden' if cur_status in ['not_reviewed','under_review'] else ''))}
-        %endif
         </div>
         ${h.end_form()}
     </div>
@@ -193,14 +208,22 @@ var change_status_show = function(){
 YUE.onDOMReady(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
+   var set_close_button_state = function(cur_val){
+       if (cur_val == 'approved' || cur_val == 'rejected') {
+           YUD.removeClass('save_close_label', 'disabled');
+           YUD.get('save_close').disabled = false;
+       }else{
+           YUD.addClass('save_close_label', 'disabled');
+           YUD.get('save_close').disabled = true;
+       }
+   }
    YUE.on(YUQ('.status_change_radio'), 'change',function(e){
        var val = e.currentTarget.value;
-       if (val == 'approved' || val == 'rejected') {
-           YUD.removeClass('save_close', 'hidden');
-       }else{
-           YUD.addClass('save_close', 'hidden');
-       }
+       set_close_button_state(val)
    })
+   // if currect checked status is approved or rejected we should unlock the close button
+   var cur_val = YUQ('.status_change_radio[checked]')[0].value;
+   set_close_button_state(cur_val)
    YUE.on('preview-btn', 'click', function(e){
        var _text = YUD.get('text').value;
        if(!_text){

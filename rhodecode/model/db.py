@@ -1979,6 +1979,7 @@ class PullRequest(Base, BaseModel):
          'mysql_charset': 'utf8'},
     )
 
+    # values for .status
     STATUS_NEW = u'new'
     STATUS_OPEN = u'open'
     STATUS_CLOSED = u'closed'
@@ -1986,7 +1987,7 @@ class PullRequest(Base, BaseModel):
     pull_request_id = Column('pull_request_id', Integer(), nullable=False, primary_key=True)
     title = Column('title', Unicode(256), nullable=True)
     description = Column('description', UnicodeText(10240), nullable=True)
-    status = Column('status', Unicode(256), nullable=False, default=STATUS_NEW)
+    status = Column('status', Unicode(256), nullable=False, default=STATUS_NEW) # only for closedness, not approve/reject/etc
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     updated_on = Column('updated_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     user_id = Column("user_id", Integer(), ForeignKey('users.user_id'), nullable=False, unique=None)
@@ -2146,7 +2147,7 @@ class Gist(Base, BaseModel):
     gist_access_id = Column('gist_access_id', Unicode(250))
     gist_description = Column('gist_description', UnicodeText(1024))
     gist_owner = Column('user_id', Integer(), ForeignKey('users.user_id'), nullable=True)
-    gist_expires = Column('gist_expires', Float(), nullable=False)
+    gist_expires = Column('gist_expires', Float(53), nullable=False)
     gist_type = Column('gist_type', Unicode(128), nullable=False)
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     modified_at = Column('modified_at', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)

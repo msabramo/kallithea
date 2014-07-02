@@ -259,7 +259,7 @@ OUTPUT::
 get_user
 --------
 
-Get's an user by username or user_id, Returns empty result if user is not found.
+Gets an user by username or user_id, Returns empty result if user is not found.
 If userid param is skipped it is set to id of user who is calling this method.
 This command can be executed only using api_key belonging to user with admin
 rights, or regular users that cannot specify different userid than theirs

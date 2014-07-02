@@ -54,7 +54,7 @@ from rhodecode.model import BaseModel
 from rhodecode.model.db import Repository, RhodeCodeUi, CacheInvalidation, \
     UserFollowing, UserLog, User, RepoGroup, PullRequest
 from rhodecode.lib.hooks import log_push_action
-from rhodecode.lib.exceptions import NonRelativePathError
+from rhodecode.lib.exceptions import NonRelativePathError, IMCCommitError
 
 log = logging.getLogger(__name__)
 
@@ -250,7 +250,7 @@ class ScmModel(BaseModel):
     @LazyProperty
     def repos_path(self):
         """
-        Get's the repositories root path from database
+        Gets the repositories root path from database
         """
 
         q = self.sa.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key == '/').one()
@@ -546,11 +546,15 @@ class ScmModel(BaseModel):
         author = safe_unicode(author)
         imc = IMC(repo)
         imc.change(FileNode(path, content, mode=cs.get_file_mode(f_path)))
-        tip = imc.commit(message=message,
-                       author=author,
-                       parents=[cs], branch=cs.branch)
-
-        self.mark_for_invalidation(repo_name)
+        try:
+            tip = imc.commit(message=message, author=author,
+                             parents=[cs], branch=cs.branch)
+        except Exception, e:
+            log.error(traceback.format_exc())
+            raise IMCCommitError(str(e))
+        finally:
+            # always clear caches, if commit fails we want fresh object also
+            self.mark_for_invalidation(repo_name)
         self._handle_push(repo,
                           username=user.username,
                           action='push_local',
@@ -744,9 +748,12 @@ class ScmModel(BaseModel):
 
             if _rhodecode_hook or force_create:
                 log.debug('writing %s hook file !' % (h_type,))
-                with open(_hook_file, 'wb') as f:
-                    tmpl = tmpl.replace('_TMPL_', rhodecode.__version__)
-                    f.write(tmpl)
-                os.chmod(_hook_file, 0755)
+                try:
+                    with open(_hook_file, 'wb') as f:
+                        tmpl = tmpl.replace('_TMPL_', rhodecode.__version__)
+                        f.write(tmpl)
+                    os.chmod(_hook_file, 0755)
+                except IOError, e:
+                    log.error('error writing %s: %s' % (_hook_file, e))
             else:
                 log.debug('skipping writing hook file')

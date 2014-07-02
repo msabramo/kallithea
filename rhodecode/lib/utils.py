@@ -55,7 +55,7 @@ from rhodecode.model.db import Repository, User, RhodeCodeUi, \
     UserLog, RepoGroup, RhodeCodeSetting, CacheInvalidation, UserGroup
 from rhodecode.model.meta import Session
 from rhodecode.model.repos_group import ReposGroupModel
-from rhodecode.lib.utils2 import safe_str, safe_unicode
+from rhodecode.lib.utils2 import safe_str, safe_unicode, get_current_rhodecode_user
 from rhodecode.lib.vcs.utils.fakemod import create_module
 from rhodecode.model.users_group import UserGroupModel
 
@@ -148,6 +148,10 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
 
     if not sa:
         sa = meta.Session()
+    # if we don't get explicit IP address try to get one from registered user
+    # in tmpl context var
+    if not ipaddr:
+        ipaddr = getattr(get_current_rhodecode_user(), 'ip_addr', '')
 
     try:
         if hasattr(user, 'user_id'):
@@ -160,7 +164,7 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
         if hasattr(repo, 'repo_id'):
             repo_obj = Repository.get(repo.repo_id)
             repo_name = repo_obj.repo_name
-        elif  isinstance(repo, basestring):
+        elif isinstance(repo, basestring):
             repo_name = repo.lstrip('/')
             repo_obj = Repository.get_by_repo_name(repo_name)
         else:
@@ -201,9 +205,11 @@ def get_filesystem_repos(path, recursive=False, skip_removed_repos=True):
     log.debug('now scanning in %s location recursive:%s...' % (path, recursive))
 
     def _get_repos(p):
-        if not os.access(p, os.W_OK):
-            log.warn('ignoring repo path without write access: %s', p)
+        if not os.access(p, os.R_OK) or not os.access(p, os.X_OK):
+            log.warn('ignoring repo path without access: %s' % (p,))
             return
+        if not os.access(p, os.W_OK):
+            log.warn('repo path without write access: %s' % (p,))
         for dirpath in os.listdir(p):
             if os.path.isfile(os.path.join(p, dirpath)):
                 continue

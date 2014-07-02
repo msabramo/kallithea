@@ -99,7 +99,7 @@ class FeedController(BaseRepoController):
             desc_msg.append('tag: %s<br/>' % tag)
         diff_processor, changes = self.__changes(cs)
         # rev link
-        _url = url('changeset_home', repo_name=cs.repository.name,
+        _url = url('changeset_home', repo_name=c.rhodecode_db_repo.repo_name,
                    revision=cs.raw_id, qualified=True)
         desc_msg.append('changeset: <a href="%s">%s</a>' % (_url, cs.raw_id[:8]))
 

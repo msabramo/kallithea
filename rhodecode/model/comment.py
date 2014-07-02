@@ -240,7 +240,7 @@ class ChangesetCommentsModel(BaseModel):
 
     def get_comments(self, repo_id, revision=None, pull_request=None):
         """
-        Get's main comments based on revision or pull_request_id
+        Gets main comments based on revision or pull_request_id
 
         :param repo_id:
         :param revision:

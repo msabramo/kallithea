@@ -34,7 +34,7 @@ from rhodecode.lib import helpers as h
 from rhodecode.lib.utils import action_logger
 from rhodecode.lib.vcs.backends.base import EmptyChangeset
 from rhodecode.lib.compat import json
-from rhodecode.lib.exceptions import HTTPLockedRC
+from rhodecode.lib.exceptions import HTTPLockedRC, UserCreationError
 from rhodecode.lib.utils2 import safe_str, _extract_extras
 from rhodecode.model.db import Repository, User
 
@@ -252,6 +252,54 @@ def log_create_repository(repository_dict, created_by, **kwargs):
     return 0
 
 
+def check_allowed_create_user(user_dict, created_by, **kwargs):
+    from rhodecode import EXTENSIONS
+    callback = getattr(EXTENSIONS, 'PRE_CREATE_USER_HOOK', None)
+    if isfunction(callback):
+        allowed, reason = callback(created_by=created_by, **user_dict)
+        if not allowed:
+            raise UserCreationError(reason)
+
+
+def log_create_user(user_dict, created_by, **kwargs):
+    """
+    Post create user Hook. This is a dummy function for admins to re-use
+    if needed. It's taken from rhodecode-extensions module and executed
+    if present
+
+    :param user_dict: dict dump of user object
+
+    available keys for user_dict:
+
+     'username',
+     'full_name_or_username',
+     'full_contact',
+     'user_id',
+     'name',
+     'firstname',
+     'short_contact',
+     'admin',
+     'lastname',
+     'ip_addresses',
+     'ldap_dn',
+     'email',
+     'api_key',
+     'last_login',
+     'full_name',
+     'active',
+     'password',
+     'emails',
+     'inherit_default_permissions'
+
+    """
+    from rhodecode import EXTENSIONS
+    callback = getattr(EXTENSIONS, 'CREATE_USER_HOOK', None)
+    if isfunction(callback):
+        return callback(created_by=created_by, **user_dict)
+
+    return 0
+
+
 def log_delete_repository(repository_dict, deleted_by, **kwargs):
     """
     Post delete repository Hook. This is a dummy function for admins to re-use
@@ -286,6 +334,45 @@ def log_delete_repository(repository_dict, deleted_by, **kwargs):
                    'deleted_on': time.time()})
         kw.update(kwargs)
         return callback(**kw)
+
+    return 0
+
+
+def log_delete_user(user_dict, deleted_by, **kwargs):
+    """
+    Post delete user Hook. This is a dummy function for admins to re-use
+    if needed. It's taken from rhodecode-extensions module and executed
+    if present
+
+    :param user_dict: dict dump of user object
+
+    available keys for user_dict:
+
+     'username',
+     'full_name_or_username',
+     'full_contact',
+     'user_id',
+     'name',
+     'firstname',
+     'short_contact',
+     'admin',
+     'lastname',
+     'ip_addresses',
+     'ldap_dn',
+     'email',
+     'api_key',
+     'last_login',
+     'full_name',
+     'active',
+     'password',
+     'emails',
+     'inherit_default_permissions'
+
+    """
+    from rhodecode import EXTENSIONS
+    callback = getattr(EXTENSIONS, 'DELETE_USER_HOOK', None)
+    if isfunction(callback):
+        return callback(deleted_by=deleted_by, **user_dict)
 
     return 0
 
