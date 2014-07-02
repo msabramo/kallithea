@@ -2578,6 +2578,12 @@ BIN_FILENODE = 6
     font-size: 10px;
 }
 
+#graph_content_pr .compare_view_commits .expand_commit,
+#graph_content .container .expand_commit {
+    width: 24px;
+    cursor: pointer;
+}
+
 #graph_content #changesets .container .right {
     width: 120px;
     padding-right: 0px;
