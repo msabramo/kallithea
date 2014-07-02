@@ -2,8 +2,8 @@
 
 <%def name="title()">
     ${_('%s Pull Request #%s') % (c.repo_name, c.pull_request.pull_request_id)}
-    %if c.rhodecode_name:
-        &middot; ${c.rhodecode_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
     %endif
 </%def>
 

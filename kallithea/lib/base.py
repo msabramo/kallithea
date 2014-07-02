@@ -300,7 +300,7 @@ class BaseController(WSGIController):
         c.visual.gravatar_url = rc_config.get('rhodecode_gravatar_url')
 
         c.ga_code = rc_config.get('rhodecode_ga_code')
-        c.rhodecode_name = rc_config.get('rhodecode_title')
+        c.site_name = rc_config.get('rhodecode_title')
         c.clone_uri_tmpl = rc_config.get('rhodecode_clone_uri_tmpl')
 
         ## INI stored

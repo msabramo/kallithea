@@ -2,8 +2,8 @@
 
 <%def name="title()">
     ${_('%s Statistics') % c.repo_name}
-    %if c.rhodecode_name:
-        &middot; ${c.rhodecode_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
     %endif
 </%def>
 

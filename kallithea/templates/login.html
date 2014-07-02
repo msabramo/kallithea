@@ -3,8 +3,8 @@
 
 <%def name="title()">
     ${_('Log In')}
-    %if c.rhodecode_name:
-        &middot; ${c.rhodecode_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
     %endif
 </%def>
 
@@ -15,8 +15,8 @@
             <div class="header">
                 <a href="${h.url('home')}"><img src="${h.url('/images/kallithea-logo.png')}" alt="RhodeCode"/></a>
             </div>
-            %if c.rhodecode_name:
-             <div class="branding">- ${c.rhodecode_name}</div>
+            %if c.site_name:
+             <div class="branding">- ${c.site_name}</div>
             %endif
         </div>
     </div>
@@ -26,8 +26,8 @@
     <%include file="/base/flash_msg.html"/>
     <!-- login -->
     <div class="title withlogo">
-        %if c.rhodecode_name:
-            <h5>${_('Log In to %s') % c.rhodecode_name}</h5>
+        %if c.site_name:
+            <h5>${_('Log In to %s') % c.site_name}</h5>
         %else:
             <h5>${_('Log In')}</h5>
         %endif

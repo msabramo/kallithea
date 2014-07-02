@@ -8,8 +8,8 @@
             <div class="header">
                 <a href="${h.url('home')}"><img src="${h.url('/images/kallithea-logo.png')}" alt="RhodeCode"/></a>
             </div>
-            %if c.rhodecode_name:
-             <div class="branding">- ${c.rhodecode_name}</div>
+            %if c.site_name:
+             <div class="branding">- ${c.site_name}</div>
             %endif
         </div>
         <!-- MENU -->

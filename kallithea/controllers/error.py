@@ -53,7 +53,7 @@ class ErrorController(BaseController):
 
     def document(self):
         resp = request.environ.get('pylons.original_response')
-        c.rhodecode_name = config.get('rhodecode_title')
+        c.site_name = config.get('rhodecode_title')
 
         log.debug('### %s ###' % resp.status)
 

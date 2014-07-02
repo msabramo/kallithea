@@ -2,8 +2,8 @@
 <%inherit file="/base/base.html"/>
 <%def name="title()">
     ${_('Journal')}
-    %if c.rhodecode_name:
-        &middot; ${c.rhodecode_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
     %endif
 </%def>
 <%def name="breadcrumbs()">

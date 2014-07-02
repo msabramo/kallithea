@@ -7,8 +7,8 @@
     %else:
         ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.org_repo.repo_name, c.org_ref)} &gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref)}
     %endif
-    %if c.rhodecode_name:
-        &middot; ${c.rhodecode_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
     %endif
 </%def>
 
