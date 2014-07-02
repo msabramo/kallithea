@@ -1,8 +1,8 @@
 #!/bin/sh
-psql -U postgres -h localhost -c 'drop database if exists rhodecode;'
-psql -U postgres -h localhost -c 'create database rhodecode;'
-paster setup-db rc.ini --force-yes --user=marcink --password=qweqwe --email=marcin@python-blog.com --repos=/home/marcink/repos --no-public-access
-API_KEY=`psql -R " " -A -U postgres -h localhost -c "select api_key from users where admin=TRUE" -d rhodecode | awk '{print $2}'`
+psql -U postgres -h localhost -c 'drop database if exists kallithea;'
+psql -U postgres -h localhost -c 'create database kallithea;'
+paster setup-db rc.ini --force-yes --user=username --password=qweqwe --email=username@example.com --repos=/home/username/repos --no-public-access
+API_KEY=`psql -R " " -A -U postgres -h localhost -c "select api_key from users where admin=TRUE" -d kallithea | awk '{print $2}'`
 echo "run those after running server"
 paster serve rc.ini --pid-file=rc.pid --daemon
 sleep 3

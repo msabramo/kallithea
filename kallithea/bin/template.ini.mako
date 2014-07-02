@@ -20,7 +20,7 @@ pdebug = false
 </%text>
 #email_to = admin@localhost
 #error_email_from = paste_error@localhost
-#app_email_from = rhodecode-noreply@localhost
+#app_email_from = kallithea-noreply@localhost
 #error_message =
 #email_prefix = [RhodeCode]
 
@@ -62,7 +62,7 @@ use = egg:gunicorn#main
 <%text>## is set to more than one worker</%text>
 workers = 1
 <%text>## process name</%text>
-proc_name = rhodecode
+proc_name = kallithea
 <%text>## type of worker class, one of sync, eventlet, gevent, tornado</%text>
 <%text>## recommended for bigger setup is using of of other than sync one</%text>
 worker_class = sync
@@ -80,10 +80,10 @@ master = true
 http = 0.0.0.0:5000
 
 <%text>## set as deamon and redirect all output to file</%text>
-#daemonize = ./uwsgi_rhodecode.log
+#daemonize = ./uwsgi_kallithea.log
 
 <%text>## master process PID</%text>
-pidfile = ./uwsgi_rhodecode.pid
+pidfile = ./uwsgi_kallithea.pid
 
 <%text>## stats server with workers statistics, use uwsgitop</%text>
 <%text>## for monitoring</%text>
@@ -275,8 +275,8 @@ issue_prefix = #
 
 <%text>## instance-id prefix</%text>
 <%text>## a prefix key for this instance used for cache invalidation when running</%text>
-<%text>## multiple instances of rhodecode, make sure it's globally unique for</%text>
-<%text>## all running rhodecode instances. Leave empty if you don't use it</%text>
+<%text>## multiple instances of kallithea, make sure it's globally unique for</%text>
+<%text>## all running kallithea instances. Leave empty if you don't use it</%text>
 instance_id =
 
 <%text>## alternative return HTTP header for failed authentication. Default HTTP</%text>
@@ -366,7 +366,7 @@ beaker.cache.sql_cache_long.key_length = 256
 </%text>
 <%text>## db session ##</%text>
 #beaker.session.type = ext:database
-#beaker.session.sa.url = postgresql://postgres:qwe@localhost/rhodecode
+#beaker.session.sa.url = postgresql://postgres:qwe@localhost/kallithea
 #beaker.session.table_name = db_session
 
 <%text>## encrypted cookie client side session, good for many instances ##</%text>
@@ -375,7 +375,7 @@ beaker.cache.sql_cache_long.key_length = 256
 <%text>## file based cookies (default) ##</%text>
 #beaker.session.type = file
 
-beaker.session.key = rhodecode
+beaker.session.key = kallithea
 beaker.session.secret = ${uuid()}
 
 <%text>## Secure encrypted cookie. Requires AES and AES python libraries</%text>
@@ -502,13 +502,13 @@ logview.pylons.util = #eee
 </%text>
 %if database_engine == 'sqlite':
 # SQLITE [default]
-sqlalchemy.db1.url = sqlite:///${here}/rhodecode.db?timeout=60
+sqlalchemy.db1.url = sqlite:///${here}/kallithea.db?timeout=60
 %elif database_engine == 'postgres':
 # POSTGRESQL
-sqlalchemy.db1.url = postgresql://user:pass@localhost/rhodecode
+sqlalchemy.db1.url = postgresql://user:pass@localhost/kallithea
 %elif database_engine == 'mysql':
 # MySQL
-sqlalchemy.db1.url = mysql://user:pass@localhost/rhodecode
+sqlalchemy.db1.url = mysql://user:pass@localhost/kallithea
 %endif
 # see sqlalchemy docs for others
 
