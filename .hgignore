@@ -23,5 +23,4 @@ syntax: regexp
 ^RhodeCode\.egg-info$
 ^rc.*\.ini$
 ^fabfile.py
-^\.rhodecode$
 ^\.idea$

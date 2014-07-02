@@ -48,7 +48,7 @@ def argparser(argv):
     group = parser.add_argument_group('config')
     group.add_argument('--apikey', help='api access key')
     group.add_argument('--apihost', help='api host')
-    group.add_argument('--config', help='config file path DEFAULT: ~/.rhodecode')
+    group.add_argument('--config', help='config file path DEFAULT: ~/.config/kallithea')
     group.add_argument('--save-config', action='store_true',
                        help='save the given config into a file')
 

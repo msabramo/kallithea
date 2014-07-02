@@ -37,7 +37,7 @@ except ImportError:
     except ImportError:
         import json
 
-CONFIG_NAME = '.rhodecode'
+CONFIG_NAME = '.config/kallithea'
 FORMAT_PRETTY = 'pretty'
 FORMAT_JSON = 'json'
 
