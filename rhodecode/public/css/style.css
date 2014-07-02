@@ -4863,7 +4863,7 @@ div.diffblock .code-header {
     border-bottom: 1px solid #CCCCCC;
     background: #EEEEEE;
     padding: 10px 0 10px 0;
-    height: 14px;
+    min-height: 14px;
 }
 
 div.diffblock .code-header.banner {
