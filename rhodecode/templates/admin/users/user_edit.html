@@ -1,0 +1,252 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Edit user')} ${c.user.username} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))}
+    &raquo;
+    ${h.link_to(_('Users'),h.url('users'))}
+    &raquo;
+    ${_('Edit %s') % c.user.username}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    ${h.form(url('update_user', id=c.user.user_id),method='put')}
+    <div class="form">
+        <div class="field">
+           <div class="gravatar_box">
+               <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(c.user.email)}"/></div>
+                <p>
+                %if c.use_gravatar:
+                <strong>${_('Change your avatar at')} <a href="http://gravatar.com">gravatar.com</a></strong>
+                <br/>${_('Using')} ${c.user.email}
+                %else:
+                <br/>${c.user.email}
+                %endif
+           </div>
+        </div>
+        <div class="field">
+            <div class="label">
+                <label>${_('API key')}:</label> ${c.user.api_key}
+            </div>
+        </div>
+        ##show current ip just if we show ourself
+        %if c.rhodecode_user.username == c.user.username:
+        <div class="field">
+            <div class="label">
+                <label>${_('Current IP')}:</label> ${c.perm_user.ip_addr or "?"}
+            </div>
+        </div>
+        %endif
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="username">${_('Username')}:</label>
+                </div>
+                <div class="input">
+                    %if c.ldap_dn:
+                        ${h.text('username',class_='medium disabled', readonly="readonly")}
+                    %else:
+                        ${h.text('username',class_='medium')}
+                    %endif:
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="ldap_dn">${_('LDAP DN')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('ldap_dn',class_='medium disabled',readonly="readonly")}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="new_password">${_('New password')}:</label>
+                </div>
+                <div class="input">
+                    ${h.password('new_password',class_='medium',autocomplete="off")}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="password_confirmation">${_('New password confirmation')}:</label>
+                </div>
+                <div class="input">
+                    ${h.password('password_confirmation',class_="medium",autocomplete="off")}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="firstname">${_('First Name')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('firstname',class_='medium')}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="lastname">${_('Last Name')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('lastname',class_='medium')}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="email">${_('Email')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('email',class_='medium')}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="active">${_('Active')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('active',value=True)}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="admin">${_('Admin')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('admin',value=True)}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Save'),class_="ui-btn large")}
+              ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+<div style="min-height:780px" class="box box-right">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Permissions')}</h5>
+    </div>
+    <%namespace name="dpb" file="/base/default_perms_box.html"/>
+    ${dpb.default_perms_box(url('user_perm', id=c.user.user_id))}
+
+    ## permissions overview
+    <%namespace name="p" file="/base/perms_summary.html"/>
+    ${p.perms_summary(c.perm_user.permissions, show_all=True)}
+
+</div>
+<div class="box box-left" style="clear:left">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Email addresses')}</h5>
+    </div>
+
+    <div class="emails_wrap">
+      <table class="noborder">
+      %for em in c.user_email_map:
+        <tr>
+            <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(em.user.email,16)}"/> </div></td>
+            <td><div class="email">${em.email}</div></td>
+            <td>
+              ${h.form(url('user_emails_delete', id=c.user.user_id),method='delete')}
+                  ${h.hidden('del_email',em.email_id)}
+                  ${h.submit('remove_',_('delete'),id="remove_email_%s" % em.email_id,
+                  class_="delete_icon action_button", onclick="return  confirm('"+_('Confirm to delete this email: %s') % em.email+"');")}
+              ${h.end_form()}
+            </td>
+        </tr>
+      %endfor
+      </table>
+    </div>
+
+    ${h.form(url('user_emails', id=c.user.user_id),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="new_email">${_('New email address')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('new_email', class_='medium')}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Add'),class_="ui-btn large")}
+              ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+<div class="box box-left" style="clear:left">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Allowed IP addresses')}</h5>
+    </div>
+
+    <div class="ips_wrap">
+      <table class="noborder">
+      %if c.user_ip_map:
+        %for ip in c.user_ip_map:
+          <tr>
+              <td><div class="ip">${ip.ip_addr}</div></td>
+              <td><div class="ip">${h.ip_range(ip.ip_addr)}</div></td>
+              <td>
+                ${h.form(url('user_ips_delete', id=c.user.user_id),method='delete')}
+                    ${h.hidden('del_ip',ip.ip_id)}
+                    ${h.submit('remove_',_('delete'),id="remove_ip_%s" % ip.ip_id,
+                    class_="delete_icon action_button", onclick="return  confirm('"+_('Confirm to delete this ip: %s') % ip.ip_addr+"');")}
+                ${h.end_form()}
+              </td>
+          </tr>
+        %endfor
+       %else:
+        <tr><td><div class="ip">${_('All IP addresses are allowed')}</div></td></tr>
+       %endif
+      </table>
+    </div>
+
+    ${h.form(url('user_ips', id=c.user.user_id),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="new_ip">${_('New ip address')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('new_ip', class_='medium')}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Add'),class_="ui-btn large")}
+              ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+</%def>

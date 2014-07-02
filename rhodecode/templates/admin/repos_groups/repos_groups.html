@@ -1,0 +1,23 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+<%def name="title()">
+    ${_('%s Group Dashboard') % c.group.group_name} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs()">
+    <span class="groups_breadcrumbs">
+    ${h.link_to(_(u'Home'),h.url('/'))}
+    %if c.group.parent_group:
+        &raquo; ${h.link_to(c.group.parent_group.name,h.url('repos_group_home',group_name=c.group.parent_group.group_name))}
+    %endif
+    &raquo; "${c.group.name}" ${_('with')}
+    </span>
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+        <%include file="/index_base.html" args="parent=self,group_name=c.group.group_name"/>
+</%def>

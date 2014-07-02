@@ -1,0 +1,110 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Files Add') % c.repo_name} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="js_extra()">
+<script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/mode/meta.js')}"></script>
+</%def>
+<%def name="css_extra()">
+<link rel="stylesheet" type="text/css" href="${h.url('/css/codemirror.css')}"/>
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Add file')} @ ${h.show_id(c.cs)}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('files')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+            <li>
+              <span style="text-transform: uppercase;">
+              <a href="#">${_('Branch')}: ${c.cs.branch}</a></span>
+            </li>
+        </ul>
+    </div>
+    <div class="table">
+        <div id="files_data">
+          ${h.form(h.url.current(),method='post',id='eform',enctype="multipart/form-data")}
+            <h3>${_('Add new file')}</h3>
+            <div class="form">
+              <div class="fields">
+                  <div id="filename_container" class="field file">
+                      <div class="label">
+                          <label for="filename">${_('File Name')}:</label>
+                      </div>
+                      <div class="input">
+                          <input type="text" value="" size="30" name="filename" id="filename">
+                          ${_('or')} <span class="ui-btn" id="upload_file_enable">${_('Upload file')}</span>
+                      </div>
+                  </div>
+                  <div id="upload_file_container" class="field" style="display:none">
+                    <div class="label">
+                        <label for="upload_file_container">${_('Upload file')}</label>
+                    </div>
+                    <div class="file">
+                        <input type="file"  size="30" name="upload_file" id="upload_file">
+                        ${_('or')} <span class="ui-btn" id="file_enable">${_('Create new file')}</span>
+                    </div>
+                  </div>
+                   <div class="field">
+                      <div class="label">
+                          <label for="location">${_('Location')}</label>
+                      </div>
+                      <div class="input">
+                          <input type="text" value="${c.f_path}" size="30" name="location" id="location">
+                          ${_('use / to separate directories')}
+                      </div>
+                   </div>
+              </div>
+            </div>
+            <div id="body" class="codeblock">
+            <div class="code-header">
+                <label class="commit" for="set_mode">${_('New file mode')}</label>
+                ${h.select('set_mode','plain',[('plain',_('plain'))])}
+            </div>
+                <div id="editor_container">
+                    <pre id="editor_pre"></pre>
+                    <textarea id="editor" name="content" style="display:none"></textarea>
+                </div>
+                <div style="padding: 10px;color:#666666">${_('Commit message')}</div>
+                <textarea id="commit" name="message" style="height: 100px;width: 99%;margin-left:4px" placeholder="${c.default_message}"></textarea>
+            </div>
+            <div style="text-align: left;padding-top: 5px">
+            ${h.submit('commit',_('Commit changes'),class_="ui-btn")}
+            ${h.reset('reset',_('Reset'),class_="ui-btn")}
+            </div>
+            ${h.end_form()}
+            <script type="text/javascript">
+            var reset_url = "${h.url('files_home',repo_name=c.repo_name,revision=c.cs.raw_id,f_path=c.f_path)}";
+            var myCodeMirror = initCodeMirror('editor',reset_url);
+            CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
+
+            //inject new modes
+            var modes_select = YUD.get('set_mode');
+            for(var i=0;i<CodeMirror.modeInfo.length;i++){
+                var m = CodeMirror.modeInfo[i];
+                var opt = new Option(m.name, m.mode);
+                modes_select.options[i+1] = opt
+            }
+            YUE.on(modes_select, 'change', function(e){
+                var selected = e.currentTarget;
+                var new_mode = selected.options[selected.selectedIndex].value;
+                setCodeMirrorMode(myCodeMirror, new_mode);
+            })
+            </script>
+        </div>
+    </div>
+</div>
+</%def>

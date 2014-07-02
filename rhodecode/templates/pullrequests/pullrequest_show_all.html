@@ -1,0 +1,60 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Pull Requests') % c.repo_name} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+%if c.from_:
+    ${_('Pull requests from %s') % c.repo_name}
+%else:
+    ${_('Pull requests to %s') % c.repo_name}
+%endif
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('showpullrequest')}
+
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        %if c.rhodecode_user.username != 'default':
+            <ul class="links">
+            %if h.HasPermissionAny('hg.admin','hg.create.repository')() or h.HasReposGroupPermissionAny('group.write', 'group.admin')(c.group.group_name if c.group else None):
+              <li>
+                  <span>
+                      <a id="open_new_pr" href="${h.url('pullrequest_home',repo_name=c.repo_name)}">${_('Open new pull request')}</a>
+                  </span>
+              </li>
+            %endif
+            </ul>
+        %endif
+    </div>
+
+    <div style="margin: 0 20px">
+        <div>
+        %if c.from_:
+            ${h.link_to(_('Instead, show pull requests to %s') % c.repo_name, h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed))}
+        %else:
+            ${h.link_to(_('Instead, show pull requests from %s') % c.repo_name, h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1))}
+        %endif
+        </div>
+
+        <div>
+        %if c.closed:
+            ${h.link_to(_('Hide closed pull requests'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_))}
+        %else:
+            ${h.link_to(_('Show closed pull requests too'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_,closed=1))}
+        %endif
+        </div>
+    </div>
+
+    ${c.pullrequest_data}
+
+</div>
+</%def>

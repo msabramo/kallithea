@@ -1,0 +1,206 @@
+## -*- coding: utf-8 -*-
+
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Changeset') % c.repo_name} - ${h.show_id(c.changeset)} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Changeset')} - <span class='hash'>r${c.changeset.revision}:${h.short_id(c.changeset.raw_id)}</span>
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('changelog')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <script>
+    var _USERS_AC_DATA = ${c.users_array|n};
+    var _GROUPS_AC_DATA = ${c.users_groups_array|n};
+    AJAX_COMMENT_URL = "${url('changeset_comment',repo_name=c.repo_name,revision=c.changeset.raw_id)}";
+    AJAX_COMMENT_DELETE_URL = "${url('changeset_comment_delete',repo_name=c.repo_name,comment_id='__COMMENT_ID__')}";
+    </script>
+    <div class="table">
+        <div class="diffblock">
+            <div class="parents">
+                %if c.changeset.parents:
+                 %for n, p_cs in enumerate(reversed(c.changeset.parents)):
+                    <span class="changeset_hash">&laquo; ${h.link_to('%s:%s' % (p_cs.revision,p_cs.raw_id[:6]),h.url('changeset_home',repo_name=c.repo_name,revision=p_cs.raw_id),title=p_cs.message)}</span>
+                    <br>
+                 %endfor
+                 %else:
+                    <span>${_('No parents')}</span>
+                 %endif
+            </div>
+            <div class="children">
+                %if c.changeset.children:
+                 %for n, p_cs in enumerate(reversed(c.changeset.children)):
+                    <span class="changeset_hash">${h.link_to('%s:%s' % (p_cs.revision,p_cs.raw_id[:6]),h.url('changeset_home',repo_name=c.repo_name,revision=p_cs.raw_id),title=p_cs.message)} &raquo;</span>
+                    <br>
+                 %endfor
+                 %else:
+                    <span>${_('No children')}</span>
+                 %endif
+            </div>
+            <div class="code-header banner">
+
+                <div class="hash">
+                 r${c.changeset.revision}:${h.short_id(c.changeset.raw_id)}
+                </div>
+                <div class="date">
+                  ${h.fmt_date(c.changeset.date)}
+                </div>
+                <div class="changeset-status-container">
+                    %if c.statuses:
+                      <div title="${_('Changeset status')}" class="changeset-status-lbl">[${h.changeset_status_lbl(c.statuses[0])}]</div>
+                      <div class="changeset-status-ico"><img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[0])}" /></div>
+                    %endif
+                </div>
+                <div class="diff-actions">
+                  <a href="${h.url('changeset_raw_home',repo_name=c.repo_name,revision=c.changeset.raw_id)}"  class="tooltip" title="${h.tooltip(_('Raw diff'))}"><img class="icon" src="${h.url('/images/icons/page_white.png')}"/></a>
+                  <a href="${h.url('changeset_patch_home',repo_name=c.repo_name,revision=c.changeset.raw_id)}"  class="tooltip" title="${h.tooltip(_('Patch diff'))}"><img class="icon" src="${h.url('/images/icons/page_add.png')}"/></a>
+                  <a href="${h.url('changeset_download_home',repo_name=c.repo_name,revision=c.changeset.raw_id,diff='download')}"  class="tooltip" title="${h.tooltip(_('Download diff'))}"><img class="icon" src="${h.url('/images/icons/page_save.png')}"/></a>
+                  ${c.ignorews_url(request.GET)}
+                  ${c.context_url(request.GET)}
+                </div>
+                <div class="comments-number" style="float:right;padding-right:5px">${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt}</div>
+            </div>
+        </div>
+        <div id="changeset_content">
+            <div class="container">
+                 <div class="left">
+                     <div class="author">
+                         <div class="gravatar">
+                             <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.changeset.author),20)}"/>
+                         </div>
+                         <span>${h.person(c.changeset.author)}</span><br/>
+                         <span><a href="mailto:${h.email_or_none(c.changeset.author)}">${h.email_or_none(c.changeset.author)}</a></span><br/>
+                     </div>
+                     <div class="message">${h.urlify_commit(c.changeset.message, c.repo_name)}</div>
+                 </div>
+                 <div class="right">
+                     <div class="changes">
+                        % if (len(c.changeset.affected_files) <= c.affected_files_cut_off) or c.fulldiff:
+                         <span class="removed" title="${_('Removed')}">${len(c.changeset.removed)}</span>
+                         <span class="changed" title="${_('Changed')}">${len(c.changeset.changed)}</span>
+                         <span class="added" title="${_('Added')}">${len(c.changeset.added)}</span>
+                        % else:
+                         <span class="removed" title="${_('Affected %s files') % len(c.changeset.affected_files)}">!</span>
+                         <span class="changed" title="${_('Affected %s files') % len(c.changeset.affected_files)}">!</span>
+                         <span class="added"   title="${_('Affected %s files') % len(c.changeset.affected_files)}">!</span>
+                        % endif
+                     </div>
+
+                 <span class="logtags">
+                 %if len(c.changeset.parents)>1:
+                 <span class="merge">${_('merge')}</span>
+                 %endif
+                    %if h.is_hg(c.rhodecode_repo):
+                      %for book in c.changeset.bookmarks:
+                      <span class="booktag" title="${_('Bookmark %s') % book}">
+                         ${h.link_to(h.shorter(book),h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}
+                      </span>
+                      %endfor
+                    %endif
+                     %for tag in c.changeset.tags:
+                         <span class="tagtag"  title="${_('Tag %s') % tag}">
+                         ${h.link_to(tag,h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}</span>
+                     %endfor
+                     %if c.changeset.branch:
+                         <span class="branchtag" title="${_('Branch %s') % c.changeset.branch}">
+                         ${h.link_to(c.changeset.branch,h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}
+                         </span>
+                     %endif
+                 </span>
+                    </div>
+            </div>
+            <span>
+            % if c.limited_diff:
+            ${ungettext('%s file changed','%s files changed',len(c.changeset.affected_files)) % (len(c.changeset.affected_files))}:
+            % else:
+            ${ungettext('%s file changed with %s insertions and %s deletions','%s files changed with %s insertions and %s deletions', len(c.changeset.affected_files)) % (len(c.changeset.affected_files),c.lines_added,c.lines_deleted)}:
+            %endif
+            </span>
+            <div class="cs_files">
+              %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[c.changeset.raw_id].iteritems():
+                  <div class="cs_${change}">
+                        <div class="node">
+                            <a href="#${FID}">${h.safe_unicode(path)}</a>
+                        </div>
+                    <div class="changes">${h.fancy_file_stats(stats)}</div>
+                  </div>
+              %endfor
+              % if c.limited_diff:
+                <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}" onclick="return confirm('${_("Showing a huge diff might take some time and resources")}')">${_('Show full diff')}</a></h5>
+              % endif
+            </div>
+        </div>
+
+    </div>
+
+    ## diff block
+    <%namespace name="diff_block" file="/changeset/diff_block.html"/>
+    ${diff_block.diff_block(c.changes[c.changeset.raw_id])}
+
+    % if c.limited_diff:
+      <h4>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}" onclick="return confirm('${_("Showing a huge diff might take some time and resources")}')">${_('Show full diff')}</a></h4>
+    % endif
+
+    ## template for inline comment form
+    <%namespace name="comment" file="/changeset/changeset_file_comment.html"/>
+    ${comment.comment_inline_form()}
+
+    ## render comments and inlines
+    ${comment.generate_comments()}
+
+    ## main comment form and it status
+    ${comment.comments(h.url('changeset_comment', repo_name=c.repo_name, revision=c.changeset.raw_id),
+                       h.changeset_status(c.rhodecode_db_repo, c.changeset.raw_id))}
+
+    ## FORM FOR MAKING JS ACTION AS CHANGESET COMMENTS
+    <script type="text/javascript">
+      YUE.onDOMReady(function(){
+          YUE.on(YUQ('.show-inline-comments'),'change',function(e){
+              var show = 'none';
+              var target = e.currentTarget;
+              if(target == null){
+                  target = this;
+              }
+              if(target.checked){
+                  var show = ''
+              }
+              var boxid = YUD.getAttribute(target,'id_for');
+              var comments = YUQ('#{0} .inline-comments'.format(boxid));
+              for(c in comments){
+                 YUD.setStyle(comments[c],'display',show);
+              }
+              var btns = YUQ('#{0} .inline-comments-button'.format(boxid));
+              for(c in btns){
+                  YUD.setStyle(btns[c],'display',show);
+               }
+          })
+
+          YUE.on(YUQ('.line'),'click',function(e){
+              var tr = e.currentTarget;
+              if(tr == null){
+                  tr = this;
+              }
+              injectInlineForm(tr);
+          });
+
+          // inject comments into they proper positions
+          var file_comments = YUQ('.inline-comment-placeholder');
+          renderInlineComments(file_comments);
+      })
+
+    </script>
+
+    </div>
+</%def>

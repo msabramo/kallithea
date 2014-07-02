@@ -1,0 +1,46 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s File Diff') % c.repo_name} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('File diff')} r${c.changeset_1.revision}:${h.short_id(c.changeset_1.raw_id)} &rarr; r${c.changeset_2.revision}:${h.short_id(c.changeset_2.raw_id)}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('changelog')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <div>
+    ## diff block
+    <%namespace name="diff_block" file="/changeset/diff_block.html"/>
+    ${diff_block.diff_block(c.changes)}
+    </div>
+</div>
+
+<script>
+YUE.onDOMReady(function(){
+
+    YUE.on(YUQ('.diff-menu-activate'),'click',function(e){
+        var act = e.currentTarget.nextElementSibling;
+
+        if(YUD.hasClass(act,'active')){
+            YUD.removeClass(act,'active');
+            YUD.setStyle(act,'display','none');
+        }else{
+            YUD.addClass(act,'active');
+            YUD.setStyle(act,'display','');
+        }
+    });
+
+})
+</script>
+</%def>

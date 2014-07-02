@@ -1,0 +1,191 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Permissions administration')} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))}
+    &raquo;
+    ${_('Permissions')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box box-left">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <h3>${_('Default permissions')}</h3>
+    ${h.form(url('permission', id='default'),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="anonymous">${_('Anonymous access')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('anonymous',True)}
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">
+                    <label for="default_repo_perm">${_('Repository')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_repo_perm','',c.repo_perms_choices)}
+
+                    ${h.checkbox('overwrite_default_repo','true')}
+                    <label for="overwrite_default_repo">
+                    <span class="tooltip"
+                    title="${h.tooltip(_('All default permissions on each repository will be reset to chosen permission, note that all custom default permission on repositories will be lost'))}">
+                    ${_('Overwrite existing settings')}</span> </label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">
+                    <label for="default_group_perm">${_('Repository group')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_group_perm','',c.group_perms_choices)}
+                    ${h.checkbox('overwrite_default_group','true')}
+                    <label for="overwrite_default_group">
+                    <span class="tooltip"
+                    title="${h.tooltip(_('All default permissions on each repository group will be reset to chosen permission, note that all custom default permission on repository groups will be lost'))}">
+                    ${_('Overwrite existing settings')}</span> </label>
+
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">
+                    <label for="default_group_perm">${_('User group')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_user_group_perm','',c.user_group_perms_choices)}
+                    ${h.checkbox('overwrite_default_user_group','true')}
+                    <label for="overwrite_default_user_group">
+                    <span class="tooltip"
+                    title="${h.tooltip(_('All default permissions on each user group will be reset to chosen permission, note that all custom default permission on repository groups will be lost'))}">
+                    ${_('Overwrite existing settings')}</span> </label>
+
+                </div>
+            </div>
+             <div class="field">
+                <div class="label">
+                    <label for="default_repo_create">${_('Repository creation')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_repo_create','',c.repo_create_choices)}
+                </div>
+             </div>
+             <div class="field">
+                <div class="label">
+                    <label for="default_user_group_create">${_('User group creation')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_user_group_create','',c.user_group_create_choices)}
+                </div>
+             </div>
+             <div class="field">
+                <div class="label">
+                    <label for="default_fork">${_('Repository forking')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_fork','',c.fork_choices)}
+                </div>
+             </div>
+             <div class="field">
+                <div class="label">
+                    <label for="default_register">${_('Registration')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_register','',c.register_choices)}
+                </div>
+             </div>
+             <div class="field">
+                <div class="label">
+                    <label for="default_extern_activate">${_('External auth account activation')}:</label>
+                </div>
+                <div class="select">
+                    ${h.select('default_extern_activate','',c.extern_activate_choices)}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Save'),class_="ui-btn large")}
+              ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+
+<div style="min-height:780px" class="box box-right">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Default User Permissions')}</h5>
+    </div>
+
+    ## permissions overview
+    <%namespace name="p" file="/base/perms_summary.html"/>
+    ${p.perms_summary(c.perm_user.permissions, show_all=True)}
+
+</div>
+<div class="box box-left" style="clear:left">
+    <!-- box / title -->
+    <div class="title">
+        <h5>${_('Allowed IP addresses')}</h5>
+    </div>
+
+    <div class="ips_wrap">
+      <table class="noborder">
+      %if c.user_ip_map:
+        %for ip in c.user_ip_map:
+          <tr>
+              <td><div class="ip">${ip.ip_addr}</div></td>
+              <td><div class="ip">${h.ip_range(ip.ip_addr)}</div></td>
+              <td>
+                ${h.form(url('user_ips_delete', id=c.user.user_id),method='delete')}
+                    ${h.hidden('del_ip',ip.ip_id)}
+                    ${h.hidden('default_user', 'True')}
+                    ${h.submit('remove_',_('delete'),id="remove_ip_%s" % ip.ip_id,
+                    class_="delete_icon action_button", onclick="return confirm('"+_('Confirm to delete this ip: %s') % ip.ip_addr+"');")}
+                ${h.end_form()}
+              </td>
+          </tr>
+        %endfor
+       %else:
+        <tr><td><div class="ip">${_('All IP addresses are allowed')}</div></td></tr>
+       %endif
+      </table>
+    </div>
+
+    ${h.form(url('user_ips', id=c.user.user_id),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="new_ip">${_('New ip address')}:</label>
+                </div>
+                <div class="input">
+                    ${h.hidden('default_user', 'True')}
+                    ${h.text('new_ip', class_='medium')}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Add'),class_="ui-btn large")}
+              ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+</%def>

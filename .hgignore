@@ -1,15 +1,27 @@
+syntax: glob
+*.pyc
+*.swp
+*.sqlite
+*.tox
+*.egg-info
+*.egg
 
 syntax: regexp
+^rcextensions
+^build
+^dist/
+^docs/build/
+^docs/_build/
 ^data$
-syntax: regexp
+^sql_dumps/
 ^\.settings$
-syntax: regexp
 ^\.project$
-syntax: regexp
 ^\.pydevproject$
-syntax: regexp
-^hg_app\.db$
-syntax: regexp
+^\.coverage$
+^rhodecode\.db$
 ^test\.db$
-syntax: regexp
-^repositories\.config$
+^RhodeCode\.egg-info$
+^rc.*\.ini$
+^fabfile.py
+^\.rhodecode$
+^\.idea$

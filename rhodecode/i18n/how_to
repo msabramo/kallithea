@@ -1,0 +1,67 @@
+##########################
+# to create new language #
+##########################
+
+Translations are available on transifex under::
+
+    https://www.transifex.com/projects/p/RhodeCode/
+
+Preferred method is to register on transifex and request new language translation.
+
+manual creation of new language
++++++++++++++++++++++++++++++++
+ 
+Dowload sources of RhodeCode. Run::
+
+    python setup.py develop
+
+To prepare the enviroment
+
+
+Make sure all translation strings are extracted by running::
+
+    python setup.py extract_messages
+
+Create new language by executing following command::
+    python setup.py init_catalog -l <new_language_code>
+
+This creates a new language under directory rhodecode/i18n/<new_language_code>
+Be sure to update transifex mapping under .tx/config for new language
+
+Edit the new PO file located in LC_MESSAGES directory with poedit or your
+favorite PO files editor. Do translations and at the end verify the translation
+file for any errors. This can be done by executing::
+
+    msgfmt -f -c rhodecode/i18n/<new_language_code>/LC_MESSAGES/<updated_file.po>
+
+finally compile the translations::
+
+    python setup.py compile_catalog -l <new_language_code>
+
+##########################
+# to update translations #
+##########################
+
+Fetch latest version of strings for translation by running::
+
+    python setup.py extract_messages
+
+Update PO file by doing::
+
+    python setup.py update_catalog -l <new_language_code><- to update the translations
+
+Edit the new updated po file. Repeat all steps after `init_catalog` step from
+new translation instructions
+
+
+########################
+# testing translations #
+########################
+
+Edit test.ini file and set lang attribute to::
+
+    lang=<new_language_code>
+
+Run RhodeCode tests by executing::
+
+    nosetests

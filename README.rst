@@ -1,69 +1,180 @@
--------------------------------------
-Pylons based replacement for hgwebdir
--------------------------------------
+=========
+RhodeCode
+=========
 
-Fully customizable, with authentication, permissions. Based on vcs library.
+About
+-----
 
-**Overview**
+``RhodeCode`` is a fast and powerful management tool for Mercurial_ and GIT_
+with a built in push/pull server, full text search and code-review.
+It works on http/https and has a built in permission/authentication system with
+the ability to authenticate via LDAP or ActiveDirectory. RhodeCode also provides
+simple API so it's easy integrable with existing external systems.
 
-- has it's own middleware to handle mercurial protocol request each request can 
-  be logged and authenticated + threaded performance unlikely to hgweb
-- full permissions per project read/write/admin access even on mercurial request
-- mako templates let's you cusmotize look and feel of application.
-- diffs annotations and source code all colored by pygments.
-- mercurial branch graph and yui-flot powered graphs with zooming
-- admin interface for performing user/permission managments as well as repository
-  managment. 
-- full text search of source codes with indexing daemons using whoosh
-  (no external search servers required all in one application)
-- async tasks for speed and performance using celery (works without them too)  
-- Additional settings for mercurial web, (hooks editable from admin
-  panel !) also manage paths, archive, remote messages  
-- backup scripts can do backup of whole app and send it over scp to desired location
-- setup project descriptions and info inside built in db for easy, non 
-  file-system operations
-- added cache with invalidation on push/repo managment for high performance and
-  always upto date data. 
-- rss / atom feeds, gravatar support
-- based on pylons 1.0 / sqlalchemy 0.6
+RhodeCode is similar in some respects to github_ or bitbucket_,
+however RhodeCode can be run as standalone hosted application on your own server.
+It is open source and donation ware and focuses more on providing a customized,
+self administered interface for Mercurial_ and GIT_  repositories.
+RhodeCode works on \*nix systems and Windows it is powered by a vcs_ library
+that Lukasz Balcerzak and Marcin Kuzminski created to handle multiple
+different version control systems.
 
-**Incoming**
+RhodeCode uses `PEP386 versioning <http://www.python.org/dev/peps/pep-0386/>`_
 
-- code review based on hg-review (when it's stable)
-- git support (when vcs can handle it - almost there !)
-- commit based wikis
-- in server forks
-- clonning from remote repositories into hg-app 
-- other cools stuff that i can figure out (or You can help me figure out)
-
-.. note::
-   This software is still in beta mode. 
-   I don't guarantee that it'll work correctly.
-   
-
--------------
 Installation
--------------
+------------
+Stable releases of RhodeCode are best installed via::
+
+    easy_install rhodecode
+
+Or::
+
+    pip install rhodecode
+
+Detailed instructions and links may be found on the Installation page.
+
+Please visit http://packages.python.org/RhodeCode/installation.html for
+more details
+
+RhodeCode demo
+--------------
+
+http://demo.rhodecode.org
+
+The default access is anonymous but you can login to an administrative account
+using the following credentials:
+
+- username: demo
+- password: demo12
+
+Source code
+-----------
+
+The latest sources can be obtained from official RhodeCode instance
+https://secure.rhodecode.org
+
+
+MIRRORS:
+
+Issue tracker and sources at bitbucket_
+
+http://bitbucket.org/marcinkuzminski/rhodecode
+
+Sources at github_
+
+https://github.com/marcinkuzminski/rhodecode
+
+
+RhodeCode Features
+------------------
+
+- Has its own middleware to handle mercurial_ and git_ protocol requests.
+  Each request is authenticated and logged together with IP address.
+- Build for speed and performance. You can make multiple pulls/pushes simultaneous.
+  Proven to work with 1000s of repositories and users
+- Supports http/https, LDAP, AD, proxy-pass authentication.
+- Full permissions (private/read/write/admin) together with IP restrictions for each repository,
+  additional explicit forking, repositories group and repository creation permissions.
+- User groups for easier permission management.
+- Repository groups let you group repos and manage them easier. They come with
+  permission delegation features, so you can delegate groups management.
+- Users can fork other users repos, and compare them at any time.
+- Built in Gist functionality for sharing code snippets.
+- Integrates easily with other systems, with custom created mappers you can connect it to almost
+  any issue tracker, and with an JSON-RPC API you can make much more
+- Build in commit-api let's you add, edit and commit files right from RhodeCode
+  web interface using simple editor or upload binary files using simple form.
+- Powerfull pull-request driven review system with inline commenting,
+  changeset statuses, and notification system.
+- Importing and syncing repositories from remote locations for GIT_, Mercurial_ and  SVN.
+- Mako templates let's you customize the look and feel of the application.
+- Beautiful diffs, annotations and source code browsing all colored by pygments.
+  Raw diffs are made in git-diff format for both VCS systems, including GIT_ binary-patches
+- Mercurial_ and Git_ DAG graphs and yui-flot powered graphs with zooming and statistics
+  to track activity for repositories
+- Admin interface with user/permission management. Admin activity journal, logs
+  pulls, pushes, forks, registrations and other actions made by all users.
+- Server side forks. It is possible to fork a project and modify it freely
+  without breaking the main repository.
+- rst and markdown README support for repositories.
+- Full text search powered by Whoosh on the source files, commit messages, and file names.
+  Build in indexing daemons, with optional incremental index build
+  (no external search servers required all in one application)
+- Setup project descriptions/tags and info inside built in db for easy, non
+  file-system operations.
+- Intelligent cache with invalidation after push or project change, provides
+  high performance and always up to date data.
+- RSS / Atom feeds, gravatar support, downloadable sources as zip/tar/gz
+- Optional async tasks for speed and performance using celery_
+- Backup scripts can do backup of whole app and send it over scp to desired
+  location
+- Based on pylons / sqlalchemy / sqlite / whoosh / vcs
+
+
+Incoming / Plans
+----------------
+
+- Finer granular permissions per branch, or subrepo
+- Web based merges for pull requests
+- Tracking history for each lines in files
+- Simple issue tracker
+- SSH based authentication with server side key management
+- Commit based built in wiki system
+- More statistics and graph (global annotation + some more statistics)
+- Other advancements as development continues (or you can of course make
+  additions and or requests)
+
+License
+-------
+
+``RhodeCode`` is released under the GPLv3 license.
+
+
+Getting help
+------------
+
+Listed bellow are various support resources that should help.
+
 .. note::
-   I recomend to install tip version of vcs while the app is in beta mode.
-   
-   
-- create new virtualenv and activate it - highly recommend that you use separate
-  virtual-env for whole application
-- download hg app from default branch from bitbucket and run 
-  'python setup.py install' this will install all required dependencies needed
-- run paster setup-app production.ini it should create all needed tables 
-  and an admin account make sure You specify correct path to repositories. 
-- remember that the given path for mercurial repositories must be write 
-  accessible for the application
-- run paster serve development.ini - or you can use manage-hg_app script.
-  the app should be available at the 127.0.0.1:5000
-- use admin account you created to login.
-- default permissions on each repository is read, and owner is admin. So remember
-  to update these.
-- in order to use full power of async tasks, You must install message broker
-  preferrably rabbitmq and start celeryd daemon. The app should gain some speed 
-  than. For installation instructions 
-  You can visit: http://ask.github.com/celery/getting-started/index.html. All
-  needed configs are inside hg-app ie. celeryconfig.py
-     
+
+   Please try to read the documentation before posting any issues, especially
+   the **troubleshooting section**
+
+- Join the `Google group <http://groups.google.com/group/rhodecode>`_ and ask
+  any questions.
+
+- Open an issue at `issue tracker <http://bitbucket.org/marcinkuzminski/rhodecode/issues>`_
+
+- Join #rhodecode on FreeNode (irc.freenode.net)
+  or use http://webchat.freenode.net/?channels=rhodecode for web access to irc.
+
+- You can also follow me on twitter **@marcinkuzminski** where i often post some
+  news about RhodeCode
+
+
+Online documentation
+--------------------
+
+Online documentation for the current version of RhodeCode is available at
+ - http://packages.python.org/RhodeCode/
+ - http://rhodecode.readthedocs.org/en/latest/index.html
+
+You may also build the documentation for yourself - go into ``docs/`` and run::
+
+   make html
+
+(You need to have sphinx_ installed to build the documentation. If you don't
+have sphinx_ installed you can install it via the command:
+``easy_install sphinx``)
+
+.. _virtualenv: http://pypi.python.org/pypi/virtualenv
+.. _python: http://www.python.org/
+.. _sphinx: http://sphinx.pocoo.org/
+.. _mercurial: http://mercurial.selenic.com/
+.. _bitbucket: http://bitbucket.org/
+.. _github: http://github.com/
+.. _subversion: http://subversion.tigris.org/
+.. _git: http://git-scm.com/
+.. _celery: http://celeryproject.org/
+.. _Sphinx: http://sphinx.pocoo.org/
+.. _vcs: http://pypi.python.org/pypi/vcs

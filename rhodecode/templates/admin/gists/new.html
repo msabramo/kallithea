@@ -1,0 +1,99 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('New gist')} &middot; ${c.rhodecode_name}
+</%def>
+
+<%def name="js_extra()">
+<script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/mode/meta.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/mode/meta_ext.js')}"></script>
+</%def>
+<%def name="css_extra()">
+<link rel="stylesheet" type="text/css" href="${h.url('/css/codemirror.css')}"/>
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('New gist')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('gists')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+
+    <div class="table">
+        <div id="files_data">
+          ${h.form(h.url('gists'), method='post',id='eform')}
+            <div>
+                <div class="gravatar">
+                   <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.rhodecode_user.full_contact),32)}"/>
+                </div>
+                <textarea style="resize:vertical; width:400px;border: 1px solid #ccc;border-radius: 3px;" id="description" name="description" placeholder="${_('Gist description ...')}"></textarea>
+                <div style="padding:0px 0px 0px 42px">
+                <label for='lifetime'>${_('Gist lifetime')}</label>
+                ${h.select('lifetime', '', c.lifetime_options)}
+                </div>
+            </div>
+            <div id="body" class="codeblock">
+                <div style="padding: 10px 10px 10px 26px;color:#666666">
+                    ##<input type="text" value="" size="30" name="filename" id="filename" placeholder="gistfile1.txt">
+                    ${h.text('filename', size=30, placeholder='gistfile1.txt')}
+                    ##<input type="text" value="" size="30" name="filename" id="filename" placeholder="gistfile1.txt">
+                    ${h.select('mimetype','plain',[('plain',_('plain'))])}
+                </div>
+                <div id="editor_container">
+                    <pre id="editor_pre"></pre>
+                    <textarea id="editor" name="content" style="display:none"></textarea>
+                </div>
+            </div>
+            <div style="padding-top: 5px">
+            ${h.submit('private',_('Create private gist'),class_="ui-btn yellow")}
+            ${h.submit('public',_('Create public gist'),class_="ui-btn")}
+            ${h.reset('reset',_('Reset'),class_="ui-btn")}
+            </div>
+            ${h.end_form()}
+            <script type="text/javascript">
+            var myCodeMirror = initCodeMirror('editor', '');
+            CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
+
+            //inject new modes
+            var modes_select = YUD.get('mimetype');
+            for(var i=0;i<CodeMirror.modeInfo.length;i++){
+                var m = CodeMirror.modeInfo[i];
+                var opt = new Option(m.name, m.mime);
+                YUD.setAttribute(opt, 'mode', m.mode)
+                modes_select.options[i+1] = opt;
+            }
+            YUE.on(modes_select, 'change', function(e){
+                var selected = e.currentTarget;
+                var node = selected.options[selected.selectedIndex];
+                var mimetype = node.value;
+                var new_mode = YUD.getAttribute(node, 'mode')
+                setCodeMirrorMode(myCodeMirror, new_mode);
+
+                var proposed_mimetypes = MIME_TO_EXT[mimetype] || [];
+                if(proposed_mimetypes.length < 1){
+                    //fallback to text/plain
+                    proposed_mimetypes = ['.txt']
+                }
+                var mt = proposed_mimetypes[0];
+                if(mt[0] == '*'){
+                    mt = mt.substr(1)
+                }
+                YUD.get('filename').value = 'filename1' + mt;
+            })
+            </script>
+        </div>
+    </div>
+
+</div>
+</%def>

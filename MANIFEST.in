@@ -1,15 +1,19 @@
-include COPYING
+include rhodecode/config/deployment.ini_tmpl
+include rhodecode/lib/dbmigrate/migrate.cfg
+
 include README.rst
-include pylons_app/config/deployment.ini_tmpl
+recursive-include rhodecode/i18n *
 
-include hg_app_daemon
-include hg_app_daemon2
+#docs
+recursive-include docs *
 
-recursive-include pylons_app/public/css *
-recursive-include pylons_app/public/images *
+#init.d
+recursive-include init.d *
 
-include pylons_app/public/js/yui2.js
-include pylons_app/public/js/excanvas.min.js
-include pylons_app/public/js/yui.flot.js
-
-recursive-include pylons_app/templates *
+#images
+recursive-include rhodecode/public/css *
+recursive-include rhodecode/public/images *
+#js
+recursive-include rhodecode/public/js *
+#templates
+recursive-include rhodecode/templates *

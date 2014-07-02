@@ -1,0 +1,231 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${c.repo_name} ${_('New pull request')}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('New pull request')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('showpullrequest')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+
+    ${h.form(url('pullrequest', repo_name=c.repo_name), method='post', id='pull_request_form')}
+
+    <h3>${_('Create new pull request')}</h3>
+
+    <div class="form">
+        <!-- fields -->
+
+        <div class="fields" style="float:left;width:50%;padding-right:30px;">
+
+             <div class="field">
+                <div class="label">
+                    <label for="pullrequest_title">${_('Title')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('pullrequest_title', class_="large")}
+                </div>
+             </div>
+
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="pullrequest_desc">${_('Description')}:</label>
+                </div>
+                <div class="textarea text-area editor">
+                    ${h.textarea('pullrequest_desc',size=30, style="height:100px")}
+                    <span class="help-block">${_('Write a short description on this pull request')}</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="pullrequest_desc">${_('Changeset flow')}:</label>
+                </div>
+                <div class="input">
+                    ##ORG
+                    <div>
+                        <div>
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Origin repository')}:</b> ${c.rhodecode_db_repo.description}
+                            </div>
+                            <span style="font-size: 20px">
+                            ${h.select('org_repo','',c.org_repos,class_='refs')}:${h.select('org_ref',c.default_org_ref,c.org_refs,class_='refs')}
+                            </span>
+                        </div>
+                    </div>
+
+                    ##OTHER, most Probably the PARENT OF THIS FORK
+                    <div style="border-top: 1px solid #EEE; margin: 5px 0px 0px 0px">
+                        <div>
+                            ## filled with JS
+                            <div id="other_repo_desc" style="padding:5px 3px 3px 3px;">
+                            </div>
+                            <span style="font-size: 20px">
+                            ${h.select('other_repo',c.default_other_repo,c.other_repos,class_='refs')}:${c.default_other_repo_info['revs']}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="buttons">
+                    ${h.submit('save',_('Send pull request'),class_="ui-btn large")}
+                    ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+               </div>
+            </div>
+
+        </div>
+
+        ## Reviewers
+        <div style="float:left; border-left:1px dashed #eee">
+            <h4>${_('Pull request reviewers')}</h4>
+            <div id="reviewers" style="padding:0px 0px 0px 15px">
+              ## members goes here !
+              <div class="group_members_wrap">
+                <ul id="review_members" class="group_members">
+                %for member in [c.default_other_repo_info['user']]:
+                  <li id="reviewer_${member['user_id']}">
+                    <div class="reviewers_member">
+                      <div class="gravatar"><img alt="gravatar" src="${member['gravatar_link']}"/> </div>
+                      <div style="float:left">${member['firstname']} ${member['lastname']} (${_('owner')})</div>
+                      <input type="hidden" value="${member['user_id']}" name="review_members" />
+                      <span class="delete_icon action_button" onclick="removeReviewMember(${member['user_id']})"></span>
+                    </div>
+                  </li>
+                %endfor
+                </ul>
+              </div>
+
+              <div class='ac'>
+                <div class="reviewer_ac">
+                   ${h.text('user', class_='yui-ac-input')}
+                   <span class="help-block">${_('Add reviewer to this pull request.')}</span>
+                   <div id="reviewers_container"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div style="clear:both;padding: 0 0 30px 0;"></div>
+
+        <h4>${_('Changesets')}</h4>
+        <div style="float:left;padding:0px 30px 30px 30px">
+           ## overview pulled by ajax
+           <div style="float:left" id="pull_request_overview"></div>
+           <div style="float:left;clear:both;padding:10px 10px 10px 0px;display:none">
+                <a id="pull_request_overview_url" href="#">${_('Detailed compare view')}</a>
+           </div>
+        </div>
+        <div style="clear:both;"></div>
+
+    </div>
+
+    ${h.end_form()}
+
+</div>
+
+<script type="text/javascript">
+  var _USERS_AC_DATA = ${c.users_array|n};
+  var _GROUPS_AC_DATA = ${c.users_groups_array|n};
+  PullRequestAutoComplete('user', 'reviewers_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
+
+  var other_repos_info = ${c.other_repos_info|n};
+
+  var otherrepoChanged = function(){
+      var sel_box = YUQ('#pull_request_form #other_repo')[0];
+      var repo_name = sel_box.options[sel_box.selectedIndex].value;
+      var _tmpl = "<b>${_('Destination repository')}</b>: {0}".format(other_repos_info[repo_name]['description']);
+      YUD.get('other_repo_desc').innerHTML = _tmpl
+      // replace options of other_ref with the ones for the current other_repo
+      var other_ref_selector = YUD.get('other_ref');
+      var new_select = YUD.createElementFromMarkup(other_repos_info[repo_name]['revs']);
+      var new_selectedIndex = new_select.selectedIndex;
+      other_ref_selector.innerHTML = ""; // clear old options
+      while (new_select.length > 0){ // children will be popped when appened to other_ref_selector
+          other_ref_selector.appendChild(new_select.children[0]);
+      }
+      // browsers lost track of selected when appendChild was used
+      other_ref_selector.selectedIndex = new_selectedIndex;
+
+      // reset && add the reviewer based on selected repo
+      var _data = other_repos_info[repo_name];
+      YUD.get('review_members').innerHTML = '';
+      addReviewMember(_data.user.user_id, _data.user.firstname,
+                      _data.user.lastname, _data.user.username,
+                      _data.user.gravatar_link);
+  }
+
+  var loadPreview = function(){
+      //url template
+      var url = "${h.url('compare_url',
+                         repo_name='__other_repo__',
+                         org_ref_type='__other_ref_type__',
+                         org_ref='__other_ref__',
+                         other_repo='__org_repo__',
+                         other_ref_type='__org_ref_type__',
+                         other_ref='__org_ref__',
+                         as_form=True,
+                         merge=True,
+                         )}";
+      var org_repo = YUQ('#pull_request_form #org_repo')[0].value;
+      var org_ref = YUQ('#pull_request_form #org_ref')[0].value.split(':');
+
+      var other_repo = YUQ('#pull_request_form #other_repo')[0].value;
+      var other_ref = YUQ('#pull_request_form #other_ref')[0].value.split(':');
+
+      var select_refs = YUQ('#pull_request_form select.refs')
+      var rev_data = {
+          'org_repo': org_repo,
+          'org_ref': org_ref[2],
+          'org_ref_type': 'rev',
+          'other_repo': other_repo,
+          'other_ref': other_ref[2],
+          'other_ref_type': 'rev',
+      }; // gather the org/other ref and repo here
+
+      for (k in rev_data){
+          url = url.replace('__'+k+'__',rev_data[k]);
+      }
+
+      YUD.get('pull_request_overview').innerHTML = "${_('Loading ...')}";
+      ypjax(url,'pull_request_overview');
+
+      YUD.get('pull_request_overview_url').href = url; // shouldn't have as_form ... but ...
+      YUD.setStyle(YUD.get('pull_request_overview_url').parentElement,'display','');
+  }
+
+  ## refresh automatically when something changes (org_repo can't change)
+
+  YUE.on('org_ref', 'change', function(e){
+     loadPreview();
+  });
+
+  YUE.on('other_repo', 'change', function(e){
+      otherrepoChanged();
+      loadPreview();
+  });
+
+  YUE.on('other_ref', 'change', function(e){
+     loadPreview();
+  });
+
+  otherrepoChanged();
+  //lazy load overview after 0.5s
+  setTimeout(loadPreview, 500);
+
+</script>
+
+</%def>

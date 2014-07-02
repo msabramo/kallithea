@@ -1,0 +1,251 @@
+## -*- coding: utf-8 -*-
+## usage:
+## <%namespace name="comment" file="/changeset/changeset_file_comment.html"/>
+## ${comment.comment_block(co)}
+##
+<%def name="comment_block(co)">
+  <div class="comment" id="comment-${co.comment_id}" line="${co.line_no}">
+    <div class="comment-wrapp">
+      <div class="meta">
+        <div style="float:left"> <img src="${h.gravatar_url(co.author.email, 20)}" /> </div>
+          <div class="user">
+              ${co.author.username}
+          </div>
+          <div class="date">
+              ${h.age(co.modified_at)}
+          </div>
+
+       <div style="float:left;padding:4px 0px 0px 5px">
+        <span class="">
+         %if co.pull_request:
+            <a href="${h.url('pullrequest_show',repo_name=co.pull_request.other_repo.repo_name,pull_request_id=co.pull_request.pull_request_id)}">
+            %if co.status_change:
+              ${_('Vote on pull request #%s') % co.pull_request.pull_request_id}:
+            %else:
+              ${_('Comment on pull request #%s') % co.pull_request.pull_request_id}
+            %endif
+            </a>
+         %else:
+            %if co.status_change:
+              ${_('Status change on changeset')}:
+            %else:
+              ${_('Comment on changeset')}
+            %endif
+         %endif
+        </span>
+       </div>
+
+        %if co.status_change:
+           <div  style="float:left" class="changeset-status-container">
+             <div style="float:left;padding:10px 2px 0px 2px"></div>
+             <div title="${_('Changeset status')}" class="changeset-status-lbl"> ${co.status_change[0].status_lbl}</div>
+             <div class="changeset-status-ico"><img src="${h.url(str('/images/icons/flag_status_%s.png' % co.status_change[0].status))}" /></div>
+           </div>
+        %endif
+
+      <a class="permalink" href="#comment-${co.comment_id}">&para;</a>
+      %if h.HasPermissionAny('hg.admin', 'repository.admin')() or co.author.user_id == c.rhodecode_user.user_id:
+          <div onClick="deleteComment(${co.comment_id})" class="buttons delete-comment ui-btn small">${_('Delete')}</div>
+      %endif
+      </div>
+      <div class="text">
+          ${h.rst_w_mentions(co.text)|n}
+      </div>
+    </div>
+  </div>
+</%def>
+
+
+<%def name="comment_inline_form()">
+<div id='comment-inline-form-template' style="display:none">
+  <div class="comment-inline-form ac">
+  %if c.rhodecode_user.username != 'default':
+    <div class="overlay"><div class="overlay-text">${_('Submitting...')}</div></div>
+      ${h.form('#', class_='inline-form')}
+      <div id="edit-container_{1}" class="clearfix">
+          <div class="comment-help">${_('Commenting on line {1}.')}
+          ${(_('Comments parsed using %s syntax with %s support.') % (
+                 ('<a href="%s">RST</a>' % h.url('rst_help')),
+                   ('<span style="color:#003367" class="tooltip" title="%s">@mention</span>' % _('Use @username inside this text to send notification to this RhodeCode user'))
+               )
+            )|n
+           }
+          <div id="preview-btn_{1}" class="preview-btn ui-btn small">${_('Preview')}</div>
+          </div>
+            <div class="mentions-container" id="mentions_container_{1}"></div>
+            <textarea id="text_{1}" name="text" class="comment-block-ta yui-ac-input"></textarea>
+      </div>
+      <div id="preview-container_{1}" class="clearfix" style="display:none">
+         <div class="comment-help">
+              ${_('Comment preview')}
+            <div id="edit-btn_{1}" class="edit-btn ui-btn small">${_('Edit')}</div>
+          </div>
+          <div id="preview-box_{1}" class="preview-box"></div>
+      </div>
+      <div class="comment-button">
+      <input type="hidden" name="f_path" value="{0}">
+      <input type="hidden" name="line" value="{1}">
+      ${h.submit('save', _('Comment'), class_='ui-btn save-inline-form')}
+      ${h.reset('hide-inline-form', _('Cancel'), class_='ui-btn hide-inline-form')}
+      </div>
+      ${h.end_form()}
+  %else:
+      ${h.form('')}
+      <div class="clearfix">
+          <div class="comment-help">
+            ${_('You need to be logged in to comment.')} <a href="${h.url('login_home',came_from=h.url.current())}">${_('Login now')}</a>
+          </div>
+      </div>
+      <div class="comment-button">
+      ${h.reset('hide-inline-form', _('Hide'), class_='ui-btn hide-inline-form')}
+      </div>
+      ${h.end_form()}
+  %endif
+  </div>
+</div>
+</%def>
+
+
+## generates inlines taken from c.comments var
+<%def name="inlines()">
+    <div class="comments-number">${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt}</div>
+    %for path, lines in c.inline_comments:
+        % for line,comments in lines.iteritems():
+            <div style="display:none" class="inline-comment-placeholder" path="${path}" target_id="${h.safeid(h.safe_unicode(path))}">
+            %for co in comments:
+                ${comment_block(co)}
+            %endfor
+            </div>
+        %endfor
+    %endfor
+
+</%def>
+
+## generate inline comments and the main ones
+<%def name="generate_comments(include_pr=False)">
+<div class="comments">
+    <div id="inline-comments-container">
+    ## generate inlines for this changeset
+     ${inlines()}
+    </div>
+
+    %for co in c.comments:
+        <div id="comment-tr-${co.comment_id}">
+          ## only render comments that are not from pull request, or from
+          ## pull request and a status change
+          %if not co.pull_request or (co.pull_request and co.status_change) or include_pr:
+          ${comment_block(co)}
+          %endif
+        </div>
+    %endfor
+</div>
+</%def>
+
+## MAIN COMMENT FORM
+<%def name="comments(post_url, cur_status, is_pr=False, change_status=True)">
+
+<div class="comments">
+    %if c.rhodecode_user.username != 'default':
+    <div class="comment-form ac">
+        ${h.form(post_url)}
+        <div id="edit-container" class="clearfix">
+            <div class="comment-help">
+                ${(_('Comments parsed using %s syntax with %s support.') % (('<a href="%s">RST</a>' % h.url('rst_help')),
+                  '<span style="color:#003367" class="tooltip" title="%s">@mention</span>' %
+                  _('Use @username inside this text to send notification to this RhodeCode user')))|n}
+              %if change_status:
+                | <a id="show_changeset_link" onClick="change_status_show();">
+                  %if is_pr:
+                    ${_('Vote for pull request status')}
+                  %else:
+                    ${_('Change changeset status')}
+                  %endif
+                  </a>
+                  <input id="show_changeset_status_box" type="checkbox" name="change_changeset_status" style="display: none;" />
+              %endif
+              <div id="preview-btn" class="preview-btn ui-btn small">${_('Preview')}</div>
+            </div>
+            %if change_status:
+            <div id="status_block_container" class="status-block" style="display:none">
+                %for status,lbl in c.changeset_statuses:
+                    <div class="">
+                        <img src="${h.url('/images/icons/flag_status_%s.png' % status)}" /> <input ${'checked="checked"' if status == cur_status else ''}" type="radio" class="status_change_radio" name="changeset_status" id="${status}" value="${status}">
+                        <label for="${status}">${lbl}</label>
+                    </div>
+                %endfor
+                %if is_pr and change_status:
+                <input id="save_close" type="checkbox" name="save_close" disabled="${'1' if cur_status in ['not_reviewed','under_review'] else ''}">
+                <label id="save_close_label" for="save_close" class="${'disabled' if cur_status in ['not_reviewed','under_review'] else ''}">${_("Close (when approved or rejected)")}</label>
+                %endif
+            </div>
+            %endif
+            <div class="mentions-container" id="mentions_container"></div>
+             ${h.textarea('text', class_="comment-block-ta")}
+        </div>
+
+        <div id="preview-container" class="clearfix" style="display:none">
+           <div class="comment-help">
+                ${_('Comment preview')}
+              <div id="edit-btn" class="edit-btn ui-btn small">${_('Edit')}</div>
+            </div>
+            <div id="preview-box" class="preview-box"></div>
+        </div>
+
+        <div class="comment-button">
+        ${h.submit('save', _('Comment'), class_="ui-btn large")}
+        </div>
+        ${h.end_form()}
+    </div>
+    %endif
+</div>
+<script>
+var change_status_show = function(){
+    var show = ! YUD.get('show_changeset_status_box').checked;
+    YUD.get('show_changeset_status_box').checked = show;
+    YUD.setStyle('status_block_container', 'display', show?'':'none');
+};
+
+YUE.onDOMReady(function () {
+   MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
+
+   var set_close_button_state = function(cur_val){
+       if (cur_val == 'approved' || cur_val == 'rejected') {
+           YUD.removeClass('save_close_label', 'disabled');
+           YUD.get('save_close').disabled = false;
+       }else{
+           YUD.addClass('save_close_label', 'disabled');
+           YUD.get('save_close').disabled = true;
+       }
+   }
+   YUE.on(YUQ('.status_change_radio'), 'change',function(e){
+       var val = e.currentTarget.value;
+       set_close_button_state(val)
+   })
+   // if currect checked status is approved or rejected we should unlock the close button
+   var cur_val = YUQ('.status_change_radio[checked]')[0].value;
+   set_close_button_state(cur_val)
+   YUE.on('preview-btn', 'click', function(e){
+       var _text = YUD.get('text').value;
+       if(!_text){
+           return
+       }
+       var post_data = {'text': _text};
+       YUD.addClass('preview-box', 'unloaded');
+       YUD.get('preview-box').innerHTML = _TM['Loading ...'];
+       YUD.setStyle('edit-container', 'display', 'none');
+       YUD.setStyle('preview-container', 'display', '');
+
+       var url = pyroutes.url('changeset_comment_preview', {'repo_name': '${c.repo_name}'});
+       ajaxPOST(url,post_data,function(o){
+           YUD.get('preview-box').innerHTML = o.responseText;
+           YUD.removeClass('preview-box', 'unloaded');
+       })
+   })
+   YUE.on('edit-btn', 'click', function(e){
+       YUD.setStyle('edit-container', 'display', '');
+       YUD.setStyle('preview-container', 'display', 'none');
+   })
+
+});
+</script>
+</%def>

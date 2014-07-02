@@ -1,0 +1,182 @@
+<%page args="parent,group_name=''" />
+    <div class="box">
+        <!-- box / title -->
+        <div class="title">
+            <h5>
+            <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value=""/> ${parent.breadcrumbs()} <span id="repo_count">0</span> ${_('repositories')}
+            </h5>
+            %if c.rhodecode_user.username != 'default':
+              <ul class="links">
+                %if h.HasPermissionAny('hg.admin','hg.create.repository')() or h.HasReposGroupPermissionAny('group.write', 'group.admin')(c.group.group_name if c.group else None):
+                  <li>
+                  %if c.group:
+                        <span>${h.link_to(_('Add repository'),h.url('new_repo',parent_group=c.group.group_id))}</span>
+                        %if h.HasPermissionAny('hg.admin')() or h.HasReposGroupPermissionAny('group.admin')(c.group.group_name):
+                         <span>${h.link_to(_(u'Add repository group'),h.url('new_repos_group', parent_group=c.group.group_id))}</span>
+                        %endif
+                  %else:
+                    <span>${h.link_to(_('Add repository'),h.url('new_repo'))}</span>
+                    %if h.HasPermissionAny('hg.admin')():
+                     <span>${h.link_to(_(u'Add repository group'),h.url('new_repos_group'))}</span>
+                    %endif
+                  %endif
+                  </li>
+                %endif
+                %if c.group and h.HasReposGroupPermissionAny('group.admin')(c.group.group_name):
+                <li>
+                    <span>${h.link_to(_('Edit repository group'),h.url('edit_repos_group',group_name=c.group.group_name), title=_('You have admin right to this group, and can edit it'))}</span>
+                </li>
+                %endif
+              </ul>
+            %endif
+        </div>
+        <!-- end box / title -->
+        <div class="table">
+           % if c.groups:
+            <div id='groups_list_wrap' class="yui-skin-sam">
+              <table id="groups_list">
+                  <thead>
+                      <tr>
+                          <th class="left"><a href="#">${_('Group name')}</a></th>
+                          <th class="left"><a href="#">${_('Description')}</a></th>
+                          ##<th class="left"><a href="#">${_('Number of repositories')}</a></th>
+                      </tr>
+                  </thead>
+
+                  ## REPO GROUPS
+                  % for gr in c.groups:
+                    <tr>
+                        <td>
+                            <div style="white-space: nowrap">
+                            <img class="icon" alt="${_('Repository group')}" src="${h.url('/images/icons/database_link.png')}"/>
+                            ${h.link_to(gr.name,url('repos_group_home',group_name=gr.group_name))}
+                            </div>
+                        </td>
+                        %if c.visual.stylify_metatags:
+                            <td>${h.urlify_text(h.desc_stylize(gr.group_description))}</td>
+                        %else:
+                            <td>${gr.group_description}</td>
+                        %endif
+                        ## this is commented out since for multi nested repos can be HEAVY!
+                        ## in number of executed queries during traversing uncomment at will
+                        ##<td><b>${gr.repositories_recursive_count}</b></td>
+                    </tr>
+                  % endfor
+              </table>
+            </div>
+            <div id="group-user-paginator" style="padding: 0px 0px 0px 0px"></div>
+            <div style="height: 20px"></div>
+            % endif
+            <div id="welcome" style="display:none;text-align:center">
+                <h1><a href="${h.url('home')}">${c.rhodecode_name} ${c.rhodecode_version}</a></h1>
+            </div>
+            <%cnt=0%>
+            <%namespace name="dt" file="/data_table/_dt_elements.html"/>
+            <div class="yui-skin-sam" id="repos_list_wrap"></div>
+            <div id="user-paginator" style="padding: 0px 0px 0px 0px"></div>
+        </div>
+    </div>
+
+      <script>
+        var data = ${c.data|n};
+        var myDataSource = new YAHOO.util.DataSource(data);
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+
+        myDataSource.responseSchema = {
+            resultsList: "records",
+            fields: [
+               {key:"menu"},
+               {key:"raw_name"},
+               {key:"name"},
+               {key:"desc"},
+               {key:"last_change"},
+               {key:"last_changeset"},
+               {key:"owner"},
+               {key:"atom"},
+            ]
+         };
+        myDataSource.doBeforeCallback = function(req,raw,res,cb) {
+            // This is the filter function
+            var data     = res.results || [],
+                filtered = [],
+                i,l;
+
+            if (req) {
+                req = req.toLowerCase();
+                for (i = 0; i<data.length; i++) {
+                    var pos = data[i].raw_name.toLowerCase().indexOf(req, ${len(group_name)})
+                    if (pos != -1) {
+                        filtered.push(data[i]);
+                    }
+                }
+                res.results = filtered;
+            }
+            YUD.get('repo_count').innerHTML = res.results.length;
+            return res;
+        }
+
+        // main table sorting
+        var myColumnDefs = [
+            {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+            {key:"name",label:"${_('Name')}",sortable:true,
+                sortOptions: { sortFunction: nameSort }},
+            {key:"desc",label:"${_('Description')}",sortable:true},
+            {key:"last_change",label:"${_('Last Change')}",sortable:true,
+                sortOptions: { sortFunction: ageSort }},
+            {key:"last_changeset",label:"${_('Tip')}",sortable:true,
+                sortOptions: { sortFunction: revisionSort }},
+            {key:"owner",label:"${_('Owner')}",sortable:true},
+            {key:"atom",label:"",sortable:false},
+        ];
+
+        var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,{
+          sortedBy:{key:"name",dir:"asc"},
+          paginator: YUI_paginator(${c.visual.dashboard_items},['user-paginator']),
+
+          MSG_SORTASC:"${_('Click to sort ascending')}",
+          MSG_SORTDESC:"${_('Click to sort descending')}",
+          MSG_EMPTY:"${_('No repositories found.')}",
+          MSG_ERROR:"${_('Data error.')}",
+          MSG_LOADING:"${_('Loading...')}",
+        }
+        );
+        myDataTable.subscribe('postRenderEvent',function(oArgs) {
+            tooltip_activate();
+            quick_repo_menu();
+        });
+
+        var filterTimeout = null;
+
+        updateFilter = function () {
+            // Reset timeout
+            filterTimeout = null;
+
+            // Reset sort
+            var state = myDataTable.getState();
+            state.sortedBy = {key:'name', dir:YAHOO.widget.DataTable.CLASS_ASC};
+
+            // Get filtered data
+            myDataSource.sendRequest(YUD.get('q_filter').value,{
+                success : myDataTable.onDataReturnInitializeTable,
+                failure : myDataTable.onDataReturnInitializeTable,
+                scope   : myDataTable,
+                argument: state
+            });
+
+        };
+        YUE.on('q_filter','click',function(){
+            if(!YUD.hasClass('q_filter', 'loaded')){
+                //TODO: load here full list later to do search within groups
+                YUD.addClass('q_filter', 'loaded');
+            }
+         });
+
+        YUE.on('q_filter','keyup',function (e) {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(updateFilter,600);
+        });
+
+        if(YUD.get('q_filter').value) {
+            updateFilter();
+        }
+      </script>
