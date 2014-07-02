@@ -17,7 +17,7 @@ kallithea.tests.test_scm_operations
 
 Test suite for making push/pull operations.
 Run using after doing paster serve test.ini::
- RC_WHOOSH_TEST_DISABLE=1 RC_NO_TMP_PATH=1 nosetests kallithea/tests/other/test_vcs_operations.py
+ KALLITHEA_WHOOSH_TEST_DISABLE=1 KALLITHEA_NO_TMP_PATH=1 nosetests kallithea/tests/other/test_vcs_operations.py
 
 You must have git > 1.8.1 for tests to work fine
 

@@ -91,20 +91,20 @@ def load_environment(global_conf, app_conf, initial=False,
     test = os.path.split(config['__file__'])[-1] == 'test.ini'
     if test:
         if test_env is None:
-            test_env = not int(os.environ.get('RC_NO_TMP_PATH', 0))
+            test_env = not int(os.environ.get('KALLITHEA_NO_TMP_PATH', 0))
         if test_index is None:
-            test_index = not int(os.environ.get('RC_WHOOSH_TEST_DISABLE', 0))
+            test_index = not int(os.environ.get('KALLITHEA_WHOOSH_TEST_DISABLE', 0))
         if os.environ.get('TEST_DB'):
             # swap config if we pass enviroment variable
             config['sqlalchemy.db1.url'] = os.environ.get('TEST_DB')
 
         from kallithea.lib.utils import create_test_env, create_test_index
         from kallithea.tests import TESTS_TMP_PATH
-        #set RC_NO_TMP_PATH=1 to disable re-creating the database and
+        #set KALLITHEA_NO_TMP_PATH=1 to disable re-creating the database and
         #test repos
         if test_env:
             create_test_env(TESTS_TMP_PATH, config)
-        #set RC_WHOOSH_TEST_DISABLE=1 to disable whoosh index during tests
+        #set KALLITHEA_WHOOSH_TEST_DISABLE=1 to disable whoosh index during tests
         if test_index:
             create_test_index(TESTS_TMP_PATH, config, True)
 

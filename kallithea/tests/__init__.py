@@ -28,8 +28,8 @@ nosetests --pdb --pdb-failures
 nosetests --with-coverage --cover-package=kallithea.model.validators kallithea.tests.test_validators
 
 optional FLAGS:
-    RC_WHOOSH_TEST_DISABLE=1 - skip whoosh index building and tests
-    RC_NO_TMP_PATH=1 - disable new temp path for tests, used mostly for test_vcs_operations
+    KALLITHEA_WHOOSH_TEST_DISABLE=1 - skip whoosh index building and tests
+    KALLITHEA_NO_TMP_PATH=1 - disable new temp path for tests, used mostly for test_vcs_operations
 
 """
 import os

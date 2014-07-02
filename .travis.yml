@@ -5,9 +5,9 @@ python:
   - "2.7"
 
 env:  
-  - TEST_DB=sqlite:////tmp/rhodecode_test.sqlite
-  - TEST_DB=mysql://root@127.0.0.1/rhodecode_test
-  - TEST_DB=postgresql://postgres@127.0.0.1/rhodecode_test
+  - TEST_DB=sqlite:////tmp/kallithea_test.sqlite
+  - TEST_DB=mysql://root@127.0.0.1/kallithea_test
+  - TEST_DB=postgresql://postgres@127.0.0.1/kallithea_test
 
 services:
   - mysql
@@ -15,8 +15,8 @@ services:
 
 # command to install dependencies
 before_script:
-  - mysql -e 'create database rhodecode_test;'
-  - psql -c 'create database rhodecode_test;' -U postgres
+  - mysql -e 'create database kallithea_test;'
+  - psql -c 'create database kallithea_test;' -U postgres
   - git --version
 
 before_install:

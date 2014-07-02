@@ -41,7 +41,7 @@ to change your testing enviroment.
 There's a special set of tests for push/pull operations, you can runn them using::
 
     paster serve test.ini --pid-file=test.pid --daemon
-    RC_WHOOSH_TEST_DISABLE=1 RC_NO_TMP_PATH=1 nosetests -x kallithea/tests/other/test_vcs_operations.py
+    KALLITHEA_WHOOSH_TEST_DISABLE=1 KALLITHEA_NO_TMP_PATH=1 nosetests -x kallithea/tests/other/test_vcs_operations.py
     kill -9 $(cat test.pid)
 
 

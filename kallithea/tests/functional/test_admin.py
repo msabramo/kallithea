@@ -62,13 +62,13 @@ class TestAdminController(TestController):
     def test_filter_journal_filter_exact_match_on_repository(self):
         self.log_user()
         response = self.app.get(url(controller='admin/admin', action='index',
-                                    filter='repository:rhodecode'))
+                                    filter='repository:xxx'))
         response.mustcontain('3 entries')
 
     def test_filter_journal_filter_exact_match_on_repository_CamelCase(self):
         self.log_user()
         response = self.app.get(url(controller='admin/admin', action='index',
-                                    filter='repository:RhodeCode'))
+                                    filter='repository:XxX'))
         response.mustcontain('3 entries')
 
     def test_filter_journal_filter_wildcard_on_repository(self):
@@ -98,7 +98,7 @@ class TestAdminController(TestController):
     def test_filter_journal_filter_prefix_on_repository_or_other_repo(self):
         self.log_user()
         response = self.app.get(url(controller='admin/admin', action='index',
-                                    filter='repository:test* OR repository:rhodecode'))
+                                    filter='repository:test* OR repository:xxx'))
         response.mustcontain('260 entries')  # 257 + 3
 
     def test_filter_journal_filter_exact_match_on_username(self):

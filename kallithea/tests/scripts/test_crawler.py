@@ -62,14 +62,14 @@ PROJECT_PATH = jn('/', 'home', 'marcink', 'repos')
 PROJECTS = [
     #'linux-magx-pbranch',
     'CPython',
-    'rhodecode_tip',
+    'kallithea',
 ]
 
 
 cj = cookielib.FileCookieJar('/tmp/rc_test_cookie.txt')
 o = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 o.addheaders = [
-    ('User-agent', 'rhodecode-crawler'),
+    ('User-agent', 'kallithea-crawler'),
     ('Accept-Language', 'en - us, en;q = 0.5')
 ]
 
