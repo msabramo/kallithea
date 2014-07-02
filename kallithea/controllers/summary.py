@@ -136,8 +136,8 @@ class SummaryController(BaseRepoController):
         _load_changelog_summary()
 
         username = ''
-        if self.rhodecode_user.username != User.DEFAULT_USER:
-            username = safe_str(self.rhodecode_user.username)
+        if self.authuser.username != User.DEFAULT_USER:
+            username = safe_str(self.authuser.username)
 
         _def_clone_uri = _def_clone_uri_by_id = c.clone_uri_tmpl
         if '{repo}' in _def_clone_uri:

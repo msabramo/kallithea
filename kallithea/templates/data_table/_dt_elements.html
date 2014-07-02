@@ -99,16 +99,16 @@
 </%def>
 
 <%def name="rss(name)">
-  %if c.rhodecode_user.username != 'default':
-    <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name,api_key=c.rhodecode_user.api_key)}"><i class="icon-rss-sign" style="color: #fa9b39"></i></a>
+  %if c.authuser.username != 'default':
+    <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name,api_key=c.authuser.api_key)}"><i class="icon-rss-sign" style="color: #fa9b39"></i></a>
   %else:
     <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name)}"><i class="icon-rss-sign" style="color: #fa9b39"></i></a>
   %endif
 </%def>
 
 <%def name="atom(name)">
-  %if c.rhodecode_user.username != 'default':
-    <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name,api_key=c.rhodecode_user.api_key)}"><i class="icon-rss-sign"  style="color: #fa9b39"></i></a>
+  %if c.authuser.username != 'default':
+    <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name,api_key=c.authuser.api_key)}"><i class="icon-rss-sign"  style="color: #fa9b39"></i></a>
   %else:
     <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name)}"><i class="icon-rss-sign"  style="color: #fa9b39"></i></a>
   %endif

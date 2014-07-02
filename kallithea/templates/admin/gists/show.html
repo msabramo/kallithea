@@ -22,7 +22,7 @@
     <!-- box / title -->
     <div class="title">
         ${self.breadcrumbs()}
-        %if c.rhodecode_user.username != 'default':
+        %if c.authuser.username != 'default':
         <ul class="links">
           <li>
               <a href="${h.url('new_gist')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_(u'Create New Gist')}</a>
@@ -53,7 +53,7 @@
                          %endif
                        </div>
 
-                       %if h.HasPermissionAny('hg.admin')() or c.gist.gist_owner == c.rhodecode_user.user_id:
+                       %if h.HasPermissionAny('hg.admin')() or c.gist.gist_owner == c.authuser.user_id:
                         <div style="float:right">
                             ${h.form(url('gist', gist_id=c.gist.gist_id),method='delete')}
                                 ${h.submit('remove_gist', _('Delete'),class_="btn btn-mini btn-danger",onclick="return confirm('"+_('Confirm to delete this Gist')+"');")}
@@ -62,7 +62,7 @@
                        %endif
                         <div class="buttons">
                           ## only owner should see that
-                          %if h.HasPermissionAny('hg.admin')() or c.gist.gist_owner == c.rhodecode_user.user_id:
+                          %if h.HasPermissionAny('hg.admin')() or c.gist.gist_owner == c.authuser.user_id:
                             ${h.link_to(_('Edit'),h.url('edit_gist', gist_id=c.gist.gist_access_id),class_="btn btn-mini")}
                           %endif
                           ${h.link_to(_('Show as Raw'),h.url('formatted_gist', gist_id=c.gist.gist_access_id, format='raw'),class_="btn btn-mini")}

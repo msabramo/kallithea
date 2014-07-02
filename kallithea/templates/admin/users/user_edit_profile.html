@@ -11,7 +11,7 @@ ${h.form(url('update_user', id=c.user.user_id),method='put')}
                 <strong>${_('Avatars are disabled')}</strong>
                 <br/>${c.user.email or _('Missing email, please update this user email address.')}
                         ##show current ip just if we show ourself
-                        %if c.rhodecode_user.username == c.user.username:
+                        %if c.authuser.username == c.user.username:
                             [${_('current IP')}: ${c.perm_user.ip_addr or "?"}]
                         %endif
                 %endif

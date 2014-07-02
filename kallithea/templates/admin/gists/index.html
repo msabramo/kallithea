@@ -3,9 +3,9 @@
 
 <%def name="title()">
     %if c.show_private:
-        ${_('Private Gists for user %s') % c.rhodecode_user.username}
+        ${_('Private Gists for user %s') % c.authuser.username}
     %elif c.show_public:
-        ${_('Public Gists for user %s') % c.rhodecode_user.username}
+        ${_('Public Gists for user %s') % c.authuser.username}
     %else:
         ${_('Public Gists')}
     %endif
@@ -16,9 +16,9 @@
 
 <%def name="breadcrumbs_links()">
     %if c.show_private:
-        ${_('Private Gists for user %s') % c.rhodecode_user.username}
+        ${_('Private Gists for user %s') % c.authuser.username}
     %elif c.show_public:
-        ${_('Public Gists for user %s') % c.rhodecode_user.username}
+        ${_('Public Gists for user %s') % c.authuser.username}
     %else:
         ${_('Public Gists')}
     %endif
@@ -34,7 +34,7 @@
     <!-- box / title -->
     <div class="title">
         ${self.breadcrumbs()}
-        %if c.rhodecode_user.username != 'default':
+        %if c.authuser.username != 'default':
         <ul class="links">
           <li>
              <a href="${h.url('new_gist')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_(u'Create New Gist')}</a>

@@ -178,7 +178,7 @@
               %endif
               ## TODO: this check feels wrong, it would be better to have a check for permissions
               ## also it feels like a job for the controller
-              %if c.rhodecode_user.username != 'default':
+              %if c.authuser.username != 'default':
                   <li>
                    <a class="${follow_class()}" onclick="javascript:toggleFollowingRepo(this,${c.db_repo.repo_id},'${str(h.get_token())}');">
                     <span class="show-follow"><i class="icon-heart-empty"></i> ${_('Follow')}</span>
@@ -222,10 +222,10 @@
     <li>
       <a class="menu_link childs" id="quick_login_link">
           <span class="icon">
-             <img src="${h.gravatar_url(c.rhodecode_user.email,20)}" alt="avatar">
+             <img src="${h.gravatar_url(c.authuser.email,20)}" alt="avatar">
           </span>
-          %if c.rhodecode_user.username != 'default':
-            <span class="menu_link_user">${c.rhodecode_user.username}</span>
+          %if c.authuser.username != 'default':
+            <span class="menu_link_user">${c.authuser.username}</span>
             %if c.unread_notifications != 0:
               <span class="menu_link_notifications">${c.unread_notifications}</span>
             %endif
@@ -236,7 +236,7 @@
 
   <div class="user-menu">
       <div id="quick_login">
-        %if c.rhodecode_user.username == 'default':
+        %if c.authuser.username == 'default':
             <h4>${_('Login to your account')}</h4>
             ${h.form(h.url('login_home',came_from=h.url.current()))}
             <div class="form">
@@ -275,9 +275,9 @@
             ${h.end_form()}
         %else:
             <div class="links_left">
-                <div class="big_gravatar"><img alt="gravatar" src="${h.gravatar_url(c.rhodecode_user.email,48)}" /></div>
-                <div class="full_name">${c.rhodecode_user.full_name_or_username}</div>
-                <div class="email">${c.rhodecode_user.email}</div>
+                <div class="big_gravatar"><img alt="gravatar" src="${h.gravatar_url(c.authuser.email,48)}" /></div>
+                <div class="full_name">${c.authuser.full_name_or_username}</div>
+                <div class="email">${c.authuser.email}</div>
             </div>
             <div class="links_right">
             <ol class="links">
@@ -306,7 +306,7 @@
           </li>
 
           ##ROOT MENU
-          %if c.rhodecode_user.username != 'default':
+          %if c.authuser.username != 'default':
             <li ${is_current('journal')}>
               <a class="menu_link" title="${_('Show recent activity')}"  href="${h.url('journal')}">
                 <i class="icon-book"></i> ${_('Journal')}
@@ -326,7 +326,7 @@
                 <ul class="admin_menu">
                   <li><a href="${h.url('new_gist', public=1)}"><i class="icon-file-alt"></i> ${_('Create new gist')}</a></li>
                   <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All public gists')}</a></li>
-                  %if c.rhodecode_user.username != 'default':
+                  %if c.authuser.username != 'default':
                     <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My public gists')}</a></li>
                     <li><a href="${h.url('gists', private=1)}"><i class="icon-file-text"></i> ${_('My private gists')}</a></li>
                   %endif
@@ -344,14 +344,14 @@
               </a>
               ${admin_menu()}
             </li>
-          % elif c.rhodecode_user.repositories_admin or c.rhodecode_user.repository_groups_admin or c.rhodecode_user.user_groups_admin:
+          % elif c.authuser.repositories_admin or c.authuser.repository_groups_admin or c.authuser.user_groups_admin:
           <li ${is_current('admin')}>
               <a class="menu_link childs" title="${_('Admin')}">
                 <i class="icon-cog"></i> ${_('Admin')}
               </a>
-              ${admin_menu_simple(c.rhodecode_user.repositories_admin,
-                                  c.rhodecode_user.repository_groups_admin,
-                                  c.rhodecode_user.user_groups_admin or h.HasPermissionAny('hg.usergroup.create.true')())}
+              ${admin_menu_simple(c.authuser.repositories_admin,
+                                  c.authuser.repository_groups_admin,
+                                  c.authuser.user_groups_admin or h.HasPermissionAny('hg.usergroup.create.true')())}
           </li>
           % endif
           ${usermenu()}

@@ -69,7 +69,7 @@ class GistsController(BaseController):
     def index(self):
         """GET /admin/gists: All items in the collection"""
         # url('gists')
-        not_default_user = c.rhodecode_user.username != User.DEFAULT_USER
+        not_default_user = c.authuser.username != User.DEFAULT_USER
         c.show_private = request.GET.get('private') and not_default_user
         c.show_public = request.GET.get('public') and not_default_user
 
@@ -80,17 +80,17 @@ class GistsController(BaseController):
         # MY private
         if c.show_private and not c.show_public:
             gists = gists.filter(Gist.gist_type == Gist.GIST_PRIVATE)\
-                             .filter(Gist.gist_owner == c.rhodecode_user.user_id)
+                             .filter(Gist.gist_owner == c.authuser.user_id)
         # MY public
         elif c.show_public and not c.show_private:
             gists = gists.filter(Gist.gist_type == Gist.GIST_PUBLIC)\
-                             .filter(Gist.gist_owner == c.rhodecode_user.user_id)
+                             .filter(Gist.gist_owner == c.authuser.user_id)
 
         # MY public+private
         elif c.show_private and c.show_public:
             gists = gists.filter(or_(Gist.gist_type == Gist.GIST_PUBLIC,
                                      Gist.gist_type == Gist.GIST_PRIVATE))\
-                             .filter(Gist.gist_owner == c.rhodecode_user.user_id)
+                             .filter(Gist.gist_owner == c.authuser.user_id)
 
         # default show ALL public gists
         if not c.show_public and not c.show_private:
@@ -122,7 +122,7 @@ class GistsController(BaseController):
             gist_type = Gist.GIST_PUBLIC if _public else Gist.GIST_PRIVATE
             gist = GistModel().create(
                 description=form_result['description'],
-                owner=c.rhodecode_user.user_id,
+                owner=c.authuser.user_id,
                 gist_mapping=nodes,
                 gist_type=gist_type,
                 lifetime=form_result['lifetime']
@@ -176,7 +176,7 @@ class GistsController(BaseController):
         #           method='delete')
         # url('gist', gist_id=ID)
         gist = GistModel().get_gist(gist_id)
-        owner = gist.gist_owner == c.rhodecode_user.user_id
+        owner = gist.gist_owner == c.authuser.user_id
         if h.HasPermissionAny('hg.admin')() or owner:
             GistModel().delete(gist)
             Session().commit()

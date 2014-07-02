@@ -161,10 +161,10 @@ class PullrequestsController(BaseRepoController):
         return [g for g in groups if g[0]], selected
 
     def _get_is_allowed_change_status(self, pull_request):
-        owner = self.rhodecode_user.user_id == pull_request.user_id
-        reviewer = self.rhodecode_user.user_id in [x.user_id for x in
+        owner = self.authuser.user_id == pull_request.user_id
+        reviewer = self.authuser.user_id in [x.user_id for x in
                                                    pull_request.reviewers]
-        return self.rhodecode_user.admin or owner or reviewer
+        return self.authuser.admin or owner or reviewer
 
     def _load_compare_data(self, pull_request, enable_comments=True):
         """
@@ -345,7 +345,7 @@ class PullrequestsController(BaseRepoController):
         description = _form['pullrequest_desc']
         try:
             pull_request = PullRequestModel().create(
-                self.rhodecode_user.user_id, org_repo, org_ref, other_repo,
+                self.authuser.user_id, org_repo, org_ref, other_repo,
                 other_ref, revisions, reviewers, title, description
             )
             Session().commit()
@@ -370,7 +370,7 @@ class PullrequestsController(BaseRepoController):
         if pull_request.is_closed():
             raise HTTPForbidden()
         #only owner or admin can update it
-        owner = pull_request.author.user_id == c.rhodecode_user.user_id
+        owner = pull_request.author.user_id == c.authuser.user_id
         repo_admin = h.HasRepoPermissionAny('repository.admin')(c.repo_name)
         if h.HasPermissionAny('hg.admin') or repo_admin or owner:
             reviewers_ids = map(int, filter(lambda v: v not in [None, ''],
@@ -389,7 +389,7 @@ class PullrequestsController(BaseRepoController):
     def delete(self, repo_name, pull_request_id):
         pull_request = PullRequest.get_or_404(pull_request_id)
         #only owner can delete it !
-        if pull_request.author.user_id == c.rhodecode_user.user_id:
+        if pull_request.author.user_id == c.authuser.user_id:
             PullRequestModel().delete(pull_request)
             Session().commit()
             h.flash(_('Successfully deleted pull request'),
@@ -485,7 +485,7 @@ class PullrequestsController(BaseRepoController):
         comm = ChangesetCommentsModel().create(
             text=text,
             repo=c.db_repo.repo_id,
-            user=c.rhodecode_user.user_id,
+            user=c.authuser.user_id,
             pull_request=pull_request_id,
             f_path=request.POST.get('f_path'),
             line_no=request.POST.get('line'),
@@ -495,7 +495,7 @@ class PullrequestsController(BaseRepoController):
             closing_pr=close_pr
         )
 
-        action_logger(self.rhodecode_user,
+        action_logger(self.authuser,
                       'user_commented_pull_request:%s' % pull_request_id,
                       c.db_repo, self.ip_addr, self.sa)
 
@@ -505,7 +505,7 @@ class PullrequestsController(BaseRepoController):
                 ChangesetStatusModel().set_status(
                     c.db_repo.repo_id,
                     status,
-                    c.rhodecode_user.user_id,
+                    c.authuser.user_id,
                     comm,
                     pull_request=pull_request_id
                 )
@@ -513,7 +513,7 @@ class PullrequestsController(BaseRepoController):
             if close_pr:
                 if status in ['rejected', 'approved']:
                     PullRequestModel().close_pull_request(pull_request_id)
-                    action_logger(self.rhodecode_user,
+                    action_logger(self.authuser,
                               'user_closed_pull_request:%s' % pull_request_id,
                               c.db_repo, self.ip_addr, self.sa)
                 else:
@@ -549,7 +549,7 @@ class PullrequestsController(BaseRepoController):
             #don't allow deleting comments on closed pull request
             raise HTTPForbidden()
 
-        owner = co.author.user_id == c.rhodecode_user.user_id
+        owner = co.author.user_id == c.authuser.user_id
         repo_admin = h.HasRepoPermissionAny('repository.admin')(c.repo_name)
         if h.HasPermissionAny('hg.admin') or repo_admin or owner:
             ChangesetCommentsModel().delete(comment=co)

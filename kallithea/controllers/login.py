@@ -59,7 +59,7 @@ class LoginController(BaseController):
         auth_user = AuthUser(user.user_id)
         auth_user.set_authenticated()
         cs = auth_user.get_cookie_store()
-        session['rhodecode_user'] = cs
+        session['authuser'] = cs
         user.update_lastlogin()
         Session().commit()
 
@@ -105,11 +105,11 @@ class LoginController(BaseController):
         came_from = self._validate_came_from(request.GET.get('came_from'))
         c.came_from = came_from or _default_came_from
 
-        not_default = self.rhodecode_user.username != User.DEFAULT_USER
-        ip_allowed = self.rhodecode_user.ip_allowed
+        not_default = self.authuser.username != User.DEFAULT_USER
+        ip_allowed = self.authuser.ip_allowed
 
         # redirect if already logged in
-        if self.rhodecode_user.is_authenticated and not_default and ip_allowed:
+        if self.authuser.is_authenticated and not_default and ip_allowed:
             raise HTTPFound(location=c.came_from)
 
         if request.POST:

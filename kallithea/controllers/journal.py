@@ -196,9 +196,9 @@ class JournalController(BaseController):
     def index(self):
         # Return a rendered template
         p = safe_int(request.GET.get('page', 1), 1)
-        c.user = User.get(self.rhodecode_user.user_id)
+        c.user = User.get(self.authuser.user_id)
         c.following = self.sa.query(UserFollowing)\
-            .filter(UserFollowing.user_id == self.rhodecode_user.user_id)\
+            .filter(UserFollowing.user_id == self.authuser.user_id)\
             .options(joinedload(UserFollowing.follows_repository))\
             .all()
 
@@ -216,7 +216,7 @@ class JournalController(BaseController):
 
         repos_list = Session().query(Repository)\
                      .filter(Repository.user_id ==
-                             self.rhodecode_user.user_id)\
+                             self.authuser.user_id)\
                      .order_by(func.lower(Repository.repo_name)).all()
 
         repos_data = RepoModel().get_repos_as_dict(repos_list=repos_list,
@@ -288,7 +288,7 @@ class JournalController(BaseController):
         Produce an atom-1.0 feed via feedgenerator module
         """
         following = self.sa.query(UserFollowing)\
-            .filter(UserFollowing.user_id == self.rhodecode_user.user_id)\
+            .filter(UserFollowing.user_id == self.authuser.user_id)\
             .options(joinedload(UserFollowing.follows_repository))\
             .all()
         return self._atom_feed(following, public=False)
@@ -300,7 +300,7 @@ class JournalController(BaseController):
         Produce an rss feed via feedgenerator module
         """
         following = self.sa.query(UserFollowing)\
-            .filter(UserFollowing.user_id == self.rhodecode_user.user_id)\
+            .filter(UserFollowing.user_id == self.authuser.user_id)\
             .options(joinedload(UserFollowing.follows_repository))\
             .all()
         return self._rss_feed(following, public=False)
@@ -316,7 +316,7 @@ class JournalController(BaseController):
             if user_id:
                 try:
                     self.scm_model.toggle_following_user(user_id,
-                                                self.rhodecode_user.user_id)
+                                                self.authuser.user_id)
                     Session.commit()
                     return 'ok'
                 except Exception:
@@ -326,7 +326,7 @@ class JournalController(BaseController):
             if repo_id:
                 try:
                     self.scm_model.toggle_following_repo(repo_id,
-                                                self.rhodecode_user.user_id)
+                                                self.authuser.user_id)
                     Session.commit()
                     return 'ok'
                 except Exception:
@@ -341,7 +341,7 @@ class JournalController(BaseController):
         p = safe_int(request.GET.get('page', 1), 1)
 
         c.following = self.sa.query(UserFollowing)\
-            .filter(UserFollowing.user_id == self.rhodecode_user.user_id)\
+            .filter(UserFollowing.user_id == self.authuser.user_id)\
             .options(joinedload(UserFollowing.follows_repository))\
             .all()
 
@@ -362,7 +362,7 @@ class JournalController(BaseController):
         Produce an atom-1.0 feed via feedgenerator module
         """
         c.following = self.sa.query(UserFollowing)\
-            .filter(UserFollowing.user_id == self.rhodecode_user.user_id)\
+            .filter(UserFollowing.user_id == self.authuser.user_id)\
             .options(joinedload(UserFollowing.follows_repository))\
             .all()
 
@@ -374,7 +374,7 @@ class JournalController(BaseController):
         Produce an rss2 feed via feedgenerator module
         """
         c.following = self.sa.query(UserFollowing)\
-            .filter(UserFollowing.user_id == self.rhodecode_user.user_id)\
+            .filter(UserFollowing.user_id == self.authuser.user_id)\
             .options(joinedload(UserFollowing.follows_repository))\
             .all()
 

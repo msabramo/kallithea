@@ -35,7 +35,7 @@ from kallithea.lib.utils import make_ui
 from kallithea.lib.vcs.backends import get_backend
 from kallithea.lib.compat import json
 from kallithea.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
-    remove_prefix, obfuscate_url_pw, get_current_rhodecode_user
+    remove_prefix, obfuscate_url_pw, get_current_authuser
 from kallithea.lib.caching_query import FromCache
 from kallithea.lib.hooks import log_create_repository, log_delete_repository
 
@@ -537,7 +537,7 @@ class RepoModel(BaseModel):
         :param fs_remove: remove(archive) repo from filesystem
         """
         if not cur_user:
-            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
+            cur_user = getattr(get_current_authuser(), 'username', None)
         repo = self._get_repo(repo)
         if repo:
             if forks == 'detach':

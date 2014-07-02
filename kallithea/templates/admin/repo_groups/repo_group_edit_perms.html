@@ -15,7 +15,7 @@ ${h.form(url('edit_repo_group_perms', group_name=c.repo_group.group_name),method
                 %for r2p in c.repo_group.repo_group_to_perm:
                     ##forbid revoking permission from yourself, except if you're an super admin
                     <tr id="id${id(r2p.user.username)}">
-                        %if c.rhodecode_user.user_id != r2p.user.user_id or c.rhodecode_user.is_admin:
+                        %if c.authuser.user_id != r2p.user.user_id or c.authuser.is_admin:
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'group.none')}</td>
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'group.read')}</td>
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'group.write')}</td>

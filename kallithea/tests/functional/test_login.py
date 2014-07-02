@@ -33,7 +33,7 @@ class TestLoginController(TestController):
                                  {'username': 'test_admin',
                                   'password': 'test12'})
         self.assertEqual(response.status, '302 Found')
-        self.assertEqual(response.session['rhodecode_user'].get('username'),
+        self.assertEqual(response.session['authuser'].get('username'),
                          'test_admin')
         response = response.follow()
         response.mustcontain('/%s' % HG_REPO)
@@ -44,7 +44,7 @@ class TestLoginController(TestController):
                                   'password': 'test12'})
 
         self.assertEqual(response.status, '302 Found')
-        self.assertEqual(response.session['rhodecode_user'].get('username'),
+        self.assertEqual(response.session['authuser'].get('username'),
                          'test_regular')
         response = response.follow()
         response.mustcontain('/%s' % HG_REPO)

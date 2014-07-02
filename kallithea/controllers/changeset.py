@@ -356,7 +356,7 @@ class ChangesetController(BaseRepoController):
         c.co = comm = ChangesetCommentsModel().create(
             text=text,
             repo=c.db_repo.repo_id,
-            user=c.rhodecode_user.user_id,
+            user=c.authuser.user_id,
             revision=revision,
             f_path=request.POST.get('f_path'),
             line_no=request.POST.get('line'),
@@ -374,7 +374,7 @@ class ChangesetController(BaseRepoController):
                 ChangesetStatusModel().set_status(
                     c.db_repo.repo_id,
                     status,
-                    c.rhodecode_user.user_id,
+                    c.authuser.user_id,
                     comm,
                     revision=revision,
                     dont_allow_on_closed_pull_request=True
@@ -386,7 +386,7 @@ class ChangesetController(BaseRepoController):
                 h.flash(msg, category='warning')
                 return redirect(h.url('changeset_home', repo_name=repo_name,
                                       revision=revision))
-        action_logger(self.rhodecode_user,
+        action_logger(self.authuser,
                       'user_commented_revision:%s' % revision,
                       c.db_repo, self.ip_addr, self.sa)
 
@@ -425,7 +425,7 @@ class ChangesetController(BaseRepoController):
     @jsonify
     def delete_comment(self, repo_name, comment_id):
         co = ChangesetComment.get(comment_id)
-        owner = co.author.user_id == c.rhodecode_user.user_id
+        owner = co.author.user_id == c.authuser.user_id
         repo_admin = h.HasRepoPermissionAny('repository.admin')
         if h.HasPermissionAny('hg.admin')() or repo_admin or owner:
             ChangesetCommentsModel().delete(comment=co)

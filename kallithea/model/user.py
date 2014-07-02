@@ -32,7 +32,7 @@ from pylons.i18n.translation import _
 from sqlalchemy.exc import DatabaseError
 
 
-from kallithea.lib.utils2 import safe_unicode, generate_api_key, get_current_rhodecode_user
+from kallithea.lib.utils2 import safe_unicode, generate_api_key, get_current_authuser
 from kallithea.lib.caching_query import FromCache
 from kallithea.model import BaseModel
 from kallithea.model.db import User, UserToPerm, Notification, \
@@ -78,7 +78,7 @@ class UserModel(BaseModel):
 
     def create(self, form_data, cur_user=None):
         if not cur_user:
-            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
+            cur_user = getattr(get_current_authuser(), 'username', None)
 
         from kallithea.lib.hooks import log_create_user, check_allowed_create_user
         _fd = form_data
@@ -127,7 +127,7 @@ class UserModel(BaseModel):
         :param cur_user:
         """
         if not cur_user:
-            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
+            cur_user = getattr(get_current_authuser(), 'username', None)
 
         from kallithea.lib.auth import get_crypt_password, check_password
         from kallithea.lib.hooks import log_create_user, check_allowed_create_user
@@ -259,7 +259,7 @@ class UserModel(BaseModel):
 
     def delete(self, user, cur_user=None):
         if not cur_user:
-            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
+            cur_user = getattr(get_current_authuser(), 'username', None)
         user = self._get_user(user)
 
         try:

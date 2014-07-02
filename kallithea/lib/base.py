@@ -314,7 +314,7 @@ class BaseController(WSGIController):
         c.repo_name = get_repo_slug(request)  # can be empty
         c.backends = BACKENDS.keys()
         c.unread_notifications = NotificationModel()\
-                        .get_unread_cnt_for_user(c.rhodecode_user.user_id)
+                        .get_unread_cnt_for_user(c.authuser.user_id)
 
         self.cut_off_limit = safe_int(config.get('cut_off_limit'))
         self.sa = meta.Session
@@ -335,7 +335,7 @@ class BaseController(WSGIController):
                 auth_user = AuthUser(api_key=api_key, ip_addr=self.ip_addr)
                 authenticated = False
             else:
-                cookie_store = CookieStoreWrapper(session.get('rhodecode_user'))
+                cookie_store = CookieStoreWrapper(session.get('authuser'))
                 try:
                     auth_user = AuthUser(user_id=cookie_store.get('user_id', None),
                                          ip_addr=self.ip_addr)
@@ -355,7 +355,7 @@ class BaseController(WSGIController):
                 auth_user.set_authenticated(authenticated)
             request.user = auth_user
             #set globals for auth user
-            self.rhodecode_user = c.rhodecode_user = auth_user
+            self.authuser = c.authuser = auth_user
             log.info('IP: %s User: %s accessed %s' % (
                self.ip_addr, auth_user, safe_unicode(_get_access_path(environ)))
             )
@@ -413,4 +413,4 @@ class BaseRepoController(BaseController):
             c.repository_forks = self.scm_model.get_forks(dbr)
             c.repository_pull_requests = self.scm_model.get_pull_requests(dbr)
             c.repository_following = self.scm_model.is_following_repo(
-                                    c.repo_name, self.rhodecode_user.user_id)
+                                    c.repo_name, self.authuser.user_id)

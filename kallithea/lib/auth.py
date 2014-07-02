@@ -736,7 +736,7 @@ class LoginRequired(object):
 
     def __wrapper(self, func, *fargs, **fkwargs):
         cls = fargs[0]
-        user = cls.rhodecode_user
+        user = cls.authuser
         loc = "%s:%s" % (cls.__class__.__name__, func.__name__)
 
         # check if our IP is allowed
@@ -794,7 +794,7 @@ class NotAnonymous(object):
 
     def __wrapper(self, func, *fargs, **fkwargs):
         cls = fargs[0]
-        self.user = cls.rhodecode_user
+        self.user = cls.authuser
 
         log.debug('Checking if user is not anonymous @%s' % cls)
 
@@ -824,7 +824,7 @@ class PermsDecorator(object):
 
     def __wrapper(self, func, *fargs, **fkwargs):
         cls = fargs[0]
-        self.user = cls.rhodecode_user
+        self.user = cls.authuser
         self.user_perms = self.user.permissions
         log.debug('checking %s permissions %s for %s %s',
            self.__class__.__name__, self.required_perms, cls, self.user)

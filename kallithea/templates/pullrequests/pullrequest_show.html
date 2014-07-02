@@ -115,7 +115,7 @@ ${self.repo_context_bar('showpullrequest')}
                   <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email,14)}"/> </div>
                   <div style="float:left;">${member.full_name} (${_('owner') if c.pull_request.user_id == member.user_id else _('reviewer')})</div>
                   <input type="hidden" value="${member.user_id}" name="review_members" />
-                  %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.user_id == c.rhodecode_user.user_id):
+                  %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.user_id == c.authuser.user_id):
                   <div class="reviewer_member_remove action_button" onclick="removeReviewMember(${member.user_id})">
                       <i class="icon-remove-sign" style="color: #FF4444;"></i>
                   </div>
@@ -127,7 +127,7 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
           %if not c.pull_request.is_closed():
           <div class='ac'>
-            %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.rhodecode_user.user_id:
+            %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.authuser.user_id:
             <div class="reviewer_ac">
                ${h.text('user', class_='yui-ac-input')}
                <span class="help-block">${_('Add or remove reviewer to this pull request.')}</span>

@@ -143,7 +143,7 @@ class ReposController(BaseRepoController):
 
             # create is done sometimes async on celery, db transaction
             # management is handled there.
-            task = RepoModel().create(form_result, self.rhodecode_user.user_id)
+            task = RepoModel().create(form_result, self.authuser.user_id)
             from celery.result import BaseAsyncResult
             if isinstance(task, BaseAsyncResult):
                 task_id = task.task_id
@@ -287,7 +287,7 @@ class ReposController(BaseRepoController):
             h.flash(_('Repository %s updated successfully') % repo_name,
                     category='success')
             changed_name = repo.repo_name
-            action_logger(self.rhodecode_user, 'admin_updated_repo',
+            action_logger(self.authuser, 'admin_updated_repo',
                               changed_name, self.ip_addr, self.sa)
             Session().commit()
         except formencode.Invalid, errors:
@@ -334,7 +334,7 @@ class ReposController(BaseRepoController):
                     handle_forks = 'delete'
                     h.flash(_('Deleted %s forks') % _forks, category='success')
             repo_model.delete(repo, forks=handle_forks)
-            action_logger(self.rhodecode_user, 'admin_deleted_repo',
+            action_logger(self.authuser, 'admin_deleted_repo',
                   repo_name, self.ip_addr, self.sa)
             ScmModel().mark_for_invalidation(repo_name)
             h.flash(_('Deleted repository %s') % repo_name, category='success')
@@ -394,7 +394,7 @@ class ReposController(BaseRepoController):
         RepoModel()._update_permissions(repo_name, form['perms_new'],
                                         form['perms_updates'])
         #TODO: implement this
-        #action_logger(self.rhodecode_user, 'admin_changed_repo_permissions',
+        #action_logger(self.authuser, 'admin_changed_repo_permissions',
         #              repo_name, self.ip_addr, self.sa)
         Session().commit()
         h.flash(_('Repository permissions updated'), category='success')
@@ -416,7 +416,7 @@ class ReposController(BaseRepoController):
                     repo=repo_name, group_name=obj_id
                 )
             #TODO: implement this
-            #action_logger(self.rhodecode_user, 'admin_revoked_repo_permissions',
+            #action_logger(self.authuser, 'admin_revoked_repo_permissions',
             #              repo_name, self.ip_addr, self.sa)
             Session().commit()
         except Exception:
@@ -540,7 +540,7 @@ class ReposController(BaseRepoController):
         try:
             fork_id = request.POST.get('id_fork_of')
             repo = ScmModel().mark_as_fork(repo_name, fork_id,
-                                           self.rhodecode_user.username)
+                                           self.authuser.username)
             fork = repo.fork.repo_name if repo.fork else _('Nothing')
             Session().commit()
             h.flash(_('Marked repo %s as fork of %s') % (repo_name, fork),
@@ -565,7 +565,7 @@ class ReposController(BaseRepoController):
         try:
             repo = Repository.get_by_repo_name(repo_name)
             if request.POST.get('set_lock'):
-                Repository.lock(repo, c.rhodecode_user.user_id)
+                Repository.lock(repo, c.authuser.user_id)
                 h.flash(_('Locked repository'), category='success')
             elif request.POST.get('set_unlock'):
                 Repository.unlock(repo)
@@ -592,7 +592,7 @@ class ReposController(BaseRepoController):
                     Repository.unlock(repo)
                     action = _('Unlocked')
                 else:
-                    Repository.lock(repo, c.rhodecode_user.user_id)
+                    Repository.lock(repo, c.authuser.user_id)
                     action = _('Locked')
 
                 h.flash(_('Repository has been %s') % action,
@@ -631,7 +631,7 @@ class ReposController(BaseRepoController):
         c.active = 'remote'
         if request.POST:
             try:
-                ScmModel().pull_changes(repo_name, self.rhodecode_user.username)
+                ScmModel().pull_changes(repo_name, self.authuser.username)
                 h.flash(_('Pulled from remote location'), category='success')
             except Exception, e:
                 log.error(traceback.format_exc())

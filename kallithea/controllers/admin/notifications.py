@@ -59,8 +59,8 @@ class NotificationsController(BaseController):
     def index(self, format='html'):
         """GET /_admin/notifications: All items in the collection"""
         # url('notifications')
-        c.user = self.rhodecode_user
-        notif = NotificationModel().get_for_user(self.rhodecode_user.user_id,
+        c.user = self.authuser
+        notif = NotificationModel().get_for_user(self.authuser.user_id,
                                             filter_=request.GET.getall('type'))
 
         p = safe_int(request.GET.get('page', 1), 1)
@@ -82,11 +82,11 @@ class NotificationsController(BaseController):
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
             nm = NotificationModel()
             # mark all read
-            nm.mark_all_read_for_user(self.rhodecode_user.user_id,
+            nm.mark_all_read_for_user(self.authuser.user_id,
                                       filter_=request.GET.getall('type'))
             Session().commit()
-            c.user = self.rhodecode_user
-            notif = nm.get_for_user(self.rhodecode_user.user_id,
+            c.user = self.authuser
+            notif = nm.get_for_user(self.authuser.user_id,
                                     filter_=request.GET.getall('type'))
             c.notifications = Page(notif, page=1, items_per_page=10)
             return render('admin/notifications/notifications_data.html')
@@ -109,11 +109,11 @@ class NotificationsController(BaseController):
         # url('notification', notification_id=ID)
         try:
             no = Notification.get(notification_id)
-            owner = all(un.user.user_id == c.rhodecode_user.user_id
+            owner = all(un.user.user_id == c.authuser.user_id
                         for un in no.notifications_to_users)
             if h.HasPermissionAny('hg.admin')() or owner:
                 # deletes only notification2user
-                NotificationModel().mark_read(c.rhodecode_user.user_id, no)
+                NotificationModel().mark_read(c.authuser.user_id, no)
                 Session().commit()
                 return 'ok'
         except Exception:
@@ -131,11 +131,11 @@ class NotificationsController(BaseController):
         # url('notification', notification_id=ID)
         try:
             no = Notification.get(notification_id)
-            owner = any(un.user.user_id == c.rhodecode_user.user_id
+            owner = any(un.user.user_id == c.authuser.user_id
                         for un in no.notifications_to_users)
             if h.HasPermissionAny('hg.admin')() or owner:
                 # deletes only notification2user
-                NotificationModel().delete(c.rhodecode_user.user_id, no)
+                NotificationModel().delete(c.authuser.user_id, no)
                 Session().commit()
                 return 'ok'
         except Exception:
@@ -146,10 +146,10 @@ class NotificationsController(BaseController):
     def show(self, notification_id, format='html'):
         """GET /_admin/notifications/id: Show a specific item"""
         # url('notification', notification_id=ID)
-        c.user = self.rhodecode_user
+        c.user = self.authuser
         no = Notification.get(notification_id)
 
-        owner = any(un.user.user_id == c.rhodecode_user.user_id
+        owner = any(un.user.user_id == c.authuser.user_id
                     for un in no.notifications_to_users)
         repo_admin = h.HasRepoPermissionAny('repository.admin')
         if no and (h.HasPermissionAny('hg.admin')() or repo_admin or owner):

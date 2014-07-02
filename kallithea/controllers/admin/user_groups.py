@@ -138,11 +138,11 @@ class UserGroupsController(BaseController):
             form_result = users_group_form.to_python(dict(request.POST))
             UserGroupModel().create(name=form_result['users_group_name'],
                                     description=form_result['user_group_description'],
-                                    owner=self.rhodecode_user.user_id,
+                                    owner=self.authuser.user_id,
                                     active=form_result['users_group_active'])
 
             gr = form_result['users_group_name']
-            action_logger(self.rhodecode_user,
+            action_logger(self.authuser,
                           'admin_created_users_group:%s' % gr,
                           None, self.ip_addr, self.sa)
             h.flash(_('Created user group %s') % gr, category='success')
@@ -191,7 +191,7 @@ class UserGroupsController(BaseController):
             form_result = users_group_form.to_python(request.POST)
             UserGroupModel().update(c.user_group, form_result)
             gr = form_result['users_group_name']
-            action_logger(self.rhodecode_user,
+            action_logger(self.authuser,
                           'admin_updated_users_group:%s' % gr,
                           None, self.ip_addr, self.sa)
             h.flash(_('Updated user group %s') % gr, category='success')
@@ -309,7 +309,7 @@ class UserGroupsController(BaseController):
             h.flash(_('Target group cannot be the same'), category='error')
             return redirect(url('edit_user_group_perms', id=id))
         #TODO: implement this
-        #action_logger(self.rhodecode_user, 'admin_changed_repo_permissions',
+        #action_logger(self.authuser, 'admin_changed_repo_permissions',
         #              repo_name, self.ip_addr, self.sa)
         Session().commit()
         h.flash(_('User Group permissions updated'), category='success')
@@ -330,8 +330,8 @@ class UserGroupsController(BaseController):
             elif obj_type == 'user_group':
                 obj_id = safe_int(request.POST.get('user_group_id'))
 
-            if not c.rhodecode_user.is_admin:
-                if obj_type == 'user' and c.rhodecode_user.user_id == obj_id:
+            if not c.authuser.is_admin:
+                if obj_type == 'user' and c.authuser.user_id == obj_id:
                     msg = _('Cannot revoke permission for yourself as admin')
                     h.flash(msg, category='warning')
                     raise Exception('revoke admin permission on self')

@@ -15,7 +15,7 @@ ${h.form(url('edit_user_group_perms', id=c.user_group.users_group_id),method='pu
                 %for r2p in c.user_group.user_user_group_to_perm:
                     ##forbid revoking permission from yourself, except if you're an super admin
                     <tr id="id${id(r2p.user.username)}">
-                        %if c.rhodecode_user.user_id != r2p.user.user_id or c.rhodecode_user.is_admin:
+                        %if c.authuser.user_id != r2p.user.user_id or c.authuser.is_admin:
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'usergroup.none')}</td>
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'usergroup.read')}</td>
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'usergroup.write')}</td>

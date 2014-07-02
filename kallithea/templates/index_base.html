@@ -5,7 +5,7 @@
             <h5>
             <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value=""/> ${parent.breadcrumbs()} <span id="repo_count">0</span> ${_('repositories')}
             </h5>
-            %if c.rhodecode_user.username != 'default':
+            %if c.authuser.username != 'default':
               <ul class="links">
                 <li>
                 <%

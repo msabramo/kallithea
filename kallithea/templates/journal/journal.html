@@ -21,8 +21,8 @@
     ${self.menu('journal')}
 </%def>
 <%def name="head_extra()">
-<link href="${h.url('journal_atom', api_key=c.rhodecode_user.api_key)}" rel="alternate" title="${_('ATOM journal feed')}" type="application/atom+xml" />
-<link href="${h.url('journal_rss', api_key=c.rhodecode_user.api_key)}" rel="alternate" title="${_('RSS journal feed')}" type="application/rss+xml" />
+<link href="${h.url('journal_atom', api_key=c.authuser.api_key)}" rel="alternate" title="${_('ATOM journal feed')}" type="application/atom+xml" />
+<link href="${h.url('journal_rss', api_key=c.authuser.api_key)}" rel="alternate" title="${_('RSS journal feed')}" type="application/rss+xml" />
 </%def>
 <%def name="main()">
 
@@ -35,7 +35,7 @@
              <span><a id="refresh" href="${h.url('journal')}"><i class="icon-refresh"></i></a></span>
            </li>
            <li>
-             <span><a href="${h.url('journal_atom', api_key=c.rhodecode_user.api_key)}"><i class="icon-rss-sign"></i></a></span>
+             <span><a href="${h.url('journal_atom', api_key=c.authuser.api_key)}"><i class="icon-rss-sign"></i></a></span>
            </li>
          </ul>
         </div>

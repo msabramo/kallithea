@@ -172,7 +172,7 @@ class ForksController(BaseRepoController):
 
             # create fork is done sometimes async on celery, db transaction
             # management is handled there.
-            task = RepoModel().create_fork(form_result, self.rhodecode_user.user_id)
+            task = RepoModel().create_fork(form_result, self.authuser.user_id)
             from celery.result import BaseAsyncResult
             if isinstance(task, BaseAsyncResult):
                 task_id = task.task_id

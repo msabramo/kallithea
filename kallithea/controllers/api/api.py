@@ -196,7 +196,7 @@ class ApiController(JSONRPCController):
 
         try:
             ScmModel().pull_changes(repo.repo_name,
-                                    self.rhodecode_user.username)
+                                    self.authuser.username)
             return dict(
                 msg='Pulled from `%s`' % repo.repo_name,
                 repository=repo.repo_name

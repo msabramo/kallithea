@@ -56,7 +56,7 @@ from kallithea.model.db import Repository, User, RhodeCodeUi, \
     UserLog, RepoGroup, RhodeCodeSetting, CacheInvalidation, UserGroup
 from kallithea.model.meta import Session
 from kallithea.model.repo_group import RepoGroupModel
-from kallithea.lib.utils2 import safe_str, safe_unicode, get_current_rhodecode_user
+from kallithea.lib.utils2 import safe_str, safe_unicode, get_current_authuser
 from kallithea.lib.vcs.utils.fakemod import create_module
 from kallithea.model.user_group import UserGroupModel
 
@@ -178,7 +178,7 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
     # if we don't get explicit IP address try to get one from registered user
     # in tmpl context var
     if not ipaddr:
-        ipaddr = getattr(get_current_rhodecode_user(), 'ip_addr', '')
+        ipaddr = getattr(get_current_authuser(), 'ip_addr', '')
 
     try:
         if getattr(user, 'user_id', None):

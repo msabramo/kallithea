@@ -189,8 +189,8 @@ class JSONRPCController(WSGIController):
 
         # this is little trick to inject logged in user for
         # perms decorators to work they expect the controller class to have
-        # rhodecode_user attribute set
-        self.rhodecode_user = auth_u
+        # authuser attribute set
+        self.authuser = auth_u
 
         # This attribute will need to be first param of a method that uses
         # api_key, which is translated to instance of user at that name

@@ -44,7 +44,7 @@
         %endif
 
       <a class="permalink" href="#comment-${co.comment_id}">&para;</a>
-      %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or co.author.user_id == c.rhodecode_user.user_id:
+      %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or co.author.user_id == c.authuser.user_id:
           <div onClick="deleteComment(${co.comment_id})" class="buttons delete-comment btn btn-mini">${_('Delete')}</div>
       %endif
       </div>
@@ -59,7 +59,7 @@
 <%def name="comment_inline_form()">
 <div id='comment-inline-form-template' style="display:none">
   <div class="comment-inline-form ac">
-  %if c.rhodecode_user.username != 'default':
+  %if c.authuser.username != 'default':
     <div class="overlay"><div class="overlay-text">${_('Submitting...')}</div></div>
       ${h.form('#', class_='inline-form')}
       <div id="edit-container_{1}" class="clearfix">
@@ -145,7 +145,7 @@
 <%def name="comments(post_url, cur_status, is_pr=False, change_status=True)">
 
 <div class="comments">
-    %if c.rhodecode_user.username != 'default':
+    %if c.authuser.username != 'default':
     <div class="comment-form ac">
         ${h.form(post_url)}
         <div id="edit-container" class="clearfix">

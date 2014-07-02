@@ -128,7 +128,7 @@ class UsersController(BaseController):
             form_result = user_form.to_python(dict(request.POST))
             user_model.create(form_result)
             usr = form_result['username']
-            action_logger(self.rhodecode_user, 'admin_created_user:%s' % usr,
+            action_logger(self.authuser, 'admin_created_user:%s' % usr,
                           None, self.ip_addr, self.sa)
             h.flash(_('Created user %s') % usr,
                     category='success')
@@ -181,7 +181,7 @@ class UsersController(BaseController):
 
             user_model.update(id, form_result, skip_attrs=skip_attrs)
             usr = form_result['username']
-            action_logger(self.rhodecode_user, 'admin_updated_user:%s' % usr,
+            action_logger(self.authuser, 'admin_updated_user:%s' % usr,
                           None, self.ip_addr, self.sa)
             h.flash(_('User updated successfully'), category='success')
             Session().commit()

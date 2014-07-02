@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Show notification')} ${c.rhodecode_user.username}
+    ${_('Show notification')} ${c.authuser.username}
     %if c.rhodecode_name:
         &middot; ${c.rhodecode_name}
     %endif

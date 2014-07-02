@@ -63,7 +63,7 @@ class MyAccountController(BaseController):
         super(MyAccountController, self).__before__()
 
     def __load_data(self):
-        c.user = User.get(self.rhodecode_user.user_id)
+        c.user = User.get(self.authuser.user_id)
         if c.user.username == User.DEFAULT_USER:
             h.flash(_("You can't edit this user since it's"
                       " crucial for entire application"), category='warning')
@@ -75,12 +75,12 @@ class MyAccountController(BaseController):
             repos_list = [x.follows_repository for x in
                           Session().query(UserFollowing).filter(
                               UserFollowing.user_id ==
-                              self.rhodecode_user.user_id).all()]
+                              self.authuser.user_id).all()]
         else:
             admin = True
             repos_list = Session().query(Repository)\
                          .filter(Repository.user_id ==
-                                 self.rhodecode_user.user_id)\
+                                 self.authuser.user_id)\
                          .order_by(func.lower(Repository.repo_name)).all()
 
         repos_data = RepoModel().get_repos_as_dict(repos_list=repos_list,
@@ -95,7 +95,7 @@ class MyAccountController(BaseController):
         # url('my_account')
         c.active = 'profile'
         self.__load_data()
-        c.perm_user = AuthUser(user_id=self.rhodecode_user.user_id,
+        c.perm_user = AuthUser(user_id=self.authuser.user_id,
                                ip_addr=self.ip_addr)
         c.extern_type = c.user.extern_type
         c.extern_name = c.user.extern_name
@@ -104,8 +104,8 @@ class MyAccountController(BaseController):
         update = False
         if request.POST:
             _form = UserForm(edit=True,
-                             old_data={'user_id': self.rhodecode_user.user_id,
-                                       'email': self.rhodecode_user.email})()
+                             old_data={'user_id': self.authuser.user_id,
+                                       'email': self.authuser.email})()
             form_result = {}
             try:
                 post_data = dict(request.POST)
@@ -120,7 +120,7 @@ class MyAccountController(BaseController):
                     # forbid updating username for external accounts
                     skip_attrs.append('username')
 
-                UserModel().update(self.rhodecode_user.user_id, form_result,
+                UserModel().update(self.authuser.user_id, form_result,
                                    skip_attrs=skip_attrs)
                 h.flash(_('Your account was updated successfully'),
                         category='success')
@@ -151,10 +151,10 @@ class MyAccountController(BaseController):
         c.active = 'password'
         self.__load_data()
         if request.POST:
-            _form = PasswordChangeForm(self.rhodecode_user.username)()
+            _form = PasswordChangeForm(self.authuser.username)()
             try:
                 form_result = _form.to_python(request.POST)
-                UserModel().update(self.rhodecode_user.user_id, form_result)
+                UserModel().update(self.authuser.user_id, form_result)
                 Session().commit()
                 h.flash(_("Successfully updated password"), category='success')
             except formencode.Invalid as errors:
@@ -189,7 +189,7 @@ class MyAccountController(BaseController):
     def my_account_perms(self):
         c.active = 'perms'
         self.__load_data()
-        c.perm_user = AuthUser(user_id=self.rhodecode_user.user_id,
+        c.perm_user = AuthUser(user_id=self.authuser.user_id,
                                ip_addr=self.ip_addr)
 
         return render('admin/my_account/my_account.html')
@@ -206,7 +206,7 @@ class MyAccountController(BaseController):
         email = request.POST.get('new_email')
 
         try:
-            UserModel().add_extra_email(self.rhodecode_user.user_id, email)
+            UserModel().add_extra_email(self.authuser.user_id, email)
             Session().commit()
             h.flash(_("Added email %s to user") % email, category='success')
         except formencode.Invalid, error:
@@ -221,7 +221,7 @@ class MyAccountController(BaseController):
     def my_account_emails_delete(self):
         email_id = request.POST.get('del_email_id')
         user_model = UserModel()
-        user_model.delete_extra_email(self.rhodecode_user.user_id, email_id)
+        user_model.delete_extra_email(self.authuser.user_id, email_id)
         Session().commit()
         h.flash(_("Removed email from user"), category='success')
         return redirect(url('my_account_emails'))
@@ -239,11 +239,11 @@ class MyAccountController(BaseController):
 
         c.my_pull_requests = _filter(PullRequest.query()\
                                 .filter(PullRequest.user_id ==
-                                        self.rhodecode_user.user_id)\
+                                        self.authuser.user_id)\
                                 .all())
         my_prs = [x.pull_request for x in PullRequestReviewers.query()
                     .filter(PullRequestReviewers.user_id ==
-                        self.rhodecode_user.user_id).all()]
+                        self.authuser.user_id).all()]
         c.participate_in_pull_requests = _filter(my_prs)
         return render('admin/my_account/my_account.html')
 
@@ -259,14 +259,14 @@ class MyAccountController(BaseController):
             (str(60 * 24 * 30), _('1 month')),
         ]
         c.lifetime_options = [(c.lifetime_values, _("Lifetime"))]
-        c.user_api_keys = ApiKeyModel().get_api_keys(self.rhodecode_user.user_id,
+        c.user_api_keys = ApiKeyModel().get_api_keys(self.authuser.user_id,
                                                      show_expired=show_expired)
         return render('admin/my_account/my_account.html')
 
     def my_account_api_keys_add(self):
         lifetime = safe_int(request.POST.get('lifetime'), -1)
         description = request.POST.get('description')
-        new_api_key = ApiKeyModel().create(self.rhodecode_user.user_id,
+        new_api_key = ApiKeyModel().create(self.authuser.user_id,
                                            description, lifetime)
         Session().commit()
         h.flash(_("Api key successfully created"), category='success')
@@ -274,7 +274,7 @@ class MyAccountController(BaseController):
 
     def my_account_api_keys_delete(self):
         api_key = request.POST.get('del_api_key')
-        user_id = self.rhodecode_user.user_id
+        user_id = self.authuser.user_id
         if request.POST.get('del_api_key_builtin'):
             user = User.get(user_id)
             if user:
@@ -283,7 +283,7 @@ class MyAccountController(BaseController):
                 Session().commit()
                 h.flash(_("Api key successfully reset"), category='success')
         elif api_key:
-            ApiKeyModel().delete(api_key, self.rhodecode_user.user_id)
+            ApiKeyModel().delete(api_key, self.authuser.user_id)
             Session().commit()
             h.flash(_("Api key successfully deleted"), category='success')
 
