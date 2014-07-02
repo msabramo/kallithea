@@ -12,4 +12,5 @@ trans.ja    = rhodecode/i18n/ja/LC_MESSAGES/rhodecode.po
 trans.pt_BR = rhodecode/i18n/pt_BR/LC_MESSAGES/rhodecode.po
 trans.zh_CN = rhodecode/i18n/zh_CN/LC_MESSAGES/rhodecode.po
 trans.zh_TW = rhodecode/i18n/zh_TW/LC_MESSAGES/rhodecode.po
+trans.de    = rhodecode/i18n/de/LC_MESSAGES/rhodecode.po
 type = PO
