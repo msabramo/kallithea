@@ -10,12 +10,10 @@
 
         ## CSS ###
         <%def name="css()">
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/fontawesome_extension.css')}" media="screen"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/fontawesome.css')}" media="screen"/>
             <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.rhodecode_version)}"/>
             <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.rhodecode_version)}"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/newstyle.css', ver=c.rhodecode_version)}" media="screen"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/bootstrap.css', ver=c.rhodecode_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.rhodecode_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.rhodecode_version)}" media="screen"/>
             ## EXTRA FOR CSS
             ${self.css_extra()}
         </%def>

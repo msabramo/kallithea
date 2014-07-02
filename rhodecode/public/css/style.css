@@ -4963,3 +4963,7 @@ div.comment:target>.comment-wrapp {
     border: solid 2px #ee0 !important;
     margin: -2px;
 }
+
+#help_kb {
+    display: none;
+}
