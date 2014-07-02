@@ -300,8 +300,8 @@ var pyroutes = (function() {
             //fix escape
             route_tmpl = unescape(route_tmpl);
             keys = [];
-            for (o in req_params){
-                keys.push(req_params[o])
+            for (var i=0; i < req_params.length; i++) {
+                keys.push(req_params[i])
             }
             matchlist[route_name] = [
                 route_tmpl,
