@@ -3132,7 +3132,7 @@ table.code-browser .submodule-dir {
 }
 
 .hl-tip-box {
-    visibility: hidden;
+    z-index: 1;
     position: absolute;
     color: #666;
     background-color: #FFF;

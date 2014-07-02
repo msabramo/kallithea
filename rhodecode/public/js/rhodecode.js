@@ -70,17 +70,6 @@ if(!Array.prototype.indexOf) {
     };
 }
 
-// IE(CRAP) doesn't support previousElementSibling
-var prevElementSibling = function( el ) {
-    if( el.previousElementSibling ) {
-        return el.previousElementSibling;
-    } else {
-        while( el = el.previousSibling ) {
-            if( el.nodeType === 1 ) return el;
-        }
-    }
-}
-
 /**
  * A customized version of PyRoutes.JS from https://pypi.python.org/pypi/pyroutes.js/
  * which is copyright Stephane Klein and was made available under the BSD License.
@@ -273,6 +262,7 @@ var YUD = YAHOO.util.Dom;
 var YUE = YAHOO.util.Event;
 var YUQ = YAHOO.util.Selector.query;
 
+/* Invoke all functions in callbacks */
 var _run_callbacks = function(callbacks){
     if (callbacks !== undefined){
         var _l = callbacks.length;
@@ -290,7 +280,7 @@ var _run_callbacks = function(callbacks){
 /**
  * turns objects into GET query string
  */
-var toQueryString = function(o) {
+var _toQueryString = function(o) {
     if(typeof o !== 'object') {
         return false;
     }
@@ -323,6 +313,7 @@ function ypjax(url,container,s_call,f_call,args){
     if(args===undefined){
         args=null;
     }
+    $container = $('#' + container);
 
     // Set special header for partial ajax == HTTP_X_PARTIAL_XHR
     YUC.initHeader('X-PARTIAL-XHR',true);
@@ -330,21 +321,21 @@ function ypjax(url,container,s_call,f_call,args){
     // wrapper of passed callback
     var s_wrapper = (function(o){
         return function(o){
-            YUD.get(container).innerHTML=o.responseText;
-            YUD.setStyle(container,'opacity','1.0');
+            $container.html(o.responseText);
+            $container.css('opacity','1.0');
             //execute the given original callback
             if (s_call !== undefined){
                 s_call(o);
             }
         }
     })()
-    YUD.setStyle(container,'opacity','0.3');
+    $container.css('opacity','0.3');
     YUC.asyncRequest(method,url,{
         success:s_wrapper,
         failure:function(o){
-            console.log(o);
-            YUD.get(container).innerHTML='<span class="error_red">ERROR: {0}</span>'.format(o.status);
-            YUD.setStyle(container,'opacity','1.0');
+            console.log('ypjax failure: '+o);
+            $container.html('<span class="error_red">ERROR: {0}</span>'.format(o.status));
+            $container.css('opacity','1.0');
         },
         cache:false
     },args);
@@ -380,91 +371,78 @@ var ajaxPOST = function(url,postData,success) {
             alert("error");
         },
     };
-    var postData = toQueryString(postData);
+    var postData = _toQueryString(postData);
     var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
     return request;
 };
 
 
 /**
- * tooltip activate
- */
-var tooltip_activate = function(){
-    yt = YAHOO.yuitip.main;
-    YUE.onDOMReady(yt.init);
-};
-
-/**
- * show more
+ * activate .show_more links
+ * the .show_more must have an id that is the the id of an element to hide prefixed with _
+ * the parentnode will be displayed
  */
 var show_more_event = function(){
-    YUE.on(YUD.getElementsByClassName('show_more'),'click',function(e){
-        var el = e.target;
-        YUD.setStyle(YUD.get(el.id.substring(1)),'display','');
-        YUD.setStyle(el.parentNode,'display','none');
+    $('.show_more').click(function(e){
+        var el = e.currentTarget;
+        $('#' + el.id.substring(1)).hide();
+        $(el.parentNode).show();
     });
 };
 
 /**
- * show changeset tooltip
+ * activate .lazy-cs mouseover for showing changeset tooltip
  */
 var show_changeset_tooltip = function(){
-    YUE.on(YUD.getElementsByClassName('lazy-cs'), 'mouseover', function(e){
-        var target = e.currentTarget;
-        var rid = YUD.getAttribute(target,'raw_id');
-        var repo_name = YUD.getAttribute(target,'repo_name');
-        var ttid = 'tt-'+rid;
-        var success = function(o){
-            var json = JSON.parse(o.responseText);
-            YUD.addClass(target,'tooltip')
-            YUD.setAttribute(target, 'title',json['message']);
-            YAHOO.yuitip.main.show_yuitip(e, target);
-        }
-        if(rid && !YUD.hasClass(target, 'tooltip')){
-            YUD.setAttribute(target,'id',ttid);
-            YUD.setAttribute(target, 'title',_TM['loading ...']);
-            YAHOO.yuitip.main.set_listeners(target);
-            YAHOO.yuitip.main.show_yuitip(e, target);
-            var url = pyroutes.url('changeset_info', {"repo_name":repo_name, "revision": rid});
-            ajaxGET(url, success)
+    $('.lazy-cs').mouseover(function(e){
+        var $target = $(e.currentTarget);
+        var rid = $target.attr('raw_id');
+        var repo_name = $target.attr('repo_name');
+        if(rid && !$target.hasClass('tooltip')){
+            _show_tooltip(e, _TM['loading ...']);
+            var url = pyroutes.url('changeset_info', {"repo_name": repo_name, "revision": rid});
+            ajaxGET(url, function(o){
+                    var json = JSON.parse(o.responseText);
+                    $target.addClass('tooltip')
+                    _show_tooltip(e, json['message']);
+                    _activate_tooltip($target);
+                });
         }
     });
 };
 
-var onSuccessFollow = function(target){
-    var f = YUD.get(target);
-    var f_cnt = YUD.get('current_followers_count');
-
-    if(YUD.hasClass(f, 'follow')){
-        f.setAttribute('class','following');
-        f.setAttribute('title',_TM['Stop following this repository']);
-
-        if(f_cnt){
-            var cnt = Number(f_cnt.innerHTML)+1;
-            f_cnt.innerHTML = cnt;
+var _onSuccessFollow = function(target){
+    var $target = $(target);
+    var $f_cnt = $('#current_followers_count');
+    if($target.hasClass('follow')){
+        $target.attr('class', 'following');
+        $target.attr('title', _TM['Stop following this repository']);
+        if($f_cnt.html()){
+            var cnt = Number($f_cnt.html())+1;
+            $f_cnt.html(cnt);
         }
     }
     else{
-        f.setAttribute('class','follow');
-        f.setAttribute('title',_TM['Start following this repository']);
-        if(f_cnt){
-            var cnt = Number(f_cnt.innerHTML)-1;
-            f_cnt.innerHTML = cnt;
+        $target.attr('class', 'follow');
+        $target.attr('title', _TM['Start following this repository']);
+        if($f_cnt.html()){
+            var cnt = Number($f_cnt.html())-1;
+            $f_cnt.html(cnt);
         }
     }
 }
 
-var toggleFollowingRepo = function(target,fallows_repo_id,token,user_id){
-    args = 'follows_repo_id='+fallows_repo_id;
+var toggleFollowingRepo = function(target, follows_repo_id, token, user_id){
+    args = 'follows_repo_id='+follows_repo_id;
     args+= '&amp;auth_token='+token;
     if(user_id != undefined){
         args+="&amp;user_id="+user_id;
     }
     $.post(TOGGLE_FOLLOW_URL, args, function(data){
-            onSuccessFollow(target);
+            _onSuccessFollow(target);
         });
     return false;
-}
+};
 
 var showRepoSize = function(target, repo_name, token){
     var args= 'auth_token='+token;
@@ -478,113 +456,73 @@ var showRepoSize = function(target, repo_name, token){
         });
     }
     return false;
-}
+};
 
 /**
- * TOOLTIP IMPL.
+ * tooltips
  */
-YAHOO.namespace('yuitip');
-YAHOO.yuitip.main = {
 
-    $:          YAHOO.util.Dom.get,
+var tooltip_activate = function(){
+    $(document).ready(_init_tooltip);
+};
 
-    bgColor:    '#000',
-    speed:      0.3,
-    opacity:    0.9,
-    offset:     [15,15],
-    useAnim:    false,
-    maxWidth:   600,
-    add_links:  false,
-    yuitips:    [],
+var _activate_tooltip = function($tt){
+    $tt.mouseover(_show_tooltip);
+    $tt.mousemove(_move_tooltip);
+    $tt.mouseout(_close_tooltip);
+};
 
-    set_listeners: function(tt){
-        YUE.on(tt, 'mouseover', yt.show_yuitip,  tt);
-        YUE.on(tt, 'mousemove', yt.move_yuitip,  tt);
-        YUE.on(tt, 'mouseout',  yt.close_yuitip, tt);
-    },
-
-    init: function(){
-        yt.tipBox = yt.$('tip-box');
-        if(!yt.tipBox){
-            yt.tipBox = document.createElement('div');
-            document.body.appendChild(yt.tipBox);
-            yt.tipBox.id = 'tip-box';
-        }
-
-        YUD.setStyle(yt.tipBox, 'display', 'none');
-        YUD.setStyle(yt.tipBox, 'position', 'absolute');
-        if(yt.maxWidth !== null){
-            YUD.setStyle(yt.tipBox, 'max-width', yt.maxWidth+'px');
-        }
-
-        var yuitips = YUD.getElementsByClassName('tooltip');
-
-        if(yt.add_links === true){
-            var links = document.getElementsByTagName('a');
-            var linkLen = links.length;
-            for(i=0;i<linkLen;i++){
-                yuitips.push(links[i]);
-            }
-        }
-
-        var yuiLen = yuitips.length;
-
-        for(i=0;i<yuiLen;i++){
-            yt.set_listeners(yuitips[i]);
-        }
-    },
-
-    show_yuitip: function(e, el){
-        YUE.stopEvent(e);
-        if(el.tagName.toLowerCase() === 'img'){
-            yt.tipText = el.alt ? el.alt : '';
-        } else {
-            yt.tipText = el.title ? el.title : '';
-        }
-
-        if(yt.tipText !== ''){
-            // save org title
-            YUD.setAttribute(el, 'tt_title', yt.tipText);
-            // reset title to not show org tooltips
-            YUD.setAttribute(el, 'title', '');
-
-            yt.tipBox.innerHTML = yt.tipText;
-            YUD.setStyle(yt.tipBox, 'display', 'block');
-            if(yt.useAnim === true){
-                YUD.setStyle(yt.tipBox, 'opacity', '0');
-                var newAnim = new YAHOO.util.Anim(yt.tipBox,
-                    {
-                        opacity: { to: yt.opacity }
-                    }, yt.speed, YAHOO.util.Easing.easeOut
-                );
-                newAnim.animate();
-            }
-        }
-    },
-
-    move_yuitip: function(e, el){
-        YUE.stopEvent(e);
-        var movePos = YUE.getXY(e);
-        YUD.setStyle(yt.tipBox, 'top', (movePos[1] + yt.offset[1]) + 'px');
-        YUD.setStyle(yt.tipBox, 'left', (movePos[0] + yt.offset[0]) + 'px');
-    },
-
-    close_yuitip: function(e, el){
-        YUE.stopEvent(e);
-
-        if(yt.useAnim === true){
-            var newAnim = new YAHOO.util.Anim(yt.tipBox,
-                {
-                    opacity: { to: 0 }
-                }, yt.speed, YAHOO.util.Easing.easeOut
-            );
-            newAnim.animate();
-        } else {
-            YUD.setStyle(yt.tipBox, 'display', 'none');
-        }
-        YUD.setAttribute(el,'title', YUD.getAttribute(el, 'tt_title'));
+var _init_tooltip = function(){
+    var $tipBox = $('#tip-box');
+    if(!$tipBox.length){
+        $tipBox = $('<div id="tip-box"></div>')
+        $(document.body).append($tipBox);
     }
-}
+
+    $tipBox.hide();
+    $tipBox.css('position', 'absolute');
+    $tipBox.css('max-width', '600px');
+
+    _activate_tooltip($('.tooltip'));
+};
+
+var _show_tooltip = function(e, tipText){
+    e.stopImmediatePropagation();
+    var el = e.currentTarget;
+    if(tipText){
+        // just use it
+    } else if(el.tagName.toLowerCase() === 'img'){
+        tipText = el.alt ? el.alt : '';
+    } else {
+        tipText = el.title ? el.title : '';
+    }
+
+    if(tipText !== ''){
+        // save org title
+        $(el).attr('tt_title', tipText);
+        // reset title to not show org tooltips
+        $(el).attr('title', '');
+
+        var $tipBox = $('#tip-box');
+        $tipBox.html(tipText);
+        $tipBox.css('display', 'block');
+    }
+};
+
+var _move_tooltip = function(e){
+    e.stopImmediatePropagation();
+    var $tipBox = $('#tip-box');
+    $tipBox.css('top', (e.pageY + 15) + 'px');
+    $tipBox.css('left', (e.pageX + 15) + 'px');
+};
+
+var _close_tooltip = function(e){
+    e.stopImmediatePropagation();
+    var $tipBox = $('#tip-box');
+    $tipBox.hide();
+    var el = e.currentTarget;
+    $(el).attr('title', $(el).attr('tt_title'));
+};
 
 /**
  * Quick filter widget
@@ -593,27 +531,18 @@ YAHOO.yuitip.main = {
  * @param nodes: list of nodes in html we want to filter.
  * @param display_element function that takes current node from nodes and
  *    does hide or show based on the node
- *
  */
-var q_filter = function(target,nodes,display_element){
-
+var q_filter = function(target, nodes, display_element){
     var nodes = nodes;
-    var q_filter_field = YUD.get(target);
+    var $q_filter_field = $('#' + target);
     var F = YAHOO.namespace(target);
 
-    YUE.on(q_filter_field,'keyup',function(e){
+    $q_filter_field.keyup(function(e){
         clearTimeout(F.filterTimeout);
-        F.filterTimeout = setTimeout(F.updateFilter,600);
+        F.filterTimeout = setTimeout(F.updateFilter, 600);
     });
 
     F.filterTimeout = null;
-
-    var show_node = function(node){
-        YUD.setStyle(node,'display','')
-    }
-    var hide_node = function(node){
-        YUD.setStyle(node,'display','none');
-    }
 
     F.updateFilter  = function() {
         // Reset timeout
@@ -621,114 +550,90 @@ var q_filter = function(target,nodes,display_element){
 
         var obsolete = [];
 
-        var req = q_filter_field.value.toLowerCase();
+        var req = $q_filter_field.val().toLowerCase();
 
         var l = nodes.length;
         var i;
         var showing = 0;
 
-        for (i=0;i<l;i++ ){
+        for (i=0; i<l; i++ ){
             var n = nodes[i];
             var target_element = display_element(n)
             if(req && n.innerHTML.toLowerCase().indexOf(req) == -1){
-                hide_node(target_element);
+                $(target_element).hide();
             }
             else{
-                show_node(target_element);
-                showing+=1;
+                $(target_element).show();
+                showing += 1;
             }
         }
 
-        // if repo_count is set update the number
-        var cnt = YUD.get('repo_count');
-        if(cnt){
-            YUD.get('repo_count').innerHTML = showing;
-        }
+        $('#repo_count').html(showing); /* FIXME: don't hardcode */
     }
 };
 
-var tableTr = function(cls, body){
-    var _el = document.createElement('div');
-    var cont = new YAHOO.util.Element(body);
-    var comment_id = fromHTML(body).children[0].id.split('comment-')[1];
-    var id = 'comment-tr-{0}'.format(comment_id);
-    var _html = ('<table><tbody><tr id="{0}" class="{1}">'+
+/* return jQuery expression with a tr with body in 3rd column and class cls and id named after the body */
+var _table_tr = function(cls, body){
+    // like: <div class="comment" id="comment-8" line="o92"><div class="comment-wrapp">...
+    // except new inlines which are different ...
+    var comment_id = ($(body).attr('id') || 'comment-new').split('comment-')[1];
+    var tr_id = 'comment-tr-{0}'.format(comment_id);
+    return $(('<tr id="{0}" class="{1}">'+
                   '<td class="lineno-inline new-inline"></td>'+
                   '<td class="lineno-inline old-inline"></td>'+
                   '<td>{2}</td>'+
-                 '</tr></tbody></table>').format(id, cls, body);
-    _el.innerHTML = _html;
-    return _el.children[0].children[0].children[0];
+                 '</tr>').format(tr_id, cls, body));
 };
 
-var createInlineForm = function(parent_tr, f_path, line) {
-    var tmpl = $('#comment-inline-form-template').html();
-    tmpl = tmpl.format(f_path, line);
-    var form = tableTr('comment-form-inline',tmpl)
+/** return jQuery expression with new inline form based on template **/
+var _createInlineForm = function(parent_tr, f_path, line) {
+    var $tmpl = $('#comment-inline-form-template').html().format(f_path, line);
+    var $form = _table_tr('comment-form-inline', $tmpl)
 
     // create event for hide button
-    form = new YAHOO.util.Element(form);
-    var form_hide_button = new YAHOO.util.Element(YUD.getElementsByClassName('hide-inline-form',null,form)[0]);
-    form_hide_button.on('click', function(e) {
+    $form.find('.hide-inline-form').click(function(e) {
         var newtr = e.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode;
-        if(YUD.hasClass(newtr.nextElementSibling,'inline-comments-button')){
-            YUD.setStyle(newtr.nextElementSibling,'display','');
+        if($(newtr).next().hasClass('inline-comments-button')){
+            $(newtr).next().show();
         }
-        removeInlineForm(newtr);
-        YUD.removeClass(parent_tr, 'form-open');
-        YUD.removeClass(parent_tr, 'hl-comment');
-
+        $(newtr).remove();
+        $(parent_tr).removeClass('form-open');
+        $(parent_tr).removeClass('hl-comment');
     });
 
-    return form
+    return $form
 };
 
 /**
- * Inject inline comment for on given TR this tr should be always an .line
- * tr containing the line. Code will detect comment, and always put the comment
- * block at the very bottom
+ * Inject inline comment for an given TR. This tr should always be a .line .
+ * The form will be inject after any comments.
  */
 var injectInlineForm = function(tr){
-    if(!$(tr).hasClass('line')){
+    $tr = $(tr);
+    if(!$tr.hasClass('line')){
         return
     }
     var submit_url = AJAX_COMMENT_URL;
-    var _td = YUD.getElementsByClassName('code',null,tr)[0];
-    if($(tr).hasClass('form-open') || $(tr).hasClass('context') || $(_td).hasClass('no-comment')){
+    var $td = $tr.find('.code');
+    if($tr.hasClass('form-open') || $tr.hasClass('context') || $td.hasClass('no-comment')){
         return
     }
-    $(tr).addClass('form-open hl-comment');
-    var node = YUD.getElementsByClassName('full_f_path',null,tr.parentNode.parentNode.parentNode)[0];
-    var f_path = YUD.getAttribute(node,'path');
-    var lineno = getLineNo(tr);
-    var form = createInlineForm(tr, f_path, lineno, submit_url);
+    $tr.addClass('form-open hl-comment');
+    var $node = $tr.parent().parent().parent().find('.full_f_path');
+    var f_path = $node.attr('path');
+    var lineno = _getLineNo(tr);
+    var $form = _createInlineForm(tr, f_path, lineno, submit_url);
 
-    var parent = tr;
-    while (1){
-        var n = parent.nextElementSibling;
-        // next element are comments !
-        if($(n).hasClass('inline-comments')){
-            parent = n;
-        }
-        else{
-            break;
-        }
+    var $parent = $tr;
+    while ($parent.next().hasClass('inline-comments')){
+        var $parent = $parent.next();
     }
-    YUD.insertAfter(form,parent);
-    var f = YUD.get(form);
-    var overlay = YUD.getElementsByClassName('overlay',null,f)[0];
-    var _form = YUD.getElementsByClassName('inline-form',null,f)[0];
+    $form.insertAfter($parent);
+    var $overlay = $form.find('.overlay');
+    var $inlineform = $form.find('.inline-form');
 
-    YUE.on(YUD.get(_form), 'submit',function(e){
-        YUE.preventDefault(e);
-
-        //ajax submit
-        var text = YUD.get('text_'+lineno).value;
-        var postData = {
-                'text':text,
-                'f_path':f_path,
-                'line':lineno
-        };
+    $form.submit(function(e){
+        e.preventDefault();
 
         if(lineno === undefined){
             alert('missing line !');
@@ -739,48 +644,51 @@ var injectInlineForm = function(tr){
             return
         }
 
+        var text = $('#text_'+lineno).val();
         if(text == ""){
             return
         }
 
-        var success = function(o){
-            YUD.removeClass(tr, 'form-open');
-            removeInlineForm(f);
-            var json_data = JSON.parse(o.responseText);
-            renderInlineComment(json_data);
-        };
-
-        if (YUD.hasClass(overlay,'overlay')){
-            var w = _form.offsetWidth;
-            var h = _form.offsetHeight;
-            YUD.setStyle(overlay,'width',w+'px');
-            YUD.setStyle(overlay,'height',h+'px');
+        if ($overlay.hasClass('overlay')){
+            $overlay.css('width', $inlineform.offsetWidth + 'px');
+            $overlay.css('height', $inlineform.offsetHeight + 'px');
         }
-        YUD.addClass(overlay, 'submitting');
+        $overlay.addClass('submitting');
 
+        var success = function(o){
+            $tr.removeClass('form-open');
+            $form.remove();
+            var json_data = JSON.parse(o.responseText);
+            _renderInlineComment(json_data);
+        };
+        var postData = {
+                'text': text,
+                'f_path': f_path,
+                'line': lineno
+        };
         ajaxPOST(submit_url, postData, success);
     });
 
-    YUE.on('preview-btn_'+lineno, 'click', function(e){
-        var _text = YUD.get('text_'+lineno).value;
-        if(!_text){
+    $('#preview-btn_'+lineno).click(function(e){
+        var text = $('#text_'+lineno).val();
+        if(!text){
             return
         }
-        var post_data = {'text': _text};
-        YUD.addClass('preview-box_'+lineno, 'unloaded');
-        YUD.get('preview-box_'+lineno).innerHTML = _TM['Loading ...'];
-        YUD.setStyle('edit-container_'+lineno, 'display', 'none');
-        YUD.setStyle('preview-container_'+lineno, 'display', '');
+        $('#preview-box_'+lineno).addClass('unloaded');
+        $('#preview-box_'+lineno).html(_TM['Loading ...']);
+        $('#edit-container_'+lineno).hide();
+        $('#preview-container_'+lineno).show();
 
         var url = pyroutes.url('changeset_comment_preview', {'repo_name': REPO_NAME});
-        ajaxPOST(url,post_data,function(o){
-            YUD.get('preview-box_'+lineno).innerHTML = o.responseText;
-            YUD.removeClass('preview-box_'+lineno, 'unloaded');
+        var post_data = {'text': text};
+        ajaxPOST(url, post_data, function(o){
+            $('#preview-box_'+lineno).html(o.responseText);
+            $('#preview-box_'+lineno).removeClass('unloaded');
         })
     })
-    YUE.on('edit-btn_'+lineno, 'click', function(e){
-        YUD.setStyle('edit-container_'+lineno, 'display', '');
-        YUD.setStyle('preview-container_'+lineno, 'display', 'none');
+    $('#edit-btn_'+lineno).click(function(e){
+        $('#edit-container_'+lineno).show();
+        $('#preview-container_'+lineno).hide();
     })
 
     setTimeout(function(){
@@ -788,10 +696,7 @@ var injectInlineForm = function(tr){
         tooltip_activate();
         MentionsAutoComplete('text_'+lineno, 'mentions_container_'+lineno,
                              _USERS_AC_DATA, _GROUPS_AC_DATA);
-        var _e = YUD.get('text_'+lineno);
-        if(_e){
-            _e.focus();
-        }
+        $('#text_'+lineno).focus();
     },10)
 };
 
@@ -799,38 +704,18 @@ var deleteComment = function(comment_id){
     var url = AJAX_COMMENT_DELETE_URL.replace('__COMMENT_ID__',comment_id);
     var postData = {'_method':'delete'};
     var success = function(o){
-        var n = YUD.get('comment-tr-'+comment_id);
-        var root = prevElementSibling(prevElementSibling(n));
-        n.parentNode.removeChild(n);
-
-        // scann nodes, and attach add button to last one only for TR
-        // which are the inline comments
-        if(root && root.tagName == 'TR'){
-            placeAddButton(root);
-        }
+        var $deleted = $('#comment-tr-'+comment_id);
+        var $prev = $deleted.prev('tr');
+        $deleted.remove();
+        _placeAddButton($prev);
     }
     ajaxPOST(url,postData,success);
 }
 
-var createInlineAddButton = function(tr){
-
-    var label = TRANSLATION_MAP['Add another comment'];
-
-    var html_el = document.createElement('div');
-    YUD.addClass(html_el, 'add-comment');
-    html_el.innerHTML = '<span class="ui-btn">{0}</span>'.format(label);
-
-    var add = new YAHOO.util.Element(html_el);
-    add.on('click', function(e) {
-        injectInlineForm(tr);
-    });
-    return add;
-};
-
-var getLineNo = function(tr) {
+var _getLineNo = function(tr) {
     var line;
-    var o = tr.children[0].id.split('_');
-    var n = tr.children[1].id.split('_');
+    var o = $(tr).children()[0].id.split('_');
+    var n = $(tr).children()[1].id.split('_');
 
     if (n.length >= 2) {
         line = n[n.length-1];
@@ -841,78 +726,48 @@ var getLineNo = function(tr) {
     return line
 };
 
-var placeAddButton = function(target_tr){
-    if(!target_tr){
-        return
+var _placeAddButton = function($line_tr){
+    var $tr = $line_tr;
+    while ($tr.next().hasClass('inline-comments')){
+        $tr.find('.add-comment').remove();
+        $tr = $tr.next();
     }
-    var last_node = target_tr;
-    //scann
-    while (1){
-        var n = last_node.nextElementSibling;
-        // next element are comments !
-        if($(n).hasClass('inline-comments')){
-            last_node = n;
-            //also remove the comment button from previous
-            var comment_add_buttons = YUD.getElementsByClassName('add-comment',null,last_node);
-            for(var i=0;i<comment_add_buttons.length;i++){
-                var b = comment_add_buttons[i];
-                b.parentNode.removeChild(b);
-            }
-        }
-        else{
-            break;
-        }
-    }
-
-    var add = createInlineAddButton(target_tr);
-    // get the comment div
-    var comment_block = YUD.getElementsByClassName('comment',null,last_node)[0];
-    // attach add button
-    YUD.insertAfter(add,comment_block);
-}
+    $tr.find('.add-comment').remove();
+    var label = TRANSLATION_MAP['Add another comment'];
+    var $html_el = $('<div class="add-comment"><span class="ui-btn">{0}</span></div>'.format(label));
+    $html_el.click(function(e) {
+        injectInlineForm($line_tr);
+    });
+    $tr.find('.comment').after($html_el);
+};
 
 /**
  * Places the inline comment into the changeset block in proper line position
  */
-var placeInline = function(target_container,lineno,html){
-    var lineid = "{0}_{1}".format(target_container,lineno);
-    var target_line = YUD.get(lineid);
-    var comment = new YAHOO.util.Element(tableTr('inline-comments',html))
+var _placeInline = function(target_id, lineno, html){
+    var $td = $("#{0}_{1}".format(target_id, lineno));
 
     // check if there are comments already !
-    var parent = target_line.parentNode;
-    var root_parent = parent;
-    while (1){
-        var n = parent.nextElementSibling;
-        // next element are comments !
-        if($(n).hasClass('inline-comments')){
-            parent = n;
-        }
-        else{
-            break;
-        }
+    var $line_tr = $td.parent(); // the tr
+    var $after_tr = $line_tr;
+    while ($after_tr.next().hasClass('inline-comments')){
+        $after_tr = $after_tr.next();
     }
     // put in the comment at the bottom
-    YUD.insertAfter(comment,parent);
+    $after_tr.after(_table_tr('inline-comments', html));
 
-    // scann nodes, and attach add button to last one
-    placeAddButton(root_parent);
-
-    return target_line;
+    // scan nodes, and attach add button to last one
+    _placeAddButton($line_tr);
 }
 
 /**
  * make a single inline comment and place it inside
  */
-var renderInlineComment = function(json_data){
-    try{
-        var html =  json_data['rendered_text'];
-        var lineno = json_data['line_no'];
-        var target_id = json_data['target_id'];
-        placeInline(target_id, lineno, html);
-    }catch(e){
-        console.log(e);
-    }
+var _renderInlineComment = function(json_data){
+    var html =  json_data['rendered_text'];
+    var lineno = json_data['line_no'];
+    var target_id = json_data['target_id'];
+    _placeInline(target_id, lineno, html);
 }
 
 /**
@@ -923,27 +778,28 @@ var renderInlineComments = function(file_comments){
         // holding all comments for a FILE
         var box = file_comments[f];
 
-        var target_id = YUD.getAttribute(box,'target_id');
-        // actually comments with line numbers
+        var target_id = $(box).attr('target_id');
+        // actual comments with line numbers
         var comments = box.children;
         for(var i=0; i<comments.length; i++){
             var data = {
                 'rendered_text': comments[i].outerHTML,
-                'line_no': YUD.getAttribute(comments[i],'line'),
+                'line_no': $(comments[i]).attr('line'),
                 'target_id': target_id
             }
-            renderInlineComment(data);
+            _renderInlineComment(data);
         }
     }
 }
 
+/* activate files.html stuff */
 var fileBrowserListeners = function(current_url, node_list_url, url_base){
-    var current_url_branch = +"?branch=__BRANCH__";
+    var current_url_branch = "?branch=__BRANCH__";
 
     $('#stay_at_branch').on('click',function(e){
-        if(e.target.checked){
+        if(e.currentTarget.checked){
             var uri = current_url_branch;
-            uri = uri.replace('__BRANCH__',e.target.value);
+            uri = uri.replace('__BRANCH__',e.currentTarget.value);
             window.location = uri;
         }
         else{
@@ -951,26 +807,25 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
         }
     })
 
-    var n_filter = YUD.get('node_filter');
-    var F = YAHOO.namespace('node_filter');
+    var $node_filter = $('#node_filter');
 
-    F.filterTimeout = null;
+    var filterTimeout = null;
     var nodes = null;
 
-    F.initFilter = function(){
-        $('#node_filter_box_loading').css('display','');
-        $('#search_activate_id').css('display','none');
-        $('#add_node_id').css('display','none');
+    var initFilter = function(){
+        $('#node_filter_box_loading').show();
+        $('#search_activate_id').hide();
+        $('#add_node_id').hide();
         YUC.initHeader('X-PARTIAL-XHR',true);
         YUC.asyncRequest('GET', node_list_url, {
             success:function(o){
                 nodes = JSON.parse(o.responseText).nodes;
-                $('#node_filter_box_loading').css('display','none');
-                $('#node_filter_box').css('display','');
-                n_filter.focus();
-                if(YUD.hasClass(n_filter,'init')){
-                    n_filter.value = '';
-                    YUD.removeClass(n_filter,'init');
+                $('#node_filter_box_loading').hide();
+                $('#node_filter_box').show();
+                $node_filter.focus();
+                if($node_filter.hasClass('init')){
+                    $node_filter.val('');
+                    $node_filter.removeClass('init');
                 }
             },
             failure:function(o){
@@ -979,11 +834,11 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
         },null);
     }
 
-    F.updateFilter = function(e) {
+    var updateFilter = function(e) {
         return function(){
             // Reset timeout
-            F.filterTimeout = null;
-            var query = e.target.value.toLowerCase();
+            filterTimeout = null;
+            var query = e.currentTarget.value.toLowerCase();
             var match = [];
             var matches = 0;
             var matches_max = 20;
@@ -1011,58 +866,58 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
                 }
             }
             if(query != ""){
-                $('#tbody').css('display','none');
-                $('#tbody_filtered').css('display','');
+                $('#tbody').hide();
+                $('#tbody_filtered').show();
 
                 if (match.length==0){
                   match.push('<tr><td>{0}</td><td colspan="5"></td></tr>'.format(_TM['No matching files']));
                 }
 
-                YUD.get('tbody_filtered').innerHTML = match.join("");
+                $('#tbody_filtered').html(match.join(""));
             }
             else{
-                $('#tbody').css('display','');
-                $('#tbody_filtered').css('display','none');
+                $('#tbody').show();
+                $('#tbody_filtered').hide();
             }
         }
     };
 
-    YUE.on(YUD.get('filter_activate'),'click',function(){
-            F.initFilter();
-        })
-    YUE.on(n_filter,'click',function(){
-            if(YUD.hasClass(n_filter,'init')){
-                n_filter.value = '';
-                YUD.removeClass(n_filter,'init');
+    $('#filter_activate').click(function(){
+            initFilter();
+        });
+    $node_filter.click(function(){
+            if($node_filter.hasClass('init')){
+                $node_filter.val('');
+                $node_filter.removeClass('init');
             }
         });
-    YUE.on(n_filter,'keyup',function(e){
-            clearTimeout(F.filterTimeout);
-            F.filterTimeout = setTimeout(F.updateFilter(e),600);
+    $node_filter.keyup(function(e){
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(updateFilter(e),600);
         });
 };
 
 
-var initCodeMirror = function(textAreadId,resetUrl){
-    var myCodeMirror = CodeMirror.fromTextArea(YUD.get(textAreadId),{
-            mode:  "null",
-            lineNumbers:true,
+var initCodeMirror = function(textarea_id, resetUrl){
+    var myCodeMirror = CodeMirror.fromTextArea($('#' + textarea_id)[0], {
+            mode: "null",
+            lineNumbers: true,
             indentUnit: 4
         });
-    YUE.on('reset','click',function(e){
-            window.location=resetUrl
+    $('#reset').click(function(e){
+            window.location=resetUrl;
         });
 
-    YUE.on('file_enable','click',function(){
-            $('#editor_container').css('display','');
-            $('#upload_file_container').css('display','none');
-            $('#filename_container').css('display','');
+    $('#file_enable').click(function(){
+            $('#editor_container').show();
+            $('#upload_file_container').hide();
+            $('#filename_container').show();
         });
 
-    YUE.on('upload_file_enable','click',function(){
-            $('#editor_container').css('display','none');
-            $('#upload_file_container').css('display','');
-            $('#filename_container').css('display','none');
+    $('#upload_file_enable').click(function(){
+            $('#editor_container').hide();
+            $('#upload_file_container').show();
+            $('#filename_container').hide();
         });
 
     return myCodeMirror
@@ -1074,8 +929,8 @@ var setCodeMirrorMode = function(codeMirrorInstance, mode) {
 }
 
 
-var getIdentNode = function(n){
-    //iterate thru nodes untill matched interesting node !
+var _getIdentNode = function(n){
+    //iterate thrugh nodes until matching interesting node
 
     if (typeof n == 'undefined'){
         return -1
@@ -1085,68 +940,55 @@ var getIdentNode = function(n){
         return n
     }
     else{
-        return getIdentNode(n.parentNode);
+        return _getIdentNode(n.parentNode);
     }
 };
 
+/* generate links for multi line selects that can be shown by files.html page_highlights.
+ * This is a mouseup handler for hlcode from CodeHtmlFormatter and pygmentize */
 var getSelectionLink = function(e) {
     //get selection from start/to nodes
     if (typeof window.getSelection != "undefined") {
         s = window.getSelection();
 
-        from = getIdentNode(s.anchorNode);
-        till = getIdentNode(s.focusNode);
+        from = _getIdentNode(s.anchorNode);
+        till = _getIdentNode(s.focusNode);
 
         f_int = parseInt(from.id.replace('L',''));
         t_int = parseInt(till.id.replace('L',''));
 
-        if (f_int > t_int){
+        var yoffset = 35;
+        var ranges = [parseInt(from.id.replace('L','')), parseInt(till.id.replace('L',''))];
+        if (ranges[0] > ranges[1]){
             //highlight from bottom
-            offset = -35;
-            ranges = [t_int,f_int];
-
+            yoffset = -yoffset;
+            ranges = [ranges[1], ranges[0]];
         }
-        else{
-            //highligth from top
-            offset = 35;
-            ranges = [f_int,t_int];
-        }
+        var $hl_div = $('div#linktt');
         // if we select more than 2 lines
         if (ranges[0] != ranges[1]){
-            if(YUD.get('linktt') == null){
-                hl_div = document.createElement('div');
-                hl_div.id = 'linktt';
+            if ($hl_div.length) {
+                $hl_div.html('');
+            } else {
+                $hl_div = $('<div id="linktt" class="hl-tip-box">');
+                $('body').prepend($hl_div);
             }
-            hl_div.innerHTML = '';
 
-            anchor = '#L'+ranges[0]+'-'+ranges[1];
-            var link = document.createElement('a');
-            link.href = location.href.substring(0,location.href.indexOf('#'))+anchor;
-            link.innerHTML = _TM['Selection link'];
-            hl_div.appendChild(link);
-            YUD.get('body').appendChild(hl_div);
-
-            xy = YUD.getXY(till.id);
-
-            YUD.addClass('linktt', 'hl-tip-box');
-            $('#linktt').css('top',xy[1]+offset+'px');
-            $('#linktt').css('left',xy[0]+'px');
-            $('#linktt').css('visibility','visible');
-
+            $hl_div.append($('<a>').html(_TM['Selection link']).attr('href', location.href.substring(0, location.href.indexOf('#')) + '#L' + ranges[0] + '-'+ranges[1]));
+            xy = $(till).offset();
+            $hl_div.css('top', (xy.top + yoffset) + 'px').css('left', xy.left + 'px');
+            $hl_div.show();
         }
         else{
-            $('#linktt').css('visibility','hidden');
+            $hl_div.hide();
         }
     }
 };
 
-var deleteNotification = function(url, notification_id,callbacks){
+var deleteNotification = function(url, notification_id, callbacks){
     var callback = {
         success:function(o){
-            var obj = YUD.get(String("notification_"+notification_id));
-            if(obj.parentNode !== undefined){
-                obj.parentNode.removeChild(obj);
-            }
+            $("#notification_"+notification_id).remove();
             _run_callbacks(callbacks);
         },
         failure:function(o){
@@ -1159,16 +1001,12 @@ var deleteNotification = function(url, notification_id,callbacks){
                                                   callback, postData);
 };
 
-var readNotification = function(url, notification_id,callbacks){
+var readNotification = function(url, notification_id, callbacks){
     var callback = {
         success:function(o){
-            var obj = YUD.get(String("notification_"+notification_id));
-            YUD.removeClass(obj, 'unread');
-            var r_button = YUD.getElementsByClassName('read-notification',null,obj.children[0])[0];
-
-            if(r_button.parentNode !== undefined){
-                r_button.parentNode.removeChild(r_button);
-            }
+            var $obj = $("#notification_"+notification_id);
+            $obj.removeClass('unread');
+            $obj.find('.read-notification').remove();
             _run_callbacks(callbacks);
         },
         failure:function(o){
@@ -1183,7 +1021,7 @@ var readNotification = function(url, notification_id,callbacks){
 
 /** MEMBERS AUTOCOMPLETE WIDGET **/
 
-var MembersAutoComplete = function (divid, cont, users_list, groups_list) {
+var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
     var myUsers = users_list;
     var myGroups = groups_list;
 
@@ -1338,11 +1176,11 @@ var MembersAutoComplete = function (divid, cont, users_list, groups_list) {
             if (oData.nname != undefined) {
                 //users
                 myAC.getInputEl().value = oData.nname;
-                YUD.get('perm_new_member_type_'+nextId).value = 'user';
+                $('#perm_new_member_type_'+nextId).val('user');
             } else {
                 //groups
                 myAC.getInputEl().value = oData.grname;
-                YUD.get('perm_new_member_type_'+nextId).value = 'users_group';
+                $('#perm_new_member_type_'+nextId).val('users_group');
             }
         };
 
@@ -1485,11 +1323,11 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
                 chunks[1] = chunks[1].replace('@'+myAC.dataSource.mentionQuery,
                                               '@'+oData.nname+' ');
                 myAC.getInputEl().value = chunks.join('')
-                YUD.get(myAC.getInputEl()).focus(); // Y U NO WORK !?
+                myAC.getInputEl().focus(); // Y U NO WORK !?
             } else {
                 //groups
                 myAC.getInputEl().value = oData.grname;
-                YUD.get('perm_new_member_type').value = 'users_group';
+                $('#perm_new_member_type').val('users_group');
             }
         });
     }
@@ -1549,7 +1387,6 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 }
 
 var addReviewMember = function(id,fname,lname,nname,gravatar_link){
-    var members  = YUD.get('review_members');
     var tmpl = '<li id="reviewer_{2}">'+
     '<div class="reviewers_member">'+
       '<div class="gravatar"><img alt="gravatar" src="{0}"/> </div>'+
@@ -1562,31 +1399,26 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
     var element = tmpl.format(gravatar_link,displayname,id);
     // check if we don't have this ID already in
     var ids = [];
-    var _els = YUQ('#review_members li');
-    for (el in _els){
-        ids.push(_els[el].id)
-    }
+    $('#review_members').find('li').each(function() {
+            ids.push(this.id);
+        });
     if(ids.indexOf('reviewer_'+id) == -1){
         //only add if it's not there
-        members.innerHTML += element;
+        $('#review_members').append(element);
     }
 }
 
 var removeReviewMember = function(reviewer_id, repo_name, pull_request_id){
-    var el = YUD.get('reviewer_{0}'.format(reviewer_id));
-    if (el.parentNode !== undefined){
-        el.parentNode.removeChild(el);
-    }
+    $('#reviewer_{0}'.format(reviewer_id)).remove();
 }
 
+/* handle "Save Changes" of addReviewMember and removeReviewMember on PR */
 var updateReviewers = function(reviewers_ids, repo_name, pull_request_id){
     if (reviewers_ids === undefined){
         var reviewers_ids = [];
-        var ids = YUQ('#review_members input');
-        for(var i=0; i<ids.length;i++){
-            var id = ids[i].value
-            reviewers_ids.push(id);
-        }
+        $('#review_members').find('input').each(function(){
+                reviewers_ids.push(this.value);
+            });
     }
     var url = pyroutes.url('pullrequest_update', {"repo_name":repo_name,
                                                   "pull_request_id": pull_request_id});
@@ -1598,6 +1430,7 @@ var updateReviewers = function(reviewers_ids, repo_name, pull_request_id){
     ajaxPOST(url,postData,success);
 }
 
+/* activate auto completion of users and groups ... but only used for users as PR reviewers */
 var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
     var myUsers = users_list;
     var myGroups = groups_list;
@@ -1731,37 +1564,32 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
             var oData = aArgs[2]; // object literal of selected item's result data
 
             //fill the autocomplete with value
-
             if (oData.nname != undefined) {
                 addReviewMember(oData.id, oData.fname, oData.lname, oData.nname,
                                 oData.gravatar_lnk);
                 myAC.dataSource.cache.push(oData.id);
-                YUD.get('user').value = ''
+                $('#user').val('');
             }
         });
     }
-    return {
-        ownerDS: ownerDS,
-        reviewerAC: reviewerAC,
-    };
 }
 
 /**
- * QUICK REPO MENU
+ * Activate .quick_repo_menu
  */
 var quick_repo_menu = function(){
-    YUE.on(YUQ('.quick_repo_menu'),'mouseenter',function(e){
-            var menu = e.currentTarget.firstElementChild.firstElementChild;
-            if(YUD.hasClass(menu,'hidden')){
-                YUD.replaceClass(e.currentTarget,'hidden', 'active');
-                YUD.replaceClass(menu, 'hidden', 'active');
+    $(".quick_repo_menu").mouseenter(function(e) {
+            var $menu = $(e.currentTarget).children().first().children().first();
+            if($menu.hasClass('hidden')){
+                $menu.removeClass('hidden').addClass('active');
+                $(e.currentTarget).removeClass('hidden').addClass('active');
             }
         })
-    YUE.on(YUQ('.quick_repo_menu'),'mouseleave',function(e){
-            var menu = e.currentTarget.firstElementChild.firstElementChild;
-            if(YUD.hasClass(menu,'active')){
-                YUD.replaceClass(e.currentTarget, 'active', 'hidden');
-                YUD.replaceClass(menu, 'active', 'hidden');
+    $(".quick_repo_menu").mouseleave(function(e) {
+            var $menu = $(e.currentTarget).children().first().children().first();
+            if($menu.hasClass('active')){
+                $menu.removeClass('active').addClass('hidden');
+                $(e.currentTarget).removeClass('active').addClass('hidden');
             }
         })
 };
@@ -1791,92 +1619,57 @@ var get_rev = function(node){
 }
 
 var get_date = function(node){
-    var date_ = YUD.getAttribute(node.firstElementChild,'date');
-    return date_
+    return $(node.firstElementChild).attr('date');
 }
 
 var revisionSort = function(a, b, desc, field) {
-    var a_ = fromHTML(a.getData(field));
-    var b_ = fromHTML(b.getData(field));
+    var a_ = get_rev(fromHTML(a.getData(field)));
+    var b_ = get_rev(fromHTML(b.getData(field)));
 
-    // extract revisions from string nodes
-    a_ = get_rev(a_)
-    b_ = get_rev(b_)
-
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
+    return YAHOO.util.Sort.compare(a_, b_, desc);
 };
 
 var ageSort = function(a, b, desc, field) {
-    var a_ = fromHTML(a.getData(field));
-    var b_ = fromHTML(b.getData(field));
+    // data is like: <span class="tooltip" date="2014-06-04 18:18:55.325474" title="Wed, 04 Jun 2014 18:18:55">1 day and 23 hours ago</span>
+    var a_ = $(a.getData(field)).attr('date');
+    var b_ = $(b.getData(field)).attr('date');
 
-    // extract name from table
-    a_ = get_date(a_)
-    b_ = get_date(b_)
-
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
+    return YAHOO.util.Sort.compare(a_, b_, desc);
 };
 
 var lastLoginSort = function(a, b, desc, field) {
     var a_ = a.getData('last_login_raw') || 0;
     var b_ = b.getData('last_login_raw') || 0;
 
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
+    return YAHOO.util.Sort.compare(a_, b_, desc);
 };
 
 var nameSort = function(a, b, desc, field) {
     var a_ = a.getData('raw_name') || 0;
     var b_ = b.getData('raw_name') || 0;
 
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
+    return YAHOO.util.Sort.compare(a_, b_, desc);
 };
 
 var dateSort = function(a, b, desc, field) {
-    var a_ = fromHTML(a.getData(field));
-    var b_ = fromHTML(b.getData(field));
+    var a_ = get_date(fromHTML(a.getData(field)));
+    var b_ = get_date(fromHTML(b.getData(field)));
 
-    // extract name from table
-    a_ = get_date(a_)
-    b_ = get_date(b_)
-
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
+    return YAHOO.util.Sort.compare(a_, b_, desc);
 };
 
 var addPermAction = function(_html, users_list, groups_list){
-    var elmts = YUD.getElementsByClassName('last_new_member');
-    var last_node = elmts[elmts.length-1];
-    if (last_node){
-        var next_id = (YUD.getElementsByClassName('new_members')).length;
-        _html = _html.format(next_id);
-        last_node.innerHTML = _html;
-        YUD.setStyle(last_node, 'display', '');
-        YUD.removeClass(last_node, 'last_new_member');
-        MembersAutoComplete("perm_new_member_name_"+next_id,
-                "perm_container_"+next_id, users_list, groups_list);
-        //create new last NODE
-        var el = document.createElement('tr');
-        el.id = 'add_perm_input';
-        YUD.addClass(el,'last_new_member');
-        YUD.addClass(el,'new_members');
-        YUD.insertAfter(el, last_node);
-    }
+    var $last_node = $('.last_new_member').last(); // empty tr between last and add
+    var next_id = $('.new_members').length;
+    $last_node.before($('<tr class="new_members">').append(_html.format(next_id)));
+    _MembersAutoComplete("perm_new_member_name_"+next_id,
+            "perm_container_"+next_id, users_list, groups_list);
 }
 
 function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data) {
     var callback = {
         success: function (o) {
-            var tr = YUD.get(String(field_id));
-            tr.parentNode.removeChild(tr);
+            $('#' + field_id).remove();
         },
         failure: function (o) {
             alert(_TM['Failed to remoke permission'] + ": " + o.status);
@@ -1902,141 +1695,44 @@ function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data)
     }
 
     var request = YAHOO.util.Connect.asyncRequest('POST', url, callback,
-            toQueryString(query_params));
+            _toQueryString(query_params));
 };
 
 /* Multi selectors */
 
 var MultiSelectWidget = function(selected_id, available_id, form_id){
-    //definition of containers ID's
-    var selected_container = selected_id;
-    var available_container = available_id;
+    var $availableselect = $('#' + available_id);
+    var $selectedselect = $('#' + selected_id);
 
-    //temp container for selected storage.
-    var cache = new Array();
-    var av_cache = new Array();
-    var c =  YUD.get(selected_container);
-    var ac = YUD.get(available_container);
-
-    //get only selected options for further fullfilment
-    for(var i = 0;node =c.options[i];i++){
-        if(node.selected){
-            //push selected to my temp storage left overs :)
-            cache.push(node);
-        }
-    }
-
-    //get all available options to cache
-    for(var i = 0;node =ac.options[i];i++){
-            //push selected to my temp storage left overs :)
-            av_cache.push(node);
-    }
-
-    //fill available only with those not in chosen
-    ac.options.length=0;
-    tmp_cache = new Array();
-
-    for(var i = 0;node = av_cache[i];i++){
-        var add = true;
-        for(var i2 = 0;node_2 = cache[i2];i2++){
-            if(node.value == node_2.value){
-                add=false;
-                break;
-            }
-        }
-        if(add){
-            tmp_cache.push(new Option(node.text, node.value, false, false));
-        }
-    }
-
-    for(var i = 0;node = tmp_cache[i];i++){
-        ac.options[i] = node;
-    }
-
-    function prompts_action_callback(e){
-
-        var chosen = YUD.get(selected_container);
-        var available = YUD.get(available_container);
-
-        //get checked and unchecked options from field
-        function get_checked(from_field){
-            //temp container for storage.
-            var sel_cache = new Array();
-            var oth_cache = new Array();
-
-            for(var i = 0;node = from_field.options[i];i++){
-                if(node.selected){
-                    //push selected fields :)
-                    sel_cache.push(node);
-                }
-                else{
-                    oth_cache.push(node)
+    //fill available only with those not in selected
+    var $selectedoptions = $selectedselect.children('option');
+    $availableselect.children('option').filter(function(i, e){
+            for(var j = 0, node; node = $selectedoptions[j]; j++){
+                if(node.value == e.value){
+                    return true;
                 }
             }
+            return false;
+        }).remove();
 
-            return [sel_cache,oth_cache]
-        }
-
-        //fill the field with given options
-        function fill_with(field,options){
-            //clear firtst
-            field.options.length=0;
-            for(var i = 0;node = options[i];i++){
-                    field.options[i]=new Option(node.text, node.value,
-                            false, false);
-            }
-
-        }
-        //adds to current field
-        function add_to(field,options){
-            for(var i = 0;node = options[i];i++){
-                    field.appendChild(new Option(node.text, node.value,
-                            false, false));
-            }
-        }
-
-        // add action
-        if (this.id=='add_element'){
-            var c = get_checked(available);
-            add_to(chosen,c[0]);
-            fill_with(available,c[1]);
-        }
-        // remove action
-        if (this.id=='remove_element'){
-            var c = get_checked(chosen);
-            add_to(available,c[0]);
-            fill_with(chosen,c[1]);
-        }
-        // add all elements
-        if(this.id=='add_all_elements'){
-            for(var i=0; node = available.options[i];i++){
-                    chosen.appendChild(new Option(node.text,
-                            node.value, false, false));
-            }
-            available.options.length = 0;
-        }
-        //remove all elements
-        if(this.id=='remove_all_elements'){
-            for(var i=0; node = chosen.options[i];i++){
-                available.appendChild(new Option(node.text,
-                        node.value, false, false));
-            }
-            chosen.options.length = 0;
-        }
-
-    }
-
-    YUE.addListener(['add_element','remove_element',
-                   'add_all_elements','remove_all_elements'],'click',
-                   prompts_action_callback)
-    if (form_id !== undefined) {
-        YUE.addListener(form_id,'submit',function(){
-            var chosen = YUD.get(selected_container);
-            for (var i = 0; i < chosen.options.length; i++) {
-                chosen.options[i].selected = 'selected';
-            }
+    $('#add_element').click(function(e){
+            $selectedselect.append($availableselect.children('option:selected'));
         });
-    }
+    $('#remove_element').click(function(e){
+            $availableselect.append($selectedselect.children('option:selected'));
+        });
+    $('#add_all_elements').click(function(e){
+            $selectedselect.append($availableselect.children('option'));
+        });
+    $('#remove_all_elements').click(function(e){
+            $availableselect.append($selectedselect.children('option'));
+        });
+
+    $('#'+form_id).submit(function(){
+            $selectedselect.children('option').each(function(i, e){
+                e.selected = 'selected';
+            });
+        });
 }
 
 // custom paginator
@@ -2108,7 +1804,7 @@ var YUI_paginator = function(links_per_page, containers){
 
                 this.link     = document.createElement('a');
                 this.span     = document.createElement('span');
-                YUD.setStyle(this.span, 'display', 'none');
+                $(this.span).hide();
 
                 var _pos = this.getPos(p.getCurrentPage(), p.getTotalPages(), 5);
                 this.leftmost_page = _pos[0];
@@ -2119,7 +1815,7 @@ var YUI_paginator = function(links_per_page, containers){
                 this.link.className = c;
                 this.link.innerHTML = label;
                 this.link.title     = title;
-                YAHOO.util.Event.on(this.link,'click',this.onClick,this,true);
+                YUE.on(this.link,'click',this.onClick,this,true);
 
                 setId(this.span, id_base + '-first-span');
                 this.span.className = c;
@@ -2152,12 +1848,12 @@ var YUI_paginator = function(links_per_page, containers){
                 }
             },
             destroy : function () {
-                YAHOO.util.Event.purgeElement(this.link);
+                YUE.purgeElement(this.link);
                 this.current.parentNode.removeChild(this.current);
                 this.link = this.span = null;
             },
             onClick : function (e) {
-                YAHOO.util.Event.stopEvent(e);
+                YUE.stopEvent(e);
                 this.paginator.setPage(1);
             }
         };
@@ -2237,7 +1933,7 @@ var YUI_paginator = function(links_per_page, containers){
 
                 this.link = document.createElement('a');
                 this.span = document.createElement('span');
-                YUD.setStyle(this.span, 'display', 'none');
+                $(this.span).hide();
 
                 this.na   = this.span.cloneNode(false);
 
@@ -2246,7 +1942,7 @@ var YUI_paginator = function(links_per_page, containers){
                 this.link.className = c;
                 this.link.innerHTML = label;
                 this.link.title     = title;
-                YAHOO.util.Event.on(this.link,'click',this.onClick,this,true);
+                YUE.on(this.link,'click',this.onClick,this,true);
 
                 setId(this.span, id_base + '-last-span');
                 this.span.className = c;
@@ -2295,12 +1991,12 @@ var YUI_paginator = function(links_per_page, containers){
 
             },
             destroy : function () {
-                YAHOO.util.Event.purgeElement(this.link);
+                YUE.purgeElement(this.link);
                 this.current.parentNode.removeChild(this.current);
                 this.link = this.span = null;
             },
             onClick : function (e) {
-                YAHOO.util.Event.stopEvent(e);
+                YUE.stopEvent(e);
                 this.paginator.setPage(this.paginator.getTotalPages());
             }
         };
@@ -2326,18 +2022,17 @@ var YUI_paginator = function(links_per_page, containers){
 
 // global hooks after DOM is loaded
 
-YUE.onDOMReady(function(){
-    YUE.on(YUQ('.diff-collapse-button'), 'click', function(e){
-        var button = e.currentTarget;
-        var t = YUD.get(button).getAttribute('target');
-        console.log(t);
-        if(YUD.hasClass(t, 'hidden')){
-            YUD.removeClass(t, 'hidden');
-            YUD.get(button).innerHTML = "&uarr; {0} &uarr;".format(_TM['Collapse diff']);
+$(document).ready(function(){
+    $('.diff-collapse-button').click(function(e) {
+        var $button = $(e.currentTarget);
+        var $target = $('#' + $button.attr('target'));
+        if($target.hasClass('hidden')){
+            $target.removeClass('hidden');
+            $button.html("&uarr; {0} &uarr;".format(_TM['Collapse diff']));
         }
-        else if(!YUD.hasClass(t, 'hidden')){
-            YUD.addClass(t, 'hidden');
-            YUD.get(button).innerHTML = "&darr; {0} &darr;".format(_TM['Expand diff']);
+        else if(!$target.hasClass('hidden')){
+            $target.addClass('hidden');
+            $button.html("&darr; {0} &darr;".format(_TM['Expand diff']));
         }
     });
 });
