@@ -110,7 +110,7 @@ class Fixture(object):
             lastname='Test',
             active=True,
             admin=False,
-            extern_type='rhodecode',
+            extern_type='internal',
             extern_name=None
         )
         defs.update(custom)

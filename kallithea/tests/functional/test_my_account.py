@@ -109,7 +109,7 @@ class TestMyAccountController(TestController):
     def test_my_account_update(self, name, attrs):
         usr = fixture.create_user(self.test_user_1, password='qweqwe',
                                   email='testme@example.com',
-                                  extern_type='rhodecode',
+                                  extern_type='internal',
                                   extern_name=self.test_user_1,
                                   skip_if_exists=True)
         params = usr.get_api_data()  # current user data
@@ -118,7 +118,7 @@ class TestMyAccountController(TestController):
 
         params.update({'password_confirmation': ''})
         params.update({'new_password': ''})
-        params.update({'extern_type': 'rhodecode'})
+        params.update({'extern_type': 'internal'})
         params.update({'extern_name': self.test_user_1})
 
         params.update(attrs)
@@ -137,7 +137,7 @@ class TestMyAccountController(TestController):
             params['emails'] = [attrs['email']]
         if name == 'extern_type':
             #cannot update this via form, expected value is original one
-            params['extern_type'] = "rhodecode"
+            params['extern_type'] = "internal"
         if name == 'extern_name':
             #cannot update this via form, expected value is original one
             params['extern_name'] = str(user_id)

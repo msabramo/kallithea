@@ -20,7 +20,7 @@ ${h.form(url('my_account'), method='post')}
         <% readonly = None %>
         <% disabled = "" %>
         <div class="fields">
-           %if c.extern_type != 'rhodecode':
+           %if c.extern_type != 'internal':
                 <% readonly = "readonly" %>
                 <% disabled = " disabled" %>
                 <strong>${_('Your user is in an external Source of Record; some details cannot be managed here')}.</strong>

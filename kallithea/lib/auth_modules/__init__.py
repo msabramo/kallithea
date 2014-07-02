@@ -305,7 +305,7 @@ class RhodeCodeExternalAuthPlugin(RhodeCodeAuthPluginBase):
 def importplugin(plugin):
     """
     Imports and returns the authentication plugin in the module named by plugin
-    (e.g., plugin='kallithea.lib.auth_modules.auth_rhodecode'). Returns the
+    (e.g., plugin='kallithea.lib.auth_modules.auth_internal'). Returns the
     RhodeCodeAuthPluginBase subclass on success, raises exceptions on failure.
 
     raises:

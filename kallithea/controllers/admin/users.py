@@ -40,7 +40,7 @@ from kallithea.lib.exceptions import DefaultUserException, \
 from kallithea.lib import helpers as h
 from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator, \
     AuthUser, generate_api_key
-import kallithea.lib.auth_modules.auth_rhodecode
+import kallithea.lib.auth_modules.auth_internal
 from kallithea.lib import auth_modules
 from kallithea.lib.base import BaseController, render
 from kallithea.model.api_key import ApiKeyModel
@@ -121,7 +121,7 @@ class UsersController(BaseController):
     def create(self):
         """POST /users: Create a new item"""
         # url('users')
-        c.default_extern_type = auth_modules.auth_rhodecode.RhodeCodeAuthPlugin.name
+        c.default_extern_type = auth_modules.auth_internal.RhodeCodeAuthPlugin.name
         user_model = UserModel()
         user_form = UserForm()()
         try:
@@ -151,7 +151,7 @@ class UsersController(BaseController):
     def new(self, format='html'):
         """GET /users/new: Form to create a new item"""
         # url('new_user')
-        c.default_extern_type = auth_modules.auth_rhodecode.RhodeCodeAuthPlugin.name
+        c.default_extern_type = auth_modules.auth_internal.RhodeCodeAuthPlugin.name
         return render('admin/users/user_add.html')
 
     def update(self, id):
@@ -175,7 +175,7 @@ class UsersController(BaseController):
             form_result = _form.to_python(dict(request.POST))
             skip_attrs = ['extern_type', 'extern_name']
             #TODO: plugin should define if username can be updated
-            if c.extern_type != "rhodecode":
+            if c.extern_type != "internal":
                 # forbid updating username for external accounts
                 skip_attrs.append('username')
 

@@ -116,7 +116,7 @@ class MyAccountController(BaseController):
                 skip_attrs = ['admin', 'active', 'extern_type', 'extern_name',
                               'new_password', 'password_confirmation']
                 #TODO: plugin should define if username can be updated
-                if c.extern_type != "rhodecode":
+                if c.extern_type != "internal":
                     # forbid updating username for external accounts
                     skip_attrs.append('username')
 

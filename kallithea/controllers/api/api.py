@@ -618,8 +618,8 @@ class ApiController(JSONRPCController):
     def create_user(self, apiuser, username, email, password=Optional(''),
                     firstname=Optional(''), lastname=Optional(''),
                     active=Optional(True), admin=Optional(False),
-                    extern_name=Optional('rhodecode'),
-                    extern_type=Optional('rhodecode')):
+                    extern_name=Optional('internal'),
+                    extern_type=Optional('internal')):
         """
         Creates new user. Returns new user object. This command can
         be executed only using api_key belonging to user with admin rights.

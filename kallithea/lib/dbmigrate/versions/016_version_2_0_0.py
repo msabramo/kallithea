@@ -63,7 +63,7 @@ def fixups(models, _SESSION):
             usr.extern_name = ldap_dn
             usr.extern_type = 'ldap'
         else:
-            usr.extern_name = 'rhodecode'
-            usr.extern_type = 'rhodecode'
+            usr.extern_name = 'internal'
+            usr.extern_type = 'internal'
         _SESSION().add(usr)
         _SESSION().commit()

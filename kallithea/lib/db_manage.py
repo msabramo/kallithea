@@ -374,8 +374,8 @@ class DbManage(object):
         :param skip_existing:
         """
 
-        for k, v, t in [('auth_plugins', 'kallithea.lib.auth_modules.auth_rhodecode', 'list'),
-                     ('auth_rhodecode_enabled', 'True', 'bool')]:
+        for k, v, t in [('auth_plugins', 'kallithea.lib.auth_modules.auth_internal', 'list'),
+                     ('auth_internal_enabled', 'True', 'bool')]:
             if skip_existing and Setting.get_by_name(k) != None:
                 log.debug('Skipping option %s' % k)
                 continue
@@ -541,7 +541,7 @@ class DbManage(object):
         UserModel().create_or_update(username, password, email,
                                      firstname='RhodeCode', lastname='Admin',
                                      active=True, admin=admin,
-                                     extern_type="rhodecode")
+                                     extern_type="internal")
 
     def create_default_user(self):
         log.info('creating default user')

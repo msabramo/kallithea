@@ -56,8 +56,8 @@ class TestAdminUsersController(TestController):
              'firstname': name,
              'active': True,
              'lastname': lastname,
-             'extern_name': 'rhodecode',
-             'extern_type': 'rhodecode',
+             'extern_name': 'internal',
+             'extern_type': 'internal',
              'email': email})
 
         self.checkSessionFlash(response, '''Created user %s''' % (username))
@@ -124,7 +124,7 @@ class TestAdminUsersController(TestController):
         self.log_user()
         usr = fixture.create_user(self.test_user_1, password='qweqwe',
                                   email='testme@example.com',
-                                  extern_type='rhodecode',
+                                  extern_type='internal',
                                   extern_name=self.test_user_1,
                                   skip_if_exists=True)
         Session().commit()
@@ -136,7 +136,7 @@ class TestAdminUsersController(TestController):
             params['emails'] = [attrs['email']]
         if name == 'extern_type':
             #cannot update this via form, expected value is original one
-            params['extern_type'] = "rhodecode"
+            params['extern_type'] = "internal"
         if name == 'extern_name':
             #cannot update this via form, expected value is original one
             params['extern_name'] = self.test_user_1

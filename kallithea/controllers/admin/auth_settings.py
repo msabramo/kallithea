@@ -53,7 +53,7 @@ class AuthSettingsController(BaseController):
 
     def __load_defaults(self):
         c.available_plugins = [
-            'kallithea.lib.auth_modules.auth_rhodecode',
+            'kallithea.lib.auth_modules.auth_internal',
             'kallithea.lib.auth_modules.auth_container',
             'kallithea.lib.auth_modules.auth_ldap',
             'kallithea.lib.auth_modules.auth_crowd',
@@ -65,7 +65,7 @@ class AuthSettingsController(BaseController):
         _defaults = {}
         # default plugins loaded
         formglobals = {
-            "auth_plugins": ["kallithea.lib.auth_modules.auth_rhodecode"]
+            "auth_plugins": ["kallithea.lib.auth_modules.auth_internal"]
         }
         formglobals.update(Setting.get_auth_settings())
         formglobals["plugin_settings"] = {}

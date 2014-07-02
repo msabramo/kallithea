@@ -37,7 +37,7 @@ def downgrade(migrate_engine):
 
 def fixups(models, _SESSION):
     notify('Fixing default auth modules')
-    plugins = 'kallithea.lib.auth_modules.auth_rhodecode'
+    plugins = 'kallithea.lib.auth_modules.auth_internal'
     opts = []
     ldap_enabled = str2bool(getattr(
         models.Setting.get_by_name('ldap_active'),
@@ -47,7 +47,7 @@ def fixups(models, _SESSION):
         opts.append(('auth_ldap_enabled', 'True', 'bool'))
 
     opts.append(('auth_plugins', plugins, 'list'),)
-    opts.append(('auth_rhodecode_enabled', 'True', 'bool'))
+    opts.append(('auth_internal_enabled', 'True', 'bool'))
 
     for name, default, type_ in opts:
         setting = models.Setting.get_by_name(name)

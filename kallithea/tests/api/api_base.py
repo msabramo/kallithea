@@ -618,7 +618,7 @@ class BaseTestApi(object):
 
         id_, params = _build_data(self.apikey, 'create_user',
                                   username=username,
-                                  email=email, extern_name='rhodecode')
+                                  email=email, extern_name='internal')
         response = api_call(self, params)
 
         usr = UserModel().get_by_username(username)

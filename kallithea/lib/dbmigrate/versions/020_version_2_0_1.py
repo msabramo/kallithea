@@ -36,10 +36,10 @@ def downgrade(migrate_engine):
 
 
 def fixups(models, _SESSION):
-    #fix all empty extern type users to default 'rhodecode'
+    #fix all empty extern type users to default 'internal'
     for usr in models.User.query().all():
         if not usr.extern_name:
-            usr.extern_name = 'rhodecode'
-            usr.extern_type = 'rhodecode'
+            usr.extern_name = 'internal'
+            usr.extern_type = 'internal'
             _SESSION().add(usr)
             _SESSION().commit()

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-kallithea.lib.auth_modules.auth_rhodecode
+kallithea.lib.auth_modules.auth_internal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode authentication plugin for built in internal auth
@@ -39,7 +39,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeAuthPluginBase):
 
     @hybrid_property
     def name(self):
-        return "rhodecode"
+        return "internal"
 
     def settings(self):
         return []

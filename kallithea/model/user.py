@@ -185,8 +185,8 @@ class UserModel(BaseModel):
 
         try:
             form_data['admin'] = False
-            form_data['extern_name'] = 'rhodecode'
-            form_data['extern_type'] = 'rhodecode'
+            form_data['extern_name'] = 'internal'
+            form_data['extern_type'] = 'internal'
             new_user = self.create(form_data)
 
             self.sa.add(new_user)
