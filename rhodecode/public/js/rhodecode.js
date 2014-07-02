@@ -58,14 +58,36 @@ String.prototype.rstrip = function(char) {
     return this.replace(new RegExp(''+char+'+$'),'');
 }
 
-
+/* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf#Polyfill
+   under MIT license / public domain, see
+   https://developer.mozilla.org/en-US/docs/MDN/About#Copyrights_and_licenses */
 if(!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function(needle) {
-        for(var i = 0; i < this.length; i++) {
-            if(this[i] === needle) {
-                return i;
+    Array.prototype.indexOf = function (searchElement, fromIndex) {
+        if ( this === undefined || this === null ) {
+            throw new TypeError( '"this" is null or not defined' );
+        }
+
+        var length = this.length >>> 0; // Hack to convert object.length to a UInt32
+
+        fromIndex = +fromIndex || 0;
+
+        if (Math.abs(fromIndex) === Infinity) {
+            fromIndex = 0;
+        }
+
+        if (fromIndex < 0) {
+            fromIndex += length;
+            if (fromIndex < 0) {
+                fromIndex = 0;
             }
         }
+
+        for (;fromIndex < length; fromIndex++) {
+            if (this[fromIndex] === searchElement) {
+                return fromIndex;
+            }
+        }
+
         return -1;
     };
 }
