@@ -67,9 +67,6 @@ Troubleshooting
     you have installed latest windows patches (especially KB2789397)
 
 
-For further questions search the `Issues tracker`_, or post a message in the
-`google group rhodecode`_
-
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _python: http://www.python.org/
 .. _mercurial: http://mercurial.selenic.com/
@@ -79,4 +76,3 @@ For further questions search the `Issues tracker`_, or post a message in the
 .. _mercurial-server: http://www.lshift.net/mercurial-server.html
 .. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
 .. _Issues tracker: https://bitbucket.org/conservancy/kallithea/issues
-.. _google group rhodecode: http://groups.google.com/group/rhodecode

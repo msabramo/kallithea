@@ -136,16 +136,12 @@ Listed bellow are various support resources that should help.
    Please try to read the documentation before posting any issues, especially
    the **troubleshooting section**
 
-- Join the `Google group <http://groups.google.com/group/rhodecode>`_ and ask
-  any questions.
-
 - Open an issue at `issue tracker <https://bitbucket.org/conservancy/kallithea/issues>`_
 
-- Join #rhodecode on FreeNode (irc.freenode.net)
-  or use http://webchat.freenode.net/?channels=rhodecode for web access to irc.
+- Join #kallithea on FreeNode (irc.freenode.net)
+  or use http://webchat.freenode.net/?channels=kallithea for web access to irc.
 
-- You can also follow me on twitter **@marcinkuzminski** where i often post some
-  news about RhodeCode
+You can follow this project on Twitter, **@KallitheaSCM**.
 
 
 Online documentation

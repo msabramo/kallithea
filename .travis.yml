@@ -35,7 +35,7 @@ script: nosetests
 notifications:
     email:
         - marcinkuz@gmail.com
-    irc: "irc.freenode.org#rhodecode"
+    irc: "irc.freenode.org#kallithea"
 
 branches:
   only:

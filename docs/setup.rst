@@ -743,4 +743,3 @@ Some example init.d scripts can be found in init.d directory::
 .. _mercurial-server: http://www.lshift.net/mercurial-server.html
 .. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
 .. _Issues tracker: https://bitbucket.org/conservancy/kallithea/issues
-.. _google group rhodecode: http://groups.google.com/group/rhodecode
