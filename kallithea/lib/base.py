@@ -307,7 +307,7 @@ class BaseController(WSGIController):
         c.visual.allow_repo_location_change = str2bool(config.get('allow_repo_location_change', True))
         c.visual.allow_custom_hooks_settings = str2bool(config.get('allow_custom_hooks_settings', True))
 
-        c.rhodecode_instanceid = config.get('instance_id')
+        c.instance_id = config.get('instance_id')
         c.issues_url = config.get('bugtracker', url('issues_url'))
         # END CONFIG VARS
 
