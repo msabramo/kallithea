@@ -121,4 +121,60 @@ and licensed under the MIT-permissive license, which is
 
 
 
+YUI
+---
+
+Kallithea incorporates parts of the Javascript system called
+[YUI 2 — Yahoo! User Interface Library](http://yui.github.io/yui2/docs/yui_2.9.0_full/),
+which is made available under the [BSD License](http://yuilibrary.com/license/):
+
+Copyright &copy; 2013 Yahoo! Inc. All rights reserved.
+
+Redistribution and use of this software in source and binary forms, with or
+without modification, are permitted provided that the following conditions are
+met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Yahoo! Inc. nor the names of YUI's contributors may be
+  used to endorse or promote products derived from this software without
+  specific prior written permission of Yahoo! Inc.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Kallithea includes a minified version of YUI 2.9. To build yui.2.9.js:
+
+    git clone https://github.com/yui/builder
+    git clone https://github.com/yui/yui2
+    cd yui2/
+    git checkout hudson-yui2-2800
+    ln -sf JumpToPageDropDown.js src/paginator/js/JumpToPageDropdown.js # work around inconsistent casing
+    rm -f tmp.js
+    for m in yahoo event dom connection animation dragdrop element datasource autocomplete container event-delegate json datatable paginator; do
+      rm -f build/\$m/\$m.js
+      ( cd src/\$m && ant build deploybuild ) && sed -e 's,@VERSION@,2.9.0,g' -e 's,@BUILD@,2800,g' build/\$m/\$m.js >> tmp.js
+    done
+    java -jar ../builder/componentbuild/lib/yuicompressor/yuicompressor-2.4.4.jar tmp.js -o yui.2.9.js
+
+In compliance with GPLv3 the Corresponding Source for this Object Code is made
+available on
+[https://kallithea-scm.org/repos/mirror](https://kallithea-scm.org/repos/mirror).
+
+
+
 EOF
