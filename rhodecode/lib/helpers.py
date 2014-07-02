@@ -946,7 +946,6 @@ class Page(_Page):
         if self.page != self.last_page and rightmost_page < self.last_page:
             nav_items.append(self._pagerlink(self.last_page, self.last_page))
 
-        ## prerender links
         #_page_link = url.current()
         #nav_items.append(literal('<link rel="prerender" href="%s?page=%s">' % (_page_link, str(int(self.page)+1))))
         #nav_items.append(literal('<link rel="prefetch" href="%s?page=%s">' % (_page_link, str(int(self.page)+1))))
