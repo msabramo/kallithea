@@ -20,7 +20,7 @@ Upgrading from PyPI (aka "Cheeseshop")
 If using a sqlite database, stop the Rhodecode process/daemon/service, and
 then make a copy of the database file::
 
- service rhodecode stop
+ service kallithea stop
  cp rhodecode.db rhodecode.db.{version}
 
 
@@ -90,7 +90,7 @@ readily apparent::
 
 Once that is complete, you may now start your upgraded Rhodecode Instance::
 
- service rhodecode start
+ service kallithea start
 
 Or::
 

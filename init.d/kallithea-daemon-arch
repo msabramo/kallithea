@@ -6,7 +6,7 @@
 . /etc/rc.conf
 . /etc/rc.d/functions
 
-DAEMON=rhodecode
+DAEMON=kallithea
 APP_HOMEDIR="/srv"
 APP_PATH="$APP_HOMEDIR/$DAEMON"
 CONF_NAME="production.ini"

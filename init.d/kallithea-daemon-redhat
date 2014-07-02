@@ -12,7 +12,7 @@
 ##################################################
 
 
-APP_NAME="rhodecode"
+APP_NAME="kallithea"
 # the location of your app
 # since this is a web app, it should go in /var/www
 APP_PATH="/var/www/$APP_NAME"
@@ -22,14 +22,14 @@ CONF_NAME="production.ini"
 # write to wherever the PID should be stored, just ensure
 # that the user you run paster as has the appropriate permissions
 # same goes for the log file
-PID_PATH="/var/run/rhodecode/pid"
-LOG_PATH="/var/log/rhodecode/rhodecode.log"
+PID_PATH="/var/run/kallithea/pid"
+LOG_PATH="/var/log/kallithea/kallithea.log"
 
 # replace this with the path to the virtual environment you
 # made for RhodeCode
-PYTHON_PATH="/opt/python_virtualenvironments/rhodecode-venv"
+PYTHON_PATH="/opt/python_virtualenvironments/kallithea-venv"
 
-RUN_AS="rhodecode"
+RUN_AS="kallithea"
 
 DAEMON="$PYTHON_PATH/bin/paster"
 
@@ -39,7 +39,7 @@ DAEMON_OPTS="serve --daemon \
     --pid-file=$PID_PATH \
     --log-file=$LOG_PATH $APP_PATH/$CONF_NAME"
 
-DESC="rhodecode-server"
+DESC="kallithea-server"
 LOCK_FILE="/var/lock/subsys/$APP_NAME"
 
 # source CentOS init functions
@@ -61,7 +61,7 @@ ensure_pid_dir () {
   fi
 }
 
-start_rhodecode () {
+start_kallithea () {
     ensure_pid_dir
     PYTHON_EGG_CACHE="/tmp" daemon --pidfile $PID_PATH \
         --user $RUN_AS "$DAEMON $DAEMON_OPTS"
@@ -70,7 +70,7 @@ start_rhodecode () {
     return $RETVAL
 }
 
-stop_rhodecode () {
+stop_kallithea () {
     if [ -e $LOCK_FILE ]; then
       killproc -p $PID_PATH
       RETVAL=$?
@@ -82,7 +82,7 @@ stop_rhodecode () {
     return $RETVAL
 }
 
-status_rhodecode() {
+status_kallithea() {
   if [ -e $LOCK_FILE ]; then
     # exit with non-zero to indicate failure
     RETVAL=1
@@ -92,25 +92,25 @@ status_rhodecode() {
   return $RETVAL
 }
 
-restart_rhodecode () {
-    stop_rhodecode
-    start_rhodecode
+restart_kallithea () {
+    stop_kallithea
+    start_kallithea
     RETVAL=$?
 }
 
 case "$1" in
   start)
     echo -n $"Starting $DESC: "
-    start_rhodecode
+    start_kallithea
     echo
     ;;
   stop)
     echo -n $"Stopping $DESC: "
-    stop_rhodecode
+    stop_kallithea
     echo
     ;;
   status)
-    status_rhodecode
+    status_kallithea
     RETVAL=$?
     if [ ! $RETVAL -eq 0 ]; then
       echo "RhodeCode server is running..."
@@ -120,7 +120,7 @@ case "$1" in
     ;;
   restart)
     echo -n $"Restarting $DESC: "
-    restart_rhodecode
+    restart_kallithea
     echo
     ;;
   *)

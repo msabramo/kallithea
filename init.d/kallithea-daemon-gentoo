@@ -3,8 +3,8 @@
 #### THIS IS AN GENTOO INIT.D SCRIPT####
 ########################################
 
-APP_NAME="rhodecode"
-APP_HOMEDIR="marcink/python_workspace"
+APP_NAME="kallithea"
+APP_HOMEDIR="username/python_workspace"
 APP_PATH="/home/$APP_HOMEDIR/$APP_NAME"
 
 CONF_NAME="production.ini"
@@ -14,7 +14,7 @@ LOG_PATH="$APP_PATH/$APP_NAME.log"
 
 PYTHON_PATH="/home/$APP_HOMEDIR/v-env"
 
-RUN_AS="marcink"
+RUN_AS="username"
 
 DAEMON="$PYTHON_PATH/bin/paster"
 
