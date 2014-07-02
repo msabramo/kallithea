@@ -835,7 +835,7 @@ def gravatar_url(email_address, size=30, ssl_enabled=True):
     from pylons import url
     from pylons import tmpl_context as c
 
-    _def = 'anonymous@rhodecode.org'  # default gravatar
+    _def = 'anonymous@kallithea-scm.org'  # default gravatar
     _use_gravatar = c.visual.use_gravatar
     _gravatar_url = c.visual.gravatar_url or User.DEFAULT_GRAVATAR_URL
 

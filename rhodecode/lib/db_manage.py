@@ -209,7 +209,7 @@ class DbManage(object):
 
         def_user.name = 'Anonymous'
         def_user.lastname = 'User'
-        def_user.email = 'anonymous@rhodecode.org'
+        def_user.email = 'anonymous@kallithea-scm.org'
 
         try:
             self.sa.add(def_user)
@@ -548,7 +548,7 @@ class DbManage(object):
         # create default user for handling default permissions.
         user = UserModel().create_or_update(username=User.DEFAULT_USER,
                                             password=str(uuid.uuid1())[:20],
-                                            email='anonymous@rhodecode.org',
+                                            email='anonymous@kallithea-scm.org',
                                             firstname='Anonymous',
                                             lastname='User')
         # based on configuration options activate/deactive this user which

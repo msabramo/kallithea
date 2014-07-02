@@ -56,7 +56,7 @@ __platform__ = platform.system()
 __license__ = 'GPLv3'
 __py_version__ = sys.version_info
 __author__ = 'RhodeCode GmbH'
-__url__ = 'http://rhodecode.com'
+__url__ = 'https://kallithea-scm.org/'
 
 is_windows = __platform__ in ['Windows']
 is_unix = not is_windows

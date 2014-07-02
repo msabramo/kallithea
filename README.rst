@@ -36,16 +36,6 @@ Detailed instructions and links may be found on the Installation page.
 Please visit http://packages.python.org/RhodeCode/installation.html for
 more details
 
-RhodeCode demo
---------------
-
-http://demo.rhodecode.org
-
-The default access is anonymous but you can login to an administrative account
-using the following credentials:
-
-- username: demo
-- password: demo12
 
 Source code
 -----------

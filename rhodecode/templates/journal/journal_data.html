@@ -6,7 +6,7 @@
         % for user,entries in items:
             <div class="journal_container">
                 <div class="gravatar">
-                    <img alt="gravatar" src="${h.gravatar_url(user.email if user else 'anonymous@rhodecode.org',24)}"/>
+                    <img alt="gravatar" src="${h.gravatar_url(user.email if user else 'anonymous@kallithea-scm.org',24)}"/>
                 </div>
                 %if user:
                    <div class="journal_user">${user.name} ${user.lastname}</div>
