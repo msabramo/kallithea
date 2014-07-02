@@ -169,7 +169,7 @@ setup(
     main = pylons.util:PylonsInstaller
 
     [paste.global_paster_command]
-    setup-rhodecode=rhodecode.lib.paster_commands.setup_rhodecode:Command
+    setup-db=rhodecode.lib.paster_commands.setup_db:Command
     update-repoinfo=rhodecode.lib.paster_commands.update_repoinfo:Command
     make-rcext=rhodecode.lib.paster_commands.make_rcextensions:Command
     repo-scan=rhodecode.lib.paster_commands.repo_scan:Command

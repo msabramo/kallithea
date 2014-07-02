@@ -221,7 +221,7 @@ character differences between Unix and Windows
 For the sake of simplicity lets run it with the default settings. After
 your edits (if any), in the previous Command Prompt, type::
 
- paster setup-rhodecode production.ini
+ paster setup-db production.ini
 
 (this time a NEW database will be installed, you must follow a different
 step to later UPGRADE to a newer RhodeCode version)

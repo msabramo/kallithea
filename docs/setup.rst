@@ -26,20 +26,20 @@ configuration file to use this other database. RhodeCode currently supports
 postgresql, sqlite and mysql databases. Create the database by running
 the following command::
 
-    paster setup-rhodecode production.ini
+    paster setup-db production.ini
 
 This will prompt you for a "root" path. This "root" path is the location where
 RhodeCode will store all of its repositories on the current machine. After
-entering this "root" path ``setup-rhodecode`` will also prompt you for a username
-and password for the initial admin account which ``setup-rhodecode`` sets
+entering this "root" path ``setup-db`` will also prompt you for a username
+and password for the initial admin account which ``setup-db`` sets
 up for you.
 
 setup process can be fully automated, example for lazy::
 
-    paster setup-rhodecode production.ini --user=nn --password=secret --email=nn@your.kallithea.server --repos=/home/nn/my_repos
+    paster setup-db production.ini --user=nn --password=secret --email=nn@your.kallithea.server --repos=/home/nn/my_repos
 
 
-- The ``setup-rhodecode`` command will create all of the needed tables and an
+- The ``setup-db`` command will create all of the needed tables and an
   admin account. When choosing a root path you can either use a new empty
   location, or a location which already contains existing repositories. If you
   choose a location which contains existing repositories RhodeCode will simply
@@ -57,7 +57,7 @@ You are now ready to use RhodeCode, to run it simply execute::
 - This command runs the RhodeCode server. The web app should be available at the
   127.0.0.1:5000. This ip and port is configurable via the production.ini
   file created in previous step
-- Use the admin account you created above when running ``setup-rhodecode``
+- Use the admin account you created above when running ``setup-db``
   to login to the web app.
 - The default permissions on each repository is read, and the owner is admin.
   Remember to update these if needed.
