@@ -3596,7 +3596,7 @@ div.gravatar img {
     cursor: pointer !important;
     padding: 3px 3px 3px 3px;
     background-position: 0 -100px;
-
+    display: inline-block;
 }
 
 /* make .btn inputs and buttons and divs look the same */
