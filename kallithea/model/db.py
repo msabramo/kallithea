@@ -43,6 +43,7 @@ from webob.exc import HTTPNotFound
 
 from pylons.i18n.translation import lazy_ugettext as _
 
+from kallithea import DB_PREFIX
 from kallithea.lib.vcs import get_backend
 from kallithea.lib.vcs.utils.helpers import get_scm
 from kallithea.lib.vcs.exceptions import VCSError
@@ -56,8 +57,6 @@ from kallithea.lib.compat import json
 from kallithea.lib.caching_query import FromCache
 
 from kallithea.model.meta import Base, Session
-
-from kallithea import SETTINGS_PREFIX
 
 URL_SEP = '/'
 log = logging.getLogger(__name__)
@@ -160,7 +159,7 @@ class BaseModel(object):
 
 
 class Setting(Base, BaseModel):
-    __tablename__ = SETTINGS_PREFIX + 'settings'
+    __tablename__ = DB_PREFIX + 'settings'
 
     __table_args__ = (
         UniqueConstraint('app_settings_name'),
@@ -327,7 +326,7 @@ class Setting(Base, BaseModel):
 
 
 class Ui(Base, BaseModel):
-    __tablename__ = SETTINGS_PREFIX + 'ui'
+    __tablename__ = DB_PREFIX + 'ui'
     __table_args__ = (
         UniqueConstraint('ui_key'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',

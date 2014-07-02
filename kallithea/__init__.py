@@ -59,7 +59,7 @@ except ImportError:
     pass
 
 # Prefix for the ui and settings table names
-SETTINGS_PREFIX = BRAND + "_"
+DB_PREFIX = (BRAND + "_") if BRAND != "kallithea" else ""
 
 try:
     from kallithea.lib import get_current_revision

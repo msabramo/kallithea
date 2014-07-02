@@ -58,7 +58,7 @@ from kallithea.model.meta import Base, Session
 URL_SEP = '/'
 log = logging.getLogger(__name__)
 
-from kallithea import SETTINGS_PREFIX
+from kallithea import DB_PREFIX
 
 #==============================================================================
 # BASE CLASSES
@@ -150,7 +150,7 @@ class BaseModel(object):
 
 
 class Setting(Base, BaseModel):
-    __tablename__ = SETTINGS_PREFIX + 'settings'
+    __tablename__ = DB_PREFIX + 'settings'
     __table_args__ = (
         UniqueConstraint('app_settings_name'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
@@ -249,7 +249,7 @@ class Setting(Base, BaseModel):
 
 
 class Ui(Base, BaseModel):
-    __tablename__ = SETTINGS_PREFIX + 'ui'
+    __tablename__ = DB_PREFIX + 'ui'
     __table_args__ = (
         UniqueConstraint('ui_key'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',

@@ -49,7 +49,7 @@ from kallithea.lib.compat import json
 from kallithea.model.meta import Base, Session
 from kallithea.lib.caching_query import FromCache
 
-from kallithea import SETTINGS_PREFIX
+from kallithea import DB_PREFIX
 
 log = logging.getLogger(__name__)
 
@@ -143,7 +143,7 @@ class BaseModel(object):
 
 
 class Setting(Base, BaseModel):
-    __tablename__ = SETTINGS_PREFIX + 'settings'
+    __tablename__ = DB_PREFIX + 'settings'
     __table_args__ = (UniqueConstraint('app_settings_name'), {'extend_existing':True})
     app_settings_id = Column("app_settings_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
     app_settings_name = Column("app_settings_name", String(length=255, convert_unicode=False, assert_unicode=None), nullable=True, unique=None, default=None)
@@ -214,7 +214,7 @@ class Setting(Base, BaseModel):
 
 
 class Ui(Base, BaseModel):
-    __tablename__ = SETTINGS_PREFIX + 'ui'
+    __tablename__ = DB_PREFIX + 'ui'
     __table_args__ = (UniqueConstraint('ui_key'), {'extend_existing':True})
 
     HOOK_UPDATE = 'changegroup.update'
