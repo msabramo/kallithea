@@ -6,12 +6,6 @@ if (typeof console == "undefined" || typeof console.log == "undefined"){
     console = { log: function() {} }
 }
 
-
-var str_repeat = function(i, m) {
-    for (var o = []; m > 0; o[--m] = i);
-    return o.join('');
-};
-
 /**
  * INJECT .format function into String
  * Usage: "My name is {0} {1}".format("Johny","Bravo")
@@ -19,7 +13,6 @@ var str_repeat = function(i, m) {
  * Inspired by https://gist.github.com/1049426
  */
 String.prototype.format = function() {
-
       function format() {
         var str = this;
         var len = arguments.length+1;
@@ -50,12 +43,14 @@ String.prototype.strip = function(char) {
     }
     return this.replace(new RegExp('^'+char+'+|'+char+'+$','g'), '');
 }
+
 String.prototype.lstrip = function(char) {
     if(char === undefined){
         char = '\\s';
     }
     return this.replace(new RegExp('^'+char+'+'),'');
 }
+
 String.prototype.rstrip = function(char) {
     if(char === undefined){
         char = '\\s';
@@ -83,70 +78,6 @@ var prevElementSibling = function( el ) {
         while( el = el.previousSibling ) {
             if( el.nodeType === 1 ) return el;
         }
-    }
-}
-
-/**
- * SmartColorGenerator
- *
- *usage::
- *  var CG = new ColorGenerator();
- *  var col = CG.getColor(key); //returns array of RGB
- *  'rgb({0})'.format(col.join(',')
- *
- * @returns {ColorGenerator}
- */
-var ColorGenerator = function(){
-    this.GOLDEN_RATIO = 0.618033988749895;
-    this.CURRENT_RATIO = 0.22717784590367374 // this can be random
-    this.HSV_1 = 0.75;//saturation
-    this.HSV_2 = 0.95;
-    this.color;
-    this.cacheColorMap = {};
-};
-
-ColorGenerator.prototype = {
-    getColor:function(key){
-        if(this.cacheColorMap[key] !== undefined){
-            return this.cacheColorMap[key];
-        }
-        else{
-            this.cacheColorMap[key] = this.generateColor();
-            return this.cacheColorMap[key];
-        }
-    },
-    _hsvToRgb:function(h,s,v){
-        if (s == 0.0)
-            return [v, v, v];
-        i = parseInt(h * 6.0)
-        f = (h * 6.0) - i
-        p = v * (1.0 - s)
-        q = v * (1.0 - s * f)
-        t = v * (1.0 - s * (1.0 - f))
-        i = i % 6
-        if (i == 0)
-            return [v, t, p]
-        if (i == 1)
-            return [q, v, p]
-        if (i == 2)
-            return [p, v, t]
-        if (i == 3)
-            return [p, q, v]
-        if (i == 4)
-            return [t, p, v]
-        if (i == 5)
-            return [v, p, q]
-    },
-    generateColor:function(){
-        this.CURRENT_RATIO = this.CURRENT_RATIO+this.GOLDEN_RATIO;
-        this.CURRENT_RATIO = this.CURRENT_RATIO %= 1;
-        HSV_tuple = [this.CURRENT_RATIO, this.HSV_1, this.HSV_2]
-        RGB_tuple = this._hsvToRgb(HSV_tuple[0],HSV_tuple[1],HSV_tuple[2]);
-        function toRgb(v){
-            return ""+parseInt(v*256)
-        }
-        return [toRgb(RGB_tuple[0]),toRgb(RGB_tuple[1]),toRgb(RGB_tuple[2])];
-
     }
 }
 
@@ -292,7 +223,6 @@ var pyroutes = (function() {
                 var route = matchlist[route_name];
                 // param substitution
                 for(var i=0; i < route[1].length; i++) {
-
                    if (!params.hasOwnProperty(route[1][i]))
                         throw new Error(route[1][i] + ' missing in "' + route_name + '" route generation');
                 }
@@ -335,7 +265,6 @@ var pyroutes = (function() {
 })();
 
 
-
 /**
  * GLOBAL YUI Shortcuts
  */
@@ -343,16 +272,6 @@ var YUC = YAHOO.util.Connect;
 var YUD = YAHOO.util.Dom;
 var YUE = YAHOO.util.Event;
 var YUQ = YAHOO.util.Selector.query;
-
-// defines if push state is enabled for this browser ?
-var push_state_enabled = Boolean(
-        window.history && window.history.pushState && window.history.replaceState
-        && !(   /* disable for versions of iOS before version 4.3 (8F190) */
-                (/ Mobile\/([1-7][a-z]|(8([abcde]|f(1[0-8]))))/i).test(navigator.userAgent)
-                /* disable for the mercury iOS browser, or at least older versions of the webkit engine */
-                || (/AppleWebKit\/5([0-2]|3[0-2])/i).test(navigator.userAgent)
-        )
-);
 
 var _run_callbacks = function(callbacks){
     if (callbacks !== undefined){
@@ -450,8 +369,6 @@ var ajaxGET = function(url,success) {
     return request;
 };
 
-
-
 var ajaxPOST = function(url,postData,success) {
     // Set special header for ajax == HTTP_X_PARTIAL_XHR
     YUC.initHeader('X-PARTIAL-XHR',true);
@@ -537,22 +454,7 @@ var onSuccessFollow = function(target){
     }
 }
 
-var toggleFollowingUser = function(target,fallows_user_id,token,user_id){
-    args = 'follows_user_id='+fallows_user_id;
-    args+= '&amp;auth_token='+token;
-    if(user_id != undefined){
-        args+="&amp;user_id="+user_id;
-    }
-    YUC.asyncRequest('POST',TOGGLE_FOLLOW_URL,{
-        success:function(o){
-            onSuccessFollow(target);
-        }
-    },args);
-    return false;
-}
-
 var toggleFollowingRepo = function(target,fallows_repo_id,token,user_id){
-
     args = 'follows_repo_id='+fallows_repo_id;
     args+= '&amp;auth_token='+token;
     if(user_id != undefined){
@@ -746,7 +648,6 @@ var q_filter = function(target,nodes,display_element){
        if(cnt){
            YUD.get('repo_count').innerHTML = showing;
        }
-
     }
 };
 
@@ -762,11 +663,6 @@ var tableTr = function(cls, body){
                  '</tr></tbody></table>').format(id, cls, body);
     _el.innerHTML = _html;
     return _el.children[0].children[0].children[0];
-};
-
-/** comments **/
-var removeInlineForm = function(form) {
-    form.parentNode.removeChild(form);
 };
 
 var createInlineForm = function(parent_tr, f_path, line) {
@@ -891,7 +787,6 @@ var injectInlineForm = function(tr){
            YUD.setStyle('edit-container_'+lineno, 'display', '');
            YUD.setStyle('preview-container_'+lineno, 'display', 'none');
        })
-
 
       setTimeout(function(){
           // callbacks
@@ -1020,7 +915,6 @@ var renderInlineComment = function(json_data){
       var lineno = json_data['line_no'];
       var target_id = json_data['target_id'];
       placeInline(target_id, lineno, html);
-
     }catch(e){
       console.log(e);
     }
@@ -1091,7 +985,6 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
     }
 
     F.updateFilter  = function(e) {
-
         return function(){
             // Reset timeout
             F.filterTimeout = null;
@@ -1101,10 +994,8 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
             var matches_max = 20;
             if (query != ""){
                 for(var i=0;i<nodes.length;i++){
-
                     var pos = nodes[i].name.toLowerCase().indexOf(query)
                     if(query && pos != -1){
-
                         matches++
                         //show only certain amount to not kill browser
                         if (matches > matches_max){
@@ -1138,7 +1029,6 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
                 YUD.setStyle('tbody','display','');
                 YUD.setStyle('tbody_filtered','display','none');
             }
-
         }
     };
 
@@ -1205,7 +1095,6 @@ var getIdentNode = function(n){
 };
 
 var  getSelectionLink = function(e) {
-
     //get selection from start/to nodes
     if (typeof window.getSelection != "undefined") {
         s = window.getSelection();
@@ -1475,7 +1364,6 @@ var MembersAutoComplete = function (divid, cont, users_list, groups_list) {
     };
 }
 
-
 var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
     var myUsers = users_list;
     var myGroups = groups_list;
@@ -1622,7 +1510,6 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
         var re = new RegExp('(?:^@|\s@)([a-zA-Z0-9]{1}[a-zA-Z0-9\-\_\.]+)$')
         var chunks  = [];
 
-
         // cut first chunk until curret pos
         var to_max = msg.substr(0, max_pos);
         var at_pos = Math.max(0,to_max.lastIndexOf('@')-1);
@@ -1688,7 +1575,6 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
         //only add if it's not there
         members.innerHTML += element;
     }
-
 }
 
 var removeReviewMember = function(reviewer_id, repo_name, pull_request_id){
@@ -1896,6 +1782,7 @@ var fromHTML = function(html){
       _html.innerHTML = html;
       return _html;
 }
+
 var get_rev = function(node){
     var n = node.firstElementChild.firstElementChild;
 
@@ -1908,29 +1795,12 @@ var get_rev = function(node){
     }
 }
 
-var get_name = function(node){
-     var name = node.firstElementChild.children[2].innerHTML;
-     return name
-}
-var get_group_name = function(node){
-    var name = node.firstElementChild.children[1].innerHTML;
-    return name
-}
 var get_date = function(node){
     var date_ = YUD.getAttribute(node.firstElementChild,'date');
     return date_
 }
 
-var get_age = function(node){
-    return node
-}
-
-var get_link = function(node){
-    return node.firstElementChild.text;
-}
-
 var revisionSort = function(a, b, desc, field) {
-
       var a_ = fromHTML(a.getData(field));
       var b_ = fromHTML(b.getData(field));
 
@@ -1942,6 +1812,7 @@ var revisionSort = function(a, b, desc, field) {
       var compState = comp(a_, b_, desc);
       return compState;
 };
+
 var ageSort = function(a, b, desc, field) {
     var a_ = fromHTML(a.getData(field));
     var b_ = fromHTML(b.getData(field));
@@ -1973,31 +1844,6 @@ var nameSort = function(a, b, desc, field) {
     return compState;
 };
 
-var permNameSort = function(a, b, desc, field) {
-    var a_ = fromHTML(a.getData(field));
-    var b_ = fromHTML(b.getData(field));
-    // extract name from table
-
-    a_ = a_.children[0].innerHTML;
-    b_ = b_.children[0].innerHTML;
-
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
-};
-
-var groupNameSort = function(a, b, desc, field) {
-    var a_ = fromHTML(a.getData(field));
-    var b_ = fromHTML(b.getData(field));
-
-    // extract name from table
-    a_ = get_group_name(a_)
-    b_ = get_group_name(b_)
-
-    var comp = YAHOO.util.Sort.compare;
-    var compState = comp(a_, b_, desc);
-    return compState;
-};
 var dateSort = function(a, b, desc, field) {
     var a_ = fromHTML(a.getData(field));
     var b_ = fromHTML(b.getData(field));
@@ -2010,18 +1856,6 @@ var dateSort = function(a, b, desc, field) {
     var compState = comp(a_, b_, desc);
     return compState;
 };
-
-var usernamelinkSort = function(a, b, desc, field) {
-      var a_ = fromHTML(a.getData(field));
-      var b_ = fromHTML(b.getData(field));
-
-      // extract url text from string nodes
-      a_ = get_link(a_)
-      b_ = get_link(b_)
-      var comp = YAHOO.util.Sort.compare;
-      var compState = comp(a_, b_, desc);
-      return compState;
-}
 
 var addPermAction = function(_html, users_list, groups_list){
     var elmts = YUD.getElementsByClassName('last_new_member');
@@ -2042,6 +1876,7 @@ var addPermAction = function(_html, users_list, groups_list){
        YUD.insertAfter(el, last_node);
     }
 }
+
 function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data) {
     var callback = {
         success: function (o) {
@@ -2074,11 +1909,10 @@ function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data)
     var request = YAHOO.util.Connect.asyncRequest('POST', url, callback,
             toQueryString(query_params));
 };
+
 /* Multi selectors */
 
 var MultiSelectWidget = function(selected_id, available_id, form_id){
-
-
     //definition of containers ID's
     var selected_container = selected_id;
     var available_container = available_id;
@@ -2334,6 +2168,7 @@ var YUI_paginator = function(links_per_page, containers){
         };
 
         })();
+
     (function () {
 
         var Paginator = YAHOO.widget.Paginator,
@@ -2494,7 +2329,6 @@ var YUI_paginator = function(links_per_page, containers){
 }
 
 
-
 // global hooks after DOM is loaded
 
 YUE.onDOMReady(function(){
@@ -2511,7 +2345,4 @@ YUE.onDOMReady(function(){
             YUD.get(button).innerHTML = "&darr; {0} &darr;".format(_TM['Expand diff']);
         }
     });
-
-
-
 });
