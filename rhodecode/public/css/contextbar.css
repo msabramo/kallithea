@@ -274,8 +274,7 @@ ul#context-actions {
 #context-pages a,
 #context-pages .admin_menu a {
     display: block;
-    padding: 0px 10px 1px 30px;
-    padding-left: 30px;
+    padding: 0px 10px 1px 10px;
     line-height: 35px;
 }
 

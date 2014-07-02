@@ -365,6 +365,7 @@
             var tmpl = '';
 
             if(obj_dict && state.type == 'repo'){
+                tmpl += '<span class="repo-icons">';
                 if(obj_dict['repo_type'] === 'hg'){
                     tmpl += '<i class="icon-hg"></i> ';
                 }
@@ -377,6 +378,7 @@
                 else if(visual_show_public_icon){
                     tmpl += '<i class="icon-unlock-alt"></i> ';
                 }
+                tmpl += '</span>';
             }
             if(obj_dict && state.type == 'group'){
                     tmpl += '<i class="icon-folder-close"></i> ';

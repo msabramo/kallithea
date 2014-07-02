@@ -995,15 +995,10 @@ tbody .yui-dt-editable { cursor: pointer }
 }
 
 #content div.box div.title ul.links li a {
-    border-left: 1px solid #316293;
-    color: #FFFFFF;
-    display: block;
-    float: left;
     font-size: 13px;
     font-weight: 700;
     height: 1%;
-    margin: 0;
-    padding: 11px 22px 12px;
+    margin: 4px;
     text-decoration: none;
 }
 
@@ -1741,7 +1736,7 @@ div.form div.fields div.field div.button {
 
 #summary-menu-stats a {
     display: block;
-    padding: 12px 30px;
+    padding: 12px 10px;
     background-repeat: no-repeat;
     background-position: 10px 50%;
     padding-right: 10px;
@@ -4998,4 +4993,8 @@ div.comment:target>.comment-wrapp {
 
 #help_kb {
     display: none;
+}
+
+.repo-switcher-dropdown .select2-result-label span.repo-icons {
+    margin-left: -12px;
 }
