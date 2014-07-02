@@ -1,19 +1,19 @@
 <dl class="dl-horizontal">
 <%
  elems = [
-    (_('Email prefix'), c.rhodecode_ini.get('email_prefix'), ''),
-    (_('Kallithea email from'), c.rhodecode_ini.get('app_email_from'), ''),
-    (_('Error email from'), c.rhodecode_ini.get('error_email_from'), ''),
-    (_('Error email recipients'), c.rhodecode_ini.get('email_to'), ''),
+    (_('Email prefix'), c.ini.get('email_prefix'), ''),
+    (_('Kallithea email from'), c.ini.get('app_email_from'), ''),
+    (_('Error email from'), c.ini.get('error_email_from'), ''),
+    (_('Error email recipients'), c.ini.get('email_to'), ''),
 
-    (_('SMTP server'), c.rhodecode_ini.get('smtp_server'), ''),
-    (_('SMTP username'), c.rhodecode_ini.get('smtp_username'), ''),
-    (_('SMTP password'), '%s chars' % len(c.rhodecode_ini.get('smtp_password', '')), ''),
-    (_('SMTP port'), c.rhodecode_ini.get('smtp_port'), ''),
+    (_('SMTP server'), c.ini.get('smtp_server'), ''),
+    (_('SMTP username'), c.ini.get('smtp_username'), ''),
+    (_('SMTP password'), '%s chars' % len(c.ini.get('smtp_password', '')), ''),
+    (_('SMTP port'), c.ini.get('smtp_port'), ''),
 
-    (_('SMTP use TLS'), c.rhodecode_ini.get('smtp_use_tls'), ''),
-    (_('SMTP use SSL'), c.rhodecode_ini.get('smtp_use_ssl'), ''),
-    (_('SMTP auth'), c.rhodecode_ini.get('smtp_auth'), ''),
+    (_('SMTP use TLS'), c.ini.get('smtp_use_tls'), ''),
+    (_('SMTP use SSL'), c.ini.get('smtp_use_ssl'), ''),
+    (_('SMTP auth'), c.ini.get('smtp_auth'), ''),
  ]
 %>
 %for dt, dd, tt in elems:

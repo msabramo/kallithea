@@ -374,7 +374,7 @@ class SettingsController(BaseController):
         defaults.update(self._get_hg_ui_settings())
 
         import kallithea
-        c.rhodecode_ini = kallithea.CONFIG
+        c.ini = kallithea.CONFIG
 
         return htmlfill.render(
             render('admin/settings/settings.html'),
@@ -463,7 +463,7 @@ class SettingsController(BaseController):
         defaults.update(self._get_hg_ui_settings())
 
         import kallithea
-        c.rhodecode_ini = kallithea.CONFIG
+        c.ini = kallithea.CONFIG
         c.rhodecode_update_url = defaults.get('rhodecode_update_url')
         server_info = Setting.get_server_info()
         for key, val in server_info.iteritems():
