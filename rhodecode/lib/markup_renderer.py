@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.markup_renderer
+kallithea.lib.markup_renderer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Renderer for markup languages with ability to parse using rst or markdown
@@ -28,7 +28,7 @@ import re
 import logging
 import traceback
 
-from rhodecode.lib.utils2 import safe_unicode, MENTIONS_REGEX
+from kallithea.lib.utils2 import safe_unicode, MENTIONS_REGEX
 
 log = logging.getLogger(__name__)
 

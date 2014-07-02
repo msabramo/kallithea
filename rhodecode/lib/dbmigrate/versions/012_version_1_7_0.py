@@ -7,12 +7,12 @@ from sqlalchemy.orm import relation, backref, class_mapper, joinedload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
-from rhodecode.model import meta
-from rhodecode.lib.dbmigrate.versions import _reset_base
+from kallithea.model.meta import Base
+from kallithea.model import meta
+from kallithea.lib.dbmigrate.versions import _reset_base
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def upgrade(migrate_engine):
     Don't create your own engine; bind migrate_engine to your metadata
     """
     _reset_base(migrate_engine)
-    from rhodecode.lib.dbmigrate.schema import db_1_7_0
+    from kallithea.lib.dbmigrate.schema import db_1_7_0
 
     #==========================================================================
     # UserUserGroupToPerm

@@ -7,8 +7,8 @@ import sys
 
 from pkg_resources import resource_filename
 
-from rhodecode.lib.dbmigrate.migrate.versioning.config import *
-from rhodecode.lib.dbmigrate.migrate.versioning import pathed
+from kallithea.lib.dbmigrate.migrate.versioning.config import *
+from kallithea.lib.dbmigrate.migrate.versioning import pathed
 
 
 class Collection(pathed.Pathed):
@@ -34,10 +34,10 @@ class SQLScriptCollection(Collection):
 class Template(pathed.Pathed):
     """Finds the paths/packages of various Migrate templates.
 
-    :param path: Templates are loaded from rhodecode.lib.dbmigrate.migrate package
+    :param path: Templates are loaded from kallithea.lib.dbmigrate.migrate package
     if `path` is not provided.
     """
-    pkg = 'rhodecode.lib.dbmigrate.migrate.versioning.templates'
+    pkg = 'kallithea.lib.dbmigrate.migrate.versioning.templates'
     _manage = 'manage.py_tmpl'
 
     def __new__(cls, path=None):

@@ -20,8 +20,8 @@ SQLA_07 = _sa_version >= (0, 7)
 del re
 del _sa_version
 
-from rhodecode.lib.dbmigrate.migrate.changeset.schema import *
-from rhodecode.lib.dbmigrate.migrate.changeset.constraint import *
+from kallithea.lib.dbmigrate.migrate.changeset.schema import *
+from kallithea.lib.dbmigrate.migrate.changeset.constraint import *
 
 sqlalchemy.schema.Table.__bases__ += (ChangesetTable,)
 sqlalchemy.schema.Column.__bases__ += (ChangesetColumn,)

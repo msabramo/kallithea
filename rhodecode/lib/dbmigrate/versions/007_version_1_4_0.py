@@ -7,11 +7,11 @@ from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
-from rhodecode.model import meta
+from kallithea.model.meta import Base
+from kallithea.model import meta
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # CHANGESET_COMMENTS
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_4_0 import ChangesetComment
+    from kallithea.lib.dbmigrate.schema.db_1_4_0 import ChangesetComment
     tbl_name = ChangesetComment.__tablename__
     tbl = Table(tbl_name,
                 MetaData(bind=migrate_engine), autoload=True,
@@ -38,7 +38,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # REPOSITORY
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_4_0 import Repository
+    from kallithea.lib.dbmigrate.schema.db_1_4_0 import Repository
     tbl = Repository.__table__
     updated_on = Column('updated_on', DateTime(timezone=False),
                         nullable=True, unique=None)

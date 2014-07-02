@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.utils
+kallithea.lib.utils
 ~~~~~~~~~~~~~~~~~~~
 
 Some simple helper functions
@@ -36,8 +36,8 @@ import urllib
 import urlobject
 
 from pylons.i18n.translation import _, ungettext
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.compat import json
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.compat import json
 
 
 def __get_lem():
@@ -211,8 +211,8 @@ def safe_unicode(str_, from_encoding=None):
         return str_
 
     if not from_encoding:
-        import rhodecode
-        DEFAULT_ENCODINGS = aslist(rhodecode.CONFIG.get('default_encoding',
+        import kallithea
+        DEFAULT_ENCODINGS = aslist(kallithea.CONFIG.get('default_encoding',
                                                         'utf8'), sep=',')
         from_encoding = DEFAULT_ENCODINGS
 
@@ -260,8 +260,8 @@ def safe_str(unicode_, to_encoding=None):
         return unicode_
 
     if not to_encoding:
-        import rhodecode
-        DEFAULT_ENCODINGS = aslist(rhodecode.CONFIG.get('default_encoding',
+        import kallithea
+        DEFAULT_ENCODINGS = aslist(kallithea.CONFIG.get('default_encoding',
                                                         'utf8'), sep=',')
         to_encoding = DEFAULT_ENCODINGS
 
@@ -523,9 +523,9 @@ def get_changeset_safe(repo, rev):
     :param repo:
     :param rev:
     """
-    from rhodecode.lib.vcs.backends.base import BaseRepository
-    from rhodecode.lib.vcs.exceptions import RepositoryError
-    from rhodecode.lib.vcs.backends.base import EmptyChangeset
+    from kallithea.lib.vcs.backends.base import BaseRepository
+    from kallithea.lib.vcs.exceptions import RepositoryError
+    from kallithea.lib.vcs.backends.base import EmptyChangeset
     if not isinstance(repo, BaseRepository):
         raise Exception('You must pass an Repository '
                         'object as first argument got %s', type(repo))

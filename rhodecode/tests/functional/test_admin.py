@@ -2,10 +2,10 @@ from __future__ import with_statement
 import os
 import csv
 import datetime
-from rhodecode.tests import *
-from rhodecode.model.db import UserLog
-from rhodecode.model.meta import Session
-from rhodecode.lib.utils2 import safe_unicode
+from kallithea.tests import *
+from kallithea.model.db import UserLog
+from kallithea.model.meta import Session
+from kallithea.lib.utils2 import safe_unicode
 
 dn = os.path.dirname
 FIXTURES = os.path.join(dn(dn(os.path.abspath(__file__))), 'fixtures')

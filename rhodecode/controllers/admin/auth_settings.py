@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.auth_settings
+kallithea.controllers.admin.auth_settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 pluggable authentication controller for RhodeCode
@@ -32,14 +32,14 @@ from pylons.i18n.translation import _
 
 from sqlalchemy.exc import DatabaseError
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.compat import json, formatted_json
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator
-from rhodecode.lib import auth_modules
-from rhodecode.model.forms import AuthSettingsForm
-from rhodecode.model.db import RhodeCodeSetting
-from rhodecode.model.meta import Session
+from kallithea.lib import helpers as h
+from kallithea.lib.compat import json, formatted_json
+from kallithea.lib.base import BaseController, render
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator
+from kallithea.lib import auth_modules
+from kallithea.model.forms import AuthSettingsForm
+from kallithea.model.db import RhodeCodeSetting
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 
@@ -53,10 +53,10 @@ class AuthSettingsController(BaseController):
 
     def __load_defaults(self):
         c.available_plugins = [
-            'rhodecode.lib.auth_modules.auth_rhodecode',
-            'rhodecode.lib.auth_modules.auth_container',
-            'rhodecode.lib.auth_modules.auth_ldap',
-            'rhodecode.lib.auth_modules.auth_crowd',
+            'kallithea.lib.auth_modules.auth_rhodecode',
+            'kallithea.lib.auth_modules.auth_container',
+            'kallithea.lib.auth_modules.auth_ldap',
+            'kallithea.lib.auth_modules.auth_crowd',
         ]
         c.enabled_plugins = RhodeCodeSetting.get_auth_plugins()
 
@@ -65,7 +65,7 @@ class AuthSettingsController(BaseController):
         _defaults = {}
         # default plugins loaded
         formglobals = {
-            "auth_plugins": ["rhodecode.lib.auth_modules.auth_rhodecode"]
+            "auth_plugins": ["kallithea.lib.auth_modules.auth_rhodecode"]
         }
         formglobals.update(RhodeCodeSetting.get_auth_settings())
         formglobals["plugin_settings"] = {}

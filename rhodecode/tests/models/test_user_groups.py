@@ -1,12 +1,12 @@
 import os
 from sqlalchemy.exc import IntegrityError
-from rhodecode.model.db import User
+from kallithea.model.db import User
 
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
 
-from rhodecode.model.user_group import UserGroupModel
-from rhodecode.model.meta import Session
+from kallithea.model.user_group import UserGroupModel
+from kallithea.model.meta import Session
 
 
 fixture = Fixture()

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.paster_commands.make_index
+kallithea.lib.paster_commands.make_index
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 make-index paster command for RhodeCode
@@ -30,11 +30,11 @@ import os
 import sys
 import logging
 
-from rhodecode.lib.utils import BasePasterCommand
+from kallithea.lib.utils import BasePasterCommand
 from string import strip
 from shutil import rmtree
-from rhodecode.model.repo import RepoModel
-from rhodecode.lib.utils import BasePasterCommand, load_rcextensions
+from kallithea.model.repo import RepoModel
+from kallithea.lib.utils import BasePasterCommand, load_rcextensions
 
 # Add location of top level folder to sys.path
 from os.path import dirname as dn
@@ -72,8 +72,8 @@ class Command(BasePasterCommand):
         #======================================================================
         # WHOOSH DAEMON
         #======================================================================
-        from rhodecode.lib.pidlock import LockHeld, DaemonLock
-        from rhodecode.lib.indexers.daemon import WhooshIndexingDaemon
+        from kallithea.lib.pidlock import LockHeld, DaemonLock
+        from kallithea.lib.indexers.daemon import WhooshIndexingDaemon
         try:
             l = DaemonLock(file_=os.path.join(dn(dn(index_location)),
                                               'make_index.lock'))

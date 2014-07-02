@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.__init__
+kallithea.__init__
 ~~~~~~~~~~~~~~~~~~
 
 RhodeCode, a web based repository management based on pylons
@@ -43,7 +43,7 @@ CONFIG = {}
 EXTENSIONS = {}
 
 try:
-    from rhodecode.lib import get_current_revision
+    from kallithea.lib import get_current_revision
     _rev = get_current_revision(quiet=True)
     if _rev and len(VERSION) > 3:
         VERSION += ('%s' % _rev[0],)

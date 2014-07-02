@@ -27,15 +27,15 @@ from formencode.validators import (
     UnicodeString, OneOf, Int, Number, Regex, Email, Bool, StringBoolean, Set,
     NotEmpty, IPAddress, CIDR, String, FancyValidator
 )
-from rhodecode.lib.compat import OrderedSet
-from rhodecode.lib import ipaddr
-from rhodecode.lib.utils import repo_name_slug
-from rhodecode.lib.utils2 import safe_int, str2bool, aslist
-from rhodecode.model.db import RepoGroup, Repository, UserGroup, User,\
+from kallithea.lib.compat import OrderedSet
+from kallithea.lib import ipaddr
+from kallithea.lib.utils import repo_name_slug
+from kallithea.lib.utils2 import safe_int, str2bool, aslist
+from kallithea.model.db import RepoGroup, Repository, UserGroup, User,\
     ChangesetStatus
-from rhodecode.lib.exceptions import LdapImportError
-from rhodecode.config.routing import ADMIN_PREFIX
-from rhodecode.lib.auth import HasRepoGroupPermissionAny, HasPermissionAny
+from kallithea.lib.exceptions import LdapImportError
+from kallithea.config.routing import ADMIN_PREFIX
+from kallithea.lib.auth import HasRepoGroupPermissionAny, HasPermissionAny
 
 # silence warnings and pylint
 UnicodeString, OneOf, Int, Number, Regex, Email, Bool, StringBoolean, Set, \
@@ -295,7 +295,7 @@ def ValidOldPassword(username):
         }
 
         def validate_python(self, value, state):
-            from rhodecode.lib import auth_modules
+            from kallithea.lib import auth_modules
             if not auth_modules.authenticate(username, value, ''):
                 msg = M(self, 'invalid_password', state)
                 raise formencode.Invalid(msg, value, state,
@@ -330,7 +330,7 @@ def ValidAuth():
         }
 
         def validate_python(self, value, state):
-            from rhodecode.lib import auth_modules
+            from kallithea.lib import auth_modules
 
             password = value['password']
             username = value['username']
@@ -458,11 +458,11 @@ def SlugifyName():
 
 
 def ValidCloneUri():
-    from rhodecode.lib.utils import make_ui
+    from kallithea.lib.utils import make_ui
 
     def url_handler(repo_type, url, ui):
         if repo_type == 'hg':
-            from rhodecode.lib.vcs.backends.hg.repository import MercurialRepository
+            from kallithea.lib.vcs.backends.hg.repository import MercurialRepository
             if url.startswith('http'):
                 # initially check if it's at least the proper URL
                 # or does it pass basic auth
@@ -476,7 +476,7 @@ def ValidCloneUri():
                 raise Exception('clone from URI %s not allowed' % (url,))
 
         elif repo_type == 'git':
-            from rhodecode.lib.vcs.backends.git.repository import GitRepository
+            from kallithea.lib.vcs.backends.git.repository import GitRepository
             if url.startswith('http'):
                 # initially check if it's at least the proper URL
                 # or does it pass basic auth
@@ -905,7 +905,7 @@ def ValidAuthPlugins():
             return filter(lambda s: s not in [None, ''], value)
 
         def validate_python(self, value, state):
-            from rhodecode.lib import auth_modules
+            from kallithea.lib import auth_modules
             module_list = value
             unique_names = {}
             try:

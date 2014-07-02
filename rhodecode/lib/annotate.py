@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.annotate
+kallithea.lib.annotate
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Anontation library for usage in rhodecode, previously part of vcs
@@ -25,8 +25,8 @@ Anontation library for usage in rhodecode, previously part of vcs
 
 import StringIO
 
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.nodes import FileNode
 from pygments.formatters import HtmlFormatter
 from pygments import highlight
 
@@ -46,7 +46,7 @@ def annotate_highlight(filenode, annotate_from_changeset_func=None,
     :param headers: dictionary with headers (keys are whats in ``order``
       parameter)
     """
-    from rhodecode.lib.utils import get_custom_lexer
+    from kallithea.lib.utils import get_custom_lexer
     options['linenos'] = True
     formatter = AnnotateHtmlFormatter(filenode=filenode, order=order,
         headers=headers,

@@ -13,7 +13,7 @@ to be installed in a webapp just by importing celerypylons::
 import os
 import warnings
 
-CELERYPYLONS_LOADER = 'rhodecode.lib.celerypylons.loader.PylonsLoader'
+CELERYPYLONS_LOADER = 'kallithea.lib.celerypylons.loader.PylonsLoader'
 if os.environ.get('CELERY_LOADER', CELERYPYLONS_LOADER) != CELERYPYLONS_LOADER:
     warnings.warn("'CELERY_LOADER' environment variable will be overridden by celery-pylons.")
 os.environ['CELERY_LOADER'] = CELERYPYLONS_LOADER

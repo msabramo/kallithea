@@ -7,13 +7,13 @@ from sqlalchemy.orm import relation, backref, class_mapper, joinedload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
-from rhodecode.lib.utils2 import str2bool
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.utils2 import str2bool
 
-from rhodecode.model.meta import Base
-from rhodecode.model import meta
-from rhodecode.lib.dbmigrate.versions import _reset_base, notify
+from kallithea.model.meta import Base
+from kallithea.model import meta
+from kallithea.lib.dbmigrate.versions import _reset_base, notify
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def upgrade(migrate_engine):
     Don't create your own engine; bind migrate_engine to your metadata
     """
     _reset_base(migrate_engine)
-    from rhodecode.lib.dbmigrate.schema import db_2_0_0
+    from kallithea.lib.dbmigrate.schema import db_2_0_0
 
     # issue fixups
     fixups(db_2_0_0, meta.Session)
@@ -37,13 +37,13 @@ def downgrade(migrate_engine):
 
 def fixups(models, _SESSION):
     notify('Fixing default auth modules')
-    plugins = 'rhodecode.lib.auth_modules.auth_rhodecode'
+    plugins = 'kallithea.lib.auth_modules.auth_rhodecode'
     opts = []
     ldap_enabled = str2bool(getattr(
         models.RhodeCodeSetting.get_by_name('ldap_active'),
         'app_settings_value', False))
     if ldap_enabled:
-        plugins += ',rhodecode.lib.auth_modules.auth_ldap'
+        plugins += ',kallithea.lib.auth_modules.auth_ldap'
         opts.append(('auth_ldap_enabled', 'True', 'bool'))
 
     opts.append(('auth_plugins', plugins, 'list'),)

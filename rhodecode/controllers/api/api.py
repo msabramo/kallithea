@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.api
+kallithea.controllers.api
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 API controller for RhodeCode
@@ -29,26 +29,26 @@ import traceback
 import logging
 from sqlalchemy import or_
 
-from rhodecode.controllers.api import JSONRPCController, JSONRPCError
-from rhodecode.lib.auth import (
+from kallithea.controllers.api import JSONRPCController, JSONRPCError
+from kallithea.lib.auth import (
     PasswordGenerator, AuthUser, HasPermissionAllDecorator,
     HasPermissionAnyDecorator, HasPermissionAnyApi, HasRepoPermissionAnyApi,
     HasRepoGroupPermissionAnyApi, HasUserGroupPermissionAny)
-from rhodecode.lib.utils import map_groups, repo2db_mapper
-from rhodecode.lib.utils2 import (
+from kallithea.lib.utils import map_groups, repo2db_mapper
+from kallithea.lib.utils2 import (
     str2bool, time_to_datetime, safe_int, Optional, OAttr)
-from rhodecode.model.meta import Session
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.scm import ScmModel, UserGroupList
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.user import UserModel
-from rhodecode.model.user_group import UserGroupModel
-from rhodecode.model.gist import GistModel
-from rhodecode.model.db import (
+from kallithea.model.meta import Session
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.scm import ScmModel, UserGroupList
+from kallithea.model.repo import RepoModel
+from kallithea.model.user import UserModel
+from kallithea.model.user_group import UserGroupModel
+from kallithea.model.gist import GistModel
+from kallithea.model.db import (
     Repository, RhodeCodeSetting, UserIpMap, Permission, User, Gist,
     RepoGroup)
-from rhodecode.lib.compat import json
-from rhodecode.lib.exceptions import (
+from kallithea.lib.compat import json
+from kallithea.lib.exceptions import (
     DefaultUserException, UserGroupsAssignedException)
 
 log = logging.getLogger(__name__)

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.compare
+kallithea.controllers.compare
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 compare controller for pylons showing differences between two
@@ -34,15 +34,15 @@ from pylons import request, response, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
 from pylons.i18n.translation import _
 
-from rhodecode.lib.vcs.exceptions import EmptyRepositoryError, RepositoryError
-from rhodecode.lib.vcs.utils import safe_str
-from rhodecode.lib.vcs.utils.hgcompat import unionrepo
-from rhodecode.lib import helpers as h
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib import diffs
-from rhodecode.model.db import Repository
-from rhodecode.lib.diffs import LimitedDiffContainer
+from kallithea.lib.vcs.exceptions import EmptyRepositoryError, RepositoryError
+from kallithea.lib.vcs.utils import safe_str
+from kallithea.lib.vcs.utils.hgcompat import unionrepo
+from kallithea.lib import helpers as h
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib import diffs
+from kallithea.model.db import Repository
+from kallithea.lib.diffs import LimitedDiffContainer
 
 
 log = logging.getLogger(__name__)

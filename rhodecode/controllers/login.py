@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.login
+kallithea.controllers.login
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Login controller for rhodeocode
@@ -35,15 +35,15 @@ from pylons.i18n.translation import _
 from pylons.controllers.util import redirect
 from pylons import request, session, tmpl_context as c, url
 
-import rhodecode.lib.helpers as h
-from rhodecode.lib.auth import AuthUser, HasPermissionAnyDecorator
-from rhodecode.lib.auth_modules import importplugin
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib.exceptions import UserCreationError
-from rhodecode.model.db import User, RhodeCodeSetting
-from rhodecode.model.forms import LoginForm, RegisterForm, PasswordResetForm
-from rhodecode.model.user import UserModel
-from rhodecode.model.meta import Session
+import kallithea.lib.helpers as h
+from kallithea.lib.auth import AuthUser, HasPermissionAnyDecorator
+from kallithea.lib.auth_modules import importplugin
+from kallithea.lib.base import BaseController, render
+from kallithea.lib.exceptions import UserCreationError
+from kallithea.model.db import User, RhodeCodeSetting
+from kallithea.model.forms import LoginForm, RegisterForm, PasswordResetForm
+from kallithea.model.user import UserModel
+from kallithea.model.meta import Session
 
 
 log = logging.getLogger(__name__)
@@ -143,7 +143,7 @@ class LoginController(BaseController):
         # check if we use container plugin, and try to login using it.
         auth_plugins = RhodeCodeSetting.get_auth_plugins()
         if any((importplugin(name).is_container_auth for name in auth_plugins)):
-            from rhodecode.lib import auth_modules
+            from kallithea.lib import auth_modules
             try:
                 auth_info = auth_modules.authenticate('', '', request.environ)
             except UserCreationError, e:
@@ -175,7 +175,7 @@ class LoginController(BaseController):
                 form_result['active'] = c.auto_active
 
                 if c.captcha_active:
-                    from rhodecode.lib.recaptcha import submit
+                    from kallithea.lib.recaptcha import submit
                     response = submit(request.POST.get('recaptcha_challenge_field'),
                                       request.POST.get('recaptcha_response_field'),
                                       private_key=captcha_private_key,
@@ -220,7 +220,7 @@ class LoginController(BaseController):
             try:
                 form_result = password_reset_form.to_python(dict(request.POST))
                 if c.captcha_active:
-                    from rhodecode.lib.recaptcha import submit
+                    from kallithea.lib.recaptcha import submit
                     response = submit(request.POST.get('recaptcha_challenge_field'),
                                       request.POST.get('recaptcha_response_field'),
                                       private_key=captcha_private_key,

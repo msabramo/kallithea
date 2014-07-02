@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.utils
+kallithea.lib.utils
 ~~~~~~~~~~~~~~~~~~~
 
 Utilities library for RhodeCode
@@ -42,23 +42,23 @@ from paste.script.command import Command, BadCommand
 from webhelpers.text import collapse, remove_formatting, strip_tags
 from beaker.cache import _cache_decorate
 
-from rhodecode.lib.vcs import get_backend
-from rhodecode.lib.vcs.backends.base import BaseChangeset
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.utils.hgcompat import ui, config
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs import get_backend
+from kallithea.lib.vcs.backends.base import BaseChangeset
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils.hgcompat import ui, config
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.exceptions import VCSError
 
-from rhodecode.lib.caching_query import FromCache
+from kallithea.lib.caching_query import FromCache
 
-from rhodecode.model import meta
-from rhodecode.model.db import Repository, User, RhodeCodeUi, \
+from kallithea.model import meta
+from kallithea.model.db import Repository, User, RhodeCodeUi, \
     UserLog, RepoGroup, RhodeCodeSetting, CacheInvalidation, UserGroup
-from rhodecode.model.meta import Session
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.lib.utils2 import safe_str, safe_unicode, get_current_rhodecode_user
-from rhodecode.lib.vcs.utils.fakemod import create_module
-from rhodecode.model.user_group import UserGroupModel
+from kallithea.model.meta import Session
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.lib.utils2 import safe_str, safe_unicode, get_current_rhodecode_user
+from kallithea.lib.vcs.utils.fakemod import create_module
+from kallithea.model.user_group import UserGroupModel
 
 log = logging.getLogger(__name__)
 
@@ -150,7 +150,7 @@ def get_repo_by_id(repo_name):
     try:
         _repo_id = _extract_id_from_repo_name(repo_name)
         if _repo_id:
-            from rhodecode.model.db import Repository
+            from kallithea.model.db import Repository
             return Repository.get(_repo_id).repo_name
     except Exception:
         log.debug('Failed to extract repo_name from URL %s' % (
@@ -410,14 +410,14 @@ def set_vcs_config(config):
     """
     Patch VCS config with some RhodeCode specific stuff
 
-    :param config: rhodecode.CONFIG
+    :param config: kallithea.CONFIG
     """
-    import rhodecode
-    from rhodecode.lib.vcs import conf
-    from rhodecode.lib.utils2 import aslist
+    import kallithea
+    from kallithea.lib.vcs import conf
+    from kallithea.lib.utils2 import aslist
     conf.settings.BACKENDS = {
-        'hg': 'rhodecode.lib.vcs.backends.hg.MercurialRepository',
-        'git': 'rhodecode.lib.vcs.backends.git.GitRepository',
+        'hg': 'kallithea.lib.vcs.backends.hg.MercurialRepository',
+        'git': 'kallithea.lib.vcs.backends.git.GitRepository',
     }
 
     conf.settings.GIT_EXECUTABLE_PATH = config.get('git_path', 'git')
@@ -479,8 +479,8 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
     :param install_git_hook: if this is True, also check and install githook
         for a repo if missing
     """
-    from rhodecode.model.repo import RepoModel
-    from rhodecode.model.scm import ScmModel
+    from kallithea.model.repo import RepoModel
+    from kallithea.model.scm import ScmModel
     sa = meta.Session()
     repo_model = RepoModel()
     user = User.get_first_admin()
@@ -578,13 +578,13 @@ def add_cache(settings):
 
 
 def load_rcextensions(root_path):
-    import rhodecode
-    from rhodecode.config import conf
+    import kallithea
+    from kallithea.config import conf
 
     path = os.path.join(root_path, 'rcextensions', '__init__.py')
     if os.path.isfile(path):
         rcext = create_module('rc', path)
-        EXT = rhodecode.EXTENSIONS = rcext
+        EXT = kallithea.EXTENSIONS = rcext
         log.debug('Found rcextensions now loading %s...' % rcext)
 
         # Additional mappings that are not present in the pygments lexers
@@ -602,7 +602,7 @@ def load_rcextensions(root_path):
 
         # auto check if the module is not missing any data, set to default if is
         # this will help autoupdate new feature of rcext module
-        #from rhodecode.config import rcextensions
+        #from kallithea.config import rcextensions
         #for k in dir(rcextensions):
         #    if not k.startswith('_') and not hasattr(EXT, k):
         #        setattr(EXT, k, getattr(rcextensions, k))
@@ -613,11 +613,11 @@ def get_custom_lexer(extension):
     returns a custom lexer if it's defined in rcextensions module, or None
     if there's no custom lexer defined
     """
-    import rhodecode
+    import kallithea
     from pygments import lexers
     #check if we didn't define this extension as other lexer
-    if rhodecode.EXTENSIONS and extension in rhodecode.EXTENSIONS.EXTRA_LEXERS:
-        _lexer_name = rhodecode.EXTENSIONS.EXTRA_LEXERS[extension]
+    if kallithea.EXTENSIONS and extension in kallithea.EXTENSIONS.EXTRA_LEXERS:
+        _lexer_name = kallithea.EXTENSIONS.EXTRA_LEXERS[extension]
         return lexers.get_lexer_by_name(_lexer_name)
 
 
@@ -632,8 +632,8 @@ def create_test_index(repo_location, config, full_index):
     :param full_index:
     """
 
-    from rhodecode.lib.indexers.daemon import WhooshIndexingDaemon
-    from rhodecode.lib.pidlock import DaemonLock, LockHeld
+    from kallithea.lib.indexers.daemon import WhooshIndexingDaemon
+    from kallithea.lib.pidlock import DaemonLock, LockHeld
 
     repo_location = repo_location
 
@@ -656,8 +656,8 @@ def create_test_env(repos_test_path, config):
     Makes a fresh database and
     install test repository into tmp dir
     """
-    from rhodecode.lib.db_manage import DbManage
-    from rhodecode.tests import HG_REPO, GIT_REPO, TESTS_TMP_PATH
+    from kallithea.lib.db_manage import DbManage
+    from kallithea.tests import HG_REPO, GIT_REPO, TESTS_TMP_PATH
 
     # PART ONE create db
     dbconf = config['sqlalchemy.db1.url']
@@ -705,7 +705,7 @@ def create_test_env(repos_test_path, config):
     tar.close()
 
     #LOAD VCS test stuff
-    from rhodecode.tests.vcs import setup_package
+    from kallithea.tests.vcs import setup_package
     setup_package()
 
 
@@ -781,8 +781,8 @@ class BasePasterCommand(Command):
         """
         logging.config.fileConfig(self.path_to_ini_file)
         from pylons import config
-        from rhodecode.model import init_model
-        from rhodecode.lib.utils2 import engine_from_config
+        from kallithea.model import init_model
+        from kallithea.lib.utils2 import engine_from_config
 
         #get to remove repos !!
         add_cache(config)
@@ -795,9 +795,9 @@ def check_git_version():
     Checks what version of git is installed in system, and issues a warning
     if it's too old for RhodeCode to properly work.
     """
-    from rhodecode import BACKENDS
-    from rhodecode.lib.vcs.backends.git.repository import GitRepository
-    from rhodecode.lib.vcs.conf import settings
+    from kallithea import BACKENDS
+    from kallithea.lib.vcs.backends.git.repository import GitRepository
+    from kallithea.lib.vcs.conf import settings
     from distutils.version import StrictVersion
 
     stdout, stderr = GitRepository._run_git_command('--version', _bare=True,
@@ -840,7 +840,7 @@ def jsonify(func, *args, **kwargs):
 
     """
     from pylons.decorators.util import get_pylons
-    from rhodecode.lib.compat import json
+    from kallithea.lib.compat import json
     pylons = get_pylons(args)
     pylons.response.headers['Content-Type'] = 'application/json; charset=utf-8'
     data = func(*args, **kwargs)

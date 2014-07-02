@@ -14,14 +14,14 @@
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.model.db import User, Permission, UserIpMap, UserApiKeys
-from rhodecode.lib.auth import check_password
-from rhodecode.model.user import UserModel
-from rhodecode.model import validators
-from rhodecode.lib import helpers as h
-from rhodecode.model.meta import Session
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.model.db import User, Permission, UserIpMap, UserApiKeys
+from kallithea.lib.auth import check_password
+from kallithea.model.user import UserModel
+from kallithea.model import validators
+from kallithea.lib import helpers as h
+from kallithea.model.meta import Session
 
 fixture = Fixture()
 

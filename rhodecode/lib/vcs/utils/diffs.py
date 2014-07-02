@@ -9,9 +9,9 @@ import itertools
 
 from difflib import unified_diff
 
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.nodes import FileNode, NodeError
-from rhodecode.lib.vcs.utils import safe_unicode
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.nodes import FileNode, NodeError
+from kallithea.lib.vcs.utils import safe_unicode
 
 
 def get_udiff(filenode_old, filenode_new, show_whitespace=True):

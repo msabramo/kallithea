@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.my_account
+kallithea.controllers.admin.my_account
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 my account controller for rhodecode admin
@@ -34,18 +34,18 @@ from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, NotAnonymous, AuthUser
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib.utils2 import generate_api_key, safe_int
-from rhodecode.lib.compat import json
-from rhodecode.model.db import Repository, PullRequest, PullRequestReviewers, \
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import LoginRequired, NotAnonymous, AuthUser
+from kallithea.lib.base import BaseController, render
+from kallithea.lib.utils2 import generate_api_key, safe_int
+from kallithea.lib.compat import json
+from kallithea.model.db import Repository, PullRequest, PullRequestReviewers, \
     UserEmailMap, UserApiKeys, User, UserFollowing
-from rhodecode.model.forms import UserForm, PasswordChangeForm
-from rhodecode.model.user import UserModel
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.api_key import ApiKeyModel
-from rhodecode.model.meta import Session
+from kallithea.model.forms import UserForm, PasswordChangeForm
+from kallithea.model.user import UserModel
+from kallithea.model.repo import RepoModel
+from kallithea.model.api_key import ApiKeyModel
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.rcmail.smtp_mailer
+kallithea.lib.rcmail.smtp_mailer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Simple smtp mailer used in RhodeCode
@@ -28,8 +28,8 @@ import logging
 import smtplib
 from socket import sslerror
 from email.utils import formatdate
-from rhodecode.lib.rcmail.message import Message
-from rhodecode.lib.rcmail.utils import DNS_NAME
+from kallithea.lib.rcmail.message import Message
+from kallithea.lib.rcmail.utils import DNS_NAME
 
 
 class SmtpMailer(object):

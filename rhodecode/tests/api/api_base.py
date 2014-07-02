@@ -15,7 +15,7 @@
 """
 tests for api. run with::
 
-    RC_WHOOSH_TEST_DISABLE=1 nosetests --with-coverage --cover-package=rhodecode.controllers.api.api -x rhodecode/tests/api
+    RC_WHOOSH_TEST_DISABLE=1 nosetests --with-coverage --cover-package=kallithea.controllers.api.api -x kallithea/tests/api
 """
 
 from __future__ import with_statement
@@ -23,19 +23,19 @@ import os
 import random
 import mock
 
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.lib.compat import json
-from rhodecode.lib.auth import AuthUser
-from rhodecode.model.user import UserModel
-from rhodecode.model.user_group import UserGroupModel
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.meta import Session
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.gist import GistModel
-from rhodecode.model.db import Repository, User, RhodeCodeSetting
-from rhodecode.lib.utils2 import time_to_datetime
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.lib.compat import json
+from kallithea.lib.auth import AuthUser
+from kallithea.model.user import UserModel
+from kallithea.model.user_group import UserGroupModel
+from kallithea.model.repo import RepoModel
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.meta import Session
+from kallithea.model.scm import ScmModel
+from kallithea.model.gist import GistModel
+from kallithea.model.db import Repository, User, RhodeCodeSetting
+from kallithea.lib.utils2 import time_to_datetime
 
 
 API_URL = '/_admin/api'
@@ -140,7 +140,7 @@ class BaseTestApi(object):
         self.assertEqual(expected, given)
 
     def test_Optional_object(self):
-        from rhodecode.controllers.api.api import Optional
+        from kallithea.controllers.api.api import Optional
 
         option1 = Optional(None)
         self.assertEqual('<Optional:%s>' % None, repr(option1))
@@ -150,13 +150,13 @@ class BaseTestApi(object):
         self.assertEqual('trololo', Optional.extract('trololo'))
 
     def test_Optional_OAttr(self):
-        from rhodecode.controllers.api.api import Optional, OAttr
+        from kallithea.controllers.api.api import Optional, OAttr
 
         option1 = Optional(OAttr('apiuser'))
         self.assertEqual('apiuser', Optional.extract(option1))
 
     def test_OAttr_object(self):
-        from rhodecode.controllers.api.api import OAttr
+        from kallithea.controllers.api.api import OAttr
 
         oattr1 = OAttr('apiuser')
         self.assertEqual('<OptionalAttr:apiuser>', repr(oattr1))

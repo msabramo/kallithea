@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.db
+kallithea.model.db
 ~~~~~~~~~~~~~~~~~~
 
 Database Models for RhodeCode
@@ -40,18 +40,18 @@ from webob.exc import HTTPNotFound
 
 from pylons.i18n.translation import lazy_ugettext as _
 
-from rhodecode.lib.vcs import get_backend
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.vcs import get_backend
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.backends.base import EmptyChangeset
 
-from rhodecode.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
+from kallithea.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
     safe_unicode, remove_suffix, remove_prefix, time_to_datetime, _set_extras
-from rhodecode.lib.compat import json
-from rhodecode.lib.caching_query import FromCache
+from kallithea.lib.compat import json
+from kallithea.lib.caching_query import FromCache
 
-from rhodecode.model.meta import Base, Session
+from kallithea.model.meta import Base, Session
 
 URL_SEP = '/'
 log = logging.getLogger(__name__)
@@ -407,7 +407,7 @@ class User(Base, BaseModel):
         """
         Returns instance of AuthUser for this user
         """
-        from rhodecode.lib.auth import AuthUser
+        from kallithea.lib.auth import AuthUser
         return AuthUser(user_id=self.user_id, api_key=self.api_key,
                         username=self.username)
 
@@ -473,7 +473,7 @@ class User(Base, BaseModel):
 
         :param author:
         """
-        from rhodecode.lib.helpers import email, author_name
+        from kallithea.lib.helpers import email, author_name
         # Valid email in the attribute passed, see if they're in the system
         _email = email(author)
         if _email:
@@ -587,7 +587,7 @@ class UserIpMap(Base, BaseModel):
 
     @classmethod
     def _get_ip_range(cls, ip_addr):
-        from rhodecode.lib import ipaddr
+        from kallithea.lib import ipaddr
         net = ipaddr.IPNetwork(address=ip_addr)
         return [str(net.network), str(net.broadcast)]
 
@@ -818,7 +818,7 @@ class Repository(Base, BaseModel):
 
     @hybrid_property
     def changeset_cache(self):
-        from rhodecode.lib.vcs.backends.base import EmptyChangeset
+        from kallithea.lib.vcs.backends.base import EmptyChangeset
         dummy = EmptyChangeset().__json__()
         if not self._changeset_cache:
             return dummy
@@ -962,7 +962,7 @@ class Repository(Base, BaseModel):
         """
         Creates an db based ui object for this repository
         """
-        from rhodecode.lib.utils import make_ui
+        from kallithea.lib.utils import make_ui
         return make_ui('db', clear_session=False)
 
     @classmethod
@@ -973,7 +973,7 @@ class Repository(Base, BaseModel):
         :param cls:
         :param repo_name:
         """
-        from rhodecode.lib.utils import is_valid_repo
+        from kallithea.lib.utils import is_valid_repo
 
         return is_valid_repo(repo_name, cls.base_path())
 
@@ -1079,7 +1079,7 @@ class Repository(Base, BaseModel):
 
         :param cs_cache:
         """
-        from rhodecode.lib.vcs.backends.base import BaseChangeset
+        from kallithea.lib.vcs.backends.base import BaseChangeset
         if cs_cache is None:
             cs_cache = EmptyChangeset()
             # use no-cache version here
@@ -1163,7 +1163,7 @@ class Repository(Base, BaseModel):
         return grouped
 
     def _repo_size(self):
-        from rhodecode.lib import helpers as h
+        from kallithea.lib import helpers as h
         log.debug('calculating repository size...')
         return h.format_byte_size(self.scm_instance.size)
 
@@ -1182,8 +1182,8 @@ class Repository(Base, BaseModel):
 
     @property
     def scm_instance(self):
-        import rhodecode
-        full_cache = str2bool(rhodecode.CONFIG.get('vcs_full_cache'))
+        import kallithea
+        full_cache = str2bool(kallithea.CONFIG.get('vcs_full_cache'))
         if full_cache:
             return self.scm_instance_cached()
         return self.__get_instance()
@@ -1815,8 +1815,8 @@ class CacheInvalidation(Base, BaseModel):
         Wrapper for generating a unique cache key for this instance and "key".
         key must / will start with a repo_name which will be stored in .cache_args .
         """
-        import rhodecode
-        prefix = rhodecode.CONFIG.get('instance_id', '')
+        import kallithea
+        prefix = kallithea.CONFIG.get('instance_id', '')
         return "%s%s" % (prefix, key)
 
     @classmethod
@@ -2101,7 +2101,7 @@ class Notification(Base, BaseModel):
 
     @property
     def description(self):
-        from rhodecode.model.notification import NotificationModel
+        from kallithea.model.notification import NotificationModel
         return NotificationModel().make_description(self)
 
 
@@ -2160,8 +2160,8 @@ class Gist(Base, BaseModel):
         return cls.query().filter(cls.gist_access_id == gist_access_id).scalar()
 
     def gist_url(self):
-        import rhodecode
-        alias_url = rhodecode.CONFIG.get('gist_alias_url')
+        import kallithea
+        alias_url = kallithea.CONFIG.get('gist_alias_url')
         if alias_url:
             return alias_url.replace('{gistid}', self.gist_access_id)
 
@@ -2175,7 +2175,7 @@ class Gist(Base, BaseModel):
 
         :param cls:
         """
-        from rhodecode.model.gist import GIST_STORE_LOC
+        from kallithea.model.gist import GIST_STORE_LOC
         q = Session().query(RhodeCodeUi)\
             .filter(RhodeCodeUi.ui_key == URL_SEP)
         q = q.options(FromCache("sql_cache_short", "repository_repo_path"))
@@ -2206,7 +2206,7 @@ class Gist(Base, BaseModel):
 
     @property
     def scm_instance(self):
-        from rhodecode.lib.vcs import get_repo
+        from kallithea.lib.vcs import get_repo
         base_path = self.base_path()
         return get_repo(os.path.join(*map(safe_str,
                                           [base_path, self.gist_access_id])))

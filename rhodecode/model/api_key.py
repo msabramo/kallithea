@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.api_key
+kallithea.model.api_key
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 api key model for RhodeCode
@@ -29,10 +29,10 @@ import logging
 import traceback
 from sqlalchemy import or_
 
-from rhodecode.lib.utils2 import generate_api_key
-from rhodecode.model import BaseModel
-from rhodecode.model.db import UserApiKeys
-from rhodecode.model.meta import Session
+from kallithea.lib.utils2 import generate_api_key
+from kallithea.model import BaseModel
+from kallithea.model.db import UserApiKeys
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 

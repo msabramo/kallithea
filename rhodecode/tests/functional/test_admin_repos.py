@@ -4,16 +4,16 @@ import os
 import mock
 import urllib
 
-from rhodecode.lib import vcs
-from rhodecode.model.db import Repository, RepoGroup, UserRepoToPerm, User,\
+from kallithea.lib import vcs
+from kallithea.model.db import Repository, RepoGroup, UserRepoToPerm, User,\
     Permission
-from rhodecode.model.user import UserModel
-from rhodecode.tests import *
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.meta import Session
-from rhodecode.tests.fixture import Fixture, error_function
+from kallithea.model.user import UserModel
+from kallithea.tests import *
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.repo import RepoModel
+from kallithea.model.scm import ScmModel
+from kallithea.model.meta import Session
+from kallithea.tests.fixture import Fixture, error_function
 
 fixture = Fixture()
 

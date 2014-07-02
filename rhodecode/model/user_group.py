@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.users_group
+kallithea.model.users_group
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 user group model for RhodeCode
@@ -25,11 +25,11 @@ user group model for RhodeCode
 import logging
 import traceback
 
-from rhodecode.model import BaseModel
-from rhodecode.model.db import UserGroupMember, UserGroup,\
+from kallithea.model import BaseModel
+from kallithea.model.db import UserGroupMember, UserGroup,\
     UserGroupRepoToPerm, Permission, UserGroupToPerm, User, UserUserGroupToPerm,\
     UserGroupUserGroupToPerm
-from rhodecode.lib.exceptions import UserGroupsAssignedException,\
+from kallithea.lib.exceptions import UserGroupsAssignedException,\
     RepoGroupAssignmentError
 
 log = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ class UserGroupModel(BaseModel):
 
     def _update_permissions(self, user_group, perms_new=None,
                             perms_updates=None):
-        from rhodecode.lib.auth import HasUserGroupPermissionAny
+        from kallithea.lib.auth import HasUserGroupPermissionAny
         if not perms_new:
             perms_new = []
         if not perms_updates:

@@ -1,7 +1,7 @@
 import re
-from rhodecode.lib.vcs.backends.base import BaseWorkdir
-from rhodecode.lib.vcs.exceptions import RepositoryError
-from rhodecode.lib.vcs.exceptions import BranchDoesNotExistError
+from kallithea.lib.vcs.backends.base import BaseWorkdir
+from kallithea.lib.vcs.exceptions import RepositoryError
+from kallithea.lib.vcs.exceptions import BranchDoesNotExistError
 
 
 class GitWorkdir(BaseWorkdir):

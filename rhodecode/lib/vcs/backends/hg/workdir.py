@@ -1,7 +1,7 @@
-from rhodecode.lib.vcs.backends.base import BaseWorkdir
-from rhodecode.lib.vcs.exceptions import BranchDoesNotExistError
+from kallithea.lib.vcs.backends.base import BaseWorkdir
+from kallithea.lib.vcs.exceptions import BranchDoesNotExistError
 
-from rhodecode.lib.vcs.utils.hgcompat import hg_merge
+from kallithea.lib.vcs.utils.hgcompat import hg_merge
 
 
 class MercurialWorkdir(BaseWorkdir):

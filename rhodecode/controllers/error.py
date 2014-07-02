@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.error
+kallithea.controllers.error
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode error controller
@@ -32,7 +32,7 @@ from pylons import tmpl_context as c, request, config, url
 from pylons.i18n.translation import _
 from pylons.middleware import  media_path
 
-from rhodecode.lib.base import BaseController, render
+from kallithea.lib.base import BaseController, render
 
 log = logging.getLogger(__name__)
 

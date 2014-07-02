@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.paster_commands.cache_keys
+kallithea.lib.paster_commands.cache_keys
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cleanup-keys paster command for RhodeCode
@@ -30,9 +30,9 @@ import os
 import sys
 import logging
 
-from rhodecode.model.meta import Session
-from rhodecode.lib.utils import BasePasterCommand
-from rhodecode.model.db import CacheInvalidation
+from kallithea.model.meta import Session
+from kallithea.lib.utils import BasePasterCommand
+from kallithea.model.db import CacheInvalidation
 
 # Add location of top level folder to sys.path
 from os.path import dirname as dn

@@ -9,10 +9,10 @@ import logging
 from pkg_resources import resource_filename
 from tempita import Template as TempitaTemplate
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.versioning import version, pathed, cfgparse
-from rhodecode.lib.dbmigrate.migrate.versioning.template import Template
-from rhodecode.lib.dbmigrate.migrate.versioning.config import *
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.versioning import version, pathed, cfgparse
+from kallithea.lib.dbmigrate.migrate.versioning.template import Template
+from kallithea.lib.dbmigrate.migrate.versioning.config import *
 
 
 log = logging.getLogger(__name__)

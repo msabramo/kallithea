@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.permissions
+kallithea.controllers.admin.permissions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 permissions controller for Rhodecode
@@ -33,14 +33,14 @@ from pylons import request, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
 from pylons.i18n.translation import _
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator,\
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator,\
     AuthUser
-from rhodecode.lib.base import BaseController, render
-from rhodecode.model.forms import DefaultPermissionsForm
-from rhodecode.model.permission import PermissionModel
-from rhodecode.model.db import User, UserIpMap, Permission
-from rhodecode.model.meta import Session
+from kallithea.lib.base import BaseController, render
+from kallithea.model.forms import DefaultPermissionsForm
+from kallithea.model.permission import PermissionModel
+from kallithea.model.db import User, UserIpMap, Permission
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 

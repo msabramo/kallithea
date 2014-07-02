@@ -6,11 +6,11 @@ import os
 import time
 import shutil
 import datetime
-from rhodecode.tests.vcs.conf import SCM_TESTS, get_new_dir
+from kallithea.tests.vcs.conf import SCM_TESTS, get_new_dir
 
-from rhodecode.lib import vcs
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.lib.vcs.nodes import FileNode
+from kallithea.lib import vcs
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.lib.vcs.nodes import FileNode
 
 
 class BackendTestMixin(object):

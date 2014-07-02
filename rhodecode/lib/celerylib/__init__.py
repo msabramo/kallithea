@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.celerylib.__init__
+kallithea.lib.celerylib.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 celery libs for RhodeCode
@@ -35,13 +35,13 @@ from pylons import config
 from hashlib import md5
 from decorator import decorator
 
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode import CELERY_ON, CELERY_EAGER
-from rhodecode.lib.utils2 import str2bool, safe_str
-from rhodecode.lib.pidlock import DaemonLock, LockHeld
-from rhodecode.model import init_model
-from rhodecode.model import meta
-from rhodecode.model.db import Statistics, Repository, User
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea import CELERY_ON, CELERY_EAGER
+from kallithea.lib.utils2 import str2bool, safe_str
+from kallithea.lib.pidlock import DaemonLock, LockHeld
+from kallithea.model import init_model
+from kallithea.model import meta
+from kallithea.model.db import Statistics, Repository, User
 
 from sqlalchemy import engine_from_config
 

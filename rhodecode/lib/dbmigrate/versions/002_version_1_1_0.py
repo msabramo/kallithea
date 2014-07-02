@@ -5,10 +5,10 @@ from sqlalchemy import *
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
-from rhodecode.model.meta import Base
+from kallithea.model.meta import Base
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
 log = logging.getLogger(__name__)
 
@@ -68,13 +68,13 @@ def upgrade(migrate_engine):
     #==========================================================================
     # Add table `user_followings`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_1_0 import UserFollowing
+    from kallithea.lib.dbmigrate.schema.db_1_1_0 import UserFollowing
     UserFollowing().__table__.create()
 
     #==========================================================================
     # Add table `cache_invalidation`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_1_0 import CacheInvalidation
+    from kallithea.lib.dbmigrate.schema.db_1_1_0 import CacheInvalidation
     CacheInvalidation().__table__.create()
 
     return

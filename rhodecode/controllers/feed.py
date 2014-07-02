@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.feed
+kallithea.controllers.feed
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Feed controller for rhodecode
@@ -32,12 +32,12 @@ from pylons.i18n.translation import _
 from beaker.cache import cache_region, region_invalidate
 from webhelpers.feedgenerator import Atom1Feed, Rss201rev2Feed
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController
-from rhodecode.lib.diffs import DiffProcessor, LimitedDiffContainer
-from rhodecode.model.db import CacheInvalidation
-from rhodecode.lib.utils2 import safe_int, str2bool, safe_unicode
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseRepoController
+from kallithea.lib.diffs import DiffProcessor, LimitedDiffContainer
+from kallithea.model.db import CacheInvalidation
+from kallithea.lib.utils2 import safe_int, str2bool, safe_unicode
 
 log = logging.getLogger(__name__)
 
@@ -54,8 +54,8 @@ class FeedController(BaseRepoController):
         self.title = self.title = _('%s %s feed') % (c.rhodecode_name, '%s')
         self.language = 'en-us'
         self.ttl = "5"
-        import rhodecode
-        CONF = rhodecode.CONFIG
+        import kallithea
+        CONF = kallithea.CONFIG
         self.include_diff = str2bool(CONF.get('rss_include_diff', False))
         self.feed_nr = safe_int(CONF.get('rss_items_per_page', 20))
         # we need to protect from parsing huge diffs here other way

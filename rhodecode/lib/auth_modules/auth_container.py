@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.auth_modules.auth_container
+kallithea.lib.auth_modules.auth_container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode container based authentication plugin
@@ -24,10 +24,10 @@ RhodeCode container based authentication plugin
 """
 
 import logging
-from rhodecode.lib import auth_modules
-from rhodecode.lib.utils2 import str2bool, safe_unicode
-from rhodecode.lib.compat import hybrid_property
-from rhodecode.model.db import User
+from kallithea.lib import auth_modules
+from kallithea.lib.utils2 import str2bool, safe_unicode
+from kallithea.lib.compat import hybrid_property
+from kallithea.model.db import User
 
 log = logging.getLogger(__name__)
 

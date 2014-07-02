@@ -12,12 +12,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.tests.test_scm_operations
+kallithea.tests.test_scm_operations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Test suite for making push/pull operations.
 Run using after doing paster serve test.ini::
- RC_WHOOSH_TEST_DISABLE=1 RC_NO_TMP_PATH=1 nosetests rhodecode/tests/other/test_vcs_operations.py
+ RC_WHOOSH_TEST_DISABLE=1 RC_NO_TMP_PATH=1 nosetests kallithea/tests/other/test_vcs_operations.py
 
 You must have git > 1.8.1 for tests to work fine
 
@@ -35,11 +35,11 @@ from os.path import join as jn
 from tempfile import _RandomNameSequence
 from subprocess import Popen, PIPE
 
-from rhodecode.tests import *
-from rhodecode.model.db import User, Repository, UserIpMap, CacheInvalidation
-from rhodecode.model.meta import Session
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.user import UserModel
+from kallithea.tests import *
+from kallithea.model.db import User, Repository, UserIpMap, CacheInvalidation
+from kallithea.model.meta import Session
+from kallithea.model.repo import RepoModel
+from kallithea.model.user import UserModel
 
 DEBUG = True
 HOST = '127.0.0.1:5000'  # test host

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.middleware.errormator
+kallithea.lib.middleware.errormator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 middleware to handle errormator publishing of errors

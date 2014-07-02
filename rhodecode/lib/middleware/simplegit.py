@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.middleware.simplegit
+kallithea.lib.middleware.simplegit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SimpleGit middleware for handling git protocol request (push/clone etc.)
@@ -34,15 +34,15 @@ import traceback
 from paste.httpheaders import REMOTE_USER, AUTH_TYPE
 from webob.exc import HTTPNotFound, HTTPForbidden, HTTPInternalServerError, \
     HTTPNotAcceptable
-from rhodecode.model.db import User, RhodeCodeUi
+from kallithea.model.db import User, RhodeCodeUi
 
-from rhodecode.lib.utils2 import safe_str, fix_PATH, get_server_url,\
+from kallithea.lib.utils2 import safe_str, fix_PATH, get_server_url,\
     _set_extras
-from rhodecode.lib.base import BaseVCSController
-from rhodecode.lib.utils import make_ui, is_valid_repo
-from rhodecode.lib.exceptions import HTTPLockedRC
-from rhodecode.lib.hooks import pre_pull
-from rhodecode.lib import auth_modules
+from kallithea.lib.base import BaseVCSController
+from kallithea.lib.utils import make_ui, is_valid_repo
+from kallithea.lib.exceptions import HTTPLockedRC
+from kallithea.lib.hooks import pre_pull
+from kallithea.lib import auth_modules
 
 log = logging.getLogger(__name__)
 
@@ -157,7 +157,7 @@ class SimpleGit(BaseVCSController):
 
         # extras are injected into UI object and later available
         # in hooks executed by rhodecode
-        from rhodecode import CONFIG
+        from kallithea import CONFIG
         server_url = get_server_url(environ)
         extras = {
             'ip': ip_addr,
@@ -222,7 +222,7 @@ class SimpleGit(BaseVCSController):
         :param repo_path: full path to the repository
         """
 
-        from rhodecode.lib.middleware.pygrack import make_wsgi_app
+        from kallithea.lib.middleware.pygrack import make_wsgi_app
         app = make_wsgi_app(
             repo_root=safe_str(self.basepath),
             repo_name=repo_name,
@@ -275,13 +275,13 @@ class SimpleGit(BaseVCSController):
         """
         Handles pull action, push is handled by post-receive hook
         """
-        from rhodecode.lib.hooks import log_pull_action
+        from kallithea.lib.hooks import log_pull_action
         service = environ['QUERY_STRING'].split('=')
 
         if len(service) < 2:
             return
 
-        from rhodecode.model.db import Repository
+        from kallithea.model.db import Repository
         _repo = Repository.get_by_repo_name(repo_name)
         _repo = _repo.scm_instance
 

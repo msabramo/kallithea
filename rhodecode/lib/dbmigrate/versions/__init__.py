@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.dbmigrate.versions.__init__
+kallithea.lib.dbmigrate.versions.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Package containing new versions of database models
@@ -28,10 +28,10 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import relation, backref, class_mapper, joinedload
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model import meta
+from kallithea.model import meta
 
 
 def notify(msg, caps=True):

@@ -40,8 +40,8 @@ from formencode import All
 
 from pylons.i18n.translation import _
 
-from rhodecode import BACKENDS
-from rhodecode.model import validators as v
+from kallithea import BACKENDS
+from kallithea.model import validators as v
 
 log = logging.getLogger(__name__)
 
@@ -418,10 +418,10 @@ def AuthSettingsForm(current_active_modules):
         def __init__(self, *args, **kwargs):
             # The auth plugins tell us what form validators they use
             if current_active_modules:
-                import rhodecode.lib.auth_modules
-                from rhodecode.lib.auth_modules import LazyFormencode
+                import kallithea.lib.auth_modules
+                from kallithea.lib.auth_modules import LazyFormencode
                 for module in current_active_modules:
-                    plugin = rhodecode.lib.auth_modules.loadplugin(module)
+                    plugin = kallithea.lib.auth_modules.loadplugin(module)
                     plugin_name = plugin.name
                     for sv in plugin.plugin_settings():
                         newk = "auth_%s_%s" % (plugin_name, sv["name"])

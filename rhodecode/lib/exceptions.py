@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.exceptions
+kallithea.lib.exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Set of custom exceptions used in RhodeCode
@@ -79,8 +79,8 @@ class HTTPLockedRC(HTTPClientError):
     title = explanation = 'Repository Locked'
 
     def __init__(self, reponame, username, *args, **kwargs):
-        from rhodecode import CONFIG
-        from rhodecode.lib.utils2 import safe_int
+        from kallithea import CONFIG
+        from kallithea.lib.utils2 import safe_int
         _code = CONFIG.get('lock_ret_code')
         self.code = safe_int(_code, self.code)
         self.title = self.explanation = ('Repository `%s` locked by '

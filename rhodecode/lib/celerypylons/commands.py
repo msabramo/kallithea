@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import rhodecode
-from rhodecode.lib.utils import BasePasterCommand, Command, load_rcextensions
+import kallithea
+from kallithea.lib.utils import BasePasterCommand, Command, load_rcextensions
 from celery.app import app_or_default
 from celery.bin import camqadm, celerybeat, celeryd, celeryev
 
-from rhodecode.lib.utils2 import str2bool
+from kallithea.lib.utils2 import str2bool
 
 __all__ = ['CeleryDaemonCommand', 'CeleryBeatCommand',
            'CAMQPAdminCommand', 'CeleryEventCommand']
@@ -40,7 +40,7 @@ class CeleryCommand(BasePasterCommand):
         if not CELERY_ON:
             raise Exception('Please set use_celery = true in .ini config '
                             'file before running celeryd')
-        rhodecode.CELERY_ON = CELERY_ON
+        kallithea.CELERY_ON = CELERY_ON
         load_rcextensions(config['here'])
         cmd = self.celery_command(app_or_default())
         return cmd.run(**vars(self.options))

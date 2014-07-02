@@ -1,9 +1,9 @@
 import datetime
 
-from rhodecode.tests import *
-from rhodecode.model.gist import GistModel
-from rhodecode.model.meta import Session
-from rhodecode.model.db import User, Gist
+from kallithea.tests import *
+from kallithea.model.gist import GistModel
+from kallithea.model.meta import Session
+from kallithea.model.db import User, Gist
 
 
 def _create_gist(f_name, content='some gist', lifetime=-1,

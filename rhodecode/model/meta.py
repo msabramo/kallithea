@@ -18,7 +18,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 from beaker import cache
 
-from rhodecode.lib import caching_query
+from kallithea.lib import caching_query
 
 
 # Beaker CacheManager.  A home base for cache configurations.

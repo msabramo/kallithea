@@ -18,14 +18,14 @@ Authentication modules
 import logging
 import traceback
 
-from rhodecode.lib.compat import importlib
-from rhodecode.lib.utils2 import str2bool
-from rhodecode.lib.compat import formatted_json, hybrid_property
-from rhodecode.lib.auth import PasswordGenerator
-from rhodecode.model.user import UserModel
-from rhodecode.model.db import RhodeCodeSetting, User, UserGroup
-from rhodecode.model.meta import Session
-from rhodecode.model.user_group import UserGroupModel
+from kallithea.lib.compat import importlib
+from kallithea.lib.utils2 import str2bool
+from kallithea.lib.compat import formatted_json, hybrid_property
+from kallithea.lib.auth import PasswordGenerator
+from kallithea.model.user import UserModel
+from kallithea.model.db import RhodeCodeSetting, User, UserGroup
+from kallithea.model.meta import Session
+from kallithea.model.user_group import UserGroupModel
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class RhodeCodeAuthPluginBase(object):
                 self.validator_name = name
 
             def __call__(self, *args, **kwargs):
-                from rhodecode.model import validators as v
+                from kallithea.model import validators as v
                 obj = getattr(v, self.validator_name)
                 #log.debug('Initializing lazy formencode object: %s' % obj)
                 return LazyFormencode(obj, *args, **kwargs)
@@ -305,7 +305,7 @@ class RhodeCodeExternalAuthPlugin(RhodeCodeAuthPluginBase):
 def importplugin(plugin):
     """
     Imports and returns the authentication plugin in the module named by plugin
-    (e.g., plugin='rhodecode.lib.auth_modules.auth_rhodecode'). Returns the
+    (e.g., plugin='kallithea.lib.auth_modules.auth_rhodecode'). Returns the
     RhodeCodeAuthPluginBase subclass on success, raises exceptions on failure.
 
     raises:

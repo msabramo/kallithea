@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
 
-from rhodecode.model.db import Repository
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.user import UserModel
-from rhodecode.model.meta import Session
+from kallithea.model.db import Repository
+from kallithea.model.repo import RepoModel
+from kallithea.model.user import UserModel
+from kallithea.model.meta import Session
 
 fixture = Fixture()
 
-from rhodecode.tests import *
+from kallithea.tests import *
 
 
 class _BaseTest(TestController):

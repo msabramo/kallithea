@@ -1,7 +1,7 @@
 from __future__ import with_statement
 
-from rhodecode.lib.vcs.utils.filesize import filesizeformat
-from rhodecode.lib.vcs.utils.compat import unittest
+from kallithea.lib.vcs.utils.filesize import filesizeformat
+from kallithea.lib.vcs.utils.compat import unittest
 
 
 class TestFilesizeformat(unittest.TestCase):

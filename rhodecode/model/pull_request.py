@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.pull_request
+kallithea.model.pull_request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 pull request model for RhodeCode
@@ -28,13 +28,13 @@ import datetime
 
 from pylons.i18n.translation import _
 
-from rhodecode.model.meta import Session
-from rhodecode.lib import helpers as h
-from rhodecode.model import BaseModel
-from rhodecode.model.db import PullRequest, PullRequestReviewers, Notification,\
+from kallithea.model.meta import Session
+from kallithea.lib import helpers as h
+from kallithea.model import BaseModel
+from kallithea.model.db import PullRequest, PullRequestReviewers, Notification,\
     ChangesetStatus
-from rhodecode.model.notification import NotificationModel
-from rhodecode.lib.utils2 import safe_unicode
+from kallithea.model.notification import NotificationModel
+from kallithea.lib.utils2 import safe_unicode
 
 
 log = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class PullRequestModel(BaseModel):
 
     def create(self, created_by, org_repo, org_ref, other_repo, other_ref,
                revisions, reviewers, title, description=None):
-        from rhodecode.model.changeset_status import ChangesetStatusModel
+        from kallithea.model.changeset_status import ChangesetStatusModel
 
         created_by_user = self._get_user(created_by)
         org_repo = self._get_repo(org_repo)

@@ -1,8 +1,8 @@
-include rhodecode/config/deployment.ini_tmpl
-include rhodecode/lib/dbmigrate/migrate.cfg
+include kallithea/config/deployment.ini_tmpl
+include kallithea/lib/dbmigrate/migrate.cfg
 
 include README.rst
-recursive-include rhodecode/i18n *
+recursive-include kallithea/i18n *
 
 #docs
 recursive-include docs *
@@ -11,9 +11,9 @@ recursive-include docs *
 recursive-include init.d *
 
 #images
-recursive-include rhodecode/public/css *
-recursive-include rhodecode/public/images *
+recursive-include kallithea/public/css *
+recursive-include kallithea/public/images *
 #js
-recursive-include rhodecode/public/js *
+recursive-include kallithea/public/js *
 #templates
-recursive-include rhodecode/templates *
+recursive-include kallithea/templates *

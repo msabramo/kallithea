@@ -13,7 +13,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-rhodecode.lib.app_globals
+kallithea.lib.app_globals
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The application's Globals object

@@ -13,7 +13,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-rhodecode.lib.base
+kallithea.lib.base
 ~~~~~~~~~~~~~~~~~~
 
 The base Controller API
@@ -39,20 +39,20 @@ from pylons.controllers import WSGIController
 from pylons.controllers.util import redirect
 from pylons.templating import render_mako as render  # don't remove this import
 
-from rhodecode import __version__, BACKENDS
+from kallithea import __version__, BACKENDS
 
-from rhodecode.lib.utils2 import str2bool, safe_unicode, AttributeDict,\
+from kallithea.lib.utils2 import str2bool, safe_unicode, AttributeDict,\
     safe_str, safe_int
-from rhodecode.lib import auth_modules
-from rhodecode.lib.auth import AuthUser, HasPermissionAnyMiddleware, CookieStoreWrapper
-from rhodecode.lib.utils import get_repo_slug
-from rhodecode.lib.exceptions import UserCreationError
-from rhodecode.model import meta
+from kallithea.lib import auth_modules
+from kallithea.lib.auth import AuthUser, HasPermissionAnyMiddleware, CookieStoreWrapper
+from kallithea.lib.utils import get_repo_slug
+from kallithea.lib.exceptions import UserCreationError
+from kallithea.model import meta
 
-from rhodecode.model.db import Repository, RhodeCodeUi, User, RhodeCodeSetting
-from rhodecode.model.notification import NotificationModel
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.meta import Session
+from kallithea.model.db import Repository, RhodeCodeUi, User, RhodeCodeSetting
+from kallithea.model.notification import NotificationModel
+from kallithea.model.scm import ScmModel
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 
@@ -156,7 +156,7 @@ class BaseVCSController(object):
 
         data = repo_name.split('/')
         if len(data) >= 2:
-            from rhodecode.lib.utils import get_repo_by_id
+            from kallithea.lib.utils import get_repo_by_id
             by_id_match = get_repo_by_id(repo_name)
             if by_id_match:
                 data[1] = by_id_match
@@ -271,7 +271,7 @@ class BaseVCSController(object):
         try:
             return self._handle_request(environ, start_response)
         finally:
-            log = logging.getLogger('rhodecode.' + self.__class__.__name__)
+            log = logging.getLogger('kallithea.' + self.__class__.__name__)
             log.debug('Request time: %.3fs' % (time.time() - start))
             meta.Session.remove()
 
@@ -340,7 +340,7 @@ class BaseController(WSGIController):
                     auth_user = AuthUser(user_id=cookie_store.get('user_id', None),
                                          ip_addr=self.ip_addr)
                 except UserCreationError, e:
-                    from rhodecode.lib import helpers as h
+                    from kallithea.lib import helpers as h
                     h.flash(e, 'error')
                     # container auth or other auth functions that create users on
                     # the fly can throw this exception signaling that there's issue

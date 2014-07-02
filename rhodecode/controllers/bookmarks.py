@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.bookmarks
+kallithea.controllers.bookmarks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Bookmarks controller for rhodecode
@@ -27,9 +27,9 @@ import logging
 
 from pylons import tmpl_context as c
 
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.compat import OrderedDict
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.compat import OrderedDict
 from webob.exc import HTTPNotFound
 
 log = logging.getLogger(__name__)

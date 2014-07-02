@@ -80,7 +80,7 @@ def safe_unicode(str_, from_encoding=None):
         return str_
 
     if not from_encoding:
-        from rhodecode.lib.vcs.conf import settings
+        from kallithea.lib.vcs.conf import settings
         from_encoding = settings.DEFAULT_ENCODINGS
 
     if not isinstance(from_encoding, (list, tuple)):
@@ -127,7 +127,7 @@ def safe_str(unicode_, to_encoding=None):
         return unicode_
 
     if not to_encoding:
-        from rhodecode.lib.vcs.conf import settings
+        from kallithea.lib.vcs.conf import settings
         to_encoding = settings.DEFAULT_ENCODINGS
 
     if not isinstance(to_encoding, (list, tuple)):

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.repo_groups
+kallithea.controllers.admin.repo_groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Repository groups controller for RhodeCode
@@ -36,21 +36,21 @@ from pylons.i18n.translation import _, ungettext
 
 from sqlalchemy.exc import IntegrityError
 
-import rhodecode
-from rhodecode.lib import helpers as h
-from rhodecode.lib.compat import json
-from rhodecode.lib.auth import LoginRequired, HasPermissionAnyDecorator,\
+import kallithea
+from kallithea.lib import helpers as h
+from kallithea.lib.compat import json
+from kallithea.lib.auth import LoginRequired, HasPermissionAnyDecorator,\
     HasRepoGroupPermissionAnyDecorator, HasRepoGroupPermissionAll,\
     HasPermissionAll
-from rhodecode.lib.base import BaseController, render
-from rhodecode.model.db import RepoGroup, Repository
-from rhodecode.model.scm import RepoGroupList
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.forms import RepoGroupForm, RepoGroupPermsForm
-from rhodecode.model.meta import Session
-from rhodecode.model.repo import RepoModel
+from kallithea.lib.base import BaseController, render
+from kallithea.model.db import RepoGroup, Repository
+from kallithea.model.scm import RepoGroupList
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.forms import RepoGroupForm, RepoGroupPermsForm
+from kallithea.model.meta import Session
+from kallithea.model.repo import RepoModel
 from webob.exc import HTTPInternalServerError, HTTPNotFound
-from rhodecode.lib.utils2 import str2bool, safe_int
+from kallithea.lib.utils2 import str2bool, safe_int
 from sqlalchemy.sql.expression import func
 
 
@@ -123,7 +123,7 @@ class RepoGroupsController(BaseController):
         group_iter = RepoGroupList(_list, perm_set=['group.admin'])
         repo_groups_data = []
         total_records = len(group_iter)
-        _tmpl_lookup = rhodecode.CONFIG['pylons.app_globals'].mako_lookup
+        _tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         template = _tmpl_lookup.get_template('data_table/_dt_elements.html')
 
         repo_group_name = lambda repo_group_name, children_groups: (

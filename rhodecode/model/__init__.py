@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.__init__
+kallithea.model.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The application's model objects
@@ -30,7 +30,7 @@ The application's model objects
        from paste.deploy import appconfig
        from pylons import config
        from sqlalchemy import engine_from_config
-       from rhodecode.config.environment import load_environment
+       from kallithea.config.environment import load_environment
 
        conf = appconfig('config:development.ini', relative_to = './../../')
        load_environment(conf.global_conf, conf.local_conf)
@@ -43,8 +43,8 @@ The application's model objects
 
 
 import logging
-from rhodecode.model import meta
-from rhodecode.lib.utils2 import safe_str, obfuscate_url_pw
+from kallithea.model import meta
+from kallithea.lib.utils2 import safe_str, obfuscate_url_pw
 
 log = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ class BaseModel(object):
 
         :param user: UserID, username, or User instance
         """
-        from rhodecode.model.db import User
+        from kallithea.model.db import User
         return self._get_instance(User, user,
                                   callback=User.get_by_username)
 
@@ -117,7 +117,7 @@ class BaseModel(object):
 
         :param repository: RepoID, repository name or Repository Instance
         """
-        from rhodecode.model.db import Repository
+        from kallithea.model.db import Repository
         return self._get_instance(Repository, repository,
                                   callback=Repository.get_by_repo_name)
 
@@ -127,7 +127,7 @@ class BaseModel(object):
 
         :param permission: PermissionID, permission_name or Permission instance
         """
-        from rhodecode.model.db import Permission
+        from kallithea.model.db import Permission
         return self._get_instance(Permission, permission,
                                   callback=Permission.get_by_key)
 

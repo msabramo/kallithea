@@ -1,7 +1,7 @@
-from rhodecode.lib.rcmail.response import MailResponse
+from kallithea.lib.rcmail.response import MailResponse
 
-from rhodecode.lib.rcmail.exceptions import BadHeaders
-from rhodecode.lib.rcmail.exceptions import InvalidMessage
+from kallithea.lib.rcmail.exceptions import BadHeaders
+from kallithea.lib.rcmail.exceptions import InvalidMessage
 
 
 class Attachment(object):

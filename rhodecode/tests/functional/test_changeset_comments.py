@@ -1,7 +1,7 @@
-from rhodecode.tests import *
-from rhodecode.model.db import ChangesetComment, Notification, User, \
+from kallithea.tests import *
+from kallithea.model.db import ChangesetComment, Notification, User, \
     UserNotification
-from rhodecode.model.meta import Session
+from kallithea.model.meta import Session
 
 
 class TestChangeSetCommentsController(TestController):

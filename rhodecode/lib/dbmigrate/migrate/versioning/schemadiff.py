@@ -5,7 +5,7 @@
 import logging
 import sqlalchemy
 
-from rhodecode.lib.dbmigrate.migrate.changeset import SQLA_06
+from kallithea.lib.dbmigrate.migrate.changeset import SQLA_06
 from sqlalchemy.types import Float
 
 log = logging.getLogger(__name__)

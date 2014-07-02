@@ -54,7 +54,7 @@ copyright = u'%s, Marcin Kuzminski' % (datetime.datetime.now().year)
 # The short X.Y version.
 root = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(root)
-from rhodecode import __version__
+from kallithea import __version__
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__
@@ -218,7 +218,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'rhodecode', u'RhodeCode Documentation',
+    ('index', 'kallithea', u'RhodeCode Documentation',
      [u'Marcin Kuzminski'], 1)
 ]
 

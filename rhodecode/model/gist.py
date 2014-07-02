@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.gist
+kallithea.model.gist
 ~~~~~~~~~~~~~~~~~~~~
 
 gist model for RhodeCode
@@ -31,14 +31,14 @@ import traceback
 import shutil
 
 from pylons.i18n.translation import _
-from rhodecode.lib.utils2 import safe_unicode, unique_id, safe_int, \
+from kallithea.lib.utils2 import safe_unicode, unique_id, safe_int, \
     time_to_datetime, safe_str, AttributeDict
-from rhodecode.lib.compat import json
-from rhodecode.lib import helpers as h
-from rhodecode.model import BaseModel
-from rhodecode.model.db import Gist
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.scm import ScmModel
+from kallithea.lib.compat import json
+from kallithea.lib import helpers as h
+from kallithea.model import BaseModel
+from kallithea.model.db import Gist
+from kallithea.model.repo import RepoModel
+from kallithea.model.scm import ScmModel
 
 log = logging.getLogger(__name__)
 

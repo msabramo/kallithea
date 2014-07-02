@@ -3,8 +3,8 @@
 """
 from sqlalchemy.databases import firebird as sa_base
 from sqlalchemy.schema import PrimaryKeyConstraint
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.changeset import ansisql
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.changeset import ansisql
 
 
 FBSchemaGenerator = sa_base.FBDDLCompiler

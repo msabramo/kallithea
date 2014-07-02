@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.indexers.__init__
+kallithea.lib.indexers.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whoosh indexing module for RhodeCode
@@ -35,7 +35,7 @@ from whoosh.analysis import RegexTokenizer, LowercaseFilter, StopFilter
 from whoosh.fields import TEXT, ID, STORED, NUMERIC, BOOLEAN, Schema, FieldType, DATETIME
 from whoosh.formats import Characters
 from whoosh.highlight import highlight as whoosh_highlight, HtmlFormatter, ContextFragmenter
-from rhodecode.lib.utils2 import LazyProperty
+from kallithea.lib.utils2 import LazyProperty
 
 log = logging.getLogger(__name__)
 

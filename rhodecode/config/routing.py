@@ -33,7 +33,7 @@ def make_map(config):
     rmap.minimization = False
     rmap.explicit = False
 
-    from rhodecode.lib.utils import (is_valid_repo, is_valid_repo_group,
+    from kallithea.lib.utils import (is_valid_repo, is_valid_repo_group,
                                      get_repo_by_id)
 
     def check_repo(environ, match_dict):

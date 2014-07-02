@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.changelog
+kallithea.controllers.changelog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 changelog controller for rhodecode
@@ -31,15 +31,15 @@ from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 from webob.exc import HTTPNotFound, HTTPBadRequest
 
-import rhodecode.lib.helpers as h
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.helpers import RepoPage
-from rhodecode.lib.compat import json
-from rhodecode.lib.graphmod import _colored, _dagwalker
-from rhodecode.lib.vcs.exceptions import RepositoryError, ChangesetDoesNotExistError,\
+import kallithea.lib.helpers as h
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.helpers import RepoPage
+from kallithea.lib.compat import json
+from kallithea.lib.graphmod import _colored, _dagwalker
+from kallithea.lib.vcs.exceptions import RepositoryError, ChangesetDoesNotExistError,\
     ChangesetError, NodeDoesNotExistError, EmptyRepositoryError
-from rhodecode.lib.utils2 import safe_int, safe_str
+from kallithea.lib.utils2 import safe_int, safe_str
 
 
 log = logging.getLogger(__name__)

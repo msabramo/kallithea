@@ -12,12 +12,12 @@
 import datetime
 import itertools
 
-from rhodecode.lib.vcs.utils import author_name, author_email, safe_unicode
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.utils.helpers import get_dict_for_attrs
-from rhodecode.lib.vcs.conf import settings
+from kallithea.lib.vcs.utils import author_name, author_email, safe_unicode
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils.helpers import get_dict_for_attrs
+from kallithea.lib.vcs.conf import settings
 
-from rhodecode.lib.vcs.exceptions import (
+from kallithea.lib.vcs.exceptions import (
     ChangesetError, EmptyRepositoryError, NodeAlreadyAddedError,
     NodeAlreadyChangedError, NodeAlreadyExistsError, NodeAlreadyRemovedError,
     NodeDoesNotExistError, NodeNotChangedError, RepositoryError
@@ -997,7 +997,7 @@ class EmptyChangeset(BaseChangeset):
 
     @LazyProperty
     def branch(self):
-        from rhodecode.lib.vcs.backends import get_backend
+        from kallithea.lib.vcs.backends import get_backend
         return get_backend(self.alias).DEFAULT_BRANCH_NAME
 
     @LazyProperty

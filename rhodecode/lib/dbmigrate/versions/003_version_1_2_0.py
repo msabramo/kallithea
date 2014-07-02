@@ -6,10 +6,10 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
+from kallithea.model.meta import Base
 
 log = logging.getLogger(__name__)
 
@@ -22,43 +22,43 @@ def upgrade(migrate_engine):
     #==========================================================================
     # Add table `groups``
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import Group as Group
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import Group as Group
     Group().__table__.create()
 
     #==========================================================================
     # Add table `group_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import UserRepoGroupToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import UserRepoGroupToPerm
     UserRepoGroupToPerm().__table__.create()
 
     #==========================================================================
     # Add table `users_groups`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import UserGroup
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import UserGroup
     UserGroup().__table__.create()
 
     #==========================================================================
     # Add table `users_groups_members`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import UserGroupMember
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import UserGroupMember
     UserGroupMember().__table__.create()
 
     #==========================================================================
     # Add table `users_group_repo_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import UserGroupRepoToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import UserGroupRepoToPerm
     UserGroupRepoToPerm().__table__.create()
 
     #==========================================================================
     # Add table `users_group_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import UserGroupToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import UserGroupToPerm
     UserGroupToPerm().__table__.create()
 
     #==========================================================================
     # Upgrade of `users` table
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import User
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import User
 
     #add column
     ldap_dn = Column("ldap_dn", String(length=255, convert_unicode=False, assert_unicode=None), nullable=True, unique=None, default=None)
@@ -74,7 +74,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # Upgrade of `repositories` table
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import Repository
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import Repository
 
     #ADD clone_uri column#
 
@@ -103,7 +103,7 @@ def upgrade(migrate_engine):
     # Upgrade of `user_followings` table
     #==========================================================================
 
-    from rhodecode.lib.dbmigrate.schema.db_1_2_0 import UserFollowing
+    from kallithea.lib.dbmigrate.schema.db_1_2_0 import UserFollowing
 
     follows_from = Column('follows_from', DateTime(timezone=False),
                           nullable=True, unique=None,

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.pullrequests
+kallithea.controllers.pullrequests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 pull requests controller for rhodecode for initializing pull requests
@@ -35,25 +35,25 @@ from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
-from rhodecode.lib.compat import json
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
+from kallithea.lib.compat import json
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
     NotAnonymous
-from rhodecode.lib.helpers import Page
-from rhodecode.lib import helpers as h
-from rhodecode.lib import diffs
-from rhodecode.lib.utils import action_logger, jsonify
-from rhodecode.lib.vcs.utils import safe_str
-from rhodecode.lib.vcs.exceptions import EmptyRepositoryError
-from rhodecode.lib.diffs import LimitedDiffContainer
-from rhodecode.model.db import  PullRequest, ChangesetStatus, ChangesetComment
-from rhodecode.model.pull_request import PullRequestModel
-from rhodecode.model.meta import Session
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.comment import ChangesetCommentsModel
-from rhodecode.model.changeset_status import ChangesetStatusModel
-from rhodecode.model.forms import PullRequestForm
-from rhodecode.lib.utils2 import safe_int
+from kallithea.lib.helpers import Page
+from kallithea.lib import helpers as h
+from kallithea.lib import diffs
+from kallithea.lib.utils import action_logger, jsonify
+from kallithea.lib.vcs.utils import safe_str
+from kallithea.lib.vcs.exceptions import EmptyRepositoryError
+from kallithea.lib.diffs import LimitedDiffContainer
+from kallithea.model.db import  PullRequest, ChangesetStatus, ChangesetComment
+from kallithea.model.pull_request import PullRequestModel
+from kallithea.model.meta import Session
+from kallithea.model.repo import RepoModel
+from kallithea.model.comment import ChangesetCommentsModel
+from kallithea.model.changeset_status import ChangesetStatusModel
+from kallithea.model.forms import PullRequestForm
+from kallithea.lib.utils2 import safe_int
 
 log = logging.getLogger(__name__)
 

@@ -22,20 +22,20 @@ from dulwich.objects import Tag
 from dulwich.repo import Repo, NotGitRepository
 from dulwich.config import ConfigFile
 
-from rhodecode.lib.vcs import subprocessio
-from rhodecode.lib.vcs.backends.base import BaseRepository, CollectionGenerator
-from rhodecode.lib.vcs.conf import settings
+from kallithea.lib.vcs import subprocessio
+from kallithea.lib.vcs.backends.base import BaseRepository, CollectionGenerator
+from kallithea.lib.vcs.conf import settings
 
-from rhodecode.lib.vcs.exceptions import (
+from kallithea.lib.vcs.exceptions import (
     BranchDoesNotExistError, ChangesetDoesNotExistError, EmptyRepositoryError,
     RepositoryError, TagAlreadyExistError, TagDoesNotExistError
 )
-from rhodecode.lib.vcs.utils import safe_unicode, makedate, date_fromtimestamp
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.utils.ordered_dict import OrderedDict
-from rhodecode.lib.vcs.utils.paths import abspath, get_user_home
+from kallithea.lib.vcs.utils import safe_unicode, makedate, date_fromtimestamp
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils.ordered_dict import OrderedDict
+from kallithea.lib.vcs.utils.paths import abspath, get_user_home
 
-from rhodecode.lib.vcs.utils.hgcompat import (
+from kallithea.lib.vcs.utils.hgcompat import (
     hg_url, httpbasicauthhandler, httpdigestauthhandler
 )
 

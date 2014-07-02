@@ -1,10 +1,10 @@
-from rhodecode.tests import *
+from kallithea.tests import *
 
-from rhodecode.model.meta import Session
-from rhodecode.tests.fixture import Fixture
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.db import Repository
-from rhodecode.lib.exceptions import AttachedForksError
+from kallithea.model.meta import Session
+from kallithea.tests.fixture import Fixture
+from kallithea.model.repo import RepoModel
+from kallithea.model.db import Repository
+from kallithea.lib.exceptions import AttachedForksError
 
 fixture = Fixture()
 

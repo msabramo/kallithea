@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.user
+kallithea.model.user
 ~~~~~~~~~~~~~~~~~~~~
 
 users model for RhodeCode
@@ -32,14 +32,14 @@ from pylons.i18n.translation import _
 from sqlalchemy.exc import DatabaseError
 
 
-from rhodecode.lib.utils2 import safe_unicode, generate_api_key, get_current_rhodecode_user
-from rhodecode.lib.caching_query import FromCache
-from rhodecode.model import BaseModel
-from rhodecode.model.db import User, UserToPerm, Notification, \
+from kallithea.lib.utils2 import safe_unicode, generate_api_key, get_current_rhodecode_user
+from kallithea.lib.caching_query import FromCache
+from kallithea.model import BaseModel
+from kallithea.model.db import User, UserToPerm, Notification, \
     UserEmailMap, UserIpMap
-from rhodecode.lib.exceptions import DefaultUserException, \
+from kallithea.lib.exceptions import DefaultUserException, \
     UserOwnsReposException
-from rhodecode.model.meta import Session
+from kallithea.model.meta import Session
 
 
 log = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class UserModel(BaseModel):
         if not cur_user:
             cur_user = getattr(get_current_rhodecode_user(), 'username', None)
 
-        from rhodecode.lib.hooks import log_create_user, check_allowed_create_user
+        from kallithea.lib.hooks import log_create_user, check_allowed_create_user
         _fd = form_data
         user_data = {
             'username': _fd['username'], 'password': _fd['password'],
@@ -89,7 +89,7 @@ class UserModel(BaseModel):
         }
         # raises UserCreationError if it's not allowed
         check_allowed_create_user(user_data, cur_user)
-        from rhodecode.lib.auth import get_crypt_password
+        from kallithea.lib.auth import get_crypt_password
         try:
             new_user = User()
             for k, v in form_data.items():
@@ -129,8 +129,8 @@ class UserModel(BaseModel):
         if not cur_user:
             cur_user = getattr(get_current_rhodecode_user(), 'username', None)
 
-        from rhodecode.lib.auth import get_crypt_password, check_password
-        from rhodecode.lib.hooks import log_create_user, check_allowed_create_user
+        from kallithea.lib.auth import get_crypt_password, check_password
+        from kallithea.lib.hooks import log_create_user, check_allowed_create_user
         user_data = {
             'username': username, 'password': password,
             'email': email, 'firstname': firstname, 'lastname': lastname,
@@ -181,7 +181,7 @@ class UserModel(BaseModel):
             raise
 
     def create_registration(self, form_data):
-        from rhodecode.model.notification import NotificationModel
+        from kallithea.model.notification import NotificationModel
 
         try:
             form_data['admin'] = False
@@ -212,7 +212,7 @@ class UserModel(BaseModel):
             raise
 
     def update(self, user_id, form_data, skip_attrs=[]):
-        from rhodecode.lib.auth import get_crypt_password
+        from kallithea.lib.auth import get_crypt_password
         try:
             user = self.get(user_id, cache=False)
             if user.username == User.DEFAULT_USER:
@@ -237,7 +237,7 @@ class UserModel(BaseModel):
             raise
 
     def update_user(self, user, **kwargs):
-        from rhodecode.lib.auth import get_crypt_password
+        from kallithea.lib.auth import get_crypt_password
         try:
             user = self._get_user(user)
             if user.username == User.DEFAULT_USER:
@@ -277,15 +277,15 @@ class UserModel(BaseModel):
                 )
             self.sa.delete(user)
 
-            from rhodecode.lib.hooks import log_delete_user
+            from kallithea.lib.hooks import log_delete_user
             log_delete_user(user.get_dict(), cur_user)
         except Exception:
             log.error(traceback.format_exc())
             raise
 
     def reset_password_link(self, data):
-        from rhodecode.lib.celerylib import tasks, run_task
-        from rhodecode.model.notification import EmailNotificationModel
+        from kallithea.lib.celerylib import tasks, run_task
+        from kallithea.model.notification import EmailNotificationModel
         user_email = data['email']
         try:
             user = User.get_by_email(user_email)
@@ -310,8 +310,8 @@ class UserModel(BaseModel):
         return True
 
     def reset_password(self, data):
-        from rhodecode.lib.celerylib import tasks, run_task
-        from rhodecode.lib import auth
+        from kallithea.lib.celerylib import tasks, run_task
+        from kallithea.lib import auth
         user_email = data['email']
         pre_db = True
         try:
@@ -434,7 +434,7 @@ class UserModel(BaseModel):
         :param user:
         :param email:
         """
-        from rhodecode.model import forms
+        from kallithea.model import forms
         form = forms.UserExtraEmailForm()()
         data = form.to_python(dict(email=email))
         user = self._get_user(user)
@@ -464,7 +464,7 @@ class UserModel(BaseModel):
         :param user:
         :param ip:
         """
-        from rhodecode.model import forms
+        from kallithea.model import forms
         form = forms.UserExtraIpForm()()
         data = form.to_python(dict(ip=ip))
         user = self._get_user(user)

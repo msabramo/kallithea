@@ -17,20 +17,20 @@ import logging
 import datetime
 
 
-from rhodecode.lib.vcs.backends.base import BaseRepository, CollectionGenerator
-from rhodecode.lib.vcs.conf import settings
+from kallithea.lib.vcs.backends.base import BaseRepository, CollectionGenerator
+from kallithea.lib.vcs.conf import settings
 
-from rhodecode.lib.vcs.exceptions import (
+from kallithea.lib.vcs.exceptions import (
     BranchDoesNotExistError, ChangesetDoesNotExistError, EmptyRepositoryError,
     RepositoryError, VCSError, TagAlreadyExistError, TagDoesNotExistError
 )
-from rhodecode.lib.vcs.utils import (
+from kallithea.lib.vcs.utils import (
     author_email, author_name, date_fromtimestamp, makedate, safe_unicode
 )
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.utils.ordered_dict import OrderedDict
-from rhodecode.lib.vcs.utils.paths import abspath
-from rhodecode.lib.vcs.utils.hgcompat import (
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils.ordered_dict import OrderedDict
+from kallithea.lib.vcs.utils.paths import abspath
+from kallithea.lib.vcs.utils.hgcompat import (
     ui, nullid, match, patch, diffopts, clone, get_contact, pull,
     localrepository, RepoLookupError, Abort, RepoError, hex, scmutil, hg_url,
     httpbasicauthhandler, httpdigestauthhandler, peer, httppeer

@@ -17,7 +17,7 @@
 
 import os
 import logging
-import rhodecode
+import kallithea
 import platform
 
 from mako.lookup import TemplateLookup
@@ -25,20 +25,20 @@ from pylons.configuration import PylonsConfig
 from pylons.error import handle_mako_error
 
 # don't remove this import it does magic for celery
-from rhodecode.lib import celerypylons
+from kallithea.lib import celerypylons
 
-import rhodecode.lib.app_globals as app_globals
+import kallithea.lib.app_globals as app_globals
 
-from rhodecode.config.routing import make_map
+from kallithea.config.routing import make_map
 
-from rhodecode.lib import helpers
-from rhodecode.lib.auth import set_available_permissions
-from rhodecode.lib.utils import repo2db_mapper, make_ui, set_rhodecode_config,\
+from kallithea.lib import helpers
+from kallithea.lib.auth import set_available_permissions
+from kallithea.lib.utils import repo2db_mapper, make_ui, set_rhodecode_config,\
     load_rcextensions, check_git_version, set_vcs_config
-from rhodecode.lib.utils2 import engine_from_config, str2bool
-from rhodecode.lib.db_manage import DbManage
-from rhodecode.model import init_model
-from rhodecode.model.scm import ScmModel
+from kallithea.lib.utils2 import engine_from_config, str2bool
+from kallithea.lib.db_manage import DbManage
+from kallithea.model import init_model
+from kallithea.model.scm import ScmModel
 
 log = logging.getLogger(__name__)
 
@@ -61,16 +61,16 @@ def load_environment(global_conf, app_conf, initial=False,
     )
 
     # Initialize config with the basic options
-    config.init_app(global_conf, app_conf, package='rhodecode', paths=paths)
+    config.init_app(global_conf, app_conf, package='kallithea', paths=paths)
 
     # store some globals into rhodecode
-    rhodecode.CELERY_ON = str2bool(config['app_conf'].get('use_celery'))
-    rhodecode.CELERY_EAGER = str2bool(config['app_conf'].get('celery.always.eager'))
+    kallithea.CELERY_ON = str2bool(config['app_conf'].get('use_celery'))
+    kallithea.CELERY_EAGER = str2bool(config['app_conf'].get('celery.always.eager'))
 
     config['routes.map'] = make_map(config)
     config['pylons.app_globals'] = app_globals.Globals(config)
     config['pylons.h'] = helpers
-    rhodecode.CONFIG = config
+    kallithea.CONFIG = config
 
     load_rcextensions(root_path=config['here'])
 
@@ -98,8 +98,8 @@ def load_environment(global_conf, app_conf, initial=False,
             # swap config if we pass enviroment variable
             config['sqlalchemy.db1.url'] = os.environ.get('TEST_DB')
 
-        from rhodecode.lib.utils import create_test_env, create_test_index
-        from rhodecode.tests import TESTS_TMP_PATH
+        from kallithea.lib.utils import create_test_env, create_test_index
+        from kallithea.tests import TESTS_TMP_PATH
         #set RC_NO_TMP_PATH=1 to disable re-creating the database and
         #test repos
         if test_env:
@@ -119,18 +119,18 @@ def load_environment(global_conf, app_conf, initial=False,
     config['base_path'] = repos_path
     set_rhodecode_config(config)
 
-    instance_id = rhodecode.CONFIG.get('instance_id')
+    instance_id = kallithea.CONFIG.get('instance_id')
     if instance_id == '*':
         instance_id = '%s-%s' % (platform.uname()[1], os.getpid())
-        rhodecode.CONFIG['instance_id'] = instance_id
+        kallithea.CONFIG['instance_id'] = instance_id
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
 
     # store config reference into our module to skip import magic of
     # pylons
-    rhodecode.CONFIG.update(config)
-    set_vcs_config(rhodecode.CONFIG)
+    kallithea.CONFIG.update(config)
+    set_vcs_config(kallithea.CONFIG)
 
     #check git version
     check_git_version()

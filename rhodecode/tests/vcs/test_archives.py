@@ -6,11 +6,11 @@ import zipfile
 import datetime
 import tempfile
 import StringIO
-from rhodecode.tests.vcs.base import BackendTestMixin
-from rhodecode.tests.vcs.conf import SCM_TESTS
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.nodes import FileNode
-from rhodecode.lib.vcs.utils.compat import unittest
+from kallithea.tests.vcs.base import BackendTestMixin
+from kallithea.tests.vcs.conf import SCM_TESTS
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.utils.compat import unittest
 
 
 class ArchivesTestCaseMixin(BackendTestMixin):

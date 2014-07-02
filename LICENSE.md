@@ -35,7 +35,7 @@ and licensed under the MIT-permissive license, which is
 
 Additional files from upstream Codemirror are copyrighted by various authors
 and licensed under other permissive licenses.  The sub-directories under
-[.../public/js/mode/](rhodecode/public/js/mode) include the copyright and
+[.../public/js/mode/](kallithea/public/js/mode) include the copyright and
 license notice and information as they appeared in Codemirror's upstream
 release.
 
@@ -46,7 +46,7 @@ jQuery
 
 Kallithea incorporates the Javascript system called
 [jQuery](http://jquery.org/),
-[herein](rhodecode/public/js/jquery-1.10.2.min.js), and the Corresponding
+[herein](kallithea/public/js/jquery-1.10.2.min.js), and the Corresponding
 Source can be found in https://github.com/jquery/jquery at tag 1.10.2
 (mirrored at https://kallithea-scm.org/repos/mirror/jquery/files/1.10.2/ ).
 
@@ -227,7 +227,7 @@ in this distribution.
 Migrate
 -------
 
-Kallithea incorporates in rhodecode/lib/dbmigrate/migrate parts of the Python
+Kallithea incorporates in kallithea/lib/dbmigrate/migrate parts of the Python
 system called [Migrate or sqlalchemy-migrate](https://github.com/stackforge/sqlalchemy-migrate),
 which is:
 

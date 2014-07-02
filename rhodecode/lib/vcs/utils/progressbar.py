@@ -3,8 +3,8 @@ import sys
 import datetime
 import string
 
-from rhodecode.lib.vcs.utils.filesize import filesizeformat
-from rhodecode.lib.vcs.utils.helpers import get_total_seconds
+from kallithea.lib.vcs.utils.filesize import filesizeformat
+from kallithea.lib.vcs.utils.helpers import get_total_seconds
 
 
 class ProgressBarError(Exception):

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from rhodecode.tests import *
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.meta import Session
-from rhodecode.model.db import Repository
-from rhodecode.model.scm import ScmModel
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.tests.fixture import Fixture
+from kallithea.tests import *
+from kallithea.model.repo import RepoModel
+from kallithea.model.meta import Session
+from kallithea.model.db import Repository
+from kallithea.model.scm import ScmModel
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.tests.fixture import Fixture
 
 fixture = Fixture()
 

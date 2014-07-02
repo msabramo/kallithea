@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.comment
+kallithea.model.comment
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 comments model for RhodeCode
@@ -29,13 +29,13 @@ import traceback
 from pylons.i18n.translation import _
 from sqlalchemy.util.compat import defaultdict
 
-from rhodecode.lib.utils2 import extract_mentioned_users, safe_unicode
-from rhodecode.lib import helpers as h
-from rhodecode.model import BaseModel
-from rhodecode.model.db import ChangesetComment, User, Repository, \
+from kallithea.lib.utils2 import extract_mentioned_users, safe_unicode
+from kallithea.lib import helpers as h
+from kallithea.model import BaseModel
+from kallithea.model.db import ChangesetComment, User, Repository, \
     Notification, PullRequest
-from rhodecode.model.notification import NotificationModel
-from rhodecode.model.meta import Session
+from kallithea.model.notification import NotificationModel
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 

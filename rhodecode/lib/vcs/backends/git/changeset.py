@@ -3,20 +3,20 @@ from itertools import chain
 from dulwich import objects
 from subprocess import Popen, PIPE
 
-from rhodecode.lib.vcs.conf import settings
-from rhodecode.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
-from rhodecode.lib.vcs.exceptions import (
+from kallithea.lib.vcs.conf import settings
+from kallithea.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
+from kallithea.lib.vcs.exceptions import (
     RepositoryError, ChangesetError, NodeDoesNotExistError, VCSError,
     ChangesetDoesNotExistError, ImproperArchiveTypeError
 )
-from rhodecode.lib.vcs.nodes import (
+from kallithea.lib.vcs.nodes import (
     FileNode, DirNode, NodeKind, RootNode, RemovedFileNode, SubModuleNode,
     ChangedFileNodesGenerator, AddedFileNodesGenerator, RemovedFileNodesGenerator
 )
-from rhodecode.lib.vcs.utils import (
+from kallithea.lib.vcs.utils import (
     safe_unicode, safe_str, safe_int, date_fromtimestamp
 )
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils.lazy import LazyProperty
 
 
 class GitChangeset(BaseChangeset):

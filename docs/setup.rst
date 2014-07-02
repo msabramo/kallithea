@@ -477,7 +477,7 @@ There are 4 built in hooks that cannot be changed (only enable/disable by
 checkboxes on previos section).
 To add another custom hook simply fill in first section with
 <name>.<hook_type> and the second one with hook path. Example hooks
-can be found at *rhodecode.lib.hooks*.
+can be found at *kallithea.lib.hooks*.
 
 
 Changing default encoding
@@ -573,7 +573,7 @@ Sample config for nginx using proxy::
 
        ## uncomment root directive if you want to serve static files by nginx
        ## requires static_files = false in .ini file
-       #root /path/to/installation/rhodecode/public;
+       #root /path/to/installation/kallithea/public;
        include         /etc/nginx/proxy.conf;
        location / {
             try_files $uri @rhode;

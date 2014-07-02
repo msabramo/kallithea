@@ -18,7 +18,7 @@ import errno
 
 from multiprocessing.util import Finalize
 
-from rhodecode.lib.compat import kill
+from kallithea.lib.compat import kill
 
 
 class LockHeld(Exception):

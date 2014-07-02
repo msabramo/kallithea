@@ -7,12 +7,12 @@ from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
-from rhodecode.model import meta
-from rhodecode.lib.dbmigrate.versions import _reset_base
+from kallithea.model.meta import Base
+from kallithea.model import meta
+from kallithea.lib.dbmigrate.versions import _reset_base
 
 log = logging.getLogger(__name__)
 
@@ -26,27 +26,27 @@ def upgrade(migrate_engine):
     #==========================================================================
     # USEREMAILMAP
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_4_0 import UserEmailMap
+    from kallithea.lib.dbmigrate.schema.db_1_4_0 import UserEmailMap
     tbl = UserEmailMap.__table__
     tbl.create()
     #==========================================================================
     # PULL REQUEST
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_4_0 import PullRequest
+    from kallithea.lib.dbmigrate.schema.db_1_4_0 import PullRequest
     tbl = PullRequest.__table__
     tbl.create()
 
     #==========================================================================
     # PULL REQUEST REVIEWERS
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_4_0 import PullRequestReviewers
+    from kallithea.lib.dbmigrate.schema.db_1_4_0 import PullRequestReviewers
     tbl = PullRequestReviewers.__table__
     tbl.create()
 
     #==========================================================================
     # CHANGESET STATUS
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_4_0 import ChangesetStatus
+    from kallithea.lib.dbmigrate.schema.db_1_4_0 import ChangesetStatus
     tbl = ChangesetStatus.__table__
     tbl.create()
 
@@ -55,7 +55,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # USERS TABLE
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import User
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import User
     tbl = User.__table__
 
     # change column name -> firstname
@@ -74,7 +74,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # USERS GROUP TABLE
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import UserGroup
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import UserGroup
     tbl = UserGroup.__table__
     # add inherit_default_permission column
     gr_inherit_default_permissions = Column(
@@ -87,7 +87,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # REPOSITORIES
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import Repository
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import Repository
     tbl = Repository.__table__
 
     # add enable locking column
@@ -110,7 +110,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # GROUPS
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import RepoGroup
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import RepoGroup
     tbl = RepoGroup.__table__
 
     # add enable locking column
@@ -122,7 +122,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # CACHE INVALIDATION
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import CacheInvalidation
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import CacheInvalidation
     tbl = CacheInvalidation.__table__
 
     # add INDEX for cache keys
@@ -132,7 +132,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # NOTIFICATION
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import Notification
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import Notification
     tbl = Notification.__table__
 
     # add index for notification type
@@ -142,7 +142,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # CHANGESET_COMMENTS
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import ChangesetComment
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import ChangesetComment
 
     tbl = ChangesetComment.__table__
     col = ChangesetComment.__table__.columns.revision

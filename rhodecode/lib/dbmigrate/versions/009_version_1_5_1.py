@@ -7,11 +7,11 @@ from sqlalchemy.orm import relation, backref, class_mapper, joinedload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
-from rhodecode.model import meta
+from kallithea.model.meta import Base
+from kallithea.model import meta
 
 log = logging.getLogger(__name__)
 

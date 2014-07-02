@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.followers
+kallithea.controllers.followers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Followers controller for rhodecode
@@ -27,11 +27,11 @@ import logging
 
 from pylons import tmpl_context as c, request
 
-from rhodecode.lib.helpers import Page
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.model.db import Repository, User, UserFollowing
-from rhodecode.lib.utils2 import safe_int
+from kallithea.lib.helpers import Page
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.model.db import Repository, User, UserFollowing
+from kallithea.lib.utils2 import safe_int
 
 log = logging.getLogger(__name__)
 

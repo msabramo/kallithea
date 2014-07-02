@@ -6,19 +6,19 @@ import time
 import shutil
 import tempfile
 import datetime
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.lib.vcs.utils.paths import get_dirs_for_path
-from rhodecode.lib.vcs.utils.helpers import get_dict_for_attrs
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.utils.helpers import get_scms_for_path
-from rhodecode.lib.vcs.utils.helpers import get_total_seconds
-from rhodecode.lib.vcs.utils.helpers import parse_changesets
-from rhodecode.lib.vcs.utils.helpers import parse_datetime
-from rhodecode.lib.vcs.utils import author_email, author_name
-from rhodecode.lib.vcs.utils.paths import get_user_home
-from rhodecode.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.lib.vcs.utils.paths import get_dirs_for_path
+from kallithea.lib.vcs.utils.helpers import get_dict_for_attrs
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.utils.helpers import get_scms_for_path
+from kallithea.lib.vcs.utils.helpers import get_total_seconds
+from kallithea.lib.vcs.utils.helpers import parse_changesets
+from kallithea.lib.vcs.utils.helpers import parse_datetime
+from kallithea.lib.vcs.utils import author_email, author_name
+from kallithea.lib.vcs.utils.paths import get_user_home
+from kallithea.lib.vcs.exceptions import VCSError
 
-from rhodecode.tests.vcs.conf import TEST_HG_REPO, TEST_GIT_REPO, TEST_TMP_PATH
+from kallithea.tests.vcs.conf import TEST_HG_REPO, TEST_GIT_REPO, TEST_TMP_PATH
 
 
 class PathsTest(unittest.TestCase):

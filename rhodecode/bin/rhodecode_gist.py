@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.bin.rhodecode_gist
+kallithea.bin.rhodecode_gist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Gist CLI client for RhodeCode
@@ -30,7 +30,7 @@ import stat
 import argparse
 import fileinput
 
-from rhodecode.bin.base import json, api_call, RcConf, FORMAT_JSON, FORMAT_PRETTY
+from kallithea.bin.base import json, api_call, RcConf, FORMAT_JSON, FORMAT_PRETTY
 
 
 def argparser(argv):

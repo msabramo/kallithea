@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.permission
+kallithea.model.permission
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 permissions model for RhodeCode
@@ -29,10 +29,10 @@ import traceback
 
 from sqlalchemy.exc import DatabaseError
 
-from rhodecode.model import BaseModel
-from rhodecode.model.db import User, Permission, UserToPerm, UserRepoToPerm,\
+from kallithea.model import BaseModel
+from kallithea.model.db import User, Permission, UserToPerm, UserRepoToPerm,\
     UserRepoGroupToPerm, UserUserGroupToPerm
-from rhodecode.lib.utils2 import str2bool
+from kallithea.lib.utils2 import str2bool
 
 log = logging.getLogger(__name__)
 

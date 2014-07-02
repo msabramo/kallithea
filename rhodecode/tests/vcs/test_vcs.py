@@ -3,10 +3,10 @@ from __future__ import with_statement
 import os
 import shutil
 
-from rhodecode.lib.vcs import VCSError, get_repo, get_backend
-from rhodecode.lib.vcs.backends.hg import MercurialRepository
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.tests.vcs.conf import TEST_HG_REPO, TEST_GIT_REPO, TEST_TMP_PATH
+from kallithea.lib.vcs import VCSError, get_repo, get_backend
+from kallithea.lib.vcs.backends.hg import MercurialRepository
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.tests.vcs.conf import TEST_HG_REPO, TEST_GIT_REPO, TEST_TMP_PATH
 
 
 

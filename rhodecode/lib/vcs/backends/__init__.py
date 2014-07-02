@@ -10,11 +10,11 @@
 """
 import os
 from pprint import pformat
-from rhodecode.lib.vcs.conf import settings
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.utils.paths import abspath
-from rhodecode.lib.vcs.utils.imports import import_class
+from kallithea.lib.vcs.conf import settings
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.utils.paths import abspath
+from kallithea.lib.vcs.utils.imports import import_class
 
 
 def get_repo(path=None, alias=None, create=False):

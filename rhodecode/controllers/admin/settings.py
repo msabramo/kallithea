@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.settings
+kallithea.controllers.admin.settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 settings controller for rhodecode admin
@@ -33,20 +33,20 @@ from pylons import request, tmpl_context as c, url, config
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib.celerylib import tasks, run_task
-from rhodecode.lib.exceptions import HgsubversionImportError
-from rhodecode.lib.utils import repo2db_mapper, set_rhodecode_config
-from rhodecode.model.db import RhodeCodeUi, Repository, RhodeCodeSetting
-from rhodecode.model.forms import ApplicationSettingsForm, \
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator
+from kallithea.lib.base import BaseController, render
+from kallithea.lib.celerylib import tasks, run_task
+from kallithea.lib.exceptions import HgsubversionImportError
+from kallithea.lib.utils import repo2db_mapper, set_rhodecode_config
+from kallithea.model.db import RhodeCodeUi, Repository, RhodeCodeSetting
+from kallithea.model.forms import ApplicationSettingsForm, \
     ApplicationUiSettingsForm, ApplicationVisualisationForm
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.notification import EmailNotificationModel
-from rhodecode.model.meta import Session
-from rhodecode.lib.utils2 import str2bool, safe_unicode, safe_str
-from rhodecode.lib.compat import json
+from kallithea.model.scm import ScmModel
+from kallithea.model.notification import EmailNotificationModel
+from kallithea.model.meta import Session
+from kallithea.lib.utils2 import str2bool, safe_unicode, safe_str
+from kallithea.lib.compat import json
 log = logging.getLogger(__name__)
 
 
@@ -371,8 +371,8 @@ class SettingsController(BaseController):
         defaults = RhodeCodeSetting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
-        import rhodecode
-        c.rhodecode_ini = rhodecode.CONFIG
+        import kallithea
+        c.rhodecode_ini = kallithea.CONFIG
 
         return htmlfill.render(
             render('admin/settings/settings.html'),
@@ -460,8 +460,8 @@ class SettingsController(BaseController):
         defaults = RhodeCodeSetting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
-        import rhodecode
-        c.rhodecode_ini = rhodecode.CONFIG
+        import kallithea
+        c.rhodecode_ini = kallithea.CONFIG
         c.rhodecode_update_url = defaults.get('rhodecode_update_url')
         server_info = RhodeCodeSetting.get_server_info()
         for key, val in server_info.iteritems():
@@ -479,8 +479,8 @@ class SettingsController(BaseController):
         # url('admin_settings_system_update')
         import json
         import urllib2
-        from rhodecode.lib.verlib import NormalizedVersion
-        from rhodecode import __version__
+        from kallithea.lib.verlib import NormalizedVersion
+        from kallithea import __version__
 
         defaults = RhodeCodeSetting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
@@ -488,8 +488,8 @@ class SettingsController(BaseController):
 
         _err = lambda s: '<div style="color:#ff8888; padding:4px 0px">%s</div>' % (s)
         try:
-            import rhodecode
-            ver = rhodecode.__version__
+            import kallithea
+            ver = kallithea.__version__
             log.debug('Checking for upgrade on `%s` server' % _update_url)
             opener = urllib2.build_opener()
             opener.addheaders = [('User-agent', 'RhodeCode-SCM/%s' % ver)]

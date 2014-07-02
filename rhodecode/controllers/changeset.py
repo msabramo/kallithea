@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.changeset
+kallithea.controllers.changeset
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 changeset controller for pylons showoing changes beetween
@@ -32,27 +32,27 @@ from webob.exc import HTTPForbidden, HTTPBadRequest, HTTPNotFound
 from pylons import tmpl_context as c, url, request, response
 from pylons.i18n.translation import _
 from pylons.controllers.util import redirect
-from rhodecode.lib.utils import jsonify
+from kallithea.lib.utils import jsonify
 
-from rhodecode.lib.vcs.exceptions import RepositoryError, \
+from kallithea.lib.vcs.exceptions import RepositoryError, \
     ChangesetDoesNotExistError
 
-import rhodecode.lib.helpers as h
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
+import kallithea.lib.helpers as h
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
     NotAnonymous
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.utils import action_logger
-from rhodecode.lib.compat import OrderedDict
-from rhodecode.lib import diffs
-from rhodecode.model.db import ChangesetComment, ChangesetStatus
-from rhodecode.model.comment import ChangesetCommentsModel
-from rhodecode.model.changeset_status import ChangesetStatusModel
-from rhodecode.model.meta import Session
-from rhodecode.model.repo import RepoModel
-from rhodecode.lib.diffs import LimitedDiffContainer
-from rhodecode.lib.exceptions import StatusChangeOnClosedPullRequestError
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.utils import action_logger
+from kallithea.lib.compat import OrderedDict
+from kallithea.lib import diffs
+from kallithea.model.db import ChangesetComment, ChangesetStatus
+from kallithea.model.comment import ChangesetCommentsModel
+from kallithea.model.changeset_status import ChangesetStatusModel
+from kallithea.model.meta import Session
+from kallithea.model.repo import RepoModel
+from kallithea.lib.diffs import LimitedDiffContainer
+from kallithea.lib.exceptions import StatusChangeOnClosedPullRequestError
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.utils2 import safe_unicode, safe_str
 
 log = logging.getLogger(__name__)
 

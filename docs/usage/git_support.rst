@@ -42,7 +42,7 @@ You can simply run `paster serve` as usual.
 
 
 You can always disable git/hg support by editing a
-file **rhodecode/__init__.py** and commenting out backends
+file **kallithea/__init__.py** and commenting out backends
 
 .. code-block:: python
 

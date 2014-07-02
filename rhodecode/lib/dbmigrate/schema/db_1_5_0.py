@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.db_1_5_0
+kallithea.model.db_1_5_0
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Database Models for RhodeCode <=1.5.2
@@ -40,17 +40,17 @@ from webob.exc import HTTPNotFound
 
 from pylons.i18n.translation import lazy_ugettext as _
 
-from rhodecode.lib.vcs import get_backend
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs import get_backend
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.utils.lazy import LazyProperty
 
-from rhodecode.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
+from kallithea.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
     safe_unicode, remove_suffix, remove_prefix
-from rhodecode.lib.compat import json
-from rhodecode.lib.caching_query import FromCache
+from kallithea.lib.compat import json
+from kallithea.lib.caching_query import FromCache
 
-from rhodecode.model.meta import Base, Session
+from kallithea.model.meta import Base, Session
 
 URL_SEP = '/'
 log = logging.getLogger(__name__)
@@ -798,13 +798,13 @@ class Repository(Base, BaseModel):
         """
         Creates an db based ui object for this repository
         """
-        from rhodecode.lib.utils import make_ui
+        from kallithea.lib.utils import make_ui
         return make_ui('db', clear_session=False)
 
     @classmethod
     def inject_ui(cls, repo, extras={}):
-        from rhodecode.lib.vcs.backends.hg import MercurialRepository
-        from rhodecode.lib.vcs.backends.git import GitRepository
+        from kallithea.lib.vcs.backends.hg import MercurialRepository
+        from kallithea.lib.vcs.backends.git import GitRepository
         required = (MercurialRepository, GitRepository)
         if not isinstance(repo, required):
             raise Exception('repo must be instance of %s' % (','.join(required)))
@@ -821,7 +821,7 @@ class Repository(Base, BaseModel):
         :param cls:
         :param repo_name:
         """
-        from rhodecode.lib.utils import is_valid_repo
+        from kallithea.lib.utils import is_valid_repo
 
         return is_valid_repo(repo_name, cls.base_path())
 
@@ -961,8 +961,8 @@ class Repository(Base, BaseModel):
 
     @LazyProperty
     def scm_instance(self):
-        import rhodecode
-        full_cache = str2bool(rhodecode.CONFIG.get('vcs_full_cache'))
+        import kallithea
+        full_cache = str2bool(kallithea.CONFIG.get('vcs_full_cache'))
         if full_cache:
             return self.scm_instance_cached()
         return self.__get_instance()
@@ -1048,7 +1048,7 @@ class RepoGroup(Base, BaseModel):
     @classmethod
     def groups_choices(cls, check_perms=False):
         from webhelpers.html import literal as _literal
-        from rhodecode.model.scm import ScmModel
+        from kallithea.model.scm import ScmModel
         groups = cls.query().all()
         if check_perms:
             #filter group user have access to, it's done
@@ -1467,10 +1467,10 @@ class CacheInvalidation(Base, BaseModel):
 
         :param key:
         """
-        import rhodecode
+        import kallithea
         prefix = ''
         org_key = key
-        iid = rhodecode.CONFIG.get('instance_id')
+        iid = kallithea.CONFIG.get('instance_id')
         if iid:
             prefix = iid
 
@@ -1806,7 +1806,7 @@ class Notification(Base, BaseModel):
 
     @property
     def description(self):
-        from rhodecode.model.notification import NotificationModel
+        from kallithea.model.notification import NotificationModel
         return NotificationModel().make_description(self)
 
 

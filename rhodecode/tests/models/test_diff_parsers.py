@@ -1,8 +1,8 @@
 from __future__ import with_statement
-from rhodecode.tests import *
-from rhodecode.lib.diffs import DiffProcessor, NEW_FILENODE, DEL_FILENODE, \
+from kallithea.tests import *
+from kallithea.lib.diffs import DiffProcessor, NEW_FILENODE, DEL_FILENODE, \
     MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE, COPIED_FILENODE
-from rhodecode.tests.fixture import Fixture
+from kallithea.tests.fixture import Fixture
 
 fixture = Fixture()
 

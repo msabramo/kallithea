@@ -12,14 +12,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.tests.test_crawer
+kallithea.tests.test_crawer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Test for crawling a project for memory usage
 This should be runned just as regular script together
 with a watch script that will show memory usage.
 
-watch -n1 ./rhodecode/tests/mem_watch
+watch -n1 ./kallithea/tests/mem_watch
 
 :created_on: Apr 21, 2010
 :author: marcink
@@ -41,9 +41,9 @@ __here__ = os.path.abspath(__file__)
 __root__ = dn(dn(dn(__here__)))
 sys.path.append(__root__)
 
-from rhodecode.lib import vcs
-from rhodecode.lib.compat import OrderedSet
-from rhodecode.lib.vcs.exceptions import RepositoryError
+from kallithea.lib import vcs
+from kallithea.lib.compat import OrderedSet
+from kallithea.lib.vcs.exceptions import RepositoryError
 
 PASES = 3
 HOST = 'http://127.0.0.1'

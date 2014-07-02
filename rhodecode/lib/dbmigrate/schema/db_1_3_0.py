@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.db_1_3_0
+kallithea.model.db_1_3_0
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Database Models for RhodeCode <=1.3.X
@@ -36,17 +36,17 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, joinedload, class_mapper, validates
 from beaker.cache import cache_region, region_invalidate
 
-from rhodecode.lib.vcs import get_backend
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs import get_backend
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.utils.lazy import LazyProperty
 
-from rhodecode.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
+from kallithea.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
     safe_unicode
-from rhodecode.lib.compat import json
-from rhodecode.lib.caching_query import FromCache
+from kallithea.lib.compat import json
+from kallithea.lib.caching_query import FromCache
 
-from rhodecode.model.meta import Base, Session
+from kallithea.model.meta import Base, Session
 import hashlib
 
 
@@ -639,7 +639,7 @@ class Repository(Base, BaseModel):
         :param cls:
         :param repo_name:
         """
-        from rhodecode.lib.utils import is_valid_repo
+        from kallithea.lib.utils import is_valid_repo
 
         return is_valid_repo(repo_name, cls.base_path())
 
@@ -1101,9 +1101,9 @@ class CacheInvalidation(Base, BaseModel):
 
         :param key:
         """
-        import rhodecode
+        import kallithea
         prefix = ''
-        iid = rhodecode.CONFIG.get('instance_id')
+        iid = kallithea.CONFIG.get('instance_id')
         if iid:
             prefix = iid
         return "%s%s" % (prefix, key), prefix, key.rstrip('_README')
@@ -1258,7 +1258,7 @@ class Notification(Base, BaseModel):
 
     @property
     def description(self):
-        from rhodecode.model.notification import NotificationModel
+        from kallithea.model.notification import NotificationModel
         return NotificationModel().make_description(self)
 
 

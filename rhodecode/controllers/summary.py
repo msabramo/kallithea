@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.summary
+kallithea.controllers.summary
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Summary controller for Rhodecode
@@ -37,23 +37,23 @@ from webob.exc import HTTPBadRequest
 
 from beaker.cache import cache_region, region_invalidate
 
-from rhodecode.lib.compat import product
-from rhodecode.lib.vcs.exceptions import ChangesetError, EmptyRepositoryError, \
+from kallithea.lib.compat import product
+from kallithea.lib.vcs.exceptions import ChangesetError, EmptyRepositoryError, \
     NodeDoesNotExistError
-from rhodecode.config.conf import ALL_READMES, ALL_EXTS, LANGUAGES_EXTENSIONS_MAP
-from rhodecode.model.db import Statistics, CacheInvalidation, User
-from rhodecode.lib.utils import jsonify
-from rhodecode.lib.utils2 import safe_unicode, safe_str
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
+from kallithea.config.conf import ALL_READMES, ALL_EXTS, LANGUAGES_EXTENSIONS_MAP
+from kallithea.model.db import Statistics, CacheInvalidation, User
+from kallithea.lib.utils import jsonify
+from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
     NotAnonymous
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.markup_renderer import MarkupRenderer
-from rhodecode.lib.celerylib import run_task
-from rhodecode.lib.celerylib.tasks import get_commits_stats
-from rhodecode.lib.compat import json
-from rhodecode.lib.vcs.nodes import FileNode
-from rhodecode.controllers.changelog import _load_changelog_summary
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.markup_renderer import MarkupRenderer
+from kallithea.lib.celerylib import run_task
+from kallithea.lib.celerylib.tasks import get_commits_stats
+from kallithea.lib.compat import json
+from kallithea.lib.vcs.nodes import FileNode
+from kallithea.controllers.changelog import _load_changelog_summary
 
 log = logging.getLogger(__name__)
 

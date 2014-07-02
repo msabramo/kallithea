@@ -8,8 +8,8 @@ from copy import copy
 
 from sqlalchemy.databases import sqlite as sa_base
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.changeset import ansisql, SQLA_06
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.changeset import ansisql, SQLA_06
 
 SQLiteSchemaGenerator = sa_base.SQLiteDDLCompiler
 

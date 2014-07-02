@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from rhodecode.tests import *
+from kallithea.tests import *
 
 class TestCompareController(TestController):
 

@@ -1,10 +1,10 @@
 import datetime
 import errno
 
-from rhodecode.lib.vcs.backends.base import BaseInMemoryChangeset
-from rhodecode.lib.vcs.exceptions import RepositoryError
+from kallithea.lib.vcs.backends.base import BaseInMemoryChangeset
+from kallithea.lib.vcs.exceptions import RepositoryError
 
-from rhodecode.lib.vcs.utils.hgcompat import memfilectx, memctx, hex, tolocal
+from kallithea.lib.vcs.utils.hgcompat import memfilectx, memctx, hex, tolocal
 
 
 class MercurialInMemoryChangeset(BaseInMemoryChangeset):

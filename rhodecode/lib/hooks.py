@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.hooks
+kallithea.lib.hooks
 ~~~~~~~~~~~~~~~~~~~
 
 Hooks runned by rhodecode
@@ -28,13 +28,13 @@ import sys
 import time
 import binascii
 
-from rhodecode.lib.vcs.utils.hgcompat import nullrev, revrange
-from rhodecode.lib import helpers as h
-from rhodecode.lib.utils import action_logger
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.exceptions import HTTPLockedRC, UserCreationError
-from rhodecode.lib.utils2 import safe_str, _extract_extras
-from rhodecode.model.db import Repository, User
+from kallithea.lib.vcs.utils.hgcompat import nullrev, revrange
+from kallithea.lib import helpers as h
+from kallithea.lib.utils import action_logger
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.exceptions import HTTPLockedRC, UserCreationError
+from kallithea.lib.utils2 import safe_str, _extract_extras
+from kallithea.model.db import Repository, User
 
 
 def _get_scm_size(alias, root_path):
@@ -132,7 +132,7 @@ def log_pull_action(ui, repo, **kwargs):
     action = 'pull'
     action_logger(user, action, ex.repository, ex.ip, commit=True)
     # extension hook call
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'PULL_HOOK', None)
     if callable(callback):
         kw = {}
@@ -190,7 +190,7 @@ def log_push_action(ui, repo, **kwargs):
     action_logger(ex.username, action, ex.repository, ex.ip, commit=True)
 
     # extension hook call
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'PUSH_HOOK', None)
     if callable(callback):
         kw = {'pushed_revs': revs}
@@ -235,7 +235,7 @@ def log_create_repository(repository_dict, created_by, **kwargs):
      'repo_name'
 
     """
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'CREATE_REPO_HOOK', None)
     if callable(callback):
         kw = {}
@@ -249,7 +249,7 @@ def log_create_repository(repository_dict, created_by, **kwargs):
 
 def check_allowed_create_user(user_dict, created_by, **kwargs):
     # pre create hooks
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'PRE_CREATE_USER_HOOK', None)
     if callable(callback):
         allowed, reason = callback(created_by=created_by, **user_dict)
@@ -286,7 +286,7 @@ def log_create_user(user_dict, created_by, **kwargs):
      'inherit_default_permissions'
 
     """
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'CREATE_USER_HOOK', None)
     if callable(callback):
         return callback(created_by=created_by, **user_dict)
@@ -317,7 +317,7 @@ def log_delete_repository(repository_dict, deleted_by, **kwargs):
      'repo_name'
 
     """
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'DELETE_REPO_HOOK', None)
     if callable(callback):
         kw = {}
@@ -359,7 +359,7 @@ def log_delete_user(user_dict, deleted_by, **kwargs):
      'inherit_default_permissions'
 
     """
-    from rhodecode import EXTENSIONS
+    from kallithea import EXTENSIONS
     callback = getattr(EXTENSIONS, 'DELETE_USER_HOOK', None)
     if callable(callback):
         return callback(deleted_by=deleted_by, **user_dict)
@@ -386,10 +386,10 @@ def handle_git_receive(repo_path, revs, env, hook_type='post'):
     """
     from paste.deploy import appconfig
     from sqlalchemy import engine_from_config
-    from rhodecode.config.environment import load_environment
-    from rhodecode.model import init_model
-    from rhodecode.model.db import RhodeCodeUi
-    from rhodecode.lib.utils import make_ui
+    from kallithea.config.environment import load_environment
+    from kallithea.model import init_model
+    from kallithea.model.db import RhodeCodeUi
+    from kallithea.lib.utils import make_ui
     extras = _extract_extras(env)
 
     path, ini_name = os.path.split(extras['config'])

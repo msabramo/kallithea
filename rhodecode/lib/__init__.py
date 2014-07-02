@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib
+kallithea.lib
 ~~~~~~~~~~~~~
 
 RhodeCode libs
@@ -34,8 +34,8 @@ def get_current_revision(quiet=False):
     """
 
     try:
-        from rhodecode.lib.vcs import get_repo
-        from rhodecode.lib.vcs.utils.helpers import get_scm
+        from kallithea.lib.vcs import get_repo
+        from kallithea.lib.vcs.utils.helpers import get_scm
         repopath = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 '..', '..'))
         scm = get_scm(repopath)[0]

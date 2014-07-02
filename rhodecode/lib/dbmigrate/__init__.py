@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.dbmigrate.__init__
+kallithea.lib.dbmigrate.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Database migration modules
@@ -27,8 +27,8 @@ import logging
 from sqlalchemy import engine_from_config
 
 
-from rhodecode.lib.utils import BasePasterCommand, Command, add_cache
-from rhodecode.lib.db_manage import DbManage
+from kallithea.lib.utils import BasePasterCommand, Command, add_cache
+from kallithea.lib.db_manage import DbManage
 
 log = logging.getLogger(__name__)
 

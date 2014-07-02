@@ -1,10 +1,10 @@
 from __future__ import with_statement
 
 import datetime
-from rhodecode.lib.vcs.nodes import FileNode
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.tests.vcs.base import BackendTestMixin
-from rhodecode.tests.vcs.conf import SCM_TESTS
+from kallithea.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.tests.vcs.base import BackendTestMixin
+from kallithea.tests.vcs.conf import SCM_TESTS
 
 
 class WorkdirTestCaseMixin(BackendTestMixin):
@@ -69,7 +69,7 @@ class WorkdirTestCaseMixin(BackendTestMixin):
         self.assertEqual(self.repo.workdir.get_changeset(), old_head)
 
     def test_checkout_branch(self):
-        from rhodecode.lib.vcs.exceptions import BranchDoesNotExistError
+        from kallithea.lib.vcs.exceptions import BranchDoesNotExistError
         # first, 'foobranch' does not exist.
         self.assertRaises(BranchDoesNotExistError, self.repo.workdir.checkout_branch,
                           branch='foobranch')

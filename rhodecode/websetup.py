@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.websetup
+kallithea.websetup
 ~~~~~~~~~~~~~~~~~~
 
 Weboperations and setup for rhodecode
@@ -25,9 +25,9 @@ Weboperations and setup for rhodecode
 
 import logging
 
-from rhodecode.config.environment import load_environment
-from rhodecode.lib.db_manage import DbManage
-from rhodecode.model.meta import Session
+from kallithea.config.environment import load_environment
+from kallithea.lib.db_manage import DbManage
+from kallithea.model.meta import Session
 
 
 log = logging.getLogger(__name__)

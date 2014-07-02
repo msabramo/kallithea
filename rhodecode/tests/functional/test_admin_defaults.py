@@ -1,5 +1,5 @@
-from rhodecode.tests import *
-from rhodecode.model.db import RhodeCodeSetting
+from kallithea.tests import *
+from kallithea.model.db import RhodeCodeSetting
 
 
 class TestDefaultsController(TestController):

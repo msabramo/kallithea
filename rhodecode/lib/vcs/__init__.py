@@ -20,8 +20,8 @@ __all__ = [
 ]
 
 import sys
-from rhodecode.lib.vcs.backends import get_repo, get_backend
-from rhodecode.lib.vcs.exceptions import VCSError, RepositoryError, ChangesetError
+from kallithea.lib.vcs.backends import get_repo, get_backend
+from kallithea.lib.vcs.exceptions import VCSError, RepositoryError, ChangesetError
 
 
 def get_version():
@@ -34,7 +34,7 @@ def get_version():
 def main(argv=None):
     if argv is None:
         argv = sys.argv
-    from rhodecode.lib.vcs.cli import ExecutionManager
+    from kallithea.lib.vcs.cli import ExecutionManager
     manager = ExecutionManager(argv)
     manager.execute()
     return 0

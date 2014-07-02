@@ -1,12 +1,12 @@
 import functools
-from rhodecode.tests import *
+from kallithea.tests import *
 
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.db import RepoGroup, Repository, User
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.db import RepoGroup, Repository, User
 
-from rhodecode.model.meta import Session
+from kallithea.model.meta import Session
 from nose.tools import with_setup
-from rhodecode.tests.models.common import _create_project_tree, check_tree_perms, \
+from kallithea.tests.models.common import _create_project_tree, check_tree_perms, \
     _get_perms, _check_expected_count, expected_count, _destroy_project_tree
 
 

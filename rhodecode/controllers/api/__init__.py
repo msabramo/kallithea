@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.api
+kallithea.controllers.api
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 JSON RPC controller
@@ -35,12 +35,12 @@ from pylons.controllers import WSGIController
 
 from webob.exc import HTTPError
 
-from rhodecode.model.db import User
-from rhodecode.model import meta
-from rhodecode.lib.compat import izip_longest, json
-from rhodecode.lib.auth import AuthUser
-from rhodecode.lib.base import _get_ip_addr as _get_ip, _get_access_path
-from rhodecode.lib.utils2 import safe_unicode, safe_str
+from kallithea.model.db import User
+from kallithea.model import meta
+from kallithea.lib.compat import izip_longest, json
+from kallithea.lib.auth import AuthUser
+from kallithea.lib.base import _get_ip_addr as _get_ip, _get_access_path
+from kallithea.lib.utils2 import safe_unicode, safe_str
 
 log = logging.getLogger('JSONRPC')
 

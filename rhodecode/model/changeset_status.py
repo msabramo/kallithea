@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-rhodecode.model.changeset_status
+kallithea.model.changeset_status
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Changeset status conttroller
@@ -27,9 +27,9 @@ Changeset status conttroller
 import logging
 from collections import  defaultdict
 
-from rhodecode.model import BaseModel
-from rhodecode.model.db import ChangesetStatus, PullRequest
-from rhodecode.lib.exceptions import StatusChangeOnClosedPullRequestError
+from kallithea.model import BaseModel
+from kallithea.model.db import ChangesetStatus, PullRequest
+from kallithea.lib.exceptions import StatusChangeOnClosedPullRequestError
 
 log = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ class ChangesetStatusModel(BaseModel):
 
         q = ChangesetStatus.query()
         if not comment:
-            from rhodecode.model.comment import ChangesetCommentsModel
+            from kallithea.model.comment import ChangesetCommentsModel
             comment = ChangesetCommentsModel().create(
                 text=u'Auto status change to %s' % (ChangesetStatus.get_status_lbl(status)),
                 repo=repo,

@@ -1,5 +1,5 @@
-from rhodecode.model.db import User, UserIpMap
-from rhodecode.tests import *
+from kallithea.model.db import User, UserIpMap
+from kallithea.tests import *
 
 class TestAdminPermissionsController(TestController):
 

@@ -9,9 +9,9 @@ import time
 import datetime
 from subprocess import Popen, PIPE
 
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.exceptions import RepositoryError
-from rhodecode.lib.vcs.utils.paths import abspath
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.exceptions import RepositoryError
+from kallithea.lib.vcs.utils.paths import abspath
 
 ALIASES = ['hg', 'git']
 
@@ -67,7 +67,7 @@ def get_scms_for_path(path):
 
     :raises VCSError: if given ``path`` is not a directory
     """
-    from rhodecode.lib.vcs.backends import get_backend
+    from kallithea.lib.vcs.backends import get_backend
     if hasattr(path, '__call__'):
         path = path()
     if not os.path.isdir(path):

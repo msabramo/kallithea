@@ -23,9 +23,9 @@ This module initializes the application via ``websetup`` (`paster
 setup-app`) and provides the base testing objects.
 
 nosetests -x - fail on first error
-nosetests rhodecode.tests.functional.test_admin_settings:TestSettingsController.test_my_account
+nosetests kallithea.tests.functional.test_admin_settings:TestSettingsController.test_my_account
 nosetests --pdb --pdb-failures
-nosetests --with-coverage --cover-package=rhodecode.model.validators rhodecode.tests.test_validators
+nosetests --with-coverage --cover-package=kallithea.model.validators kallithea.tests.test_validators
 
 optional FLAGS:
     RC_WHOOSH_TEST_DISABLE=1 - skip whoosh index building and tests
@@ -55,12 +55,12 @@ from routes.util import URLGenerator
 from webtest import TestApp
 from nose.plugins.skip import SkipTest
 
-from rhodecode.lib.compat import unittest
-from rhodecode import is_windows
-from rhodecode.model.meta import Session
-from rhodecode.model.db import User
-from rhodecode.tests.nose_parametrized import parameterized
-from rhodecode.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.compat import unittest
+from kallithea import is_windows
+from kallithea.model.meta import Session
+from kallithea.model.db import User
+from kallithea.tests.nose_parametrized import parameterized
+from kallithea.lib.utils2 import safe_unicode, safe_str
 
 
 os.environ['TZ'] = 'UTC'
@@ -150,7 +150,7 @@ def get_new_dir(title):
     """
     Returns always new directory path.
     """
-    from rhodecode.tests.vcs.utils import get_normalized_path
+    from kallithea.tests.vcs.utils import get_normalized_path
     name = TEST_REPO_PREFIX
     if title:
         name = '-'.join((name, title))

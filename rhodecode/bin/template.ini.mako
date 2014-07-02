@@ -142,7 +142,7 @@ port = ${port}
 #prefix = /<your-prefix>
 
 [app:main]
-use = egg:rhodecode
+use = egg:kallithea
 <%text>## enable proxy prefix middleware</%text>
 #filter-with = proxy-prefix
 
@@ -306,7 +306,7 @@ broker.port = 5672
 broker.user = rabbitmq
 broker.password = qweqwe
 
-celery.imports = rhodecode.lib.celerylib.tasks
+celery.imports = kallithea.lib.celerylib.tasks
 
 celery.result.backend = amqp
 celery.result.dburi = amqp://
@@ -599,11 +599,11 @@ format = %(asctime)s.%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
 datefmt = %Y-%m-%d %H:%M:%S
 
 [formatter_color_formatter]
-class=rhodecode.lib.colored_formatter.ColorFormatter
+class=kallithea.lib.colored_formatter.ColorFormatter
 format= %(asctime)s.%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
 datefmt = %Y-%m-%d %H:%M:%S
 
 [formatter_color_formatter_sql]
-class=rhodecode.lib.colored_formatter.ColorFormatterSql
+class=kallithea.lib.colored_formatter.ColorFormatterSql
 format= %(asctime)s.%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
 datefmt = %Y-%m-%d %H:%M:%S

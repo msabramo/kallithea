@@ -89,7 +89,7 @@ Trending source files
 Trending source files are calculated based on pre defined dict of known
 types and extensions. If You miss some extension or Would like to scan some
 custom files it's possible to add new types in `LANGUAGES_EXTENSIONS_MAP` dict
-located in `/rhodecode/lib/celerylib/tasks.py`
+located in `/kallithea/lib/celerylib/tasks.py`
 
 
 Cloning remote repositories

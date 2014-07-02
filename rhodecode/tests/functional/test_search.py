@@ -1,5 +1,5 @@
 import os
-from rhodecode.tests import *
+from kallithea.tests import *
 
 
 class TestSearchController(TestController):

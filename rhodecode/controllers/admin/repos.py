@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.repos
+kallithea.controllers.admin.repos
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Repositories controller for RhodeCode
@@ -33,23 +33,23 @@ from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 from sqlalchemy.sql.expression import func
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator, \
     HasRepoPermissionAllDecorator, NotAnonymous,HasPermissionAny, \
     HasRepoGroupPermissionAny, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.utils import action_logger, repo_name_slug, jsonify
-from rhodecode.lib.helpers import get_token
-from rhodecode.lib.vcs import RepositoryError
-from rhodecode.model.meta import Session
-from rhodecode.model.db import User, Repository, UserFollowing, RepoGroup,\
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.utils import action_logger, repo_name_slug, jsonify
+from kallithea.lib.helpers import get_token
+from kallithea.lib.vcs import RepositoryError
+from kallithea.model.meta import Session
+from kallithea.model.db import User, Repository, UserFollowing, RepoGroup,\
     RhodeCodeSetting, RepositoryField
-from rhodecode.model.forms import RepoForm, RepoFieldForm, RepoPermsForm
-from rhodecode.model.scm import ScmModel, RepoGroupList, RepoList
-from rhodecode.model.repo import RepoModel
-from rhodecode.lib.compat import json
-from rhodecode.lib.exceptions import AttachedForksError
-from rhodecode.lib.utils2 import safe_int
+from kallithea.model.forms import RepoForm, RepoFieldForm, RepoPermsForm
+from kallithea.model.scm import ScmModel, RepoGroupList, RepoList
+from kallithea.model.repo import RepoModel
+from kallithea.lib.compat import json
+from kallithea.lib.exceptions import AttachedForksError
+from kallithea.lib.utils2 import safe_int
 
 log = logging.getLogger(__name__)
 
@@ -221,7 +221,7 @@ class ReposController(BaseRepoController):
         task_id = request.GET.get('task_id')
 
         if task_id and task_id not in ['None']:
-            from rhodecode import CELERY_ON
+            from kallithea import CELERY_ON
             from celery.result import AsyncResult
             if CELERY_ON:
                 task = AsyncResult(task_id)

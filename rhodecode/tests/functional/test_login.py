@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement
 import mock
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.lib.utils2 import generate_api_key
-from rhodecode.lib.auth import check_password
-from rhodecode.lib import helpers as h
-from rhodecode.model.api_key import ApiKeyModel
-from rhodecode.model import validators
-from rhodecode.model.db import User, Notification
-from rhodecode.model.meta import Session
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.lib.utils2 import generate_api_key
+from kallithea.lib.auth import check_password
+from kallithea.lib import helpers as h
+from kallithea.model.api_key import ApiKeyModel
+from kallithea.model import validators
+from kallithea.model.db import User, Notification
+from kallithea.model.meta import Session
 
 fixture = Fixture()
 
@@ -308,7 +308,7 @@ class TestLoginController(TestController):
     ])
     def test_access_not_whitelisted_page_via_api_key(self, test_name, api_key):
         whitelist = self._get_api_whitelist([])
-        with mock.patch('rhodecode.CONFIG', whitelist):
+        with mock.patch('kallithea.CONFIG', whitelist):
             self.assertEqual([],
                              whitelist['api_access_controllers_whitelist'])
             if test_name == 'proper_api_key':
@@ -329,7 +329,7 @@ class TestLoginController(TestController):
     ])
     def test_access_whitelisted_page_via_api_key(self, test_name, api_key, code):
         whitelist = self._get_api_whitelist(['ChangesetController:changeset_raw'])
-        with mock.patch('rhodecode.CONFIG', whitelist):
+        with mock.patch('kallithea.CONFIG', whitelist):
             self.assertEqual(['ChangesetController:changeset_raw'],
                              whitelist['api_access_controllers_whitelist'])
             if test_name == 'proper_api_key':
@@ -343,7 +343,7 @@ class TestLoginController(TestController):
 
     def test_access_page_via_extra_api_key(self):
         whitelist = self._get_api_whitelist(['ChangesetController:changeset_raw'])
-        with mock.patch('rhodecode.CONFIG', whitelist):
+        with mock.patch('kallithea.CONFIG', whitelist):
             self.assertEqual(['ChangesetController:changeset_raw'],
                              whitelist['api_access_controllers_whitelist'])
 
@@ -357,7 +357,7 @@ class TestLoginController(TestController):
 
     def test_access_page_via_expired_api_key(self):
         whitelist = self._get_api_whitelist(['ChangesetController:changeset_raw'])
-        with mock.patch('rhodecode.CONFIG', whitelist):
+        with mock.patch('kallithea.CONFIG', whitelist):
             self.assertEqual(['ChangesetController:changeset_raw'],
                              whitelist['api_access_controllers_whitelist'])
 

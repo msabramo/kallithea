@@ -1,12 +1,12 @@
 from __future__ import with_statement
 
 import datetime
-from rhodecode.lib import vcs
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.lib.vcs.nodes import FileNode
+from kallithea.lib import vcs
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.lib.vcs.nodes import FileNode
 
-from rhodecode.tests.vcs.base import BackendTestMixin
-from rhodecode.tests.vcs.conf import SCM_TESTS
+from kallithea.tests.vcs.base import BackendTestMixin
+from kallithea.tests.vcs.conf import SCM_TESTS
 
 
 class BranchesTestCaseMixin(BackendTestMixin):

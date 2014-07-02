@@ -3,7 +3,7 @@
 """
 from sqlalchemy import schema
 
-from rhodecode.lib.dbmigrate.migrate.exceptions import *
+from kallithea.lib.dbmigrate.migrate.exceptions import *
 
 
 class ConstraintChangeset(object):
@@ -27,7 +27,7 @@ class ConstraintChangeset(object):
 
     def __do_imports(self, visitor_name, *a, **kw):
         engine = kw.pop('engine', self.table.bind)
-        from rhodecode.lib.dbmigrate.migrate.changeset.databases.visitor import (get_engine_visitor,
+        from kallithea.lib.dbmigrate.migrate.changeset.databases.visitor import (get_engine_visitor,
                                                                                  run_single_visitor)
         visitorcallable = get_engine_visitor(engine, visitor_name)
         run_single_visitor(engine, visitorcallable, self, *a, **kw)

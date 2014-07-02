@@ -6,10 +6,10 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
+from kallithea.model.meta import Base
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # Change unique constraints of table `repo_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import UserRepoToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import UserRepoToPerm
     tbl = UserRepoToPerm().__table__
     new_cons = UniqueConstraint('user_id', 'repository_id', 'permission_id', table=tbl)
     new_cons.create()
@@ -47,7 +47,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # fix uniques of table `user_repo_group_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import UserRepoGroupToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import UserRepoGroupToPerm
     tbl = UserRepoGroupToPerm().__table__
     new_cons = UniqueConstraint('group_id', 'permission_id', 'user_id', table=tbl)
     new_cons.create()

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.user_group
+kallithea.model.user_group
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 repo group model for RhodeCode
@@ -30,10 +30,10 @@ import traceback
 import shutil
 import datetime
 
-from rhodecode.lib.utils2 import LazyProperty
+from kallithea.lib.utils2 import LazyProperty
 
-from rhodecode.model import BaseModel
-from rhodecode.model.db import RepoGroup, RhodeCodeUi, UserRepoGroupToPerm, \
+from kallithea.model import BaseModel
+from kallithea.model.db import RepoGroup, RhodeCodeUi, UserRepoGroupToPerm, \
     User, Permission, UserGroupRepoGroupToPerm, UserGroup, Repository
 
 log = logging.getLogger(__name__)
@@ -194,8 +194,8 @@ class RepoGroupModel(BaseModel):
     def _update_permissions(self, repo_group, perms_new=None,
                             perms_updates=None, recursive=None,
                             check_perms=True):
-        from rhodecode.model.repo import RepoModel
-        from rhodecode.lib.auth import HasUserGroupPermissionAny
+        from kallithea.model.repo import RepoModel
+        from kallithea.lib.auth import HasUserGroupPermissionAny
 
         if not perms_new:
             perms_new = []
@@ -338,7 +338,7 @@ class RepoGroupModel(BaseModel):
             raise
 
     def add_permission(self, repo_group, obj, obj_type, perm, recursive):
-        from rhodecode.model.repo import RepoModel
+        from kallithea.model.repo import RepoModel
         repo_group = self._get_repo_group(repo_group)
         perm = self._get_perm(perm)
 
@@ -394,7 +394,7 @@ class RepoGroupModel(BaseModel):
         :param obj_type: user or user group type
         :param recursive: recurse to all children of group
         """
-        from rhodecode.model.repo import RepoModel
+        from kallithea.model.repo import RepoModel
         repo_group = self._get_repo_group(repo_group)
 
         for el in repo_group.recursive_groups_and_repos():

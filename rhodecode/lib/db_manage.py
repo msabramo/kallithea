@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.db_manage
+kallithea.lib.db_manage
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Database creation, and setup module for RhodeCode. Used for creation
@@ -32,22 +32,22 @@ import logging
 from os.path import dirname as dn, join as jn
 import datetime
 
-from rhodecode import __dbversion__, __py_version__
+from kallithea import __dbversion__, __py_version__
 
-from rhodecode.model.user import UserModel
-from rhodecode.lib.utils import ask_ok
-from rhodecode.model import init_model
-from rhodecode.model.db import User, Permission, RhodeCodeUi, \
+from kallithea.model.user import UserModel
+from kallithea.lib.utils import ask_ok
+from kallithea.model import init_model
+from kallithea.model.db import User, Permission, RhodeCodeUi, \
     RhodeCodeSetting, UserToPerm, DbMigrateVersion, RepoGroup, \
     UserRepoGroupToPerm, CacheInvalidation, UserGroup, Repository
 
 from sqlalchemy.engine import create_engine
-from rhodecode.model.repo_group import RepoGroupModel
-#from rhodecode.model import meta
-from rhodecode.model.meta import Session, Base
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.permission import PermissionModel
-from rhodecode.model.user_group import UserGroupModel
+from kallithea.model.repo_group import RepoGroupModel
+#from kallithea.model import meta
+from kallithea.model.meta import Session, Base
+from kallithea.model.repo import RepoModel
+from kallithea.model.permission import PermissionModel
+from kallithea.model.user_group import UserGroupModel
 
 
 log = logging.getLogger(__name__)
@@ -121,8 +121,8 @@ class DbManage(object):
 
         """
 
-        from rhodecode.lib.dbmigrate.migrate.versioning import api
-        from rhodecode.lib.dbmigrate.migrate.exceptions import \
+        from kallithea.lib.dbmigrate.migrate.versioning import api
+        from kallithea.lib.dbmigrate.migrate.exceptions import \
             DatabaseNotControlledError
 
         if 'sqlite' in self.dburi:
@@ -140,7 +140,7 @@ class DbManage(object):
             sys.exit(0)
 
         repository_path = jn(dn(dn(dn(os.path.realpath(__file__)))),
-                             'rhodecode/lib/dbmigrate')
+                             'kallithea/lib/dbmigrate')
         db_uri = self.dburi
 
         try:
@@ -269,7 +269,7 @@ class DbManage(object):
             self.create_user(username, password, email, True)
         else:
             log.info('creating admin and regular test users')
-            from rhodecode.tests import TEST_USER_ADMIN_LOGIN, \
+            from kallithea.tests import TEST_USER_ADMIN_LOGIN, \
             TEST_USER_ADMIN_PASS, TEST_USER_ADMIN_EMAIL, \
             TEST_USER_REGULAR_LOGIN, TEST_USER_REGULAR_PASS, \
             TEST_USER_REGULAR_EMAIL, TEST_USER_REGULAR2_LOGIN, \
@@ -308,31 +308,31 @@ class DbManage(object):
         hooks2 = RhodeCodeUi() if hooks2_ is None else hooks2_
         hooks2.ui_section = 'hooks'
         hooks2.ui_key = hooks2_key
-        hooks2.ui_value = 'python:rhodecode.lib.hooks.repo_size'
+        hooks2.ui_value = 'python:kallithea.lib.hooks.repo_size'
         self.sa.add(hooks2)
 
         hooks3 = RhodeCodeUi()
         hooks3.ui_section = 'hooks'
         hooks3.ui_key = RhodeCodeUi.HOOK_PUSH
-        hooks3.ui_value = 'python:rhodecode.lib.hooks.log_push_action'
+        hooks3.ui_value = 'python:kallithea.lib.hooks.log_push_action'
         self.sa.add(hooks3)
 
         hooks4 = RhodeCodeUi()
         hooks4.ui_section = 'hooks'
         hooks4.ui_key = RhodeCodeUi.HOOK_PRE_PUSH
-        hooks4.ui_value = 'python:rhodecode.lib.hooks.pre_push'
+        hooks4.ui_value = 'python:kallithea.lib.hooks.pre_push'
         self.sa.add(hooks4)
 
         hooks5 = RhodeCodeUi()
         hooks5.ui_section = 'hooks'
         hooks5.ui_key = RhodeCodeUi.HOOK_PULL
-        hooks5.ui_value = 'python:rhodecode.lib.hooks.log_pull_action'
+        hooks5.ui_value = 'python:kallithea.lib.hooks.log_pull_action'
         self.sa.add(hooks5)
 
         hooks6 = RhodeCodeUi()
         hooks6.ui_section = 'hooks'
         hooks6.ui_key = RhodeCodeUi.HOOK_PRE_PULL
-        hooks6.ui_value = 'python:rhodecode.lib.hooks.pre_pull'
+        hooks6.ui_value = 'python:kallithea.lib.hooks.pre_pull'
         self.sa.add(hooks6)
 
         # enable largefiles
@@ -374,7 +374,7 @@ class DbManage(object):
         :param skip_existing:
         """
 
-        for k, v, t in [('auth_plugins', 'rhodecode.lib.auth_modules.auth_rhodecode', 'list'),
+        for k, v, t in [('auth_plugins', 'kallithea.lib.auth_modules.auth_rhodecode', 'list'),
                      ('auth_rhodecode_enabled', 'True', 'bool')]:
             if skip_existing and RhodeCodeSetting.get_by_name(k) != None:
                 log.debug('Skipping option %s' % k)

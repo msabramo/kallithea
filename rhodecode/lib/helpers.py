@@ -54,17 +54,17 @@ from webhelpers.paginate import Page as _Page
 from webhelpers.html.tags import _set_input_attrs, _set_id_attr, \
     convert_boolean_attrs, NotGiven, _make_safe_id_component
 
-from rhodecode.lib.annotate import annotate_highlight
-from rhodecode.lib.utils import repo_name_slug, get_custom_lexer
-from rhodecode.lib.utils2 import str2bool, safe_unicode, safe_str, \
+from kallithea.lib.annotate import annotate_highlight
+from kallithea.lib.utils import repo_name_slug, get_custom_lexer
+from kallithea.lib.utils2 import str2bool, safe_unicode, safe_str, \
     get_changeset_safe, datetime_to_time, time_to_datetime, AttributeDict,\
     safe_int
-from rhodecode.lib.markup_renderer import MarkupRenderer
-from rhodecode.lib.vcs.exceptions import ChangesetDoesNotExistError
-from rhodecode.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
-from rhodecode.config.conf import DATE_FORMAT, DATETIME_FORMAT
-from rhodecode.model.changeset_status import ChangesetStatusModel
-from rhodecode.model.db import URL_SEP, Permission
+from kallithea.lib.markup_renderer import MarkupRenderer
+from kallithea.lib.vcs.exceptions import ChangesetDoesNotExistError
+from kallithea.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
+from kallithea.config.conf import DATE_FORMAT, DATETIME_FORMAT
+from kallithea.model.changeset_status import ChangesetStatusModel
+from kallithea.model.db import URL_SEP, Permission
 
 log = logging.getLogger(__name__)
 
@@ -365,7 +365,7 @@ def pygmentize_annotation(repo_name, filenode, **kwargs):
 
 
 def is_following_repo(repo_name, user_id):
-    from rhodecode.model.scm import ScmModel
+    from kallithea.model.scm import ScmModel
     return ScmModel().is_following_repo(repo_name, user_id)
 
 class _Message(object):
@@ -407,9 +407,9 @@ flash = Flash()
 #==============================================================================
 # SCM FILTERS available via h.
 #==============================================================================
-from rhodecode.lib.vcs.utils import author_name, author_email
-from rhodecode.lib.utils2 import credentials_filter, age as _age
-from rhodecode.model.db import User, ChangesetStatus
+from kallithea.lib.vcs.utils import author_name, author_email
+from kallithea.lib.utils2 import credentials_filter, age as _age
+from kallithea.model.db import User, ChangesetStatus
 
 age = lambda  x, y=False: _age(x, y)
 capitalize = lambda x: x.capitalize()
@@ -425,7 +425,7 @@ def show_id(cs):
 
     :param cs: changeset instance
     """
-    from rhodecode import CONFIG
+    from kallithea import CONFIG
     def_len = safe_int(CONFIG.get('show_sha_length', 12))
     show_rev = str2bool(CONFIG.get('show_revision_number', True))
 
@@ -821,7 +821,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
 #==============================================================================
 # PERMS
 #==============================================================================
-from rhodecode.lib.auth import HasPermissionAny, HasPermissionAll, \
+from kallithea.lib.auth import HasPermissionAny, HasPermissionAll, \
 HasRepoPermissionAny, HasRepoPermissionAll, HasRepoGroupPermissionAll, \
 HasRepoGroupPermissionAny
 
@@ -1133,7 +1133,7 @@ def fancy_file_stats(stats):
 
     :param stats: two element list of added/deleted lines of code
     """
-    from rhodecode.lib.diffs import NEW_FILENODE, DEL_FILENODE, \
+    from kallithea.lib.diffs import NEW_FILENODE, DEL_FILENODE, \
         MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE
 
     def cgen(l_type, a_v, d_v):
@@ -1302,7 +1302,7 @@ def urlify_commit(text_, repository=None, link_=None):
     newtext = urlify_text(newtext, safe=False)
 
     try:
-        from rhodecode import CONFIG
+        from kallithea import CONFIG
         conf = CONFIG
 
         # allow multiple issue servers to be used
@@ -1421,6 +1421,6 @@ def not_mapped_error(repo_name):
 
 
 def ip_range(ip_addr):
-    from rhodecode.model.db import UserIpMap
+    from kallithea.model.db import UserIpMap
     s, e = UserIpMap._get_ip_range(ip_addr)
     return '%s - %s' % (s, e)

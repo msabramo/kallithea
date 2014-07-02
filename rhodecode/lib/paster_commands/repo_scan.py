@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.paster_commands.make_rcextensions
+kallithea.lib.paster_commands.make_rcextensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 repo-scan paster command for RhodeCode
@@ -29,8 +29,8 @@ import os
 import sys
 import logging
 
-from rhodecode.model.scm import ScmModel
-from rhodecode.lib.utils import BasePasterCommand, repo2db_mapper
+from kallithea.model.scm import ScmModel
+from kallithea.lib.utils import BasePasterCommand, repo2db_mapper
 
 # Add location of top level folder to sys.path
 from os.path import dirname as dn

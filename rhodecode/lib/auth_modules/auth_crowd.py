@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.auth_modules.auth_crowd
+kallithea.lib.auth_modules.auth_crowd
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode authentication plugin for Atlassian CROWD
@@ -27,9 +27,9 @@ RhodeCode authentication plugin for Atlassian CROWD
 import base64
 import logging
 import urllib2
-from rhodecode.lib import auth_modules
-from rhodecode.lib.compat import json, formatted_json, hybrid_property
-from rhodecode.model.db import User
+from kallithea.lib import auth_modules
+from kallithea.lib.compat import json, formatted_json, hybrid_property
+from kallithea.model.db import User
 
 log = logging.getLogger(__name__)
 

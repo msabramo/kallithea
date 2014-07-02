@@ -1,20 +1,20 @@
 import os
 import posixpath
 
-from rhodecode.lib.vcs.conf import settings
-from rhodecode.lib.vcs.backends.base import BaseChangeset
-from rhodecode.lib.vcs.exceptions import (
+from kallithea.lib.vcs.conf import settings
+from kallithea.lib.vcs.backends.base import BaseChangeset
+from kallithea.lib.vcs.exceptions import (
     ChangesetDoesNotExistError, ChangesetError, ImproperArchiveTypeError,
     NodeDoesNotExistError, VCSError
 )
-from rhodecode.lib.vcs.nodes import (
+from kallithea.lib.vcs.nodes import (
     AddedFileNodesGenerator, ChangedFileNodesGenerator, DirNode, FileNode,
     NodeKind, RemovedFileNodesGenerator, RootNode, SubModuleNode
 )
-from rhodecode.lib.vcs.utils import safe_str, safe_unicode, date_fromtimestamp
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.utils.paths import get_dirs_for_path
-from rhodecode.lib.vcs.utils.hgcompat import archival, hex
+from kallithea.lib.vcs.utils import safe_str, safe_unicode, date_fromtimestamp
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils.paths import get_dirs_for_path
+from kallithea.lib.vcs.utils.hgcompat import archival, hex
 
 
 class MercurialChangeset(BaseChangeset):

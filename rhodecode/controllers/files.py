@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.files
+kallithea.controllers.files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Files controller for RhodeCode
@@ -33,32 +33,32 @@ import shutil
 from pylons import request, response, tmpl_context as c, url
 from pylons.i18n.translation import _
 from pylons.controllers.util import redirect
-from rhodecode.lib.utils import jsonify, action_logger
+from kallithea.lib.utils import jsonify, action_logger
 
-from rhodecode.lib import diffs
-from rhodecode.lib import helpers as h
+from kallithea.lib import diffs
+from kallithea.lib import helpers as h
 
-from rhodecode.lib.compat import OrderedDict
-from rhodecode.lib.utils2 import convert_line_endings, detect_mode, safe_str,\
+from kallithea.lib.compat import OrderedDict
+from kallithea.lib.utils2 import convert_line_endings, detect_mode, safe_str,\
     str2bool
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.vcs.conf import settings
-from rhodecode.lib.vcs.exceptions import RepositoryError, \
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.vcs.conf import settings
+from kallithea.lib.vcs.exceptions import RepositoryError, \
     ChangesetDoesNotExistError, EmptyRepositoryError, \
     ImproperArchiveTypeError, VCSError, NodeAlreadyExistsError,\
     NodeDoesNotExistError, ChangesetError, NodeError
-from rhodecode.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.nodes import FileNode
 
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.db import Repository
+from kallithea.model.repo import RepoModel
+from kallithea.model.scm import ScmModel
+from kallithea.model.db import Repository
 
-from rhodecode.controllers.changeset import anchor_url, _ignorews_url,\
+from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
 from webob.exc import HTTPNotFound
-from rhodecode.lib.exceptions import NonRelativePathError, IMCCommitError
+from kallithea.lib.exceptions import NonRelativePathError, IMCCommitError
 
 
 log = logging.getLogger(__name__)
@@ -536,7 +536,7 @@ class FilesController(BaseRepoController):
         except (ImproperArchiveTypeError, KeyError):
             return _('Unknown archive type')
         # archive cache
-        from rhodecode import CONFIG
+        from kallithea import CONFIG
         rev_name = cs.raw_id[:12]
         archive_name = '%s-%s%s' % (safe_str(repo_name.replace('/', '_')),
                                     safe_str(rev_name), ext)

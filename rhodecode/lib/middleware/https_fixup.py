@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.middleware.https_fixup
+kallithea.lib.middleware.https_fixup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 middleware to handle https correctly
@@ -24,7 +24,7 @@ middleware to handle https correctly
 """
 
 
-from rhodecode.lib.utils2 import str2bool
+from kallithea.lib.utils2 import str2bool
 
 
 class HttpsFixup(object):

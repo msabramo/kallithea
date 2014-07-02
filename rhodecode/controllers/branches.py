@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.branches
+kallithea.controllers.branches
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 branches controller for rhodecode
@@ -28,10 +28,10 @@ import binascii
 
 from pylons import tmpl_context as c
 
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.compat import OrderedDict
-from rhodecode.lib.utils2 import safe_unicode
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.lib.compat import OrderedDict
+from kallithea.lib.utils2 import safe_unicode
 
 log = logging.getLogger(__name__)
 

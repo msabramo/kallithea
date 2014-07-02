@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.middleware.wrapper
+kallithea.lib.middleware.wrapper
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 request time mesuring app
@@ -25,8 +25,8 @@ request time mesuring app
 
 import time
 import logging
-from rhodecode.lib.base import _get_ip_addr, _get_access_path
-from rhodecode.lib.utils2 import safe_unicode
+from kallithea.lib.base import _get_ip_addr, _get_access_path
+from kallithea.lib.utils2 import safe_unicode
 
 
 class RequestWrapper(object):
@@ -40,7 +40,7 @@ class RequestWrapper(object):
         try:
             return self.application(environ, start_response)
         finally:
-            log = logging.getLogger('rhodecode.' + self.__class__.__name__)
+            log = logging.getLogger('kallithea.' + self.__class__.__name__)
             log.info('IP: %s Request to %s time: %.3fs' % (
                 _get_ip_addr(environ),
                 safe_unicode(_get_access_path(environ)), time.time() - start)

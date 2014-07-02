@@ -5,8 +5,8 @@
 from sqlalchemy.databases import mysql as sa_base
 from sqlalchemy import types as sqltypes
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.changeset import ansisql
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.changeset import ansisql
 
 
 MySQLSchemaGenerator = sa_base.MySQLDDLCompiler

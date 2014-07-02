@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.diffs
+kallithea.lib.diffs
 ~~~~~~~~~~~~~~~~~~~
 
 Set of diffing helpers, previously part of vcs
@@ -31,11 +31,11 @@ from itertools import tee, imap
 
 from pylons.i18n.translation import _
 
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.nodes import FileNode, SubModuleNode
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.helpers import escape
-from rhodecode.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.nodes import FileNode, SubModuleNode
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.helpers import escape
+from kallithea.lib.utils2 import safe_unicode, safe_str
 
 log = logging.getLogger(__name__)
 

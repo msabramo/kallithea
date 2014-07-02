@@ -13,10 +13,10 @@ import stat
 import posixpath
 import mimetypes
 
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.vcs.exceptions import NodeError, RemovedFileNodeError
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.utils import safe_unicode, safe_str
+from kallithea.lib.vcs.backends.base import EmptyChangeset
+from kallithea.lib.vcs.exceptions import NodeError, RemovedFileNodeError
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.utils import safe_unicode, safe_str
 
 
 class NodeKind:

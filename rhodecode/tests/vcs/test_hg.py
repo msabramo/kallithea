@@ -1,16 +1,16 @@
 from __future__ import with_statement
 
 import os
-from rhodecode.lib.vcs.backends.hg import MercurialRepository, MercurialChangeset
-from rhodecode.lib.vcs.exceptions import RepositoryError, VCSError, NodeDoesNotExistError
-from rhodecode.lib.vcs.nodes import NodeKind, NodeState
-from rhodecode.tests.vcs.conf import PACKAGE_DIR, TEST_HG_REPO, TEST_HG_REPO_CLONE, \
+from kallithea.lib.vcs.backends.hg import MercurialRepository, MercurialChangeset
+from kallithea.lib.vcs.exceptions import RepositoryError, VCSError, NodeDoesNotExistError
+from kallithea.lib.vcs.nodes import NodeKind, NodeState
+from kallithea.tests.vcs.conf import PACKAGE_DIR, TEST_HG_REPO, TEST_HG_REPO_CLONE, \
     TEST_HG_REPO_PULL
-from rhodecode.lib.vcs.utils.compat import unittest
+from kallithea.lib.vcs.utils.compat import unittest
 
 
 # Use only clean mercurial's ui
-from rhodecode.lib.vcs.utils.hgcompat import mercurial
+from kallithea.lib.vcs.utils.hgcompat import mercurial
 mercurial.scmutil.rcpath()
 if mercurial.scmutil._rcpath:
     mercurial.scmutil._rcpath = mercurial.scmutil._rcpath[:1]

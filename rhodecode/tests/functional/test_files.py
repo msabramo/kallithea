@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-from rhodecode.tests import *
-from rhodecode.model.db import Repository
-from rhodecode.model.meta import Session
-from rhodecode.tests.fixture import Fixture
+from kallithea.tests import *
+from kallithea.model.db import Repository
+from kallithea.model.meta import Session
+from kallithea.tests.fixture import Fixture
 
 fixture = Fixture()
 

@@ -1,4 +1,4 @@
-from rhodecode.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.exceptions import VCSError
 
 
 def import_class(class_path):

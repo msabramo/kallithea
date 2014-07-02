@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.notification
+kallithea.model.notification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Model for notifications
@@ -32,11 +32,11 @@ import traceback
 from pylons import tmpl_context as c
 from pylons.i18n.translation import _
 
-import rhodecode
-from rhodecode.lib import helpers as h
-from rhodecode.model import BaseModel
-from rhodecode.model.db import Notification, User, UserNotification
-from rhodecode.model.meta import Session
+import kallithea
+from kallithea.lib import helpers as h
+from kallithea.model import BaseModel
+from kallithea.model.db import Notification, User, UserNotification
+from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ class NotificationModel(BaseModel):
         :param email_kwargs: additional dict to pass as args to email template
         :param email_subject: use given subject as email subject
         """
-        from rhodecode.lib.celerylib import tasks, run_task
+        from kallithea.lib.celerylib import tasks, run_task
 
         if recipients and not getattr(recipients, '__iter__', False):
             raise Exception('recipients must be a list or iterable')
@@ -257,8 +257,8 @@ class EmailNotificationModel(BaseModel):
 
     def __init__(self):
         super(EmailNotificationModel, self).__init__()
-        self._template_root = rhodecode.CONFIG['pylons.paths']['templates'][0]
-        self._tmpl_lookup = rhodecode.CONFIG['pylons.app_globals'].mako_lookup
+        self._template_root = kallithea.CONFIG['pylons.paths']['templates'][0]
+        self._tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         self.email_types = {
             self.TYPE_CHANGESET_COMMENT: 'email_templates/changeset_comment.html',
             self.TYPE_PASSWORD_RESET: 'email_templates/password_reset.html',

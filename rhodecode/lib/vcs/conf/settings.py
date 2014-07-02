@@ -1,7 +1,7 @@
 import os
 import tempfile
-from rhodecode.lib.vcs.utils import aslist
-from rhodecode.lib.vcs.utils.paths import get_user_home
+from kallithea.lib.vcs.utils import aslist
+from kallithea.lib.vcs.utils.paths import get_user_home
 
 abspath = lambda * p: os.path.abspath(os.path.join(*p))
 
@@ -25,8 +25,8 @@ GIT_EXECUTABLE_PATH = 'git'
 GIT_REV_FILTER = '--all'
 
 BACKENDS = {
-    'hg': 'rhodecode.lib.vcs.backends.hg.MercurialRepository',
-    'git': 'rhodecode.lib.vcs.backends.git.GitRepository',
+    'hg': 'kallithea.lib.vcs.backends.hg.MercurialRepository',
+    'git': 'kallithea.lib.vcs.backends.git.GitRepository',
 }
 
 ARCHIVE_SPECS = {

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.auth_pam
+kallithea.lib.auth_pam
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode authentication library for PAM
@@ -30,8 +30,8 @@ import re
 import socket
 import threading
 
-from rhodecode.lib import auth_modules
-from rhodecode.lib.compat import formatted_json, hybrid_property
+from kallithea.lib import auth_modules
+from kallithea.lib.compat import formatted_json, hybrid_property
 
 log = logging.getLogger(__name__)
 

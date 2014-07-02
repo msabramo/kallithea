@@ -1,10 +1,10 @@
 import time
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.model.meta import Session
-from rhodecode.model.db import User, Repository
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.repo_group import RepoGroupModel
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.model.meta import Session
+from kallithea.model.db import User, Repository
+from kallithea.model.repo import RepoModel
+from kallithea.model.repo_group import RepoGroupModel
 
 
 fixture = Fixture()

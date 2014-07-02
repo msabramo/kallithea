@@ -11,8 +11,8 @@ import logging
 
 import sqlalchemy
 
-from rhodecode.lib.dbmigrate import migrate
-from rhodecode.lib.dbmigrate.migrate import changeset
+from kallithea.lib.dbmigrate import migrate
+from kallithea.lib.dbmigrate.migrate import changeset
 
 
 log = logging.getLogger(__name__)

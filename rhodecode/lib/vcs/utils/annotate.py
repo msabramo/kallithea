@@ -3,8 +3,8 @@ import StringIO
 from pygments.formatters import HtmlFormatter
 from pygments import highlight
 
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.nodes import FileNode
 
 
 def annotate_highlight(filenode, annotate_from_changeset_func=None,

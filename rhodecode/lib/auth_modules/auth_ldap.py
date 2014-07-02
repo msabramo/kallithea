@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.auth_modules.auth_ldap
+kallithea.lib.auth_modules.auth_ldap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode authentication plugin for LDAP
@@ -27,13 +27,13 @@ RhodeCode authentication plugin for LDAP
 import logging
 import traceback
 
-from rhodecode.lib import auth_modules
-from rhodecode.lib.compat import hybrid_property
-from rhodecode.lib.utils2 import safe_unicode, safe_str
-from rhodecode.lib.exceptions import (
+from kallithea.lib import auth_modules
+from kallithea.lib.compat import hybrid_property
+from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.exceptions import (
     LdapConnectionError, LdapUsernameError, LdapPasswordError, LdapImportError
 )
-from rhodecode.model.db import User
+from kallithea.model.db import User
 
 log = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class AuthLdap(object):
         :param password: password
         """
 
-        from rhodecode.lib.helpers import chop_at
+        from kallithea.lib.helpers import chop_at
 
         uid = chop_at(username, "@%s" % self.LDAP_SERVER_ADDRESS)
 

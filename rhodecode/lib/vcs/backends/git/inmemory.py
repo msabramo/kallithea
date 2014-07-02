@@ -4,9 +4,9 @@ import posixpath
 import stat
 from dulwich import objects
 from dulwich.repo import Repo
-from rhodecode.lib.vcs.backends.base import BaseInMemoryChangeset
-from rhodecode.lib.vcs.exceptions import RepositoryError
-from rhodecode.lib.vcs.utils import safe_str
+from kallithea.lib.vcs.backends.base import BaseInMemoryChangeset
+from kallithea.lib.vcs.exceptions import RepositoryError
+from kallithea.lib.vcs.utils import safe_str
 
 
 class GitInMemoryChangeset(BaseInMemoryChangeset):

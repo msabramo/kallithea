@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.tests.test_hg_operations
+kallithea.tests.test_hg_operations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Test suite for making push/pull operations
@@ -38,14 +38,14 @@ from paste.deploy import appconfig
 from pylons import config
 from sqlalchemy import engine_from_config
 
-from rhodecode.lib.utils import add_cache
-from rhodecode.model import init_model
-from rhodecode.model import meta
-from rhodecode.model.db import User, Repository
-from rhodecode.lib.auth import get_crypt_password
+from kallithea.lib.utils import add_cache
+from kallithea.model import init_model
+from kallithea.model import meta
+from kallithea.model.db import User, Repository
+from kallithea.lib.auth import get_crypt_password
 
-from rhodecode.tests import TESTS_TMP_PATH, NEW_HG_REPO, HG_REPO
-from rhodecode.config.environment import load_environment
+from kallithea.tests import TESTS_TMP_PATH, NEW_HG_REPO, HG_REPO
+from kallithea.config.environment import load_environment
 
 rel_path = dn(dn(dn(dn(os.path.abspath(__file__)))))
 conf = appconfig('config:rc.ini', relative_to=rel_path)
@@ -119,7 +119,7 @@ def create_test_user(force=True):
 
 def create_test_repo(force=True):
     print 'creating test repo'
-    from rhodecode.model.repo import RepoModel
+    from kallithea.model.repo import RepoModel
     sa = get_session()
 
     user = sa.query(User).filter(User.username == USER).scalar()

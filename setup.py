@@ -19,7 +19,7 @@ def _get_meta_var(name, data, callback_handler=None):
 
         return callback_handler(eval(matches.groups()[0]))
 
-_meta = open(os.path.join(here, 'rhodecode', '__init__.py'), 'rb')
+_meta = open(os.path.join(here, 'kallithea', '__init__.py'), 'rb')
 _metadata = _meta.read()
 _meta.close()
 
@@ -95,14 +95,14 @@ classifiers = [
 data_files = []
 
 # additional files that goes into package itself
-package_data = {'rhodecode': ['i18n/*/LC_MESSAGES/*.mo', ], }
+package_data = {'kallithea': ['i18n/*/LC_MESSAGES/*.mo', ], }
 
 description = ('RhodeCode is a fast and powerful management tool '
                'for Mercurial and GIT with a built in push/pull server, '
                'full text search and code-review.')
 
 keywords = ' '.join([
-    'rhodecode', 'rhodiumcode', 'mercurial', 'git', 'code review',
+    'kallithea', 'mercurial', 'git', 'code review',
     'repo groups', 'ldap', 'repository management', 'hgweb replacement',
     'hgwebdir', 'gitweb replacement', 'serving hgweb',
 ])
@@ -149,7 +149,7 @@ setup(
     include_package_data=True,
     test_suite='nose.collector',
     package_data=package_data,
-    message_extractors={'rhodecode': [
+    message_extractors={'kallithea': [
             ('**.py', 'python', None),
             ('templates/**.mako', 'mako', {'input_encoding': 'utf-8'}),
             ('templates/**.html', 'mako', {'input_encoding': 'utf-8'}),
@@ -158,25 +158,25 @@ setup(
     paster_plugins=['PasteScript', 'Pylons'],
     entry_points="""
     [console_scripts]
-    rhodecode-api =    rhodecode.bin.rhodecode_api:main
-    rhodecode-gist =   rhodecode.bin.rhodecode_gist:main
-    rhodecode-config = rhodecode.bin.rhodecode_config:main
+    rhodecode-api =    kallithea.bin.rhodecode_api:main
+    rhodecode-gist =   kallithea.bin.rhodecode_gist:main
+    rhodecode-config = kallithea.bin.rhodecode_config:main
 
     [paste.app_factory]
-    main = rhodecode.config.middleware:make_app
+    main = kallithea.config.middleware:make_app
 
     [paste.app_install]
     main = pylons.util:PylonsInstaller
 
     [paste.global_paster_command]
-    setup-db=rhodecode.lib.paster_commands.setup_db:Command
-    update-repoinfo=rhodecode.lib.paster_commands.update_repoinfo:Command
-    make-rcext=rhodecode.lib.paster_commands.make_rcextensions:Command
-    repo-scan=rhodecode.lib.paster_commands.repo_scan:Command
-    cache-keys=rhodecode.lib.paster_commands.cache_keys:Command
-    ishell=rhodecode.lib.paster_commands.ishell:Command
-    make-index=rhodecode.lib.paster_commands.make_index:Command
-    upgrade-db=rhodecode.lib.dbmigrate:UpgradeDb
-    celeryd=rhodecode.lib.celerypylons.commands:CeleryDaemonCommand
+    setup-db=kallithea.lib.paster_commands.setup_db:Command
+    update-repoinfo=kallithea.lib.paster_commands.update_repoinfo:Command
+    make-rcext=kallithea.lib.paster_commands.make_rcextensions:Command
+    repo-scan=kallithea.lib.paster_commands.repo_scan:Command
+    cache-keys=kallithea.lib.paster_commands.cache_keys:Command
+    ishell=kallithea.lib.paster_commands.ishell:Command
+    make-index=kallithea.lib.paster_commands.make_index:Command
+    upgrade-db=kallithea.lib.dbmigrate:UpgradeDb
+    celeryd=kallithea.lib.celerypylons.commands:CeleryDaemonCommand
     """,
 )

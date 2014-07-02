@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.journal
+kallithea.controllers.journal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Journal controller for pylons
@@ -37,16 +37,16 @@ from webob.exc import HTTPBadRequest
 from pylons import request, tmpl_context as c, response, url
 from pylons.i18n.translation import _
 
-from rhodecode.controllers.admin.admin import _journal_filter
-from rhodecode.model.db import UserLog, UserFollowing, Repository, User
-from rhodecode.model.meta import Session
-from rhodecode.model.repo import RepoModel
-import rhodecode.lib.helpers as h
-from rhodecode.lib.helpers import Page
-from rhodecode.lib.auth import LoginRequired, NotAnonymous
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib.utils2 import safe_int, AttributeDict
-from rhodecode.lib.compat import json
+from kallithea.controllers.admin.admin import _journal_filter
+from kallithea.model.db import UserLog, UserFollowing, Repository, User
+from kallithea.model.meta import Session
+from kallithea.model.repo import RepoModel
+import kallithea.lib.helpers as h
+from kallithea.lib.helpers import Page
+from kallithea.lib.auth import LoginRequired, NotAnonymous
+from kallithea.lib.base import BaseController, render
+from kallithea.lib.utils2 import safe_int, AttributeDict
+from kallithea.lib.compat import json
 
 log = logging.getLogger(__name__)
 

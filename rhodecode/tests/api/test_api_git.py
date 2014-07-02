@@ -12,8 +12,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from rhodecode.tests import *
-from rhodecode.tests.api.api_base import BaseTestApi
+from kallithea.tests import *
+from kallithea.tests.api.api_base import BaseTestApi
 
 
 class TestGitApi(BaseTestApi, TestController):

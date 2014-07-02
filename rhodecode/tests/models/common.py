@@ -1,13 +1,13 @@
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
 
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.db import RepoGroup, Repository, User
-from rhodecode.model.user import UserModel
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.repo import RepoModel
+from kallithea.model.db import RepoGroup, Repository, User
+from kallithea.model.user import UserModel
 
-from rhodecode.lib.auth import AuthUser
-from rhodecode.model.meta import Session
+from kallithea.lib.auth import AuthUser
+from kallithea.model.meta import Session
 
 
 fixture = Fixture()

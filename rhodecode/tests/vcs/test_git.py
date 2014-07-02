@@ -3,12 +3,12 @@ from __future__ import with_statement
 import os
 import mock
 import datetime
-from rhodecode.lib.vcs.backends.git import GitRepository, GitChangeset
-from rhodecode.lib.vcs.exceptions import RepositoryError, VCSError, NodeDoesNotExistError
-from rhodecode.lib.vcs.nodes import NodeKind, FileNode, DirNode, NodeState
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.tests.vcs.base import BackendTestMixin
-from rhodecode.tests.vcs.conf import TEST_GIT_REPO, TEST_GIT_REPO_CLONE, get_new_dir
+from kallithea.lib.vcs.backends.git import GitRepository, GitChangeset
+from kallithea.lib.vcs.exceptions import RepositoryError, VCSError, NodeDoesNotExistError
+from kallithea.lib.vcs.nodes import NodeKind, FileNode, DirNode, NodeState
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.tests.vcs.base import BackendTestMixin
+from kallithea.tests.vcs.conf import TEST_GIT_REPO, TEST_GIT_REPO_CLONE, get_new_dir
 
 
 class GitRepositoryTest(unittest.TestCase):

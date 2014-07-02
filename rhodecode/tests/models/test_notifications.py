@@ -1,10 +1,10 @@
-from rhodecode.tests import *
+from kallithea.tests import *
 
-from rhodecode.model.db import User, Notification, UserNotification
-from rhodecode.model.user import UserModel
+from kallithea.model.db import User, Notification, UserNotification
+from kallithea.model.user import UserModel
 
-from rhodecode.model.meta import Session
-from rhodecode.model.notification import NotificationModel
+from kallithea.model.meta import Session
+from kallithea.model.notification import NotificationModel
 
 
 class TestNotifications(BaseTestCase):

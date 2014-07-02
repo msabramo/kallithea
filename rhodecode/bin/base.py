@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.bin.base
+kallithea.bin.base
 ~~~~~~~~~~~~~~~~~~
 
 Base utils for shell scripts
@@ -30,7 +30,7 @@ import urllib2
 import pprint
 
 try:
-    from rhodecode.lib.ext_json import json
+    from kallithea.lib.ext_json import json
 except ImportError:
     try:
         import simplejson as json

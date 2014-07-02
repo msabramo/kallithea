@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.versioning.config import operations
-from rhodecode.lib.dbmigrate.migrate.versioning import pathed
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.versioning.config import operations
+from kallithea.lib.dbmigrate.migrate.versioning import pathed
 
 
 log = logging.getLogger(__name__)

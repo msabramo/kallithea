@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.users
+kallithea.controllers.admin.users
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Users crud controller for pylons
@@ -34,24 +34,24 @@ from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 from sqlalchemy.sql.expression import func
 
-import rhodecode
-from rhodecode.lib.exceptions import DefaultUserException, \
+import kallithea
+from kallithea.lib.exceptions import DefaultUserException, \
     UserOwnsReposException, UserCreationError
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator, \
     AuthUser, generate_api_key
-import rhodecode.lib.auth_modules.auth_rhodecode
-from rhodecode.lib import auth_modules
-from rhodecode.lib.base import BaseController, render
-from rhodecode.model.api_key import ApiKeyModel
+import kallithea.lib.auth_modules.auth_rhodecode
+from kallithea.lib import auth_modules
+from kallithea.lib.base import BaseController, render
+from kallithea.model.api_key import ApiKeyModel
 
-from rhodecode.model.db import User, UserEmailMap, UserIpMap, UserToPerm
-from rhodecode.model.forms import UserForm, CustomDefaultPermissionsForm
-from rhodecode.model.user import UserModel
-from rhodecode.model.meta import Session
-from rhodecode.lib.utils import action_logger
-from rhodecode.lib.compat import json
-from rhodecode.lib.utils2 import datetime_to_time, str2bool, safe_int
+from kallithea.model.db import User, UserEmailMap, UserIpMap, UserToPerm
+from kallithea.model.forms import UserForm, CustomDefaultPermissionsForm
+from kallithea.model.user import UserModel
+from kallithea.model.meta import Session
+from kallithea.lib.utils import action_logger
+from kallithea.lib.compat import json
+from kallithea.lib.utils2 import datetime_to_time, str2bool, safe_int
 
 log = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class UsersController(BaseController):
 
         users_data = []
         total_records = len(c.users_list)
-        _tmpl_lookup = rhodecode.CONFIG['pylons.app_globals'].mako_lookup
+        _tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         template = _tmpl_lookup.get_template('data_table/_dt_elements.html')
 
         grav_tmpl = lambda user_email, size: (

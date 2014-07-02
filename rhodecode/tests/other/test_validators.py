@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import formencode
 
-from rhodecode.tests import *
+from kallithea.tests import *
 
-from rhodecode.model import validators as v
-from rhodecode.model.user_group import UserGroupModel
+from kallithea.model import validators as v
+from kallithea.model.user_group import UserGroupModel
 
-from rhodecode.model.meta import Session
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.db import ChangesetStatus, Repository
-from rhodecode.model.changeset_status import ChangesetStatusModel
-from rhodecode.tests.fixture import Fixture
+from kallithea.model.meta import Session
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.db import ChangesetStatus, Repository
+from kallithea.model.changeset_status import ChangesetStatusModel
+from kallithea.tests.fixture import Fixture
 
 fixture = Fixture()
 

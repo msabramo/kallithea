@@ -5,8 +5,8 @@ import traceback
 
 from webob import Request, Response, exc
 
-import rhodecode
-from rhodecode.lib.vcs import subprocessio
+import kallithea
+from kallithea.lib.vcs import subprocessio
 
 log = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class GitRepository(object):
         # if you do add '\n' as part of data, count it.
         server_advert = '# service=%s' % git_command
         packet_len = str(hex(len(server_advert) + 4)[2:].rjust(4, '0')).lower()
-        _git_path = rhodecode.CONFIG.get('git_path', 'git')
+        _git_path = kallithea.CONFIG.get('git_path', 'git')
         try:
             out = subprocessio.SubprocessIOChunker(
                 r'%s %s --stateless-rpc --advertise-refs "%s"' % (
@@ -106,7 +106,7 @@ class GitRepository(object):
         returns an iterator obj with contents of git command's
         response to stdout
         """
-        _git_path = rhodecode.CONFIG.get('git_path', 'git')
+        _git_path = kallithea.CONFIG.get('git_path', 'git')
         git_command = self._get_fixedpath(request.path_info)
         if git_command not in self.commands:
             log.debug('command %s not allowed' % git_command)
@@ -141,7 +141,7 @@ class GitRepository(object):
         if git_command in [u'git-receive-pack']:
             # updating refs manually after each push.
             # Needed for pre-1.7.0.4 git clients using regular HTTP mode.
-            from rhodecode.lib.vcs import get_repo
+            from kallithea.lib.vcs import get_repo
             from dulwich.server import update_server_info
             repo = get_repo(self.content_path)
             if repo:

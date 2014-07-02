@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.auth
+kallithea.lib.auth
 ~~~~~~~~~~~~~~~~~~
 
 authentication and permission libraries
@@ -41,20 +41,20 @@ from sqlalchemy import or_
 from sqlalchemy.orm.exc import ObjectDeletedError
 from sqlalchemy.orm import joinedload
 
-from rhodecode import __platform__, is_windows, is_unix
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.model import meta
-from rhodecode.model.meta import Session
-from rhodecode.model.user import UserModel
-from rhodecode.model.db import User, Repository, Permission, \
+from kallithea import __platform__, is_windows, is_unix
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.model import meta
+from kallithea.model.meta import Session
+from kallithea.model.user import UserModel
+from kallithea.model.db import User, Repository, Permission, \
     UserToPerm, UserGroupRepoToPerm, UserGroupToPerm, UserGroupMember, \
     RepoGroup, UserGroupRepoGroupToPerm, UserIpMap, UserGroupUserGroupToPerm, \
     UserGroup, UserApiKeys
 
-from rhodecode.lib.utils2 import safe_unicode, aslist
-from rhodecode.lib.utils import get_repo_slug, get_repo_group_slug, \
+from kallithea.lib.utils2 import safe_unicode, aslist
+from kallithea.lib.utils import get_repo_slug, get_repo_group_slug, \
     get_user_group_slug, conditional_cache
-from rhodecode.lib.caching_query import FromCache
+from kallithea.lib.caching_query import FromCache
 
 from beaker.cache import cache_region
 
@@ -455,7 +455,7 @@ def allowed_api_access(controller_name, whitelist=None, api_key=None):
     Check if given controller_name is in whitelist API access
     """
     if not whitelist:
-        from rhodecode import CONFIG
+        from kallithea import CONFIG
         whitelist = aslist(CONFIG.get('api_access_controllers_whitelist'),
                            sep=',')
         log.debug('whitelist of API access is: %s' % (whitelist))
@@ -742,7 +742,7 @@ class LoginRequired(object):
         # check if our IP is allowed
         ip_access_valid = True
         if not user.ip_allowed:
-            from rhodecode.lib import helpers as h
+            from kallithea.lib import helpers as h
             h.flash(h.literal(_('IP %s not allowed' % (user.ip_addr))),
                     category='warning')
             ip_access_valid = False
@@ -803,7 +803,7 @@ class NotAnonymous(object):
         if anonymous:
             p = url.current()
 
-            import rhodecode.lib.helpers as h
+            import kallithea.lib.helpers as h
             h.flash(_('You need to be a registered user to '
                       'perform this action'),
                     category='warning')
@@ -840,7 +840,7 @@ class PermsDecorator(object):
             if anonymous:
                 p = url.current()
 
-                import rhodecode.lib.helpers as h
+                import kallithea.lib.helpers as h
                 h.flash(_('You need to be a signed in to '
                           'view this page'),
                         category='warning')
@@ -1313,7 +1313,7 @@ def check_ip_access(source_ip, allowed_ips=None):
     :param source_ip:
     :param allowed_ips: list of allowed ips together with mask
     """
-    from rhodecode.lib import ipaddr
+    from kallithea.lib import ipaddr
     log.debug('checking if ip:%s is subnet of %s' % (source_ip, allowed_ips))
     if isinstance(allowed_ips, (tuple, list, set)):
         for ip in allowed_ips:

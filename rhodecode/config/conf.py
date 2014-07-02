@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.config.conf
+kallithea.config.conf
 ~~~~~~~~~~~~~~~~~~~~~
 
 Various config settings for RhodeCode
@@ -22,9 +22,9 @@ Various config settings for RhodeCode
 :copyright: (c) 2013 RhodeCode GmbH.
 :license: GPLv3, see LICENSE for more details.
 """
-from rhodecode import EXTENSIONS
+from kallithea import EXTENSIONS
 
-from rhodecode.lib.utils2 import __get_lem
+from kallithea.lib.utils2 import __get_lem
 
 
 # language map is also used by whoosh indexer, which for those specified

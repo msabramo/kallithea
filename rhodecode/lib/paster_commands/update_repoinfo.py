@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.paster_commands.make_rcextensions
+kallithea.lib.paster_commands.make_rcextensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 uodate-repoinfo paster command for RhodeCode
@@ -30,10 +30,10 @@ import sys
 import logging
 import string
 
-from rhodecode.lib.utils import BasePasterCommand
-from rhodecode.model.db import Repository
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.meta import Session
+from kallithea.lib.utils import BasePasterCommand
+from kallithea.model.db import Repository
+from kallithea.model.repo import RepoModel
+from kallithea.model.meta import Session
 
 # Add location of top level folder to sys.path
 from os.path import dirname as dn

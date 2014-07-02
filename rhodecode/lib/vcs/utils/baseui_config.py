@@ -1,4 +1,4 @@
-from rhodecode.lib.vcs.utils.hgcompat import ui, config
+from kallithea.lib.vcs.utils.hgcompat import ui, config
 
 
 def make_ui(self, path='hgwebdir.config'):

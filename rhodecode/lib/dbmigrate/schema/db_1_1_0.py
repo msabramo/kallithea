@@ -2,7 +2,7 @@ from sqlalchemy import *
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
-from rhodecode.model.meta import Base
+from kallithea.model.meta import Base
 
 class BaseModel(object):
     """Base Model for all classess

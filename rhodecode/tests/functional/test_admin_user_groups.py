@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from rhodecode.tests import *
-from rhodecode.model.db import UserGroup, UserGroupToPerm, Permission
-from rhodecode.model.meta import Session
+from kallithea.tests import *
+from kallithea.model.db import UserGroup, UserGroupToPerm, Permission
+from kallithea.model.meta import Session
 
 TEST_USER_GROUP = 'admins_test'
 

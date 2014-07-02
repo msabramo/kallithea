@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.middleware.simplehg
+kallithea.lib.middleware.simplehg
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SimpleHG middleware for handling mercurial protocol request
@@ -33,15 +33,15 @@ import traceback
 from paste.httpheaders import REMOTE_USER, AUTH_TYPE
 from webob.exc import HTTPNotFound, HTTPForbidden, HTTPInternalServerError, \
     HTTPNotAcceptable
-from rhodecode.model.db import User
+from kallithea.model.db import User
 
-from rhodecode.lib.utils2 import safe_str, fix_PATH, get_server_url,\
+from kallithea.lib.utils2 import safe_str, fix_PATH, get_server_url,\
     _set_extras
-from rhodecode.lib.base import BaseVCSController
-from rhodecode.lib.utils import make_ui, is_valid_repo, ui_sections
-from rhodecode.lib.vcs.utils.hgcompat import RepoError, hgweb_mod
-from rhodecode.lib.exceptions import HTTPLockedRC
-from rhodecode.lib import auth_modules
+from kallithea.lib.base import BaseVCSController
+from kallithea.lib.utils import make_ui, is_valid_repo, ui_sections
+from kallithea.lib.vcs.utils.hgcompat import RepoError, hgweb_mod
+from kallithea.lib.exceptions import HTTPLockedRC
+from kallithea.lib import auth_modules
 
 log = logging.getLogger(__name__)
 
@@ -161,7 +161,7 @@ class SimpleHg(BaseVCSController):
 
         # extras are injected into mercurial UI object and later available
         # in hg hooks executed by rhodecode
-        from rhodecode import CONFIG
+        from kallithea import CONFIG
         server_url = get_server_url(environ)
         extras = {
             'ip': ip_addr,

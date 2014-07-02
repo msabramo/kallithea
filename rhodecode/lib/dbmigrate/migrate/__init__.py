@@ -5,7 +5,7 @@
    using Python.
 """
 
-from rhodecode.lib.dbmigrate.migrate.versioning import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate.versioning import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
 __version__ = '0.7.3.dev'

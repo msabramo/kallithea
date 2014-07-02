@@ -3,8 +3,8 @@
 import logging
 import shutil
 
-from rhodecode.lib.dbmigrate.migrate.versioning.script import base
-from rhodecode.lib.dbmigrate.migrate.versioning.template import Template
+from kallithea.lib.dbmigrate.migrate.versioning.script import base
+from kallithea.lib.dbmigrate.migrate.versioning.template import Template
 
 
 log = logging.getLogger(__name__)

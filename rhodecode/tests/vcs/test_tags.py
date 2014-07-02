@@ -1,10 +1,10 @@
 from __future__ import with_statement
 
-from rhodecode.tests.vcs.base import BackendTestMixin
-from rhodecode.tests.vcs.conf import SCM_TESTS
-from rhodecode.lib.vcs.exceptions import TagAlreadyExistError
-from rhodecode.lib.vcs.exceptions import TagDoesNotExistError
-from rhodecode.lib.vcs.utils.compat import unittest
+from kallithea.tests.vcs.base import BackendTestMixin
+from kallithea.tests.vcs.conf import SCM_TESTS
+from kallithea.lib.vcs.exceptions import TagAlreadyExistError
+from kallithea.lib.vcs.exceptions import TagDoesNotExistError
+from kallithea.lib.vcs.utils.compat import unittest
 
 
 class TagsTestCaseMixin(BackendTestMixin):

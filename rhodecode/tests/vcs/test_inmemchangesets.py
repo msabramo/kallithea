@@ -7,19 +7,19 @@ from __future__ import with_statement
 import time
 import datetime
 
-from rhodecode.lib import vcs
-from rhodecode.tests.vcs.conf import SCM_TESTS, get_new_dir
-from rhodecode.lib.vcs.exceptions import EmptyRepositoryError
-from rhodecode.lib.vcs.exceptions import NodeAlreadyAddedError
-from rhodecode.lib.vcs.exceptions import NodeAlreadyExistsError
-from rhodecode.lib.vcs.exceptions import NodeAlreadyRemovedError
-from rhodecode.lib.vcs.exceptions import NodeAlreadyChangedError
-from rhodecode.lib.vcs.exceptions import NodeDoesNotExistError
-from rhodecode.lib.vcs.exceptions import NodeNotChangedError
-from rhodecode.lib.vcs.nodes import DirNode
-from rhodecode.lib.vcs.nodes import FileNode
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.lib.vcs.utils import safe_unicode
+from kallithea.lib import vcs
+from kallithea.tests.vcs.conf import SCM_TESTS, get_new_dir
+from kallithea.lib.vcs.exceptions import EmptyRepositoryError
+from kallithea.lib.vcs.exceptions import NodeAlreadyAddedError
+from kallithea.lib.vcs.exceptions import NodeAlreadyExistsError
+from kallithea.lib.vcs.exceptions import NodeAlreadyRemovedError
+from kallithea.lib.vcs.exceptions import NodeAlreadyChangedError
+from kallithea.lib.vcs.exceptions import NodeDoesNotExistError
+from kallithea.lib.vcs.exceptions import NodeNotChangedError
+from kallithea.lib.vcs.nodes import DirNode
+from kallithea.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.lib.vcs.utils import safe_unicode
 
 
 class InMemoryChangesetTestMixin(object):

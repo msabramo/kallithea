@@ -26,11 +26,11 @@ from paste.gzipper import make_gzip_middleware
 from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 
-from rhodecode.lib.middleware.simplehg import SimpleHg
-from rhodecode.lib.middleware.simplegit import SimpleGit
-from rhodecode.lib.middleware.https_fixup import HttpsFixup
-from rhodecode.config.environment import load_environment
-from rhodecode.lib.middleware.wrapper import RequestWrapper
+from kallithea.lib.middleware.simplehg import SimpleHg
+from kallithea.lib.middleware.simplegit import SimpleGit
+from kallithea.lib.middleware.https_fixup import HttpsFixup
+from kallithea.config.environment import load_environment
+from kallithea.lib.middleware.wrapper import RequestWrapper
 
 
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
@@ -64,13 +64,13 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     if asbool(config['pdebug']):
-        from rhodecode.lib.profiler import ProfilingMiddleware
+        from kallithea.lib.profiler import ProfilingMiddleware
         app = ProfilingMiddleware(app)
 
     if asbool(full_stack):
 
-        from rhodecode.lib.middleware.sentry import Sentry
-        from rhodecode.lib.middleware.errormator import Errormator
+        from kallithea.lib.middleware.sentry import Sentry
+        from kallithea.lib.middleware.errormator import Errormator
         if Errormator and asbool(config['app_conf'].get('errormator')):
             app = Errormator(app, config)
         elif Sentry:

@@ -10,12 +10,12 @@ from sqlalchemy.sql import and_
 from sqlalchemy import exc as sa_exceptions
 from sqlalchemy.sql import bindparam
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.changeset import SQLA_07
-from rhodecode.lib.dbmigrate.migrate.versioning import genmodel, schemadiff
-from rhodecode.lib.dbmigrate.migrate.versioning.repository import Repository
-from rhodecode.lib.dbmigrate.migrate.versioning.util import load_model
-from rhodecode.lib.dbmigrate.migrate.versioning.version import VerNum
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.changeset import SQLA_07
+from kallithea.lib.dbmigrate.migrate.versioning import genmodel, schemadiff
+from kallithea.lib.dbmigrate.migrate.versioning.repository import Repository
+from kallithea.lib.dbmigrate.migrate.versioning.util import load_model
+from kallithea.lib.dbmigrate.migrate.versioning.version import VerNum
 
 
 log = logging.getLogger(__name__)

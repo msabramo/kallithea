@@ -6,10 +6,10 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import relation, backref, class_mapper
 from sqlalchemy.orm.session import Session
 
-from rhodecode.lib.dbmigrate.migrate import *
-from rhodecode.lib.dbmigrate.migrate.changeset import *
+from kallithea.lib.dbmigrate.migrate import *
+from kallithea.lib.dbmigrate.migrate.changeset import *
 
-from rhodecode.model.meta import Base
+from kallithea.model.meta import Base
 
 log = logging.getLogger(__name__)
 
@@ -21,31 +21,31 @@ def upgrade(migrate_engine):
     #==========================================================================
     # Add table `users_group_repo_group_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import UserGroupRepoGroupToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import UserGroupRepoGroupToPerm
     UserGroupRepoGroupToPerm().__table__.create()
 
     #==========================================================================
     # Add table `changeset_comments`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import  ChangesetComment
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import  ChangesetComment
     ChangesetComment().__table__.create()
 
     #==========================================================================
     # Add table `notifications`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import  Notification
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import  Notification
     Notification().__table__.create()
 
     #==========================================================================
     # Add table `user_to_notification`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import  UserNotification
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import  UserNotification
     UserNotification().__table__.create()
 
     #==========================================================================
     # Add unique to table `users_group_to_perm`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import UserGroupToPerm
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import UserGroupToPerm
     tbl = UserGroupToPerm().__table__
     cons = UniqueConstraint('users_group_id', 'permission_id', table=tbl)
     cons.create()
@@ -53,7 +53,7 @@ def upgrade(migrate_engine):
     #==========================================================================
     # Fix unique constrain on table `user_logs`
     #==========================================================================
-    from rhodecode.lib.dbmigrate.schema.db_1_3_0 import UserLog
+    from kallithea.lib.dbmigrate.schema.db_1_3_0 import UserLog
     tbl = UserLog().__table__
     col = Column("repository_id", Integer(), ForeignKey('repositories.repo_id'),
                  nullable=False, unique=None, default=None)

@@ -1,5 +1,5 @@
-from rhodecode.tests import *
-from rhodecode.model.db import RhodeCodeSetting
+from kallithea.tests import *
+from kallithea.model.db import RhodeCodeSetting
 
 
 class TestAuthSettingsController(TestController):
@@ -9,7 +9,7 @@ class TestAuthSettingsController(TestController):
         params={'auth_plugins': plugins_list,}
 
         for plugin in plugins_list.split(','):
-            enable = plugin.partition('rhodecode.lib.auth_modules.')[-1]
+            enable = plugin.partition('kallithea.lib.auth_modules.')[-1]
             params.update({'%s_enabled' % enable: True})
         response = self.app.post(url=test_url, params=params)
         return params
@@ -26,7 +26,7 @@ class TestAuthSettingsController(TestController):
         if ldap_lib_installed:
             raise SkipTest('skipping due to missing ldap lib')
 
-        params = self._enable_plugins('rhodecode.lib.auth_modules.auth_rhodecode,rhodecode.lib.auth_modules.auth_ldap')
+        params = self._enable_plugins('kallithea.lib.auth_modules.auth_rhodecode,kallithea.lib.auth_modules.auth_ldap')
         params.update({'auth_ldap_host': u'dc.example.com',
                        'auth_ldap_port': '999',
                        'auth_ldap_tls_kind': 'PLAIN',
@@ -56,7 +56,7 @@ class TestAuthSettingsController(TestController):
         if ldap_lib_installed:
             raise SkipTest('skipping due to missing ldap lib')
 
-        params = self._enable_plugins('rhodecode.lib.auth_modules.auth_rhodecode,rhodecode.lib.auth_modules.auth_ldap')
+        params = self._enable_plugins('kallithea.lib.auth_modules.auth_rhodecode,kallithea.lib.auth_modules.auth_ldap')
         params.update({'auth_ldap_host': '',
                        'auth_ldap_port': 'i-should-be-number',  # bad port num
                        'auth_ldap_tls_kind': 'PLAIN',
@@ -83,7 +83,7 @@ class TestAuthSettingsController(TestController):
         if ldap_lib_installed:
             raise SkipTest('skipping due to missing ldap lib')
 
-        params = self._enable_plugins('rhodecode.lib.auth_modules.auth_rhodecode,rhodecode.lib.auth_modules.auth_ldap')
+        params = self._enable_plugins('kallithea.lib.auth_modules.auth_rhodecode,kallithea.lib.auth_modules.auth_ldap')
         params.update({'auth_ldap_host': 'Host',
                        'auth_ldap_port': '123',
                        'auth_ldap_tls_kind': 'PLAIN',

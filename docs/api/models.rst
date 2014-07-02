@@ -4,32 +4,32 @@
 The :mod:`models` Module
 ========================
 
-.. automodule:: rhodecode.model
+.. automodule:: kallithea.model
    :members:
 
-.. automodule:: rhodecode.model.comment
+.. automodule:: kallithea.model.comment
    :members:
 
-.. automodule:: rhodecode.model.notification
+.. automodule:: kallithea.model.notification
    :members:
 
-.. automodule:: rhodecode.model.permission
+.. automodule:: kallithea.model.permission
    :members:
 
-.. automodule:: rhodecode.model.repo_permission
+.. automodule:: kallithea.model.repo_permission
    :members:
 
-.. automodule:: rhodecode.model.repo
+.. automodule:: kallithea.model.repo
    :members:
 
-.. automodule:: rhodecode.model.repos_group
+.. automodule:: kallithea.model.repos_group
    :members:
 
-.. automodule:: rhodecode.model.scm
+.. automodule:: kallithea.model.scm
    :members:
 
-.. automodule:: rhodecode.model.user
+.. automodule:: kallithea.model.user
    :members:
 
-.. automodule:: rhodecode.model.users_group
+.. automodule:: kallithea.model.users_group
    :members:

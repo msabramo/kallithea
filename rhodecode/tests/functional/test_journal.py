@@ -1,6 +1,6 @@
-from rhodecode.tests import *
-from rhodecode.model.db import UserFollowing, User, Repository
-from rhodecode.lib.helpers import get_token
+from kallithea.tests import *
+from kallithea.model.db import UserFollowing, User, Repository
+from kallithea.lib.helpers import get_token
 import datetime
 
 

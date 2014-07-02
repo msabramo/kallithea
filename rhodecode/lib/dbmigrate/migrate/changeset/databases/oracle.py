@@ -4,8 +4,8 @@
 import sqlalchemy as sa
 from sqlalchemy.databases import oracle as sa_base
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.changeset import ansisql, SQLA_06
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.changeset import ansisql, SQLA_06
 
 
 if not SQLA_06:

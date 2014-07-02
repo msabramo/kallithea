@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.compat
+kallithea.lib.compat
 ~~~~~~~~~~~~~~~~~~~~
 
 Python backward compatibility functions and common libs
@@ -28,12 +28,12 @@ Python backward compatibility functions and common libs
 import os
 import functools
 import importlib
-from rhodecode import __py_version__, is_windows
+from kallithea import __py_version__, is_windows
 
 #==============================================================================
 # json
 #==============================================================================
-from rhodecode.lib.ext_json import json
+from kallithea.lib.ext_json import json
 
 # alias for formatted json
 formatted_json = functools.partial(json.dumps, indent=4, sort_keys=True)

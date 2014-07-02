@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.admin
+kallithea.controllers.admin.admin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Controller for Admin panel of Rhodecode
@@ -33,12 +33,12 @@ from whoosh.qparser.dateparse import DateParserPlugin
 from whoosh import query
 from sqlalchemy.sql.expression import or_, and_, func
 
-from rhodecode.model.db import UserLog, User
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib.utils2 import safe_int, remove_prefix, remove_suffix
-from rhodecode.lib.indexers import JOURNAL_SCHEMA
-from rhodecode.lib.helpers import Page
+from kallithea.model.db import UserLog, User
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator
+from kallithea.lib.base import BaseController, render
+from kallithea.lib.utils2 import safe_int, remove_prefix, remove_suffix
+from kallithea.lib.indexers import JOURNAL_SCHEMA
+from kallithea.lib.helpers import Page
 
 
 log = logging.getLogger(__name__)

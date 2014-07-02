@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from rhodecode.model.db import User, UserFollowing, Repository, UserApiKeys
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.lib import helpers as h
-from rhodecode.model.user import UserModel
-from rhodecode.model.meta import Session
+from kallithea.model.db import User, UserFollowing, Repository, UserApiKeys
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.lib import helpers as h
+from kallithea.model.user import UserModel
+from kallithea.model.meta import Session
 
 fixture = Fixture()
 
@@ -76,7 +76,7 @@ class TestMyAccountController(TestController):
 
         response = self.app.get(url('my_account_emails'))
 
-        from rhodecode.model.db import UserEmailMap
+        from kallithea.model.db import UserEmailMap
         email_id = UserEmailMap.query()\
             .filter(UserEmailMap.user == User.get_by_username(TEST_USER_ADMIN_LOGIN))\
             .filter(UserEmailMap.email == 'foo@barz.com').one().email_id
@@ -180,7 +180,7 @@ class TestMyAccountController(TestController):
                                             email=new_email,))
 
         response.mustcontain('An email address must contain a single @')
-        from rhodecode.model import validators
+        from kallithea.model import validators
         msg = validators.ValidUsername(edit=False, old_data={})\
                 ._messages['username_exists']
         msg = h.html_escape(msg % {'username': 'test_admin'})

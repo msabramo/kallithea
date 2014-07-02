@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.middleware.sentry
+kallithea.lib.middleware.sentry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 middleware to handle sentry/raven publishing of errors

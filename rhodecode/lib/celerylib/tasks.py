@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.celerylib.tasks
+kallithea.lib.celerylib.tasks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode task modules, containing all task that suppose to be run
@@ -38,20 +38,20 @@ from string import lower
 from pylons import config, url
 from pylons.i18n.translation import _
 
-from rhodecode.lib.vcs import get_backend
+from kallithea.lib.vcs import get_backend
 
-from rhodecode import CELERY_ON, CELERY_EAGER
-from rhodecode.lib.utils2 import safe_str
-from rhodecode.lib.celerylib import run_task, locked_task, dbsession, \
+from kallithea import CELERY_ON, CELERY_EAGER
+from kallithea.lib.utils2 import safe_str
+from kallithea.lib.celerylib import run_task, locked_task, dbsession, \
     str2bool, __get_lockkey, LockHeld, DaemonLock, get_session
-from rhodecode.lib.helpers import person
-from rhodecode.lib.rcmail.smtp_mailer import SmtpMailer
-from rhodecode.lib.utils import add_cache, action_logger
-from rhodecode.lib.compat import json, OrderedDict
-from rhodecode.lib.hooks import log_create_repository
+from kallithea.lib.helpers import person
+from kallithea.lib.rcmail.smtp_mailer import SmtpMailer
+from kallithea.lib.utils import add_cache, action_logger
+from kallithea.lib.compat import json, OrderedDict
+from kallithea.lib.hooks import log_create_repository
 
-from rhodecode.model.db import Statistics, Repository, User
-from rhodecode.model.scm import ScmModel
+from kallithea.model.db import Statistics, Repository, User
+from kallithea.model.scm import ScmModel
 
 
 add_cache(config)  # pragma: no cover
@@ -76,7 +76,7 @@ def get_logger(cls):
 @locked_task
 @dbsession
 def whoosh_index(repo_location, full_index):
-    from rhodecode.lib.indexers.daemon import WhooshIndexingDaemon
+    from kallithea.lib.indexers.daemon import WhooshIndexingDaemon
     log = get_logger(whoosh_index)
     DBS = get_session()
 
@@ -303,9 +303,9 @@ def send_email(recipients, subject, body='', html_body=''):
 @task(ignore_result=False)
 @dbsession
 def create_repo(form_data, cur_user):
-    from rhodecode.model.repo import RepoModel
-    from rhodecode.model.user import UserModel
-    from rhodecode.model.db import RhodeCodeSetting
+    from kallithea.model.repo import RepoModel
+    from kallithea.model.user import UserModel
+    from kallithea.model.db import RhodeCodeSetting
 
     log = get_logger(create_repo)
     DBS = get_session()
@@ -398,8 +398,8 @@ def create_repo_fork(form_data, cur_user):
     :param form_data:
     :param cur_user:
     """
-    from rhodecode.model.repo import RepoModel
-    from rhodecode.model.user import UserModel
+    from kallithea.model.repo import RepoModel
+    from kallithea.model.user import UserModel
 
     log = get_logger(create_repo_fork)
     DBS = get_session()
@@ -475,7 +475,7 @@ def create_repo_fork(form_data, cur_user):
 
 
 def __get_codes_stats(repo_name):
-    from rhodecode.config.conf import LANGUAGES_EXTENSIONS_MAP
+    from kallithea.config.conf import LANGUAGES_EXTENSIONS_MAP
     repo = Repository.get_by_repo_name(repo_name).scm_instance
 
     tip = repo.get_changeset()

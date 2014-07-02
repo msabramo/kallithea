@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.db_1_2_0
+kallithea.model.db_1_2_0
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Database Models for RhodeCode <=1.2.X
@@ -34,18 +34,18 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, joinedload, class_mapper, validates
 from beaker.cache import cache_region, region_invalidate
 
-from rhodecode.lib.vcs import get_backend
-from rhodecode.lib.vcs.utils.helpers import get_scm
-from rhodecode.lib.vcs.exceptions import VCSError
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs import get_backend
+from kallithea.lib.vcs.utils.helpers import get_scm
+from kallithea.lib.vcs.exceptions import VCSError
+from kallithea.lib.vcs.utils.lazy import LazyProperty
 
-from rhodecode.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
+from kallithea.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
     generate_api_key, safe_unicode
-from rhodecode.lib.exceptions import UserGroupsAssignedException
-from rhodecode.lib.compat import json
+from kallithea.lib.exceptions import UserGroupsAssignedException
+from kallithea.lib.compat import json
 
-from rhodecode.model.meta import Base, Session
-from rhodecode.lib.caching_query import FromCache
+from kallithea.model.meta import Base, Session
+from kallithea.lib.caching_query import FromCache
 
 
 log = logging.getLogger(__name__)
@@ -324,7 +324,7 @@ class User(Base, BaseModel):
 
     @classmethod
     def create(cls, form_data):
-        from rhodecode.lib.auth import get_crypt_password
+        from kallithea.lib.auth import get_crypt_password
 
         try:
             new_user = cls()
@@ -633,7 +633,7 @@ class Repository(Base, BaseModel):
         :param cls:
         :param repo_name:
         """
-        from rhodecode.lib.utils import is_valid_repo
+        from kallithea.lib.utils import is_valid_repo
 
         return is_valid_repo(repo_name, cls.base_path())
 

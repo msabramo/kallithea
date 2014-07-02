@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.auth_modules.auth_rhodecode
+kallithea.lib.auth_modules.auth_rhodecode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 RhodeCode authentication plugin for built in internal auth
@@ -25,9 +25,9 @@ RhodeCode authentication plugin for built in internal auth
 
 
 import logging
-from rhodecode.lib import auth_modules
-from rhodecode.lib.compat import formatted_json, hybrid_property
-from rhodecode.model.db import User
+from kallithea.lib import auth_modules
+from kallithea.lib.compat import formatted_json, hybrid_property
+from kallithea.model.db import User
 
 
 log = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeAuthPluginBase):
 
         log.debug(formatted_json(user_attrs))
         if userobj.active:
-            from rhodecode.lib import auth
+            from kallithea.lib import auth
             password_match = auth.RhodeCodeCrypto.hash_check(password, userobj.password)
             if userobj.username == User.DEFAULT_USER and userobj.active:
                 log.info('user %s authenticated correctly as anonymous user' %

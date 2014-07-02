@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.repo
+kallithea.model.repo
 ~~~~~~~~~~~~~~~~~~~~
 
 Repository model for rhodecode
@@ -30,25 +30,25 @@ import shutil
 import logging
 import traceback
 from datetime import datetime
-from rhodecode.lib.utils import make_ui
+from kallithea.lib.utils import make_ui
 
-from rhodecode.lib.vcs.backends import get_backend
-from rhodecode.lib.compat import json
-from rhodecode.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
+from kallithea.lib.vcs.backends import get_backend
+from kallithea.lib.compat import json
+from kallithea.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
     remove_prefix, obfuscate_url_pw, get_current_rhodecode_user
-from rhodecode.lib.caching_query import FromCache
-from rhodecode.lib.hooks import log_create_repository, log_delete_repository
+from kallithea.lib.caching_query import FromCache
+from kallithea.lib.hooks import log_create_repository, log_delete_repository
 
-from rhodecode.model import BaseModel
-from rhodecode.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \
+from kallithea.model import BaseModel
+from kallithea.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \
     UserRepoGroupToPerm, UserGroupRepoGroupToPerm, User, Permission, \
     Statistics, UserGroup, RhodeCodeUi, RepoGroup, \
     RhodeCodeSetting, RepositoryField
 
-from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import HasRepoPermissionAny, HasUserGroupPermissionAny
-from rhodecode.lib.exceptions import AttachedForksError
-from rhodecode.model.scm import UserGroupList
+from kallithea.lib import helpers as h
+from kallithea.lib.auth import HasRepoPermissionAny, HasUserGroupPermissionAny
+from kallithea.lib.exceptions import AttachedForksError
+from kallithea.model.scm import UserGroupList
 
 log = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ class RepoModel(BaseModel):
 
         :param user:
         """
-        from rhodecode.lib.auth import AuthUser
+        from kallithea.lib.auth import AuthUser
         user = self._get_user(user)
         repos = AuthUser(user_id=user.user_id).permissions['repositories']
         access_check = lambda r: r[1] in ['repository.read',
@@ -158,11 +158,11 @@ class RepoModel(BaseModel):
 
     @classmethod
     def _render_datatable(cls, tmpl, *args, **kwargs):
-        import rhodecode
+        import kallithea
         from pylons import tmpl_context as c
         from pylons.i18n.translation import _
 
-        _tmpl_lookup = rhodecode.CONFIG['pylons.app_globals'].mako_lookup
+        _tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         template = _tmpl_lookup.get_template('data_table/_dt_elements.html')
 
         tmpl = template.get_def(tmpl)
@@ -334,7 +334,7 @@ class RepoModel(BaseModel):
                     if strip:
                         k = remove_prefix(k, 'repo_')
                     if k == 'clone_uri':
-                        from rhodecode.model.validators import Missing
+                        from kallithea.model.validators import Missing
                         _change = kwargs.get('clone_uri_change')
                         if _change == Missing:
                             # we don't change the value, so use original one
@@ -381,7 +381,7 @@ class RepoModel(BaseModel):
         only executed by create() repo. With exception of importing existing repos
 
         """
-        from rhodecode.model.scm import ScmModel
+        from kallithea.model.scm import ScmModel
 
         owner = self._get_user(owner)
         fork_of = self._get_repo(fork_of)
@@ -474,7 +474,7 @@ class RepoModel(BaseModel):
         :param form_data:
         :param cur_user:
         """
-        from rhodecode.lib.celerylib import tasks, run_task
+        from kallithea.lib.celerylib import tasks, run_task
         return run_task(tasks.create_repo, form_data, cur_user)
 
     def _update_permissions(self, repo, perms_new=None, perms_updates=None,
@@ -523,7 +523,7 @@ class RepoModel(BaseModel):
         :param form_data:
         :param cur_user:
         """
-        from rhodecode.lib.celerylib import tasks, run_task
+        from kallithea.lib.celerylib import tasks, run_task
         return run_task(tasks.create_repo_fork, form_data, cur_user)
 
     def delete(self, repo, forks=None, fs_remove=True, cur_user=None):
@@ -690,8 +690,8 @@ class RepoModel(BaseModel):
         :param clone_uri:
         :param repo_store_location:
         """
-        from rhodecode.lib.utils import is_valid_repo, is_valid_repo_group
-        from rhodecode.model.scm import ScmModel
+        from kallithea.lib.utils import is_valid_repo, is_valid_repo_group
+        from kallithea.model.scm import ScmModel
 
         if '/' in repo_name:
             raise ValueError('repo_name must not contain groups got `%s`' % repo_name)

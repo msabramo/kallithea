@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.forks
+kallithea.controllers.forks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 forks controller for rhodecode
@@ -33,19 +33,19 @@ from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 from webob.exc import HTTPNotFound, HTTPInternalServerError
 
-import rhodecode.lib.helpers as h
+import kallithea.lib.helpers as h
 
-from rhodecode.lib.helpers import Page
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator, \
+from kallithea.lib.helpers import Page
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator, \
     NotAnonymous, HasRepoPermissionAny, HasPermissionAnyDecorator
-from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.model.db import Repository, RepoGroup, UserFollowing, User,\
+from kallithea.lib.base import BaseRepoController, render
+from kallithea.model.db import Repository, RepoGroup, UserFollowing, User,\
     RhodeCodeUi
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.forms import RepoForkForm
-from rhodecode.model.scm import ScmModel, RepoGroupList
-from rhodecode.lib.utils2 import safe_int
-from rhodecode.lib.utils import jsonify
+from kallithea.model.repo import RepoModel
+from kallithea.model.forms import RepoForkForm
+from kallithea.model.scm import ScmModel, RepoGroupList
+from kallithea.lib.utils2 import safe_int
+from kallithea.lib.utils import jsonify
 
 log = logging.getLogger(__name__)
 

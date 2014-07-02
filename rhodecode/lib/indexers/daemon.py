@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.indexers.daemon
+kallithea.lib.indexers.daemon
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A daemon will read from task table and run tasks
@@ -40,14 +40,14 @@ from os.path import join as jn
 project_path = dn(dn(dn(dn(os.path.realpath(__file__)))))
 sys.path.append(project_path)
 
-from rhodecode.config.conf import INDEX_EXTENSIONS
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.db import Repository
-from rhodecode.lib.utils2 import safe_unicode, safe_str
-from rhodecode.lib.indexers import SCHEMA, IDX_NAME, CHGSETS_SCHEMA, \
+from kallithea.config.conf import INDEX_EXTENSIONS
+from kallithea.model.scm import ScmModel
+from kallithea.model.db import Repository
+from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.indexers import SCHEMA, IDX_NAME, CHGSETS_SCHEMA, \
     CHGSET_IDX_NAME
 
-from rhodecode.lib.vcs.exceptions import ChangesetError, RepositoryError, \
+from kallithea.lib.vcs.exceptions import ChangesetError, RepositoryError, \
     NodeDoesNotExistError
 
 from whoosh.index import create_in, open_dir, exists_in

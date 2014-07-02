@@ -19,11 +19,11 @@ function at ``tests/__init__.py``.
 .. _unittest: http://pypi.python.org/pypi/unittest
 
 """
-from rhodecode.lib.vcs.utils.compat import unittest
-from rhodecode.tests.vcs.conf import *
-from rhodecode.tests.vcs.utils import VCSTestError, SCMFetcher
+from kallithea.lib.vcs.utils.compat import unittest
+from kallithea.tests.vcs.conf import *
+from kallithea.tests.vcs.utils import VCSTestError, SCMFetcher
 
-from rhodecode.tests import *
+from kallithea.tests import *
 
 
 def setup_package():

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.users_group
+kallithea.model.users_group
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 repository permission model for RhodeCode
@@ -22,8 +22,8 @@ repository permission model for RhodeCode
 """
 
 import logging
-from rhodecode.model import BaseModel
-from rhodecode.model.db import UserRepoToPerm, UserGroupRepoToPerm, \
+from kallithea.model import BaseModel
+from kallithea.model.db import UserRepoToPerm, UserGroupRepoToPerm, \
     Permission
 
 log = logging.getLogger(__name__)

@@ -7,13 +7,13 @@ import logging
 import inspect
 from StringIO import StringIO
 
-from rhodecode.lib.dbmigrate import migrate
-from rhodecode.lib.dbmigrate.migrate.versioning import genmodel, schemadiff
-from rhodecode.lib.dbmigrate.migrate.versioning.config import operations
-from rhodecode.lib.dbmigrate.migrate.versioning.template import Template
-from rhodecode.lib.dbmigrate.migrate.versioning.script import base
-from rhodecode.lib.dbmigrate.migrate.versioning.util import import_path, load_model, with_engine
-from rhodecode.lib.dbmigrate.migrate.exceptions import MigrateDeprecationWarning, InvalidScriptError, ScriptError
+from kallithea.lib.dbmigrate import migrate
+from kallithea.lib.dbmigrate.migrate.versioning import genmodel, schemadiff
+from kallithea.lib.dbmigrate.migrate.versioning.config import operations
+from kallithea.lib.dbmigrate.migrate.versioning.template import Template
+from kallithea.lib.dbmigrate.migrate.versioning.script import base
+from kallithea.lib.dbmigrate.migrate.versioning.util import import_path, load_model, with_engine
+from kallithea.lib.dbmigrate.migrate.exceptions import MigrateDeprecationWarning, InvalidScriptError, ScriptError
 
 log = logging.getLogger(__name__)
 __all__ = ['PythonScript']
@@ -53,7 +53,7 @@ class PythonScript(base.BaseScript):
 
         if isinstance(repository, basestring):
             # oh dear, an import cycle!
-            from rhodecode.lib.dbmigrate.migrate.versioning.repository import Repository
+            from kallithea.lib.dbmigrate.migrate.versioning.repository import Repository
             repository = Repository(repository)
 
         oldmodel = load_model(oldmodel)

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.model.scm
+kallithea.model.scm
 ~~~~~~~~~~~~~~~~~~~
 
 Scm model for RhodeCode
@@ -36,26 +36,26 @@ from os.path import join as jn
 from sqlalchemy import func
 from pylons.i18n.translation import _
 
-import rhodecode
-from rhodecode.lib.vcs import get_backend
-from rhodecode.lib.vcs.exceptions import RepositoryError
-from rhodecode.lib.vcs.utils.lazy import LazyProperty
-from rhodecode.lib.vcs.nodes import FileNode
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
+import kallithea
+from kallithea.lib.vcs import get_backend
+from kallithea.lib.vcs.exceptions import RepositoryError
+from kallithea.lib.vcs.utils.lazy import LazyProperty
+from kallithea.lib.vcs.nodes import FileNode
+from kallithea.lib.vcs.backends.base import EmptyChangeset
 
-from rhodecode import BACKENDS
-from rhodecode.lib import helpers as h
-from rhodecode.lib.utils2 import safe_str, safe_unicode, get_server_url,\
+from kallithea import BACKENDS
+from kallithea.lib import helpers as h
+from kallithea.lib.utils2 import safe_str, safe_unicode, get_server_url,\
     _set_extras
-from rhodecode.lib.auth import HasRepoPermissionAny, HasRepoGroupPermissionAny,\
+from kallithea.lib.auth import HasRepoPermissionAny, HasRepoGroupPermissionAny,\
     HasUserGroupPermissionAny
-from rhodecode.lib.utils import get_filesystem_repos, make_ui, \
+from kallithea.lib.utils import get_filesystem_repos, make_ui, \
     action_logger
-from rhodecode.model import BaseModel
-from rhodecode.model.db import Repository, RhodeCodeUi, CacheInvalidation, \
+from kallithea.model import BaseModel
+from kallithea.model.db import Repository, RhodeCodeUi, CacheInvalidation, \
     UserFollowing, UserLog, User, RepoGroup, PullRequest
-from rhodecode.lib.hooks import log_push_action
-from rhodecode.lib.exceptions import NonRelativePathError, IMCCommitError
+from kallithea.lib.hooks import log_push_action
+from kallithea.lib.exceptions import NonRelativePathError, IMCCommitError
 
 log = logging.getLogger(__name__)
 
@@ -445,8 +445,8 @@ class ScmModel(BaseModel):
 
     def _handle_rc_scm_extras(self, username, repo_name, repo_alias,
                               action=None):
-        from rhodecode import CONFIG
-        from rhodecode.lib.base import _get_ip_addr
+        from kallithea import CONFIG
+        from kallithea.lib.base import _get_ip_addr
         try:
             from pylons import request
             environ = request.environ
@@ -493,11 +493,11 @@ class ScmModel(BaseModel):
         :param scm_type:
         """
         if scm_type == 'hg':
-            from rhodecode.lib.vcs.backends.hg import MercurialInMemoryChangeset
+            from kallithea.lib.vcs.backends.hg import MercurialInMemoryChangeset
             return MercurialInMemoryChangeset
 
         if scm_type == 'git':
-            from rhodecode.lib.vcs.backends.git import GitInMemoryChangeset
+            from kallithea.lib.vcs.backends.git import GitInMemoryChangeset
             return GitInMemoryChangeset
 
         raise Exception('Invalid scm_type, must be one of hg,git got %s'
@@ -845,10 +845,10 @@ class ScmModel(BaseModel):
             os.makedirs(loc)
 
         tmpl_post = pkg_resources.resource_string(
-            'rhodecode', jn('config', 'post_receive_tmpl.py')
+            'kallithea', jn('config', 'post_receive_tmpl.py')
         )
         tmpl_pre = pkg_resources.resource_string(
-            'rhodecode', jn('config', 'pre_receive_tmpl.py')
+            'kallithea', jn('config', 'pre_receive_tmpl.py')
         )
 
         for h_type, tmpl in [('pre', tmpl_pre), ('post', tmpl_post)]:
@@ -877,7 +877,7 @@ class ScmModel(BaseModel):
                 log.debug('writing %s hook file !' % (h_type,))
                 try:
                     with open(_hook_file, 'wb') as f:
-                        tmpl = tmpl.replace('_TMPL_', rhodecode.__version__)
+                        tmpl = tmpl.replace('_TMPL_', kallithea.__version__)
                         f.write(tmpl)
                     os.chmod(_hook_file, 0755)
                 except IOError, e:

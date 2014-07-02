@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.lib.paster_commands.make_rcextensions
+kallithea.lib.paster_commands.make_rcextensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 make-rcext paster command for RhodeCode
@@ -31,7 +31,7 @@ import sys
 import logging
 import pkg_resources
 
-from rhodecode.lib.utils import BasePasterCommand, ask_ok
+from kallithea.lib.utils import BasePasterCommand, ask_ok
 
 # Add location of top level folder to sys.path
 from os.path import dirname as dn
@@ -66,7 +66,7 @@ class Command(BasePasterCommand):
 
         here = config['here']
         tmpl = pkg_resources.resource_string(
-            'rhodecode', os.path.join('config', 'rcextensions', '__init__.py')
+            'kallithea', os.path.join('config', 'rcextensions', '__init__.py')
         )
         ext_file = os.path.join(here, 'rcextensions', '__init__.py')
         if os.path.exists(ext_file):

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.users_groups
+kallithea.controllers.admin.users_groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 User Groups crud controller for pylons
@@ -36,24 +36,24 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import func
 from webob.exc import HTTPInternalServerError
 
-import rhodecode
-from rhodecode.lib import helpers as h
-from rhodecode.lib.exceptions import UserGroupsAssignedException,\
+import kallithea
+from kallithea.lib import helpers as h
+from kallithea.lib.exceptions import UserGroupsAssignedException,\
     RepoGroupAssignmentError
-from rhodecode.lib.utils2 import safe_unicode, str2bool, safe_int
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator,\
+from kallithea.lib.utils2 import safe_unicode, str2bool, safe_int
+from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator,\
     HasUserGroupPermissionAnyDecorator, HasPermissionAnyDecorator
-from rhodecode.lib.base import BaseController, render
-from rhodecode.model.scm import UserGroupList
-from rhodecode.model.user_group import UserGroupModel
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.db import User, UserGroup, UserGroupToPerm,\
+from kallithea.lib.base import BaseController, render
+from kallithea.model.scm import UserGroupList
+from kallithea.model.user_group import UserGroupModel
+from kallithea.model.repo import RepoModel
+from kallithea.model.db import User, UserGroup, UserGroupToPerm,\
     UserGroupRepoToPerm, UserGroupRepoGroupToPerm
-from rhodecode.model.forms import UserGroupForm, UserGroupPermsForm,\
+from kallithea.model.forms import UserGroupForm, UserGroupPermsForm,\
     CustomDefaultPermissionsForm
-from rhodecode.model.meta import Session
-from rhodecode.lib.utils import action_logger
-from rhodecode.lib.compat import json
+from kallithea.model.meta import Session
+from kallithea.lib.utils import action_logger
+from kallithea.lib.compat import json
 
 log = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class UserGroupsController(BaseController):
         group_iter = UserGroupList(_list, perm_set=['usergroup.admin'])
         user_groups_data = []
         total_records = len(group_iter)
-        _tmpl_lookup = rhodecode.CONFIG['pylons.app_globals'].mako_lookup
+        _tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         template = _tmpl_lookup.get_template('data_table/_dt_elements.html')
 
         user_group_name = lambda user_group_id, user_group_name: (

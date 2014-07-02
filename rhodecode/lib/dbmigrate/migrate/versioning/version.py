@@ -6,8 +6,8 @@ import re
 import shutil
 import logging
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.versioning import pathed, script
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.versioning import pathed, script
 from datetime import datetime
 
 

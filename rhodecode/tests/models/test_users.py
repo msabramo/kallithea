@@ -1,12 +1,12 @@
-from rhodecode.tests import *
+from kallithea.tests import *
 
-from rhodecode.model.db import User, UserGroup, UserGroupMember, UserEmailMap,\
+from kallithea.model.db import User, UserGroup, UserGroupMember, UserEmailMap,\
     Permission
-from rhodecode.model.user import UserModel
+from kallithea.model.user import UserModel
 
-from rhodecode.model.meta import Session
-from rhodecode.model.user_group import UserGroupModel
-from rhodecode.tests.fixture import Fixture
+from kallithea.model.meta import Session
+from kallithea.model.user_group import UserGroupModel
+from kallithea.tests.fixture import Fixture
 
 fixture = Fixture()
 

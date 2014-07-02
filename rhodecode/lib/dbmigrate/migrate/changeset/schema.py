@@ -10,9 +10,9 @@ import sqlalchemy
 from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.schema import UniqueConstraint
 
-from rhodecode.lib.dbmigrate.migrate.exceptions import *
-from rhodecode.lib.dbmigrate.migrate.changeset import SQLA_06, SQLA_07
-from rhodecode.lib.dbmigrate.migrate.changeset.databases.visitor import (get_engine_visitor,
+from kallithea.lib.dbmigrate.migrate.exceptions import *
+from kallithea.lib.dbmigrate.migrate.changeset import SQLA_06, SQLA_07
+from kallithea.lib.dbmigrate.migrate.changeset.databases.visitor import (get_engine_visitor,
                                                                          run_single_visitor)
 
 

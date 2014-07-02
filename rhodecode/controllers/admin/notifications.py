@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.admin.notifications
+kallithea.controllers.admin.notifications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 notifications controller for RhodeCode
@@ -31,14 +31,14 @@ from pylons import tmpl_context as c, url
 from pylons.controllers.util import redirect, abort
 from webob.exc import HTTPBadRequest
 
-from rhodecode.model.db import Notification
-from rhodecode.model.notification import NotificationModel
-from rhodecode.model.meta import Session
-from rhodecode.lib.auth import LoginRequired, NotAnonymous
-from rhodecode.lib.base import BaseController, render
-from rhodecode.lib import helpers as h
-from rhodecode.lib.helpers import Page
-from rhodecode.lib.utils2 import safe_int
+from kallithea.model.db import Notification
+from kallithea.model.notification import NotificationModel
+from kallithea.model.meta import Session
+from kallithea.lib.auth import LoginRequired, NotAnonymous
+from kallithea.lib.base import BaseController, render
+from kallithea.lib import helpers as h
+from kallithea.lib.helpers import Page
+from kallithea.lib.utils2 import safe_int
 
 
 log = logging.getLogger(__name__)

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from rhodecode.lib.auth import get_crypt_password, check_password
-from rhodecode.model.db import User, RhodeCodeSetting, Repository, RhodeCodeUi
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.lib import helpers as h
-from rhodecode.model.user import UserModel
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.meta import Session
+from kallithea.lib.auth import get_crypt_password, check_password
+from kallithea.model.db import User, RhodeCodeSetting, Repository, RhodeCodeUi
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.lib import helpers as h
+from kallithea.model.user import UserModel
+from kallithea.model.scm import ScmModel
+from kallithea.model.meta import Session
 
 fixture = Fixture()
 

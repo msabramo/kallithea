@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.controllers.home
+kallithea.controllers.home
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Home controller for Rhodecode
@@ -31,14 +31,14 @@ from pylons.i18n.translation import _
 from webob.exc import HTTPBadRequest
 from sqlalchemy.sql.expression import func
 
-import rhodecode
-from rhodecode.lib import helpers as h
-from rhodecode.lib.utils import jsonify, conditional_cache
-from rhodecode.lib.compat import json
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
-from rhodecode.lib.base import BaseController, render
-from rhodecode.model.db import Repository, RepoGroup
-from rhodecode.model.repo import RepoModel
+import kallithea
+from kallithea.lib import helpers as h
+from kallithea.lib.utils import jsonify, conditional_cache
+from kallithea.lib.compat import json
+from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from kallithea.lib.base import BaseController, render
+from kallithea.model.db import Repository, RepoGroup
+from kallithea.model.repo import RepoModel
 
 
 log = logging.getLogger(__name__)

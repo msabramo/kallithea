@@ -17,14 +17,14 @@ Helpers for fixture generation
 """
 import os
 import time
-from rhodecode.tests import *
-from rhodecode.model.db import Repository, User, RepoGroup, UserGroup
-from rhodecode.model.meta import Session
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.user import UserModel
-from rhodecode.model.repo_group import RepoGroupModel
-from rhodecode.model.user_group import UserGroupModel
-from rhodecode.model.gist import GistModel
+from kallithea.tests import *
+from kallithea.model.db import Repository, User, RepoGroup, UserGroup
+from kallithea.model.meta import Session
+from kallithea.model.repo import RepoModel
+from kallithea.model.user import UserModel
+from kallithea.model.repo_group import RepoGroupModel
+from kallithea.model.user_group import UserGroupModel
+from kallithea.model.gist import GistModel
 
 dn = os.path.dirname
 FIXTURES = os.path.join(dn(dn(os.path.abspath(__file__))), 'tests', 'fixtures')

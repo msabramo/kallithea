@@ -12,12 +12,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from rhodecode.tests import *
-from rhodecode.tests.fixture import Fixture
-from rhodecode.model.db import Repository
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.meta import Session
-from rhodecode.model.scm import ScmModel
+from kallithea.tests import *
+from kallithea.tests.fixture import Fixture
+from kallithea.model.db import Repository
+from kallithea.model.repo import RepoModel
+from kallithea.model.meta import Session
+from kallithea.model.scm import ScmModel
 
 fixture = Fixture()
 

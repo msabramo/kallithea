@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-rhodecode.tests.test_libs
+kallithea.tests.test_libs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Package for testing various lib/helper functions in rhodecode
@@ -27,9 +27,9 @@ from __future__ import with_statement
 import datetime
 import hashlib
 import mock
-from rhodecode.tests import *
-from rhodecode.lib.utils2 import AttributeDict
-from rhodecode.model.db import Repository
+from kallithea.tests import *
+from kallithea.lib.utils2 import AttributeDict
+from kallithea.model.db import Repository
 
 proto = 'http'
 TEST_URLS = [
@@ -70,12 +70,12 @@ class TestLibs(BaseTestCase):
 
     @parameterized.expand(TEST_URLS)
     def test_uri_filter(self, test_url, expected, expected_creds):
-        from rhodecode.lib.utils2 import uri_filter
+        from kallithea.lib.utils2 import uri_filter
         self.assertEqual(uri_filter(test_url), expected)
 
     @parameterized.expand(TEST_URLS)
     def test_credentials_filter(self, test_url, expected, expected_creds):
-        from rhodecode.lib.utils2 import credentials_filter
+        from kallithea.lib.utils2 import credentials_filter
         self.assertEqual(credentials_filter(test_url), expected_creds)
 
     @parameterized.expand([('t', True),
@@ -97,11 +97,11 @@ class TestLibs(BaseTestCase):
                            ('', False)
     ])
     def test_str2bool(self, str_bool, expected):
-        from rhodecode.lib.utils2 import str2bool
+        from kallithea.lib.utils2 import str2bool
         self.assertEqual(str2bool(str_bool), expected)
 
     def test_mention_extractor(self):
-        from rhodecode.lib.utils2 import extract_mentioned_users
+        from kallithea.lib.utils2 import extract_mentioned_users
         sample = (
             "@first hi there @marcink here's my email marcin@email.com "
             "@lukaszb check @one_more22 it pls @ ttwelve @D[] @one@two@three "
@@ -128,7 +128,7 @@ class TestLibs(BaseTestCase):
         (dict(years= -1, months= -1), u'1 year and 1 month ago'),
     ])
     def test_age(self, age_args, expected):
-        from rhodecode.lib.utils2 import age
+        from kallithea.lib.utils2 import age
         from dateutil import relativedelta
         n = datetime.datetime(year=2012, month=5, day=17)
         delt = lambda *args, **kwargs: relativedelta.relativedelta(*args, **kwargs)
@@ -147,7 +147,7 @@ class TestLibs(BaseTestCase):
         (dict(years=1, months=1), u'in 1 year and 1 month')
     ])
     def test_age_in_future(self, age_args, expected):
-        from rhodecode.lib.utils2 import age
+        from kallithea.lib.utils2 import age
         from dateutil import relativedelta
         n = datetime.datetime(year=2012, month=5, day=17)
         delt = lambda *args, **kwargs: relativedelta.relativedelta(*args, **kwargs)
@@ -160,7 +160,7 @@ class TestLibs(BaseTestCase):
             "[requires => url] [lang => python] [just a tag]"
             "[,d] [ => ULR ] [obsolete] [desc]]"
         )
-        from rhodecode.lib.helpers import desc_stylize
+        from kallithea.lib.helpers import desc_stylize
         res = desc_stylize(sample)
         self.assertTrue('<div class="metatag" tag="tag">tag</div>' in res)
         self.assertTrue('<div class="metatag" tag="obsolete">obsolete</div>' in res)
@@ -170,7 +170,7 @@ class TestLibs(BaseTestCase):
         self.assertTrue('<div class="metatag" tag="tag">tag</div>' in res)
 
     def test_alternative_gravatar(self):
-        from rhodecode.lib.helpers import gravatar_url
+        from kallithea.lib.helpers import gravatar_url
         _md5 = lambda s: hashlib.md5(s).hexdigest()
 
         #mock pylons.url
@@ -237,7 +237,7 @@ class TestLibs(BaseTestCase):
         ('https://proxy1.server.com/{user}/{repo}', 'group/repo1', {'user': 'marcink'}, '', 'https://proxy1.server.com/marcink/group/repo1'),
     ])
     def test_clone_url_generator(self, tmpl, repo_name, overrides, prefix, expected):
-        from rhodecode.lib.utils2 import get_clone_url
+        from kallithea.lib.utils2 import get_clone_url
         clone_url = get_clone_url(uri_tmpl=tmpl, qualifed_home_url='http://vps1:8000'+prefix,
                                   repo_name=repo_name, repo_id=23, **overrides)
         self.assertEqual(clone_url, expected)
@@ -292,7 +292,7 @@ class TestLibs(BaseTestCase):
         expected = self._quick_url(expected)
 
         with mock.patch('pylons.url', fake_url):
-            from rhodecode.lib.helpers import urlify_changesets
+            from kallithea.lib.helpers import urlify_changesets
             self.assertEqual(urlify_changesets(sample, 'repo_name'), expected)
 
     @parameterized.expand([
@@ -317,7 +317,7 @@ class TestLibs(BaseTestCase):
        "https://foo.bar.com")
     ])
     def test_urlify_test(self, sample, expected, url_):
-        from rhodecode.lib.helpers import urlify_text
+        from kallithea.lib.helpers import urlify_text
         expected = self._quick_url(expected,
                                    tmpl="""<a href="%s">%s</a>""", url_=url_)
         self.assertEqual(urlify_text(sample), expected)
@@ -341,7 +341,7 @@ class TestLibs(BaseTestCase):
 
     ])
     def test_get_repo_by_id(self, test, expected):
-        from rhodecode.lib.utils import _extract_id_from_repo_name
+        from kallithea.lib.utils import _extract_id_from_repo_name
         _test = _extract_id_from_repo_name(test)
         self.assertEqual(_test, expected, msg='url:%s, got:`%s` expected: `%s`'
                                               % (test, _test, expected))

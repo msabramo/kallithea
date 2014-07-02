@@ -16,8 +16,8 @@ from sqlalchemy.schema import (ForeignKeyConstraint,
                                UniqueConstraint,
                                Index)
 
-from rhodecode.lib.dbmigrate.migrate import exceptions
-from rhodecode.lib.dbmigrate.migrate.changeset import constraint
+from kallithea.lib.dbmigrate.migrate import exceptions
+from kallithea.lib.dbmigrate.migrate.changeset import constraint
 
 from sqlalchemy.schema import AddConstraint, DropConstraint
 from sqlalchemy.sql.compiler import DDLCompiler

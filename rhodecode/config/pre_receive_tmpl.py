@@ -3,19 +3,19 @@ import os
 import sys
 
 try:
-    import rhodecode
+    import kallithea
     RC_HOOK_VER = '_TMPL_'
     os.environ['RC_HOOK_VER'] = RC_HOOK_VER
-    from rhodecode.lib.hooks import handle_git_pre_receive as _handler
+    from kallithea.lib.hooks import handle_git_pre_receive as _handler
 except ImportError:
     if os.environ.get('RC_DEBUG_GIT_HOOK'):
         import traceback
         print traceback.format_exc()
-    rhodecode = None
+    kallithea = None
 
 
 def main():
-    if rhodecode is None:
+    if kallithea is None:
         # exit with success if we cannot import rhodecode !!
         # this allows simply push to this repo even without
         # rhodecode
