@@ -151,7 +151,8 @@ ColorGenerator.prototype = {
 }
 
 /**
- * PyRoutesJS
+ * A customized version of PyRoutes.JS from https://pypi.python.org/pypi/pyroutes.js/
+ * which is copyright Stephane Klein and was made available under the BSD License.
  *
  * Usage pyroutes.url('mark_error_fixed',{"error_id":error_id}) // /mark_error_fixed/<error_id>
  */
