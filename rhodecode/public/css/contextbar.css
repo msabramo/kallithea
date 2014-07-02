@@ -53,6 +53,10 @@
     min-height: 36px;
 }
 
+#content #context-bar h2 {
+    display: inline-block;
+}
+
 #header #header-inner #quick a,
 #content #context-bar,
 #content #context-bar a {
