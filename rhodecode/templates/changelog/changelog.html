@@ -35,7 +35,7 @@ ${self.repo_context_bar('changelog')}
     <div class="table">
         % if c.pagination:
             <div id="graph">
-                <div style="display:${'none' if c.changelog_for_path else ''}">
+                <div style="overflow:auto; display:${'none' if c.changelog_for_path else ''}">
                     <div class="container_header">
                        <div style="float:right; margin: 0px 0px 0px 4px">${h.select('branch_filter',c.branch_name,c.branch_filters)}</div>
                        <div class="info_box" style="text-align: right; float: right">
