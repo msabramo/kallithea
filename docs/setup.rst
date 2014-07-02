@@ -732,7 +732,7 @@ Other configuration files
 
 Some example init.d scripts can be found in init.d directory::
 
-  https://secure.rhodecode.org/rhodecode/files/beta/init.d
+  https://kallithea-scm.org/repos/kallithea/files/tip/init.d/
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _python: http://www.python.org/
@@ -742,5 +742,5 @@ Some example init.d scripts can be found in init.d directory::
 .. _python-ldap: http://www.python-ldap.org/
 .. _mercurial-server: http://www.lshift.net/mercurial-server.html
 .. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
-.. _Issues tracker: https://bitbucket.org/marcinkuzminski/rhodecode/issues
+.. _Issues tracker: https://bitbucket.org/conservancy/kallithea/issues
 .. _google group rhodecode: http://groups.google.com/group/rhodecode

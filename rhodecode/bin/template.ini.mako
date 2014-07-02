@@ -241,7 +241,7 @@ default_encoding = utf8
 #clone_uri = {scheme}://{user}{pass}{netloc}{path}
 
 <%text>## issue tracker for RhodeCode (leave blank to disable, absent for default)</%text>
-#bugtracker = http://bitbucket.org/marcinkuzminski/rhodecode/issues
+#bugtracker = https://bitbucket.org/conservancy/kallithea/issues
 
 <%text>## issue tracking mapping for commits messages</%text>
 <%text>## comment out issue_pat, issue_server, issue_prefix to enable</%text>

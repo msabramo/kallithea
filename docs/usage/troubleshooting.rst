@@ -78,5 +78,5 @@ For further questions search the `Issues tracker`_, or post a message in the
 .. _python-ldap: http://www.python-ldap.org/
 .. _mercurial-server: http://www.lshift.net/mercurial-server.html
 .. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
-.. _Issues tracker: https://bitbucket.org/marcinkuzminski/rhodecode/issues
+.. _Issues tracker: https://bitbucket.org/conservancy/kallithea/issues
 .. _google group rhodecode: http://groups.google.com/group/rhodecode

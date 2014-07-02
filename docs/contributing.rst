@@ -9,7 +9,7 @@ greatly appreciated!
 
 Could I request that you make your source contributions by first forking the
 RhodeCode repository on bitbucket_
-https://bitbucket.org/marcinkuzminski/rhodecode and then make your changes to
+https://bitbucket.org/conservancy/kallithea and then make your changes to
 your forked repository. Please post all fixes into **dev** bookmark since your
 change might be already fixed there and i try to merge all fixes from dev into
 stable, and not the other way. Finally, when you are finished with your changes,
@@ -18,7 +18,7 @@ please send me a pull request.
 To run RhodeCode in a development version you always need to install the latest
 required libs. Simply clone rhodecode and switch to beta branch::
 
-    hg clone -u dev https://secure.rhodecode.org/rhodecode
+    hg clone https://kallithea-scm.org/repos/kallithea
 
 after downloading/pulling RhodeCode make sure you run::
 

@@ -50,19 +50,15 @@ using the following credentials:
 Source code
 -----------
 
-The latest sources can be obtained from official RhodeCode instance
-https://secure.rhodecode.org
+The latest sources can be obtained from https://kallithea-scm.org/repos/kallithea
 
 
 MIRRORS:
 
 Issue tracker and sources at bitbucket_
 
-http://bitbucket.org/marcinkuzminski/rhodecode
+https://bitbucket.org/conservancy/kallithea
 
-Sources at github_
-
-https://github.com/marcinkuzminski/rhodecode
 
 
 RhodeCode Features
@@ -143,7 +139,7 @@ Listed bellow are various support resources that should help.
 - Join the `Google group <http://groups.google.com/group/rhodecode>`_ and ask
   any questions.
 
-- Open an issue at `issue tracker <http://bitbucket.org/marcinkuzminski/rhodecode/issues>`_
+- Open an issue at `issue tracker <https://bitbucket.org/conservancy/kallithea/issues>`_
 
 - Join #rhodecode on FreeNode (irc.freenode.net)
   or use http://webchat.freenode.net/?channels=rhodecode for web access to irc.
