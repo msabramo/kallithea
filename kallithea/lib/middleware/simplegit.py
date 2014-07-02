@@ -18,9 +18,11 @@ kallithea.lib.middleware.simplegit
 SimpleGit middleware for handling git protocol request (push/clone etc.)
 It's implemented with basic auth function
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Apr 28, 2010
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 
 """

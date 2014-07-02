@@ -18,9 +18,11 @@ kallithea.lib.celerylib.tasks
 RhodeCode task modules, containing all task that suppose to be run
 by celery daemon
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Oct 6, 2010
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 

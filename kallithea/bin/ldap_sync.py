@@ -17,9 +17,11 @@ kallithea.bin.__init__
 
 LDAP sync script
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Mar 06, 2013
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 

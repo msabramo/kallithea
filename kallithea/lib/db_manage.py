@@ -18,9 +18,11 @@ kallithea.lib.db_manage
 Database creation, and setup module for RhodeCode. Used for creation
 of database as well as for migration operations
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Apr 10, 2010
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 

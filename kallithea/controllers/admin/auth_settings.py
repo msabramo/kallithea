@@ -17,6 +17,8 @@ kallithea.controllers.admin.auth_settings
 
 pluggable authentication controller for RhodeCode
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Nov 26, 2010
 :author: akesterson
 """

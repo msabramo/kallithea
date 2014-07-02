@@ -17,9 +17,11 @@ kallithea.lib.markup_renderer
 
 Renderer for markup languages with ability to parse using rst or markdown
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Oct 27, 2011
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 

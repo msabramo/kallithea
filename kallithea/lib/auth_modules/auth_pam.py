@@ -17,6 +17,8 @@ kallithea.lib.auth_pam
 
 RhodeCode authentication library for PAM
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Created on Apr 09, 2013
 :author: Alexey Larikov
 """

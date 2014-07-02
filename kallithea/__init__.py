@@ -18,9 +18,11 @@ kallithea.__init__
 RhodeCode, a web based repository management based on pylons
 versioning implementation: http://www.python.org/dev/peps/pep-0386/
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Apr 9, 2010
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 
@@ -55,7 +57,7 @@ __dbversion__ = 31  # defines current db version for migrations
 __platform__ = platform.system()
 __license__ = 'GPLv3'
 __py_version__ = sys.version_info
-__author__ = 'RhodeCode GmbH'
+__author__ = "Various Authors"
 __url__ = 'https://kallithea-scm.org/'
 
 is_windows = __platform__ in ['Windows']

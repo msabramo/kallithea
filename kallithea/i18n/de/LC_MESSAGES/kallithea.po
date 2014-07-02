@@ -1,5 +1,5 @@
 # Translations template for RhodeCode.
-# Copyright (C) 2014 RhodeCode GmbH
+# Copyright (C) 2014 RhodeCode GmbH, and others.
 # This file is distributed under the same license as the RhodeCode project.
 # Translators:
 # stephanj <info@stephan-jauernick.de>, 2013

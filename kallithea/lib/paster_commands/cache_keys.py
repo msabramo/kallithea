@@ -18,9 +18,11 @@ kallithea.lib.paster_commands.cache_keys
 cleanup-keys paster command for RhodeCode
 
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: mar 27, 2013
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 """
 

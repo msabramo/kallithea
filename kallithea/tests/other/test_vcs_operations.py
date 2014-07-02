@@ -21,9 +21,11 @@ Run using after doing paster serve test.ini::
 
 You must have git > 1.8.1 for tests to work fine
 
+This file was forked by the Kallithea project in July 2014.
+Original author and date, and relevant copyright and licensing information is below:
 :created_on: Dec 30, 2010
 :author: marcink
-:copyright: (c) 2013 RhodeCode GmbH.
+:copyright: (c) 2013 RhodeCode GmbH, and others.
 :license: GPLv3, see LICENSE.md for more details.
 
 """
