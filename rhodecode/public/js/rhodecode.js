@@ -13,7 +13,7 @@ if (typeof console == "undefined" || typeof console.log == "undefined"){
  * Inspired by https://gist.github.com/1049426
  */
 String.prototype.format = function() {
-      function format() {
+    function format() {
         var str = this;
         var len = arguments.length+1;
         var safe = undefined;
@@ -22,18 +22,18 @@ String.prototype.format = function() {
         // For each {0} {1} {n...} replace with the argument in that position.  If
         // the argument is an object or an array it will be stringified to JSON.
         for (var i=0; i < len; arg = arguments[i++]) {
-          safe = typeof arg === 'object' ? JSON.stringify(arg) : arg;
-          str = str.replace(RegExp('\\{'+(i-1)+'\\}', 'g'), safe);
+            safe = typeof arg === 'object' ? JSON.stringify(arg) : arg;
+            str = str.replace(RegExp('\\{'+(i-1)+'\\}', 'g'), safe);
         }
         return str;
-      }
+    }
 
-      // Save a reference of what may already exist under the property native.
-      // Allows for doing something like: if("".format.native) { /* use native */ }
-      format.native = String.prototype.format;
+    // Save a reference of what may already exist under the property native.
+    // Allows for doing something like: if("".format.native) { /* use native */ }
+    format.native = String.prototype.format;
 
-      // Replace the prototype property
-      return format;
+    // Replace the prototype property
+    return format;
 
 }();
 
@@ -620,34 +620,34 @@ var q_filter = function(target,nodes,display_element){
     }
 
     F.updateFilter  = function() {
-       // Reset timeout
-       F.filterTimeout = null;
+        // Reset timeout
+        F.filterTimeout = null;
 
-       var obsolete = [];
+        var obsolete = [];
 
-       var req = q_filter_field.value.toLowerCase();
+        var req = q_filter_field.value.toLowerCase();
 
-       var l = nodes.length;
-       var i;
-       var showing = 0;
+        var l = nodes.length;
+        var i;
+        var showing = 0;
 
-       for (i=0;i<l;i++ ){
-           var n = nodes[i];
-           var target_element = display_element(n)
-           if(req && n.innerHTML.toLowerCase().indexOf(req) == -1){
-               hide_node(target_element);
-           }
-           else{
-               show_node(target_element);
-               showing+=1;
-           }
-       }
+        for (i=0;i<l;i++ ){
+            var n = nodes[i];
+            var target_element = display_element(n)
+            if(req && n.innerHTML.toLowerCase().indexOf(req) == -1){
+                hide_node(target_element);
+            }
+            else{
+                show_node(target_element);
+                showing+=1;
+            }
+        }
 
-       // if repo_count is set update the number
-       var cnt = YUD.get('repo_count');
-       if(cnt){
-           YUD.get('repo_count').innerHTML = showing;
-       }
+        // if repo_count is set update the number
+        var cnt = YUD.get('repo_count');
+        if(cnt){
+            YUD.get('repo_count').innerHTML = showing;
+        }
     }
 };
 
@@ -693,111 +693,111 @@ var createInlineForm = function(parent_tr, f_path, line) {
  * block at the very bottom
  */
 var injectInlineForm = function(tr){
-      if(!YUD.hasClass(tr, 'line')){
-          return
-      }
-      var submit_url = AJAX_COMMENT_URL;
-      var _td = YUD.getElementsByClassName('code',null,tr)[0];
-      if(YUD.hasClass(tr,'form-open') || YUD.hasClass(tr,'context') || YUD.hasClass(_td,'no-comment')){
-          return
-      }
-      YUD.addClass(tr,'form-open');
-      YUD.addClass(tr,'hl-comment');
-      var node = YUD.getElementsByClassName('full_f_path',null,tr.parentNode.parentNode.parentNode)[0];
-      var f_path = YUD.getAttribute(node,'path');
-      var lineno = getLineNo(tr);
-      var form = createInlineForm(tr, f_path, lineno, submit_url);
+    if(!YUD.hasClass(tr, 'line')){
+        return
+    }
+    var submit_url = AJAX_COMMENT_URL;
+    var _td = YUD.getElementsByClassName('code',null,tr)[0];
+    if(YUD.hasClass(tr,'form-open') || YUD.hasClass(tr,'context') || YUD.hasClass(_td,'no-comment')){
+        return
+    }
+    YUD.addClass(tr,'form-open');
+    YUD.addClass(tr,'hl-comment');
+    var node = YUD.getElementsByClassName('full_f_path',null,tr.parentNode.parentNode.parentNode)[0];
+    var f_path = YUD.getAttribute(node,'path');
+    var lineno = getLineNo(tr);
+    var form = createInlineForm(tr, f_path, lineno, submit_url);
 
-      var parent = tr;
-      while (1){
-          var n = parent.nextElementSibling;
-          // next element are comments !
-          if(YUD.hasClass(n,'inline-comments')){
-              parent = n;
-          }
-          else{
-              break;
-          }
-      }
-      YUD.insertAfter(form,parent);
-      var f = YUD.get(form);
-      var overlay = YUD.getElementsByClassName('overlay',null,f)[0];
-      var _form = YUD.getElementsByClassName('inline-form',null,f)[0];
+    var parent = tr;
+    while (1){
+        var n = parent.nextElementSibling;
+        // next element are comments !
+        if(YUD.hasClass(n,'inline-comments')){
+            parent = n;
+        }
+        else{
+            break;
+        }
+    }
+    YUD.insertAfter(form,parent);
+    var f = YUD.get(form);
+    var overlay = YUD.getElementsByClassName('overlay',null,f)[0];
+    var _form = YUD.getElementsByClassName('inline-form',null,f)[0];
 
-      YUE.on(YUD.get(_form), 'submit',function(e){
-          YUE.preventDefault(e);
+    YUE.on(YUD.get(_form), 'submit',function(e){
+        YUE.preventDefault(e);
 
-          //ajax submit
-          var text = YUD.get('text_'+lineno).value;
-          var postData = {
+        //ajax submit
+        var text = YUD.get('text_'+lineno).value;
+        var postData = {
                 'text':text,
                 'f_path':f_path,
                 'line':lineno
-          };
+        };
 
-          if(lineno === undefined){
-              alert('missing line !');
-              return
-          }
-          if(f_path === undefined){
-              alert('missing file path !');
-              return
-          }
+        if(lineno === undefined){
+            alert('missing line !');
+            return
+        }
+        if(f_path === undefined){
+            alert('missing file path !');
+            return
+        }
 
-          if(text == ""){
-              return
-          }
+        if(text == ""){
+            return
+        }
 
-          var success = function(o){
-              YUD.removeClass(tr, 'form-open');
-              removeInlineForm(f);
-              var json_data = JSON.parse(o.responseText);
-              renderInlineComment(json_data);
-          };
+        var success = function(o){
+            YUD.removeClass(tr, 'form-open');
+            removeInlineForm(f);
+            var json_data = JSON.parse(o.responseText);
+            renderInlineComment(json_data);
+        };
 
-          if (YUD.hasClass(overlay,'overlay')){
-              var w = _form.offsetWidth;
-              var h = _form.offsetHeight;
-              YUD.setStyle(overlay,'width',w+'px');
-              YUD.setStyle(overlay,'height',h+'px');
-          }
-          YUD.addClass(overlay, 'submitting');
+        if (YUD.hasClass(overlay,'overlay')){
+            var w = _form.offsetWidth;
+            var h = _form.offsetHeight;
+            YUD.setStyle(overlay,'width',w+'px');
+            YUD.setStyle(overlay,'height',h+'px');
+        }
+        YUD.addClass(overlay, 'submitting');
 
-          ajaxPOST(submit_url, postData, success);
-      });
+        ajaxPOST(submit_url, postData, success);
+    });
 
-      YUE.on('preview-btn_'+lineno, 'click', function(e){
-           var _text = YUD.get('text_'+lineno).value;
-           if(!_text){
-               return
-           }
-           var post_data = {'text': _text};
-           YUD.addClass('preview-box_'+lineno, 'unloaded');
-           YUD.get('preview-box_'+lineno).innerHTML = _TM['Loading ...'];
-           YUD.setStyle('edit-container_'+lineno, 'display', 'none');
-           YUD.setStyle('preview-container_'+lineno, 'display', '');
+    YUE.on('preview-btn_'+lineno, 'click', function(e){
+        var _text = YUD.get('text_'+lineno).value;
+        if(!_text){
+            return
+        }
+        var post_data = {'text': _text};
+        YUD.addClass('preview-box_'+lineno, 'unloaded');
+        YUD.get('preview-box_'+lineno).innerHTML = _TM['Loading ...'];
+        YUD.setStyle('edit-container_'+lineno, 'display', 'none');
+        YUD.setStyle('preview-container_'+lineno, 'display', '');
 
-           var url = pyroutes.url('changeset_comment_preview', {'repo_name': REPO_NAME});
-           ajaxPOST(url,post_data,function(o){
-               YUD.get('preview-box_'+lineno).innerHTML = o.responseText;
-               YUD.removeClass('preview-box_'+lineno, 'unloaded');
-           })
-       })
-       YUE.on('edit-btn_'+lineno, 'click', function(e){
-           YUD.setStyle('edit-container_'+lineno, 'display', '');
-           YUD.setStyle('preview-container_'+lineno, 'display', 'none');
-       })
+        var url = pyroutes.url('changeset_comment_preview', {'repo_name': REPO_NAME});
+        ajaxPOST(url,post_data,function(o){
+            YUD.get('preview-box_'+lineno).innerHTML = o.responseText;
+            YUD.removeClass('preview-box_'+lineno, 'unloaded');
+        })
+    })
+    YUE.on('edit-btn_'+lineno, 'click', function(e){
+        YUD.setStyle('edit-container_'+lineno, 'display', '');
+        YUD.setStyle('preview-container_'+lineno, 'display', 'none');
+    })
 
-      setTimeout(function(){
-          // callbacks
-          tooltip_activate();
-          MentionsAutoComplete('text_'+lineno, 'mentions_container_'+lineno,
+    setTimeout(function(){
+        // callbacks
+        tooltip_activate();
+        MentionsAutoComplete('text_'+lineno, 'mentions_container_'+lineno,
                              _USERS_AC_DATA, _GROUPS_AC_DATA);
-          var _e = YUD.get('text_'+lineno);
-          if(_e){
-              _e.focus();
-          }
-      },10)
+        var _e = YUD.get('text_'+lineno);
+        if(_e){
+            _e.focus();
+        }
+    },10)
 };
 
 var deleteComment = function(comment_id){
@@ -852,22 +852,22 @@ var placeAddButton = function(target_tr){
     }
     var last_node = target_tr;
     //scann
-      while (1){
-          var n = last_node.nextElementSibling;
-          // next element are comments !
-          if(YUD.hasClass(n,'inline-comments')){
-              last_node = n;
-              //also remove the comment button from previous
-              var comment_add_buttons = YUD.getElementsByClassName('add-comment',null,last_node);
-              for(var i=0;i<comment_add_buttons.length;i++){
-                  var b = comment_add_buttons[i];
-                  b.parentNode.removeChild(b);
-              }
-          }
-          else{
-              break;
-          }
-      }
+    while (1){
+        var n = last_node.nextElementSibling;
+        // next element are comments !
+        if(YUD.hasClass(n,'inline-comments')){
+            last_node = n;
+            //also remove the comment button from previous
+            var comment_add_buttons = YUD.getElementsByClassName('add-comment',null,last_node);
+            for(var i=0;i<comment_add_buttons.length;i++){
+                var b = comment_add_buttons[i];
+                b.parentNode.removeChild(b);
+            }
+        }
+        else{
+            break;
+        }
+    }
 
     var add = createInlineAddButton(target_tr);
     // get the comment div
@@ -880,30 +880,30 @@ var placeAddButton = function(target_tr){
  * Places the inline comment into the changeset block in proper line position
  */
 var placeInline = function(target_container,lineno,html){
-      var lineid = "{0}_{1}".format(target_container,lineno);
-      var target_line = YUD.get(lineid);
-      var comment = new YAHOO.util.Element(tableTr('inline-comments',html))
+    var lineid = "{0}_{1}".format(target_container,lineno);
+    var target_line = YUD.get(lineid);
+    var comment = new YAHOO.util.Element(tableTr('inline-comments',html))
 
-      // check if there are comments already !
-      var parent = target_line.parentNode;
-      var root_parent = parent;
-      while (1){
-          var n = parent.nextElementSibling;
-          // next element are comments !
-          if(YUD.hasClass(n,'inline-comments')){
-              parent = n;
-          }
-          else{
-              break;
-          }
-      }
-      // put in the comment at the bottom
-      YUD.insertAfter(comment,parent);
+    // check if there are comments already !
+    var parent = target_line.parentNode;
+    var root_parent = parent;
+    while (1){
+        var n = parent.nextElementSibling;
+        // next element are comments !
+        if(YUD.hasClass(n,'inline-comments')){
+            parent = n;
+        }
+        else{
+            break;
+        }
+    }
+    // put in the comment at the bottom
+    YUD.insertAfter(comment,parent);
 
-      // scann nodes, and attach add button to last one
-      placeAddButton(root_parent);
+    // scann nodes, and attach add button to last one
+    placeAddButton(root_parent);
 
-      return target_line;
+    return target_line;
 }
 
 /**
@@ -911,12 +911,12 @@ var placeInline = function(target_container,lineno,html){
  */
 var renderInlineComment = function(json_data){
     try{
-      var html =  json_data['rendered_text'];
-      var lineno = json_data['line_no'];
-      var target_id = json_data['target_id'];
-      placeInline(target_id, lineno, html);
+        var html =  json_data['rendered_text'];
+        var lineno = json_data['line_no'];
+        var target_id = json_data['target_id'];
+        placeInline(target_id, lineno, html);
     }catch(e){
-      console.log(e);
+        console.log(e);
     }
 }
 
@@ -963,28 +963,28 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
     var nodes = null;
 
     F.initFilter = function(){
-      YUD.setStyle('node_filter_box_loading','display','');
-      YUD.setStyle('search_activate_id','display','none');
-      YUD.setStyle('add_node_id','display','none');
-      YUC.initHeader('X-PARTIAL-XHR',true);
-      YUC.asyncRequest('GET', node_list_url, {
-          success:function(o){
-            nodes = JSON.parse(o.responseText).nodes;
-            YUD.setStyle('node_filter_box_loading','display','none');
-            YUD.setStyle('node_filter_box','display','');
-            n_filter.focus();
-            if(YUD.hasClass(n_filter,'init')){
-                n_filter.value = '';
-                YUD.removeClass(n_filter,'init');
+        YUD.setStyle('node_filter_box_loading','display','');
+        YUD.setStyle('search_activate_id','display','none');
+        YUD.setStyle('add_node_id','display','none');
+        YUC.initHeader('X-PARTIAL-XHR',true);
+        YUC.asyncRequest('GET', node_list_url, {
+            success:function(o){
+                nodes = JSON.parse(o.responseText).nodes;
+                YUD.setStyle('node_filter_box_loading','display','none');
+                YUD.setStyle('node_filter_box','display','');
+                n_filter.focus();
+                if(YUD.hasClass(n_filter,'init')){
+                    n_filter.value = '';
+                    YUD.removeClass(n_filter,'init');
+                }
+            },
+            failure:function(o){
+                console.log('failed to load');
             }
-          },
-          failure:function(o){
-              console.log('failed to load');
-          }
-      },null);
+        },null);
     }
 
-    F.updateFilter  = function(e) {
+    F.updateFilter = function(e) {
         return function(){
             // Reset timeout
             F.filterTimeout = null;
@@ -1033,49 +1033,49 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
     };
 
     YUE.on(YUD.get('filter_activate'),'click',function(){
-        F.initFilter();
-    })
+            F.initFilter();
+        })
     YUE.on(n_filter,'click',function(){
-        if(YUD.hasClass(n_filter,'init')){
-            n_filter.value = '';
-            YUD.removeClass(n_filter,'init');
-        }
-     });
+            if(YUD.hasClass(n_filter,'init')){
+                n_filter.value = '';
+                YUD.removeClass(n_filter,'init');
+            }
+        });
     YUE.on(n_filter,'keyup',function(e){
-        clearTimeout(F.filterTimeout);
-        F.filterTimeout = setTimeout(F.updateFilter(e),600);
-    });
+            clearTimeout(F.filterTimeout);
+            F.filterTimeout = setTimeout(F.updateFilter(e),600);
+        });
 };
 
 
 var initCodeMirror = function(textAreadId,resetUrl){
     var myCodeMirror = CodeMirror.fromTextArea(YUD.get(textAreadId),{
-           mode:  "null",
-           lineNumbers:true,
-           indentUnit: 4
-         });
+            mode:  "null",
+            lineNumbers:true,
+            indentUnit: 4
+        });
     YUE.on('reset','click',function(e){
-        window.location=resetUrl
-    });
+            window.location=resetUrl
+        });
 
     YUE.on('file_enable','click',function(){
-        YUD.setStyle('editor_container','display','');
-        YUD.setStyle('upload_file_container','display','none');
-        YUD.setStyle('filename_container','display','');
-    });
+            YUD.setStyle('editor_container','display','');
+            YUD.setStyle('upload_file_container','display','none');
+            YUD.setStyle('filename_container','display','');
+        });
 
     YUE.on('upload_file_enable','click',function(){
-        YUD.setStyle('editor_container','display','none');
-        YUD.setStyle('upload_file_container','display','');
-        YUD.setStyle('filename_container','display','none');
-    });
+            YUD.setStyle('editor_container','display','none');
+            YUD.setStyle('upload_file_container','display','');
+            YUD.setStyle('filename_container','display','none');
+        });
 
     return myCodeMirror
 };
 
 var setCodeMirrorMode = function(codeMirrorInstance, mode) {
-   codeMirrorInstance.setOption("mode", mode);
-   CodeMirror.autoLoadMode(codeMirrorInstance, mode);
+    codeMirrorInstance.setOption("mode", mode);
+    CodeMirror.autoLoadMode(codeMirrorInstance, mode);
 }
 
 
@@ -1087,14 +1087,14 @@ var getIdentNode = function(n){
     }
 
     if(typeof n.id != "undefined" && n.id.match('L[0-9]+')){
-            return n
-        }
+        return n
+    }
     else{
         return getIdentNode(n.parentNode);
     }
 };
 
-var  getSelectionLink = function(e) {
+var getSelectionLink = function(e) {
     //get selection from start/to nodes
     if (typeof window.getSelection != "undefined") {
         s = window.getSelection();
@@ -1206,8 +1206,8 @@ var MembersAutoComplete = function (divid, cont, users_list, groups_list) {
                 if (((contact.fname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.lname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.nname) && ((contact.nname).toLowerCase().indexOf(query) > -1))) {
-                       matches[matches.length] = contact;
-                   }
+                    matches[matches.length] = contact;
+                }
             }
             return matches;
         };
@@ -1586,12 +1586,12 @@ var removeReviewMember = function(reviewer_id, repo_name, pull_request_id){
 
 var updateReviewers = function(reviewers_ids, repo_name, pull_request_id){
     if (reviewers_ids === undefined){
-      var reviewers_ids = [];
-      var ids = YUQ('#review_members input');
-      for(var i=0; i<ids.length;i++){
-          var id = ids[i].value
-          reviewers_ids.push(id);
-      }
+        var reviewers_ids = [];
+        var ids = YUQ('#review_members input');
+        for(var i=0; i<ids.length;i++){
+            var id = ids[i].value
+            reviewers_ids.push(id);
+        }
     }
     var url = pyroutes.url('pullrequest_update', {"repo_name":repo_name,
                                                   "pull_request_id": pull_request_id});
@@ -1621,8 +1621,8 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
                 if (((contact.fname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.lname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.nname) && ((contact.nname).toLowerCase().indexOf(query) > -1))) {
-                       matches[matches.length] = contact;
-                   }
+                    matches[matches.length] = contact;
+                }
             }
             return matches;
         };
@@ -1778,9 +1778,9 @@ var quick_repo_menu = function(){
 
 // returns a node from given html;
 var fromHTML = function(html){
-      var _html = document.createElement('element');
-      _html.innerHTML = html;
-      return _html;
+    var _html = document.createElement('element');
+    _html.innerHTML = html;
+    return _html;
 }
 
 var get_rev = function(node){
@@ -1801,16 +1801,16 @@ var get_date = function(node){
 }
 
 var revisionSort = function(a, b, desc, field) {
-      var a_ = fromHTML(a.getData(field));
-      var b_ = fromHTML(b.getData(field));
+    var a_ = fromHTML(a.getData(field));
+    var b_ = fromHTML(b.getData(field));
 
-      // extract revisions from string nodes
-      a_ = get_rev(a_)
-      b_ = get_rev(b_)
+    // extract revisions from string nodes
+    a_ = get_rev(a_)
+    b_ = get_rev(b_)
 
-      var comp = YAHOO.util.Sort.compare;
-      var compState = comp(a_, b_, desc);
-      return compState;
+    var comp = YAHOO.util.Sort.compare;
+    var compState = comp(a_, b_, desc);
+    return compState;
 };
 
 var ageSort = function(a, b, desc, field) {
@@ -1861,19 +1861,19 @@ var addPermAction = function(_html, users_list, groups_list){
     var elmts = YUD.getElementsByClassName('last_new_member');
     var last_node = elmts[elmts.length-1];
     if (last_node){
-       var next_id = (YUD.getElementsByClassName('new_members')).length;
-       _html = _html.format(next_id);
-       last_node.innerHTML = _html;
-       YUD.setStyle(last_node, 'display', '');
-       YUD.removeClass(last_node, 'last_new_member');
-       MembersAutoComplete("perm_new_member_name_"+next_id,
-               "perm_container_"+next_id, users_list, groups_list);
-       //create new last NODE
-       var el = document.createElement('tr');
-       el.id = 'add_perm_input';
-       YUD.addClass(el,'last_new_member');
-       YUD.addClass(el,'new_members');
-       YUD.insertAfter(el, last_node);
+        var next_id = (YUD.getElementsByClassName('new_members')).length;
+        _html = _html.format(next_id);
+        last_node.innerHTML = _html;
+        YUD.setStyle(last_node, 'display', '');
+        YUD.removeClass(last_node, 'last_new_member');
+        MembersAutoComplete("perm_new_member_name_"+next_id,
+                "perm_container_"+next_id, users_list, groups_list);
+        //create new last NODE
+        var el = document.createElement('tr');
+        el.id = 'add_perm_input';
+        YUD.addClass(el,'last_new_member');
+        YUD.addClass(el,'new_members');
+        YUD.insertAfter(el, last_node);
     }
 }
 
