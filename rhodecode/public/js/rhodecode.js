@@ -1373,7 +1373,6 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 
     if(ownerAC.itemSelectEvent){
         ownerAC.itemSelectEvent.subscribe(function (sType, aArgs) {
-
             var myAC = aArgs[0]; // reference back to the AC instance
             var elLI = aArgs[1]; // reference to the selected LI element
             var oData = aArgs[2]; // object literal of selected item's result data
@@ -1427,12 +1426,10 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
         return [null, null];
     };
 
-    if (ownerAC.textboxKeyUpEvent){
-        ownerAC.textboxKeyUpEvent.subscribe(function(type, args){
-
-            var ac_obj = args[0];
-            var currentMessage = args[1];
-            var currentCaretPosition = args[0]._elTextbox.selectionStart;
+    $divid = $('#'+divid);
+    $divid.keyup(function(e){
+            var currentMessage = $divid.val();
+            var currentCaretPosition = $divid[0].selectionStart;
 
             var unam = ownerAC.get_mention(currentMessage, currentCaretPosition);
             var curr_search = null;
@@ -1442,13 +1439,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 
             ownerAC.dataSource.chunks = unam[1];
             ownerAC.dataSource.mentionQuery = curr_search;
-
-        })
-    }
-    return {
-        ownerDS: ownerDS,
-        ownerAC: ownerAC,
-    };
+        });
 }
 
 var addReviewMember = function(id,fname,lname,nname,gravatar_link){
