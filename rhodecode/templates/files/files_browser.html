@@ -114,7 +114,7 @@
         // init node filter if we pass GET param ?search=1
         var search_GET = "${request.GET.get('search','')}";
         if(search_GET == "1"){
-            _NODEFILTER.initFilter();
+            $("#filter_activate").click();
         }
     })
 </script>
