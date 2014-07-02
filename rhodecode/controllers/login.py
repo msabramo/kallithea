@@ -25,9 +25,11 @@
 
 import logging
 import formencode
+import datetime
+import urlparse
 
 from formencode import htmlfill
-
+from webob.exc import HTTPFound
 from pylons.i18n.translation import _
 from pylons.controllers.util import abort, redirect
 from pylons import request, response, session, tmpl_context as c, url
@@ -35,6 +37,7 @@ from pylons import request, response, session, tmpl_context as c, url
 import rhodecode.lib.helpers as h
 from rhodecode.lib.auth import AuthUser, HasPermissionAnyDecorator
 from rhodecode.lib.base import BaseController, render
+from rhodecode.lib.exceptions import UserCreationError
 from rhodecode.model.db import User
 from rhodecode.model.forms import LoginForm, RegisterForm, PasswordResetForm
 from rhodecode.model.user import UserModel
@@ -51,17 +54,17 @@ class LoginController(BaseController):
 
     def index(self):
         # redirect if already logged in
-        c.came_from = request.GET.get('came_from', None)
-
-        if self.rhodecode_user.is_authenticated \
-                            and self.rhodecode_user.username != 'default':
-
+        c.came_from = request.GET.get('came_from')
+        not_default = self.rhodecode_user.username != 'default'
+        ip_allowed = self.rhodecode_user.ip_allowed
+        if self.rhodecode_user.is_authenticated and not_default and ip_allowed:
             return redirect(url('home'))
 
         if request.POST:
             # import Login Form validator class
             login_form = LoginForm()
             try:
+                session.invalidate()
                 c.form_result = login_form.to_python(dict(request.POST))
                 # form checks for username/password, now we're authenticated
                 username = c.form_result['username']
@@ -70,52 +73,81 @@ class LoginController(BaseController):
                 auth_user.set_authenticated()
                 cs = auth_user.get_cookie_store()
                 session['rhodecode_user'] = cs
+                user.update_lastlogin()
+                Session().commit()
+
                 # If they want to be remembered, update the cookie
-                if c.form_result['remember'] is not False:
-                    session.cookie_expires = False
-                session._set_cookie_values()
-                session._update_cookie_out()
+                if c.form_result['remember']:
+                    _year = (datetime.datetime.now() +
+                             datetime.timedelta(seconds=60 * 60 * 24 * 365))
+                    session._set_cookie_expires(_year)
+
                 session.save()
 
                 log.info('user %s is now authenticated and stored in '
                          'session, session attrs %s' % (username, cs))
-                user.update_lastlogin()
-                Session.commit()
 
+                # dumps session attrs back to cookie
+                session._update_cookie_out()
+
+                # we set new cookie
+                headers = None
+                if session.request['set_cookie']:
+                    # send set-cookie headers back to response to update cookie
+                    headers = [('Set-Cookie', session.request['cookie_out'])]
+
+                allowed_schemes = ['http', 'https']
                 if c.came_from:
-                    return redirect(c.came_from)
+                    parsed = urlparse.urlparse(c.came_from)
+                    server_parsed = urlparse.urlparse(url.current())
+                    if parsed.scheme and parsed.scheme not in allowed_schemes:
+                        log.error(
+                            'Suspicious URL scheme detected %s for url %s' %
+                            (parsed.scheme, parsed))
+                        c.came_from = url('home')
+                    elif server_parsed.netloc != parsed.netloc:
+                        log.error('Suspicious NETLOC detected %s for url %s'
+                                  'server url is: %s' %
+                                  (parsed.netloc, parsed, server_parsed))
+                        c.came_from = url('home')
+                    raise HTTPFound(location=c.came_from, headers=headers)
                 else:
-                    return redirect(url('home'))
+                    raise HTTPFound(location=url('home'), headers=headers)
 
             except formencode.Invalid, errors:
+                defaults = errors.value
+                # remove password from filling in form again
+                del defaults['password']
                 return htmlfill.render(
                     render('/login.html'),
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
                     encoding="UTF-8")
+            except UserCreationError, e:
+                # container auth or other auth functions that create users on
+                # the fly can throw this exception signaling that there's issue
+                # with user creation, explanation should be provided in
+                # Exception itself
+                h.flash(e, 'error')
 
         return render('/login.html')
 
     @HasPermissionAnyDecorator('hg.admin', 'hg.register.auto_activate',
                                'hg.register.manual_activate')
     def register(self):
-        c.auto_active = False
-        for perm in User.get_by_username('default').user_perms:
-            if perm.permission.permission_name == 'hg.register.auto_activate':
-                c.auto_active = True
-                break
+        c.auto_active = 'hg.register.auto_activate' in User.get_default_user()\
+            .AuthUser.permissions['global']
 
         if request.POST:
-
             register_form = RegisterForm()()
             try:
                 form_result = register_form.to_python(dict(request.POST))
                 form_result['active'] = c.auto_active
                 UserModel().create_registration(form_result)
-                h.flash(_('You have successfully registered into rhodecode'),
+                h.flash(_('You have successfully registered into RhodeCode'),
                             category='success')
-                Session.commit()
+                Session().commit()
                 return redirect(url('login_home'))
 
             except formencode.Invalid, errors:
@@ -125,6 +157,12 @@ class LoginController(BaseController):
                     errors=errors.error_dict or {},
                     prefix_error=False,
                     encoding="UTF-8")
+            except UserCreationError, e:
+                # container auth or other auth functions that create users on
+                # the fly can throw this exception signaling that there's issue
+                # with user creation, explanation should be provided in
+                # Exception itself
+                h.flash(e, 'error')
 
         return render('/register.html')
 

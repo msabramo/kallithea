@@ -26,40 +26,60 @@
 import logging
 
 from pylons import tmpl_context as c, request
+from pylons.i18n.translation import _
 from webob.exc import HTTPBadRequest
+from sqlalchemy.sql.expression import func
 
+import rhodecode
+from rhodecode.lib import helpers as h
+from rhodecode.lib.compat import json
 from rhodecode.lib.auth import LoginRequired
 from rhodecode.lib.base import BaseController, render
 from rhodecode.model.db import Repository
+from rhodecode.model.repo import RepoModel
+
 
 log = logging.getLogger(__name__)
 
 
 class HomeController(BaseController):
 
-    @LoginRequired()
     def __before__(self):
         super(HomeController, self).__before__()
 
+    @LoginRequired()
     def index(self):
-        c.repos_list = self.scm_model.get_repos()
         c.groups = self.scm_model.get_repos_groups()
         c.group = None
+
+        c.repos_list = Repository.query()\
+                        .filter(Repository.group_id == None)\
+                        .order_by(func.lower(Repository.repo_name))\
+                        .all()
+
+        repos_data = RepoModel().get_repos_as_dict(repos_list=c.repos_list,
+                                                   admin=False)
+        #json used to render the grid
+        c.data = json.dumps(repos_data)
+
         return render('/index.html')
 
+    @LoginRequired()
     def repo_switcher(self):
         if request.is_xhr:
             all_repos = Repository.query().order_by(Repository.repo_name).all()
             c.repos_list = self.scm_model.get_repos(all_repos,
-                                                    sort_key='name_sort')
+                                                    sort_key='name_sort',
+                                                    simple=True)
             return render('/repo_switcher_list.html')
         else:
-            return HTTPBadRequest()
+            raise HTTPBadRequest()
 
+    @LoginRequired()
     def branch_tag_switcher(self, repo_name):
         if request.is_xhr:
             c.rhodecode_db_repo = Repository.get_by_repo_name(c.repo_name)
-            c.rhodecode_repo = c.rhodecode_db_repo.scm_instance
-            return render('/switch_to_list.html')
-        else:
-            return HTTPBadRequest()
+            if c.rhodecode_db_repo:
+                c.rhodecode_repo = c.rhodecode_db_repo.scm_instance
+                return render('/switch_to_list.html')
+        raise HTTPBadRequest()

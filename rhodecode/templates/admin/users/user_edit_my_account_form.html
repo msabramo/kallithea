@@ -16,8 +16,14 @@
                 </div>
              </div>
             <div class="field">
+                <div class="field">
+                    <div class="label">
+                        <label>${_('Current IP')}:</label> ${c.perm_user.ip_addr or "?"}
+                    </div>
+                </div>
                 <div class="label">
-                    <label>${_('API key')}</label> ${c.user.api_key}
+                    <label>${_('API key - keep this in secret, change your password to generate new key')}</label>
+                    <div class="truncate autoexpand" style="width:120px;font-size:16px;font-family: monospace">${c.user.api_key}</div>
                 </div>
             </div>
             <div class="fields">
@@ -26,7 +32,11 @@
                         <label for="username">${_('Username')}:</label>
                     </div>
                     <div class="input">
-                        ${h.text('username',class_="medium")}
+                      %if c.ldap_dn:
+                          ${h.text('username',class_='medium disabled', readonly="readonly")}
+                      %else:
+                          ${h.text('username',class_='medium')}
+                      %endif:
                     </div>
                  </div>
 
@@ -53,7 +63,7 @@
                         <label for="name">${_('First Name')}:</label>
                     </div>
                     <div class="input">
-                        ${h.text('name',class_="medium")}
+                        ${h.text('firstname',class_="medium")}
                     </div>
                  </div>
 
@@ -76,8 +86,8 @@
                  </div>
 
                 <div class="buttons">
-                  ${h.submit('save',_('Save'),class_="ui-button")}
-                  ${h.reset('reset',_('Reset'),class_="ui-button")}
+                  ${h.submit('save',_('Save'),class_="ui-btn large")}
+                  ${h.reset('reset',_('Reset'),class_="ui-btn large")}
                 </div>
             </div>
         </div>

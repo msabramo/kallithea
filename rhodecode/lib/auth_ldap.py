@@ -26,7 +26,8 @@
 import logging
 
 from rhodecode.lib.exceptions import LdapConnectionError, LdapUsernameError, \
-    LdapPasswordError
+    LdapPasswordError, LdapImportError
+from rhodecode.lib.utils2 import safe_str
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ try:
     import ldap
 except ImportError:
     # means that python-ldap is not installed
-    pass
+    ldap = None
 
 
 class AuthLdap(object):
@@ -44,6 +45,9 @@ class AuthLdap(object):
                  tls_kind='PLAIN', tls_reqcert='DEMAND', ldap_version=3,
                  ldap_filter='(&(objectClass=user)(!(objectClass=computer)))',
                  search_scope='SUBTREE', attr_login='uid'):
+        if ldap is None:
+            raise LdapImportError
+
         self.ldap_version = ldap_version
         ldap_server_type = 'ldap'
 
@@ -56,19 +60,21 @@ class AuthLdap(object):
         OPT_X_TLS_DEMAND = 2
         self.TLS_REQCERT = getattr(ldap, 'OPT_X_TLS_%s' % tls_reqcert,
                                    OPT_X_TLS_DEMAND)
-        self.LDAP_SERVER_ADDRESS = server
+        # split server into list
+        self.LDAP_SERVER_ADDRESS = server.split(',')
         self.LDAP_SERVER_PORT = port
 
         # USE FOR READ ONLY BIND TO LDAP SERVER
-        self.LDAP_BIND_DN = bind_dn
-        self.LDAP_BIND_PASS = bind_pass
-
-        self.LDAP_SERVER = "%s://%s:%s" % (ldap_server_type,
-                                           self.LDAP_SERVER_ADDRESS,
-                                           self.LDAP_SERVER_PORT)
-
-        self.BASE_DN = base_dn
-        self.LDAP_FILTER = ldap_filter
+        self.LDAP_BIND_DN = safe_str(bind_dn)
+        self.LDAP_BIND_PASS = safe_str(bind_pass)
+        _LDAP_SERVERS = []
+        for host in self.LDAP_SERVER_ADDRESS:
+            _LDAP_SERVERS.append("%s://%s:%s" % (ldap_server_type,
+                                                     host.replace(' ', ''),
+                                                     self.LDAP_SERVER_PORT))
+        self.LDAP_SERVER = str(', '.join(s for s in _LDAP_SERVERS))
+        self.BASE_DN = safe_str(base_dn)
+        self.LDAP_FILTER = safe_str(ldap_filter)
         self.SEARCH_SCOPE = getattr(ldap, 'SCOPE_%s' % search_scope)
         self.attr_login = attr_login
 
@@ -114,6 +120,8 @@ class AuthLdap(object):
                 server.start_tls_s()
 
             if self.LDAP_BIND_DN and self.LDAP_BIND_PASS:
+                log.debug('Trying simple_bind with password and given DN: %s'
+                          % self.LDAP_BIND_DN)
                 server.simple_bind_s(self.LDAP_BIND_DN, self.LDAP_BIND_PASS)
 
             filter_ = '(&%s(%s=%s))' % (self.LDAP_FILTER, self.attr_login,

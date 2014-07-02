@@ -24,36 +24,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
-import traceback
 import logging
 from os.path import dirname as dn, join as jn
 
 #to get the rhodecode import
 sys.path.append(dn(dn(dn(os.path.realpath(__file__)))))
 
-from string import strip
-from shutil import rmtree
-
 from whoosh.analysis import RegexTokenizer, LowercaseFilter, StopFilter
-from whoosh.fields import TEXT, ID, STORED, Schema, FieldType
-from whoosh.index import create_in, open_dir
+from whoosh.fields import TEXT, ID, STORED, NUMERIC, BOOLEAN, Schema, FieldType, DATETIME
 from whoosh.formats import Characters
-from whoosh.highlight import highlight, HtmlFormatter, ContextFragmenter
-
-from webhelpers.html.builder import escape, literal
-from sqlalchemy import engine_from_config
-
-from rhodecode.model import init_model
-from rhodecode.model.scm import ScmModel
-from rhodecode.model.repo import RepoModel
-from rhodecode.config.environment import load_environment
+from whoosh.highlight import highlight as whoosh_highlight, HtmlFormatter, ContextFragmenter
 from rhodecode.lib.utils2 import LazyProperty
-from rhodecode.lib.utils import BasePasterCommand, Command, add_cache,\
-    load_rcextensions
+
+log = logging.getLogger(__name__)
 
 # CUSTOM ANALYZER wordsplit + lowercase filter
 ANALYZER = RegexTokenizer(expression=r"\w+") | LowercaseFilter()
-
 
 #INDEX SCHEMA DEFINITION
 SCHEMA = Schema(
@@ -71,73 +57,31 @@ IDX_NAME = 'HG_INDEX'
 FORMATTER = HtmlFormatter('span', between='\n<span class="break">...</span>\n')
 FRAGMENTER = ContextFragmenter(200)
 
+CHGSETS_SCHEMA = Schema(
+    raw_id=ID(unique=True, stored=True),
+    date=NUMERIC(stored=True),
+    last=BOOLEAN(),
+    owner=TEXT(),
+    repository=ID(unique=True, stored=True),
+    author=TEXT(stored=True),
+    message=FieldType(format=Characters(), analyzer=ANALYZER,
+                      scorable=True, stored=True),
+    parents=TEXT(),
+    added=TEXT(),
+    removed=TEXT(),
+    changed=TEXT(),
+)
 
-class MakeIndex(BasePasterCommand):
+CHGSET_IDX_NAME = 'CHGSET_INDEX'
 
-    max_args = 1
-    min_args = 1
-
-    usage = "CONFIG_FILE"
-    summary = "Creates index for full text search given configuration file"
-    group_name = "RhodeCode"
-    takes_config_file = -1
-    parser = Command.standard_parser(verbose=True)
-
-    def command(self):
-        logging.config.fileConfig(self.path_to_ini_file)
-        from pylons import config
-        add_cache(config)
-        engine = engine_from_config(config, 'sqlalchemy.db1.')
-        init_model(engine)
-        index_location = config['index_dir']
-        repo_location = self.options.repo_location \
-            if self.options.repo_location else RepoModel().repos_path
-        repo_list = map(strip, self.options.repo_list.split(',')) \
-            if self.options.repo_list else None
-        repo_update_list = map(strip, self.options.repo_update_list.split(',')) \
-            if self.options.repo_update_list else None
-        load_rcextensions(config['here'])
-        #======================================================================
-        # WHOOSH DAEMON
-        #======================================================================
-        from rhodecode.lib.pidlock import LockHeld, DaemonLock
-        from rhodecode.lib.indexers.daemon import WhooshIndexingDaemon
-        try:
-            l = DaemonLock(file_=jn(dn(dn(index_location)), 'make_index.lock'))
-            WhooshIndexingDaemon(index_location=index_location,
-                                 repo_location=repo_location,
-                                 repo_list=repo_list,
-                                 repo_update_list=repo_update_list)\
-                .run(full_index=self.options.full_index)
-            l.release()
-        except LockHeld:
-            sys.exit(1)
-
-    def update_parser(self):
-        self.parser.add_option('--repo-location',
-                          action='store',
-                          dest='repo_location',
-                          help="Specifies repositories location to index OPTIONAL",
-                          )
-        self.parser.add_option('--index-only',
-                          action='store',
-                          dest='repo_list',
-                          help="Specifies a comma separated list of repositores "
-                                "to build index on. If not given all repositories "
-                                "are scanned for indexing. OPTIONAL",
-                          )
-        self.parser.add_option('--update-only',
-                          action='store',
-                          dest='repo_update_list',
-                          help="Specifies a comma separated list of repositores "
-                                "to re-build index on. OPTIONAL",
-                          )
-        self.parser.add_option('-f',
-                          action='store_true',
-                          dest='full_index',
-                          help="Specifies that index should be made full i.e"
-                                " destroy old and build from scratch",
-                          default=False)
+# used only to generate queries in journal
+JOURNAL_SCHEMA = Schema(
+    username=TEXT(),
+    date=DATETIME(),
+    action=TEXT(),
+    repository=TEXT(),
+    ip=TEXT(),
+)
 
 
 class WhooshResultWrapper(object):
@@ -191,14 +135,25 @@ class WhooshResultWrapper(object):
 
     def get_full_content(self, docid):
         res = self.searcher.stored_fields(docid[0])
-        full_repo_path = jn(self.repo_location, res['repository'])
-        f_path = res['path'].split(full_repo_path)[-1]
-        f_path = f_path.lstrip(os.sep)
+        log.debug('result: %s' % res)
+        if self.search_type == 'content':
+            full_repo_path = jn(self.repo_location, res['repository'])
+            f_path = res['path'].split(full_repo_path)[-1]
+            f_path = f_path.lstrip(os.sep)
+            content_short = self.get_short_content(res, docid[1])
+            res.update({'content_short': content_short,
+                        'content_short_hl': self.highlight(content_short),
+                        'f_path': f_path
+                      })
+        elif self.search_type == 'path':
+            full_repo_path = jn(self.repo_location, res['repository'])
+            f_path = res['path'].split(full_repo_path)[-1]
+            f_path = f_path.lstrip(os.sep)
+            res.update({'f_path': f_path})
+        elif self.search_type == 'message':
+            res.update({'message_hl': self.highlight(res['message'])})
 
-        content_short = self.get_short_content(res, docid[1])
-        res.update({'content_short': content_short,
-                    'content_short_hl': self.highlight(content_short),
-                    'f_path': f_path})
+        log.debug('result: %s' % res)
 
         return res
 
@@ -211,26 +166,24 @@ class WhooshResultWrapper(object):
         Smart function that implements chunking the content
         but not overlap chunks so it doesn't highlight the same
         close occurrences twice.
-
-        :param matcher:
-        :param size:
         """
         memory = [(0, 0)]
-        for span in self.matcher.spans():
-            start = span.startchar or 0
-            end = span.endchar or 0
-            start_offseted = max(0, start - self.fragment_size)
-            end_offseted = end + self.fragment_size
+        if self.matcher.supports('positions'):
+            for span in self.matcher.spans():
+                start = span.startchar or 0
+                end = span.endchar or 0
+                start_offseted = max(0, start - self.fragment_size)
+                end_offseted = end + self.fragment_size
 
-            if start_offseted < memory[-1][1]:
-                start_offseted = memory[-1][1]
-            memory.append((start_offseted, end_offseted,))
-            yield (start_offseted, end_offseted,)
+                if start_offseted < memory[-1][1]:
+                    start_offseted = memory[-1][1]
+                memory.append((start_offseted, end_offseted,))
+                yield (start_offseted, end_offseted,)
 
     def highlight(self, content, top=5):
-        if self.search_type != 'content':
+        if self.search_type not in ['content', 'message']:
             return ''
-        hl = highlight(
+        hl = whoosh_highlight(
             text=content,
             terms=self.highlight_items,
             analyzer=ANALYZER,

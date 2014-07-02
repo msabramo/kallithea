@@ -9,11 +9,14 @@ import StringIO
 import urllib
 import math
 import logging
+import re
+import urlparse
+import textwrap
 
 from datetime import datetime
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight as code_highlight
-from pylons import url, request, config
+from pylons import url
 from pylons.i18n.translation import _, ungettext
 from hashlib import md5
 
@@ -33,36 +36,36 @@ from webhelpers.text import chop_at, collapse, convert_accented_entities, \
     convert_misc_entities, lchop, plural, rchop, remove_formatting, \
     replace_whitespace, urlify, truncate, wrap_paragraphs
 from webhelpers.date import time_ago_in_words
-from webhelpers.paginate import Page
+from webhelpers.paginate import Page as _Page
 from webhelpers.html.tags import _set_input_attrs, _set_id_attr, \
     convert_boolean_attrs, NotGiven, _make_safe_id_component
 
 from rhodecode.lib.annotate import annotate_highlight
-from rhodecode.lib.utils import repo_name_slug
+from rhodecode.lib.utils import repo_name_slug, get_custom_lexer
 from rhodecode.lib.utils2 import str2bool, safe_unicode, safe_str, \
-    get_changeset_safe
+    get_changeset_safe, datetime_to_time, time_to_datetime, AttributeDict,\
+    safe_int
 from rhodecode.lib.markup_renderer import MarkupRenderer
 from rhodecode.lib.vcs.exceptions import ChangesetDoesNotExistError
-from rhodecode.lib.vcs.backends.base import BaseChangeset
+from rhodecode.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
 from rhodecode.config.conf import DATE_FORMAT, DATETIME_FORMAT
 from rhodecode.model.changeset_status import ChangesetStatusModel
-from rhodecode.model.db import URL_SEP
+from rhodecode.model.db import URL_SEP, Permission
 
 log = logging.getLogger(__name__)
 
 
-html_escape_table = {
-    "&": "&amp;",
-    '"': "&quot;",
-    "'": "&apos;",
-    ">": "&gt;",
-    "<": "&lt;",
-}
-
-
-def html_escape(text):
+def html_escape(text, html_escape_table=None):
     """Produce entities within text."""
-    return "".join(html_escape_table.get(c,c) for c in text)
+    if not html_escape_table:
+        html_escape_table = {
+            "&": "&amp;",
+            '"': "&quot;",
+            "'": "&apos;",
+            ">": "&gt;",
+            "<": "&lt;",
+        }
+    return "".join(html_escape_table.get(c, c) for c in text)
 
 
 def shorter(text, size=20):
@@ -152,7 +155,8 @@ class _FilesBreadCrumbs(object):
             paths = safe_unicode(paths)
         url_l = [link_to(repo_name, url('files_home',
                                         repo_name=repo_name,
-                                        revision=rev, f_path=''))]
+                                        revision=rev, f_path=''),
+                         class_='ypjax-link')]
         paths_l = paths.split('/')
         for cnt, p in enumerate(paths_l):
             if p != '':
@@ -161,7 +165,8 @@ class _FilesBreadCrumbs(object):
                                          repo_name=repo_name,
                                          revision=rev,
                                          f_path='/'.join(paths_l[:cnt + 1])
-                                         )
+                                         ),
+                                     class_='ypjax-link'
                                      )
                              )
 
@@ -248,13 +253,14 @@ class CodeHtmlFormatter(HtmlFormatter):
 
 
 def pygmentize(filenode, **kwargs):
-    """pygmentize function using pygments
+    """
+    pygmentize function using pygments
 
     :param filenode:
     """
-
-    return literal(code_highlight(filenode.content,
-                                  filenode.lexer, CodeHtmlFormatter(**kwargs)))
+    lexer = get_custom_lexer(filenode.extension) or filenode.lexer
+    return literal(code_highlight(filenode.content, lexer,
+                                  CodeHtmlFormatter(**kwargs)))
 
 
 def pygmentize_annotation(repo_name, filenode, **kwargs):
@@ -348,7 +354,41 @@ def is_following_repo(repo_name, user_id):
     from rhodecode.model.scm import ScmModel
     return ScmModel().is_following_repo(repo_name, user_id)
 
-flash = _Flash()
+class _Message(object):
+    """A message returned by ``Flash.pop_messages()``.
+
+    Converting the message to a string returns the message text. Instances
+    also have the following attributes:
+
+    * ``message``: the message text.
+    * ``category``: the category specified when the message was created.
+    """
+
+    def __init__(self, category, message):
+        self.category=category
+        self.message=message
+
+    def __str__(self):
+        return self.message
+
+    __unicode__ = __str__
+
+    def __html__(self):
+        return escape(safe_unicode(self.message))
+
+class Flash(_Flash):
+
+    def pop_messages(self):
+        """Return all accumulated messages and delete them from the session.
+
+        The return value is a list of ``Message`` objects.
+        """
+        from pylons import session
+        messages = session.pop(self.session_key, [])
+        session.save()
+        return [_Message(*m) for m in messages]
+
+flash = Flash()
 
 #==============================================================================
 # SCM FILTERS available via h.
@@ -357,16 +397,34 @@ from rhodecode.lib.vcs.utils import author_name, author_email
 from rhodecode.lib.utils2 import credentials_filter, age as _age
 from rhodecode.model.db import User, ChangesetStatus
 
-age = lambda  x: _age(x)
+age = lambda  x, y=False: _age(x, y)
 capitalize = lambda x: x.capitalize()
 email = author_email
 short_id = lambda x: x[:12]
 hide_credentials = lambda x: ''.join(credentials_filter(x))
 
 
+def show_id(cs):
+    """
+    Configurable function that shows ID
+    by default it's r123:fffeeefffeee
+
+    :param cs: changeset instance
+    """
+    from rhodecode import CONFIG
+    def_len = safe_int(CONFIG.get('show_sha_length', 12))
+    show_rev = str2bool(CONFIG.get('show_revision_number', True))
+
+    raw_id = cs.raw_id[:def_len]
+    if show_rev:
+        return 'r%s:%s' % (cs.revision, raw_id)
+    else:
+        return '%s' % (raw_id)
+
+
 def fmt_date(date):
     if date:
-        _fmt = _(u"%a, %d %b %Y %H:%M:%S").encode('utf8')
+        _fmt = u"%a, %d %b %Y %H:%M:%S".encode('utf8')
         return date.strftime(_fmt).decode('utf8')
 
     return ""
@@ -393,8 +451,14 @@ def is_hg(repository):
 
 
 def email_or_none(author):
+    # extract email from the commit string
     _email = email(author)
     if _email != '':
+        # check it against RhodeCode database, and use the MAIN email for this
+        # user
+        user = User.get_by_email(_email, case_insensitive=True, cache=True)
+        if user is not None:
+            return user.email
         return _email
 
     # See if it contains a username we can get an email from
@@ -407,9 +471,9 @@ def email_or_none(author):
     return None
 
 
-def person(author):
+def person(author, show_attr="username_and_name"):
     # attr to return from fetched user
-    person_getter = lambda usr: usr.username
+    person_getter = lambda usr: getattr(usr, show_attr)
 
     # Valid email in the attribute passed, see if they're in the system
     _email = email(author)
@@ -417,7 +481,6 @@ def person(author):
         user = User.get_by_email(_email, case_insensitive=True, cache=True)
         if user is not None:
             return person_getter(user)
-        return _email
 
     # Maybe it's a username?
     _author = author_name(author)
@@ -426,35 +489,66 @@ def person(author):
     if user is not None:
         return person_getter(user)
 
-    # Still nothing?  Just pass back the author name then
-    return _author
+    # Still nothing?  Just pass back the author name if any, else the email
+    return _author or _email
 
 
-def bool2icon(value):
-    """Returns True/False values represented as small html image of true/false
-    icons
+def person_by_id(id_, show_attr="username_and_name"):
+    # attr to return from fetched user
+    person_getter = lambda usr: getattr(usr, show_attr)
 
-    :param value: bool value
+    #maybe it's an ID ?
+    if str(id_).isdigit() or isinstance(id_, int):
+        id_ = int(id_)
+        user = User.get(id_)
+        if user is not None:
+            return person_getter(user)
+    return id_
+
+
+def desc_stylize(value):
     """
+    converts tags from value into html equivalent
 
-    if value is True:
-        return HTML.tag('img', src=url("/images/icons/accept.png"),
-                        alt=_('True'))
-
-    if value is False:
-        return HTML.tag('img', src=url("/images/icons/cancel.png"),
-                        alt=_('False'))
+    :param value:
+    """
+    value = re.sub(r'\[see\ \=\>\ *([a-zA-Z0-9\/\=\?\&\ \:\/\.\-]*)\]',
+                   '<div class="metatag" tag="see">see =&gt; \\1 </div>', value)
+    value = re.sub(r'\[license\ \=\>\ *([a-zA-Z0-9\/\=\?\&\ \:\/\.\-]*)\]',
+                   '<div class="metatag" tag="license"><a href="http:\/\/www.opensource.org/licenses/\\1">\\1</a></div>', value)
+    value = re.sub(r'\[(requires|recommends|conflicts|base)\ \=\>\ *([a-zA-Z0-9\-\/]*)\]',
+                   '<div class="metatag" tag="\\1">\\1 =&gt; <a href="/\\2">\\2</a></div>', value)
+    value = re.sub(r'\[(lang|language)\ \=\>\ *([a-zA-Z\-\/\#\+]*)\]',
+                   '<div class="metatag" tag="lang">\\2</div>', value)
+    value = re.sub(r'\[([a-z]+)\]',
+                  '<div class="metatag" tag="\\1">\\1</div>', value)
 
     return value
 
 
-def action_parser(user_log, feed=False):
+def boolicon(value):
+    """Returns boolean value of a value, represented as small html image of true/false
+    icons
+
+    :param value: value
+    """
+
+    if value:
+        return HTML.tag('img', src=url("/images/icons/accept.png"),
+                        alt=_('True'))
+    else:
+        return HTML.tag('img', src=url("/images/icons/cancel.png"),
+                        alt=_('False'))
+
+
+def action_parser(user_log, feed=False, parse_cs=False):
     """
     This helper will action_map the specified string action into translated
     fancy names with icons and links
 
     :param user_log: user log instance
     :param feed: use output for feeds (no html and fancy icons)
+    :param parse_cs: parse Changesets into VCS instances
     """
 
     action = user_log.action
@@ -475,46 +569,84 @@ def action_parser(user_log, feed=False):
 
         repo_name = user_log.repository.repo_name
 
-        repo = user_log.repository.scm_instance
-
         def lnk(rev, repo_name):
+            if isinstance(rev, BaseChangeset) or isinstance(rev, AttributeDict):
+                lazy_cs = True
+                if getattr(rev, 'op', None) and getattr(rev, 'ref_name', None):
+                    lazy_cs = False
+                    lbl = '?'
+                    if rev.op == 'delete_branch':
+                        lbl = '%s' % _('Deleted branch: %s') % rev.ref_name
+                        title = ''
+                    elif rev.op == 'tag':
+                        lbl = '%s' % _('Created tag: %s') % rev.ref_name
+                        title = ''
+                    _url = '#'
 
-            if isinstance(rev, BaseChangeset):
-                lbl = 'r%s:%s' % (rev.revision, rev.short_id)
-                _url = url('changeset_home', repo_name=repo_name,
-                           revision=rev.raw_id)
-                title = tooltip(rev.message)
+                else:
+                    lbl = '%s' % (rev.short_id[:8])
+                    _url = url('changeset_home', repo_name=repo_name,
+                               revision=rev.raw_id)
+                    title = tooltip(rev.message)
             else:
-                lbl = '%s' % rev
+                ## changeset cannot be found/striped/removed etc.
+                lbl = ('%s' % rev)[:12]
                 _url = '#'
                 title = _('Changeset not found')
+            if parse_cs:
+                return link_to(lbl, _url, title=title, class_='tooltip')
+            return link_to(lbl, _url, raw_id=rev.raw_id, repo_name=repo_name,
+                           class_='lazy-cs' if lazy_cs else '')
 
-            return link_to(lbl, _url, title=title, class_='tooltip',)
+        def _get_op(rev_txt):
+            _op = None
+            _name = rev_txt
+            if len(rev_txt.split('=>')) == 2:
+                _op, _name = rev_txt.split('=>')
+            return _op, _name
 
         revs = []
         if len(filter(lambda v: v != '', revs_ids)) > 0:
+            repo = None
             for rev in revs_ids[:revs_top_limit]:
-                try:
-                    rev = repo.get_changeset(rev)
-                    revs.append(rev)
-                except ChangesetDoesNotExistError:
-                    log.error('cannot find revision %s in this repo' % rev)
-                    revs.append(rev)
-                    continue
-        cs_links = []
-        cs_links.append(" " + ', '.join(
+                _op, _name = _get_op(rev)
+
+                # we want parsed changesets, or new log store format is bad
+                if parse_cs:
+                    try:
+                        if repo is None:
+                            repo = user_log.repository.scm_instance
+                        _rev = repo.get_changeset(rev)
+                        revs.append(_rev)
+                    except ChangesetDoesNotExistError:
+                        log.error('cannot find revision %s in this repo' % rev)
+                        revs.append(rev)
+                        continue
+                else:
+                    _rev = AttributeDict({
+                        'short_id': rev[:12],
+                        'raw_id': rev,
+                        'message': '',
+                        'op': _op,
+                        'ref_name': _name
+                    })
+                    revs.append(_rev)
+        cs_links = [" " + ', '.join(
             [lnk(rev, repo_name) for rev in revs[:revs_limit]]
-            )
-        )
+        )]
+        _op1, _name1 = _get_op(revs_ids[0])
+        _op2, _name2 = _get_op(revs_ids[-1])
+
+        _rev = '%s...%s' % (_name1, _name2)
 
         compare_view = (
             ' <div class="compare_view tooltip" title="%s">'
             '<a href="%s">%s</a> </div>' % (
                 _('Show all combined changesets %s->%s') % (
-                    revs_ids[0], revs_ids[-1]
+                    revs_ids[0][:12], revs_ids[-1][:12]
                 ),
                 url('changeset_home', repo_name=repo_name,
-                    revision='%s...%s' % (revs_ids[0], revs_ids[-1])
+                    revision=_rev
                 ),
                 _('compare view')
             )
@@ -561,8 +693,8 @@ def action_parser(user_log, feed=False):
 
     def get_fork_name():
         repo_name = action_params
-        return _('fork name ') + str(link_to(action_params, url('summary_home',
-                                          repo_name=repo_name,)))
+        _url = url('summary_home', repo_name=repo_name)
+        return _('fork name %s') % link_to(action_params, _url)
 
     def get_user_name():
         user_name = action_params
@@ -572,48 +704,69 @@ def action_parser(user_log, feed=False):
         group_name = action_params
         return group_name
 
+    def get_pull_request():
+        pull_request_id = action_params
+        deleted = user_log.repository is None
+        if deleted:
+            repo_name = user_log.repository_name
+        else:
+            repo_name = user_log.repository.repo_name
+        return link_to(_('Pull request #%s') % pull_request_id,
+                    url('pullrequest_show', repo_name=repo_name,
+                    pull_request_id=pull_request_id))
+
+    def get_archive_name():
+        archive_name = action_params
+        return archive_name
+
     # action : translated str, callback(extractor), icon
     action_map = {
-    'user_deleted_repo':         (_('[deleted] repository'),
-                                  None, 'database_delete.png'),
-    'user_created_repo':         (_('[created] repository'),
-                                  None, 'database_add.png'),
-    'user_created_fork':         (_('[created] repository as fork'),
-                                  None, 'arrow_divide.png'),
-    'user_forked_repo':          (_('[forked] repository'),
-                                  get_fork_name, 'arrow_divide.png'),
-    'user_updated_repo':         (_('[updated] repository'),
-                                  None, 'database_edit.png'),
-    'admin_deleted_repo':        (_('[delete] repository'),
-                                  None, 'database_delete.png'),
-    'admin_created_repo':        (_('[created] repository'),
-                                  None, 'database_add.png'),
-    'admin_forked_repo':         (_('[forked] repository'),
-                                  None, 'arrow_divide.png'),
-    'admin_updated_repo':        (_('[updated] repository'),
-                                  None, 'database_edit.png'),
-    'admin_created_user':        (_('[created] user'),
-                                  get_user_name, 'user_add.png'),
-    'admin_updated_user':        (_('[updated] user'),
-                                  get_user_name, 'user_edit.png'),
-    'admin_created_users_group': (_('[created] users group'),
-                                  get_users_group, 'group_add.png'),
-    'admin_updated_users_group': (_('[updated] users group'),
-                                  get_users_group, 'group_edit.png'),
-    'user_commented_revision':   (_('[commented] on revision in repository'),
-                                  get_cs_links, 'comment_add.png'),
-    'push':                      (_('[pushed] into'),
-                                  get_cs_links, 'script_add.png'),
-    'push_local':                (_('[committed via RhodeCode] into repository'),
-                                  get_cs_links, 'script_edit.png'),
-    'push_remote':               (_('[pulled from remote] into repository'),
-                                  get_cs_links, 'connect.png'),
-    'pull':                      (_('[pulled] from'),
-                                  None, 'down_16.png'),
-    'started_following_repo':    (_('[started following] repository'),
-                                  None, 'heart_add.png'),
-    'stopped_following_repo':    (_('[stopped following] repository'),
-                                  None, 'heart_delete.png'),
+    'user_deleted_repo':           (_('[deleted] repository'),
+                                    None, 'database_delete.png'),
+    'user_created_repo':           (_('[created] repository'),
+                                    None, 'database_add.png'),
+    'user_created_fork':           (_('[created] repository as fork'),
+                                    None, 'arrow_divide.png'),
+    'user_forked_repo':            (_('[forked] repository'),
+                                    get_fork_name, 'arrow_divide.png'),
+    'user_updated_repo':           (_('[updated] repository'),
+                                    None, 'database_edit.png'),
+    'user_downloaded_archive':      (_('[downloaded] archive from repository'),
+                                    get_archive_name, 'page_white_compressed.png'),
+    'admin_deleted_repo':          (_('[delete] repository'),
+                                    None, 'database_delete.png'),
+    'admin_created_repo':          (_('[created] repository'),
+                                    None, 'database_add.png'),
+    'admin_forked_repo':           (_('[forked] repository'),
+                                    None, 'arrow_divide.png'),
+    'admin_updated_repo':          (_('[updated] repository'),
+                                    None, 'database_edit.png'),
+    'admin_created_user':          (_('[created] user'),
+                                    get_user_name, 'user_add.png'),
+    'admin_updated_user':          (_('[updated] user'),
+                                    get_user_name, 'user_edit.png'),
+    'admin_created_users_group':   (_('[created] user group'),
+                                    get_users_group, 'group_add.png'),
+    'admin_updated_users_group':   (_('[updated] user group'),
+                                    get_users_group, 'group_edit.png'),
+    'user_commented_revision':     (_('[commented] on revision in repository'),
+                                    get_cs_links, 'comment_add.png'),
+    'user_commented_pull_request': (_('[commented] on pull request for'),
+                                    get_pull_request, 'comment_add.png'),
+    'user_closed_pull_request':    (_('[closed] pull request for'),
+                                    get_pull_request, 'tick.png'),
+    'push':                        (_('[pushed] into'),
+                                    get_cs_links, 'script_add.png'),
+    'push_local':                  (_('[committed via RhodeCode] into repository'),
+                                    get_cs_links, 'script_edit.png'),
+    'push_remote':                 (_('[pulled from remote] into repository'),
+                                    get_cs_links, 'connect.png'),
+    'pull':                        (_('[pulled] from'),
+                                    None, 'down_16.png'),
+    'started_following_repo':      (_('[started following] repository'),
+                                    None, 'heart_add.png'),
+    'stopped_following_repo':      (_('[stopped following] repository'),
+                                    None, 'heart_delete.png'),
     }
 
     action_str = action_map.get(action, action)
@@ -650,20 +803,36 @@ def action_parser(user_log, feed=False):
 # PERMS
 #==============================================================================
 from rhodecode.lib.auth import HasPermissionAny, HasPermissionAll, \
-HasRepoPermissionAny, HasRepoPermissionAll
+HasRepoPermissionAny, HasRepoPermissionAll, HasReposGroupPermissionAll, \
+HasReposGroupPermissionAny
 
 
 #==============================================================================
 # GRAVATAR URL
 #==============================================================================
 
-def gravatar_url(email_address, size=30):
-    if (not str2bool(config['app_conf'].get('use_gravatar')) or
-        not email_address or email_address == 'anonymous@rhodecode.org'):
+def gravatar_url(email_address, size=30, ssl_enabled=True):
+    from pylons import url  # doh, we need to re-import url to mock it later
+    from rhodecode import CONFIG
+
+    _def = 'anonymous@rhodecode.org'  # default gravatar
+    use_gravatar = str2bool(CONFIG.get('use_gravatar'))
+    alternative_gravatar_url = CONFIG.get('alternative_gravatar_url', '')
+    email_address = email_address or _def
+    if not use_gravatar or not email_address or email_address == _def:
         f = lambda a, l: min(l, key=lambda x: abs(x - a))
         return url("/images/user%s.png" % f(size, [14, 16, 20, 24, 30]))
 
-    ssl_enabled = 'https' == request.environ.get('wsgi.url_scheme')
+    if use_gravatar and alternative_gravatar_url:
+        tmpl = alternative_gravatar_url
+        parsed_url = urlparse.urlparse(url.current(qualified=True))
+        tmpl = tmpl.replace('{email}', email_address)\
+                   .replace('{md5email}', hashlib.md5(email_address.lower()).hexdigest()) \
+                   .replace('{netloc}', parsed_url.netloc)\
+                   .replace('{scheme}', parsed_url.scheme)\
+                   .replace('{size}', str(size))
+        return tmpl
+
     default = 'identicon'
     baseurl_nossl = "http://www.gravatar.com/avatar/"
     baseurl_ssl = "https://secure.gravatar.com/avatar/"
@@ -677,6 +846,145 @@ def gravatar_url(email_address, size=30):
     gravatar_url += urllib.urlencode({'d': default, 's': str(size)})
 
     return gravatar_url
+
+
+class Page(_Page):
+    """
+    Custom pager to match rendering style with YUI paginator
+    """
+
+    def _get_pos(self, cur_page, max_page, items):
+        edge = (items / 2) + 1
+        if (cur_page <= edge):
+            radius = max(items / 2, items - cur_page)
+        elif (max_page - cur_page) < edge:
+            radius = (items - 1) - (max_page - cur_page)
+        else:
+            radius = items / 2
+
+        left = max(1, (cur_page - (radius)))
+        right = min(max_page, cur_page + (radius))
+        return left, cur_page, right
+
+    def _range(self, regexp_match):
+        """
+        Return range of linked pages (e.g. '1 2 [3] 4 5 6 7 8').
+
+        Arguments:
+
+        regexp_match
+            A "re" (regular expressions) match object containing the
+            radius of linked pages around the current page in
+            regexp_match.group(1) as a string
+
+        This function is supposed to be called as a callable in
+        re.sub.
+
+        """
+        radius = int(regexp_match.group(1))
+
+        # Compute the first and last page number within the radius
+        # e.g. '1 .. 5 6 [7] 8 9 .. 12'
+        # -> leftmost_page  = 5
+        # -> rightmost_page = 9
+        leftmost_page, _cur, rightmost_page = self._get_pos(self.page,
+                                                            self.last_page,
+                                                            (radius * 2) + 1)
+        nav_items = []
+
+        # Create a link to the first page (unless we are on the first page
+        # or there would be no need to insert '..' spacers)
+        if self.page != self.first_page and self.first_page < leftmost_page:
+            nav_items.append(self._pagerlink(self.first_page, self.first_page))
+
+        # Insert dots if there are pages between the first page
+        # and the currently displayed page range
+        if leftmost_page - self.first_page > 1:
+            # Wrap in a SPAN tag if nolink_attr is set
+            text = '..'
+            if self.dotdot_attr:
+                text = HTML.span(c=text, **self.dotdot_attr)
+            nav_items.append(text)
+
+        for thispage in xrange(leftmost_page, rightmost_page + 1):
+            # Hilight the current page number and do not use a link
+            if thispage == self.page:
+                text = '%s' % (thispage,)
+                # Wrap in a SPAN tag if nolink_attr is set
+                if self.curpage_attr:
+                    text = HTML.span(c=text, **self.curpage_attr)
+                nav_items.append(text)
+            # Otherwise create just a link to that page
+            else:
+                text = '%s' % (thispage,)
+                nav_items.append(self._pagerlink(thispage, text))
+
+        # Insert dots if there are pages between the displayed
+        # page numbers and the end of the page range
+        if self.last_page - rightmost_page > 1:
+            text = '..'
+            # Wrap in a SPAN tag if nolink_attr is set
+            if self.dotdot_attr:
+                text = HTML.span(c=text, **self.dotdot_attr)
+            nav_items.append(text)
+
+        # Create a link to the very last page (unless we are on the last
+        # page or there would be no need to insert '..' spacers)
+        if self.page != self.last_page and rightmost_page < self.last_page:
+            nav_items.append(self._pagerlink(self.last_page, self.last_page))
+
+        ## prerender links
+        nav_items.append(literal('<link rel="prerender" href="/rhodecode/changelog/1?page=%s">' % str(int(self.page)+1)))
+        return self.separator.join(nav_items)
+
+    def pager(self, format='~2~', page_param='page', partial_param='partial',
+        show_if_single_page=False, separator=' ', onclick=None,
+        symbol_first='<<', symbol_last='>>',
+        symbol_previous='<', symbol_next='>',
+        link_attr={'class': 'pager_link', 'rel': 'prerender'},
+        curpage_attr={'class': 'pager_curpage'},
+        dotdot_attr={'class': 'pager_dotdot'}, **kwargs):
+
+        self.curpage_attr = curpage_attr
+        self.separator = separator
+        self.pager_kwargs = kwargs
+        self.page_param = page_param
+        self.partial_param = partial_param
+        self.onclick = onclick
+        self.link_attr = link_attr
+        self.dotdot_attr = dotdot_attr
+
+        # Don't show navigator if there is no more than one page
+        if self.page_count == 0 or (self.page_count == 1 and not show_if_single_page):
+            return ''
+
+        from string import Template
+        # Replace ~...~ in token format by range of pages
+        result = re.sub(r'~(\d+)~', self._range, format)
+
+        # Interpolate '%' variables
+        result = Template(result).safe_substitute({
+            'first_page': self.first_page,
+            'last_page': self.last_page,
+            'page': self.page,
+            'page_count': self.page_count,
+            'items_per_page': self.items_per_page,
+            'first_item': self.first_item,
+            'last_item': self.last_item,
+            'item_count': self.item_count,
+            'link_first': self.page > self.first_page and \
+                    self._pagerlink(self.first_page, symbol_first) or '',
+            'link_last': self.page < self.last_page and \
+                    self._pagerlink(self.last_page, symbol_last) or '',
+            'link_previous': self.previous_page and \
+                    self._pagerlink(self.previous_page, symbol_previous) \
+                    or HTML.span(symbol_previous, class_="yui-pg-previous"),
+            'link_next': self.next_page and \
+                    self._pagerlink(self.next_page, symbol_next) \
+                    or HTML.span(symbol_next, class_="yui-pg-next")
+        })
+
+        return literal(result)
 
 
 #==============================================================================
@@ -792,17 +1100,16 @@ def repo_link(groups_and_repos):
         group >> subgroup >> repo
 
     :param groups_and_repos:
+    :param last_url:
     """
-    groups, repo_name = groups_and_repos
+    groups, just_name, repo_name = groups_and_repos
+    last_url = url('summary_home', repo_name=repo_name)
+    last_link = link_to(just_name, last_url)
 
-    if not groups:
-        return repo_name
-    else:
-        def make_link(group):
-            return link_to(group.name, url('repos_group_home',
-                                           group_name=group.group_name))
-        return literal(' &raquo; '.join(map(make_link, groups)) + \
-                       " &raquo; " + repo_name)
+    def make_link(group):
+        return link_to(group.name,
+                       url('repos_group_home', group_name=group.group_name))
+    return literal(' &raquo; '.join(map(make_link, groups) + ['<span>%s</span>' % last_link]))
 
 
 def fancy_file_stats(stats):
@@ -812,27 +1119,10 @@ def fancy_file_stats(stats):
 
     :param stats: two element list of added/deleted lines of code
     """
+    from rhodecode.lib.diffs import NEW_FILENODE, DEL_FILENODE, \
+        MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE
 
-    a, d, t = stats[0], stats[1], stats[0] + stats[1]
-    width = 100
-    unit = float(width) / (t or 1)
-
-    # needs > 9% of width to be visible or 0 to be hidden
-    a_p = max(9, unit * a) if a > 0 else 0
-    d_p = max(9, unit * d) if d > 0 else 0
-    p_sum = a_p + d_p
-
-    if p_sum > width:
-        #adjust the percentage to be == 100% since we adjusted to 9
-        if a_p > d_p:
-            a_p = a_p - (p_sum - width)
-        else:
-            d_p = d_p - (p_sum - width)
-
-    a_v = a if a > 0 else ''
-    d_v = d if d > 0 else ''
-
-    def cgen(l_type):
+    def cgen(l_type, a_v, d_v):
         mapping = {'tr': 'top-right-rounded-corner-mid',
                    'tl': 'top-left-rounded-corner-mid',
                    'br': 'bottom-right-rounded-corner-mid',
@@ -852,17 +1142,73 @@ def fancy_file_stats(stats):
         if l_type == 'd' and not a_v:
             return ' '.join(map(map_getter, ['tr', 'br', 'tl', 'bl']))
 
+    a, d = stats['added'], stats['deleted']
+    width = 100
+
+    if stats['binary']:
+        #binary mode
+        lbl = ''
+        bin_op = 1
+
+        if BIN_FILENODE in stats['ops']:
+            lbl = 'bin+'
+
+        if NEW_FILENODE in stats['ops']:
+            lbl += _('new file')
+            bin_op = NEW_FILENODE
+        elif MOD_FILENODE in stats['ops']:
+            lbl += _('mod')
+            bin_op = MOD_FILENODE
+        elif DEL_FILENODE in stats['ops']:
+            lbl += _('del')
+            bin_op = DEL_FILENODE
+        elif RENAMED_FILENODE in stats['ops']:
+            lbl += _('rename')
+            bin_op = RENAMED_FILENODE
+
+        #chmod can go with other operations
+        if CHMOD_FILENODE in stats['ops']:
+            _org_lbl = _('chmod')
+            lbl += _org_lbl if lbl.endswith('+') else '+%s' % _org_lbl
+
+        #import ipdb;ipdb.set_trace()
+        b_d = '<div class="bin bin%s %s" style="width:100%%">%s</div>' % (bin_op, cgen('a', a_v='', d_v=0), lbl)
+        b_a = '<div class="bin bin1" style="width:0%%"></div>'
+        return literal('<div style="width:%spx">%s%s</div>' % (width, b_a, b_d))
+
+    t = stats['added'] + stats['deleted']
+    unit = float(width) / (t or 1)
+
+    # needs > 9% of width to be visible or 0 to be hidden
+    a_p = max(9, unit * a) if a > 0 else 0
+    d_p = max(9, unit * d) if d > 0 else 0
+    p_sum = a_p + d_p
+
+    if p_sum > width:
+        #adjust the percentage to be == 100% since we adjusted to 9
+        if a_p > d_p:
+            a_p = a_p - (p_sum - width)
+        else:
+            d_p = d_p - (p_sum - width)
+
+    a_v = a if a > 0 else ''
+    d_v = d if d > 0 else ''
+
     d_a = '<div class="added %s" style="width:%s%%">%s</div>' % (
-        cgen('a'), a_p, a_v
+        cgen('a', a_v, d_v), a_p, a_v
     )
     d_d = '<div class="deleted %s" style="width:%s%%">%s</div>' % (
-        cgen('d'), d_p, d_v
+        cgen('d', a_v, d_v), d_p, d_v
     )
     return literal('<div style="width:%spx">%s%s</div>' % (width, d_a, d_d))
 
 
-def urlify_text(text_):
-    import re
+def urlify_text(text_, safe=True):
+    """
+    Extrac urls from text and make html links out of them
+
+    :param text_:
+    """
 
     url_pat = re.compile(r'''(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'''
                          '''|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)''')
@@ -870,8 +1216,10 @@ def urlify_text(text_):
     def url_func(match_obj):
         url_full = match_obj.groups()[0]
         return '<a href="%(url)s">%(url)s</a>' % ({'url': url_full})
-
-    return literal(url_pat.sub(url_func, text_))
+    _newtext = url_pat.sub(url_func, text_)
+    if safe:
+        return literal(_newtext)
+    return _newtext
 
 
 def urlify_changesets(text_, repository):
@@ -879,26 +1227,26 @@ def urlify_changesets(text_, repository):
     Extract revision ids from changeset and make link from them
 
     :param text_:
-    :param repository:
+    :param repository: repo name to build the URL with
     """
-    import re
-    URL_PAT = re.compile(r'([0-9a-fA-F]{12,})')
+    from pylons import url  # doh, we need to re-import url to mock it later
+    URL_PAT = re.compile(r'(^|\s)([0-9a-fA-F]{12,40})($|\s)')
 
     def url_func(match_obj):
-        rev = match_obj.groups()[0]
-        pref = ''
-        if match_obj.group().startswith(' '):
-            pref = ' '
+        rev = match_obj.groups()[1]
+        pref = match_obj.groups()[0]
+        suf = match_obj.groups()[2]
+
         tmpl = (
         '%(pref)s<a class="%(cls)s" href="%(url)s">'
-        '%(rev)s'
-        '</a>'
+        '%(rev)s</a>%(suf)s'
         )
         return tmpl % {
          'pref': pref,
          'cls': 'revision-link',
          'url': url('changeset_home', repo_name=repository, revision=rev),
          'rev': rev,
+         'suf': suf
         }
 
     newtext = URL_PAT.sub(url_func, text_)
@@ -916,8 +1264,8 @@ def urlify_commit(text_, repository=None, link_=None):
     :param repository:
     :param link_: changeset link
     """
-    import re
     import traceback
+    from pylons import url  # doh, we need to re-import url to mock it later
 
     def escaper(string):
         return string.replace('<', '&lt;').replace('>', '&gt;')
@@ -934,16 +1282,36 @@ def urlify_commit(text_, repository=None, link_=None):
         return ''.join(links)
 
     # urlify changesets - extrac revisions and make link out of them
-    text_ = urlify_changesets(escaper(text_), repository)
+    newtext = urlify_changesets(escaper(text_), repository)
+
+    # extract http/https links and make them real urls
+    newtext = urlify_text(newtext, safe=False)
 
     try:
-        conf = config['app_conf']
+        from rhodecode import CONFIG
+        conf = CONFIG
 
-        URL_PAT = re.compile(r'%s' % conf.get('issue_pat'))
+        # allow multiple issue servers to be used
+        valid_indices = [
+            x.group(1)
+            for x in map(lambda x: re.match(r'issue_pat(.*)', x), conf.keys())
+            if x and 'issue_server_link%s' % x.group(1) in conf
+            and 'issue_prefix%s' % x.group(1) in conf
+        ]
 
-        if URL_PAT:
-            ISSUE_SERVER_LNK = conf.get('issue_server_link')
-            ISSUE_PREFIX = conf.get('issue_prefix')
+        log.debug('found issue server suffixes `%s` during valuation of: %s'
+                  % (','.join(valid_indices), newtext))
+
+        for pattern_index in valid_indices:
+            ISSUE_PATTERN = conf.get('issue_pat%s' % pattern_index)
+            ISSUE_SERVER_LNK = conf.get('issue_server_link%s' % pattern_index)
+            ISSUE_PREFIX = conf.get('issue_prefix%s' % pattern_index)
+
+            log.debug('pattern suffix `%s` PAT:%s SERVER_LINK:%s PREFIX:%s'
+                      % (pattern_index, ISSUE_PATTERN, ISSUE_SERVER_LNK,
+                         ISSUE_PREFIX))
+
+            URL_PAT = re.compile(r'%s' % ISSUE_PATTERN)
 
             def url_func(match_obj):
                 pref = ''
@@ -961,6 +1329,7 @@ def urlify_commit(text_, repository=None, link_=None):
                     url = url.replace('{repo}', repository)
                     repo_name = repository.split(URL_SEP)[-1]
                     url = url.replace('{repo_name}', repo_name)
+
                 return tmpl % {
                      'pref': pref,
                      'cls': 'issue-tracker-link',
@@ -969,19 +1338,18 @@ def urlify_commit(text_, repository=None, link_=None):
                      'issue-prefix': ISSUE_PREFIX,
                      'serv': ISSUE_SERVER_LNK,
                 }
+            newtext = URL_PAT.sub(url_func, newtext)
+            log.debug('processed prefix:`%s` => %s' % (pattern_index, newtext))
 
-            newtext = URL_PAT.sub(url_func, text_)
-
-            if link_:
-                # wrap not links into final link => link_
-                newtext = linkify_others(newtext, link_)
-
-            return literal(newtext)
-    except:
+        # if we actually did something above
+        if link_:
+            # wrap not links into final link => link_
+            newtext = linkify_others(newtext, link_)
+    except Exception:
         log.error(traceback.format_exc())
         pass
 
-    return text_
+    return literal(newtext)
 
 
 def rst(source):
@@ -1005,3 +1373,40 @@ def changeset_status(repo, revision):
 
 def changeset_status_lbl(changeset_status):
     return dict(ChangesetStatus.STATUSES).get(changeset_status)
+
+
+def get_permission_name(key):
+    return dict(Permission.PERMS).get(key)
+
+
+def journal_filter_help():
+    return _(textwrap.dedent('''
+        Example filter terms:
+            repository:vcs
+            username:marcin
+            action:*push*
+            ip:127.0.0.1
+            date:20120101
+            date:[20120101100000 TO 20120102]
+
+        Generate wildcards using '*' character:
+            "repositroy:vcs*" - search everything starting with 'vcs'
+            "repository:*vcs*" - search for repository containing 'vcs'
+
+        Optional AND / OR operators in queries
+            "repository:vcs OR repository:test"
+            "username:test AND repository:test*"
+    '''))
+
+
+def not_mapped_error(repo_name):
+    flash(_('%s repository is not mapped to db perhaps'
+            ' it was created or renamed from the filesystem'
+            ' please run the application again'
+            ' in order to rescan repositories') % repo_name, category='error')
+
+
+def ip_range(ip_addr):
+    from rhodecode.model.db import UserIpMap
+    s, e = UserIpMap._get_ip_range(ip_addr)
+    return '%s - %s' % (s, e)

@@ -34,7 +34,16 @@ class HttpsFixup(object):
 
     def __call__(self, environ, start_response):
         self.__fixup(environ)
-        return self.application(environ, start_response)
+        debug = str2bool(self.config.get('debug'))
+        is_ssl = environ['wsgi.url_scheme'] == 'https'
+
+        def custom_start_response(status, headers, exc_info=None):
+            if is_ssl and str2bool(self.config.get('use_htsts')) and not debug:
+                headers.append(('Strict-Transport-Security',
+                                'max-age=8640000; includeSubDomains'))
+            return start_response(status, headers, exc_info)
+
+        return self.application(environ, custom_start_response)
 
     def __fixup(self, environ):
         """
@@ -42,21 +51,20 @@ class HttpsFixup(object):
         middleware you should set this header inside your
         proxy ie. nginx, apache etc.
         """
+        # DETECT PROTOCOL !
+        if 'HTTP_X_URL_SCHEME' in environ:
+            proto = environ.get('HTTP_X_URL_SCHEME')
+        elif 'HTTP_X_FORWARDED_SCHEME' in environ:
+            proto = environ.get('HTTP_X_FORWARDED_SCHEME')
+        elif 'HTTP_X_FORWARDED_PROTO' in environ:
+            proto = environ.get('HTTP_X_FORWARDED_PROTO')
+        else:
+            proto = 'http'
+        org_proto = proto
 
+        # if we have force, just override
         if str2bool(self.config.get('force_https')):
             proto = 'https'
-        else:
-            if 'HTTP_X_URL_SCHEME' in environ:
-                proto = environ.get('HTTP_X_URL_SCHEME')
-            elif 'HTTP_X_FORWARDED_SCHEME' in environ:
-                proto = environ.get('HTTP_X_FORWARDED_SCHEME')
-            elif 'HTTP_X_FORWARDED_PROTO' in environ:
-                proto = environ.get('HTTP_X_FORWARDED_PROTO')
-            else:
-                proto = 'http'
-        if proto == 'https':
-            environ['wsgi.url_scheme'] = proto
-        else:
-            environ['wsgi.url_scheme'] = 'http'
 
-        return None
+        environ['wsgi.url_scheme'] = proto
+        environ['wsgi._org_proto'] = org_proto

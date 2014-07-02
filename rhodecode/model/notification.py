@@ -27,20 +27,22 @@
 import os
 import logging
 import traceback
-import datetime
 
+from pylons import tmpl_context as c
 from pylons.i18n.translation import _
 
 import rhodecode
 from rhodecode.lib import helpers as h
 from rhodecode.model import BaseModel
 from rhodecode.model.db import Notification, User, UserNotification
-from sqlalchemy.orm import joinedload
+from rhodecode.model.meta import Session
 
 log = logging.getLogger(__name__)
 
 
 class NotificationModel(BaseModel):
+
+    cls = Notification
 
     def __get_notification(self, notification):
         if isinstance(notification, Notification):
@@ -54,7 +56,7 @@ class NotificationModel(BaseModel):
 
     def create(self, created_by, subject, body, recipients=None,
                type_=Notification.TYPE_MESSAGE, with_email=True,
-               email_kwargs={}):
+               email_kwargs={}, email_subject=None):
         """
 
         Creates notification of given type
@@ -68,11 +70,12 @@ class NotificationModel(BaseModel):
         :param type_: type of notification
         :param with_email: send email with this notification
         :param email_kwargs: additional dict to pass as args to email template
+        :param email_subject: use given subject as email subject
         """
         from rhodecode.lib.celerylib import tasks, run_task
 
         if recipients and not getattr(recipients, '__iter__', False):
-            raise Exception('recipients must be a list of iterable')
+            raise Exception('recipients must be a list or iterable')
 
         created_by_obj = self._get_user(created_by)
 
@@ -82,6 +85,9 @@ class NotificationModel(BaseModel):
                 obj = self._get_user(u)
                 if obj:
                     recipients_objs.append(obj)
+                else:
+                    # TODO: inform user that requested operation couldn't be completed
+                    log.error('cannot email unknown user %r', u)
             recipients_objs = set(recipients_objs)
             log.debug('sending notifications %s to %s' % (
                 type_, recipients_objs)
@@ -92,12 +98,13 @@ class NotificationModel(BaseModel):
             log.debug('sending notifications %s to admins: %s' % (
                 type_, recipients_objs)
             )
+        # TODO: inform user who are notified
         notif = Notification.create(
             created_by=created_by_obj, subject=subject,
             body=body, recipients=recipients_objs, type_=type_
         )
 
-        if with_email is False:
+        if not with_email:
             return notif
 
         #don't send email to person who created this comment
@@ -105,9 +112,11 @@ class NotificationModel(BaseModel):
 
         # send email with notification to all other participants
         for rec in rec_objs:
-            email_subject = NotificationModel().make_description(notif, False)
+            if not email_subject:
+                email_subject = NotificationModel()\
+                                    .make_description(notif, show_age=False)
             type_ = type_
-            email_body = body
+            email_body = None  # we set body to none, we just send HTML emails
             ## this is passed into template
             kwargs = {'subject': subject, 'body': h.rst_w_mentions(body)}
             kwargs.update(email_kwargs)
@@ -130,7 +139,7 @@ class NotificationModel(BaseModel):
                         .filter(UserNotification.notification
                                 == notification)\
                         .one()
-                self.sa.delete(obj)
+                Session().delete(obj)
                 return True
         except Exception:
             log.error(traceback.format_exc())
@@ -141,7 +150,6 @@ class NotificationModel(BaseModel):
         Get mentions for given user, filter them if filter dict is given
 
         :param user:
-        :type user:
         :param filter:
         """
         user = self._get_user(user)
@@ -152,9 +160,26 @@ class NotificationModel(BaseModel):
                                  Notification.notification_id))
 
         if filter_:
-            q = q.filter(Notification.type_ == filter_.get('type'))
+            q = q.filter(Notification.type_.in_(filter_))
 
         return q.all()
+
+    def mark_read(self, user, notification):
+        try:
+            notification = self.__get_notification(notification)
+            user = self._get_user(user)
+            if notification and user:
+                obj = UserNotification.query()\
+                        .filter(UserNotification.user == user)\
+                        .filter(UserNotification.notification
+                                == notification)\
+                        .one()
+                obj.read = True
+                Session().add(obj)
+                return True
+        except Exception:
+            log.error(traceback.format_exc())
+            raise
 
     def mark_all_read_for_user(self, user, filter_=None):
         user = self._get_user(user)
@@ -164,13 +189,13 @@ class NotificationModel(BaseModel):
             .join((Notification, UserNotification.notification_id ==
                                  Notification.notification_id))
         if filter_:
-            q = q.filter(Notification.type_ == filter_.get('type'))
+            q = q.filter(Notification.type_.in_(filter_))
 
         # this is a little inefficient but sqlalchemy doesn't support
         # update on joined tables :(
         for obj in q.all():
             obj.read = True
-            self.sa.add(obj)
+            Session().add(obj)
 
     def get_unread_cnt_for_user(self, user):
         user = self._get_user(user)
@@ -200,34 +225,33 @@ class NotificationModel(BaseModel):
         #alias
         _n = notification
         _map = {
-            _n.TYPE_CHANGESET_COMMENT: _('commented on commit'),
-            _n.TYPE_MESSAGE: _('sent message'),
-            _n.TYPE_MENTION: _('mentioned you'),
-            _n.TYPE_REGISTRATION: _('registered in RhodeCode'),
-            _n.TYPE_PULL_REQUEST: _('opened new pull request'),
-            _n.TYPE_PULL_REQUEST_COMMENT: _('commented on pull request')
+            _n.TYPE_CHANGESET_COMMENT: _('%(user)s commented on changeset at %(when)s'),
+            _n.TYPE_MESSAGE: _('%(user)s sent message at %(when)s'),
+            _n.TYPE_MENTION: _('%(user)s mentioned you at %(when)s'),
+            _n.TYPE_REGISTRATION: _('%(user)s registered in RhodeCode at %(when)s'),
+            _n.TYPE_PULL_REQUEST: _('%(user)s opened new pull request at %(when)s'),
+            _n.TYPE_PULL_REQUEST_COMMENT: _('%(user)s commented on pull request at %(when)s')
         }
+        tmpl = _map[notification.type_]
 
-        # action == _map string
-        tmpl = "%(user)s %(action)s at %(when)s"
         if show_age:
             when = h.age(notification.created_on)
         else:
             when = h.fmt_date(notification.created_on)
 
-        data = dict(
+        return tmpl % dict(
             user=notification.created_by_user.username,
-            action=_map[notification.type_], when=when,
-        )
-        return tmpl % data
+            when=when,
+            )
 
 
 class EmailNotificationModel(BaseModel):
 
     TYPE_CHANGESET_COMMENT = Notification.TYPE_CHANGESET_COMMENT
-    TYPE_PASSWORD_RESET = 'passoword_link'
+    TYPE_PASSWORD_RESET = 'password_link'
     TYPE_REGISTRATION = Notification.TYPE_REGISTRATION
     TYPE_PULL_REQUEST = Notification.TYPE_PULL_REQUEST
+    TYPE_PULL_REQUEST_COMMENT = Notification.TYPE_PULL_REQUEST_COMMENT
     TYPE_DEFAULT = 'default'
 
     def __init__(self):
@@ -238,7 +262,9 @@ class EmailNotificationModel(BaseModel):
          self.TYPE_CHANGESET_COMMENT: 'email_templates/changeset_comment.html',
          self.TYPE_PASSWORD_RESET: 'email_templates/password_reset.html',
          self.TYPE_REGISTRATION: 'email_templates/registration.html',
-         self.TYPE_DEFAULT: 'email_templates/default.html'
+         self.TYPE_DEFAULT: 'email_templates/default.html',
+         self.TYPE_PULL_REQUEST: 'email_templates/pull_request.html',
+         self.TYPE_PULL_REQUEST_COMMENT: 'email_templates/pull_request_comment.html',
         }
 
     def get_email_tmpl(self, type_, **kwargs):
@@ -250,8 +276,10 @@ class EmailNotificationModel(BaseModel):
 
         base = self.email_types.get(type_, self.email_types[self.TYPE_DEFAULT])
         email_template = self._tmpl_lookup.get_template(base)
-        # translator inject
-        _kwargs = {'_': _}
+        # translator and helpers inject
+        _kwargs = {'_': _,
+                   'h': h,
+                   'c': c}
         _kwargs.update(kwargs)
         log.debug('rendering tmpl %s with kwargs %s' % (base, _kwargs))
         return email_template.render(**_kwargs)

@@ -30,28 +30,32 @@ import urllib
 from time import mktime
 from datetime import timedelta, date
 from urlparse import urlparse
-from rhodecode.lib.compat import product
-
-from rhodecode.lib.vcs.exceptions import ChangesetError, EmptyRepositoryError, \
-    NodeDoesNotExistError
 
 from pylons import tmpl_context as c, request, url, config
 from pylons.i18n.translation import _
+from webob.exc import HTTPBadRequest
 
 from beaker.cache import cache_region, region_invalidate
 
+from rhodecode.lib import helpers as h
+from rhodecode.lib.compat import product
+from rhodecode.lib.vcs.exceptions import ChangesetError, EmptyRepositoryError, \
+    NodeDoesNotExistError
 from rhodecode.config.conf import ALL_READMES, ALL_EXTS, LANGUAGES_EXTENSIONS_MAP
 from rhodecode.model.db import Statistics, CacheInvalidation
-from rhodecode.lib.utils2 import safe_unicode
-from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
+from rhodecode.lib.utils import jsonify
+from rhodecode.lib.utils2 import safe_unicode, safe_str
+from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
+    NotAnonymous
 from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.utils import EmptyChangeset
+from rhodecode.lib.vcs.backends.base import EmptyChangeset
 from rhodecode.lib.markup_renderer import MarkupRenderer
 from rhodecode.lib.celerylib import run_task
 from rhodecode.lib.celerylib.tasks import get_commits_stats
 from rhodecode.lib.helpers import RepoPage
 from rhodecode.lib.compat import json, OrderedDict
 from rhodecode.lib.vcs.nodes import FileNode
+from rhodecode.controllers.changelog import _load_changelog_summary
 
 log = logging.getLogger(__name__)
 
@@ -62,23 +66,76 @@ README_FILES = [''.join([x[0][0], x[1][0]]) for x in
 
 class SummaryController(BaseRepoController):
 
-    @LoginRequired()
-    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
-                                   'repository.admin')
     def __before__(self):
         super(SummaryController, self).__before__()
 
+    def _get_download_links(self, repo):
+
+        download_l = []
+
+        branches_group = ([], _("Branches"))
+        tags_group = ([], _("Tags"))
+
+        for name, chs in c.rhodecode_repo.branches.items():
+            #chs = chs.split(':')[-1]
+            branches_group[0].append((chs, name),)
+        download_l.append(branches_group)
+
+        for name, chs in c.rhodecode_repo.tags.items():
+            #chs = chs.split(':')[-1]
+            tags_group[0].append((chs, name),)
+        download_l.append(tags_group)
+
+        return download_l
+
+    def __get_readme_data(self, db_repo):
+        repo_name = db_repo.repo_name
+
+        @cache_region('long_term')
+        def _get_readme_from_cache(key, kind):
+            readme_data = None
+            readme_file = None
+            log.debug('Looking for README file')
+            try:
+                # gets the landing revision! or tip if fails
+                cs = db_repo.get_landing_changeset()
+                if isinstance(cs, EmptyChangeset):
+                    raise EmptyRepositoryError()
+                renderer = MarkupRenderer()
+                for f in README_FILES:
+                    try:
+                        readme = cs.get_node(f)
+                        if not isinstance(readme, FileNode):
+                            continue
+                        readme_file = f
+                        log.debug('Found README file `%s` rendering...' %
+                                  readme_file)
+                        readme_data = renderer.render(readme.content, f)
+                        break
+                    except NodeDoesNotExistError:
+                        continue
+            except ChangesetError:
+                log.error(traceback.format_exc())
+                pass
+            except EmptyRepositoryError:
+                pass
+            except Exception:
+                log.error(traceback.format_exc())
+
+            return readme_data, readme_file
+
+        kind = 'README'
+        valid = CacheInvalidation.test_and_set_valid(repo_name, kind)
+        if not valid:
+            region_invalidate(_get_readme_from_cache, None, repo_name, kind)
+        return _get_readme_from_cache(repo_name, kind)
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
     def index(self, repo_name):
         c.dbrepo = dbrepo = c.rhodecode_db_repo
-        c.following = self.scm_model.is_following_repo(repo_name,
-                                                self.rhodecode_user.user_id)
-
-        def url_generator(**kw):
-            return url('shortlog_home', repo_name=repo_name, size=10, **kw)
-
-        c.repo_changesets = RepoPage(c.rhodecode_repo, page=1,
-                                     items_per_page=10, url=url_generator)
-
+        _load_changelog_summary()
         if self.rhodecode_user.username == 'default':
             # for default(anonymous) user we don't need to pass credentials
             username = ''
@@ -95,14 +152,14 @@ class SummaryController(BaseRepoController):
         uri_tmpl = uri_tmpl.replace('{', '%(').replace('}', ')s')
         decoded_path = safe_unicode(urllib.unquote(parsed_url.path))
         uri_dict = {
-           'user': username,
+           'user': urllib.quote(username),
            'pass': password,
            'scheme': parsed_url.scheme,
            'netloc': parsed_url.netloc,
-           'path': decoded_path
+           'path': urllib.quote(safe_str(decoded_path))
         }
 
-        uri = uri_tmpl % uri_dict
+        uri = (uri_tmpl % uri_dict)
         # generate another clone url by id
         uri_dict.update(
          {'path': decoded_path.replace(repo_name, '_%s' % c.dbrepo.repo_id)}
@@ -111,19 +168,6 @@ class SummaryController(BaseRepoController):
 
         c.clone_repo_url = uri
         c.clone_repo_url_id = uri_id
-        c.repo_tags = OrderedDict()
-        for name, hash_ in c.rhodecode_repo.tags.items()[:10]:
-            try:
-                c.repo_tags[name] = c.rhodecode_repo.get_changeset(hash_)
-            except ChangesetError:
-                c.repo_tags[name] = EmptyChangeset(hash_)
-
-        c.repo_branches = OrderedDict()
-        for name, hash_ in c.rhodecode_repo.branches.items()[:10]:
-            try:
-                c.repo_branches[name] = c.rhodecode_repo.get_changeset(hash_)
-            except ChangesetError:
-                c.repo_branches[name] = EmptyChangeset(hash_)
 
         td = date.today() + timedelta(days=1)
         td_1m = td - timedelta(days=calendar.mdays[td.month])
@@ -136,7 +180,9 @@ class SummaryController(BaseRepoController):
         if dbrepo.enable_statistics:
             c.show_stats = True
             c.no_data_msg = _('No data loaded yet')
-            run_task(get_commits_stats, c.dbrepo.repo_name, ts_min_y, ts_max_y)
+            recurse_limit = 500  # don't recurse more than 500 times when parsing
+            run_task(get_commits_stats, c.dbrepo.repo_name, ts_min_y,
+                     ts_max_y, recurse_limit)
         else:
             c.show_stats = False
             c.no_data_msg = _('Statistics are disabled for this repository')
@@ -180,64 +226,17 @@ class SummaryController(BaseRepoController):
         if c.enable_downloads:
             c.download_options = self._get_download_links(c.rhodecode_repo)
 
-        c.readme_data, c.readme_file = self.__get_readme_data(
-            c.rhodecode_db_repo.repo_name, c.rhodecode_repo
-        )
+        c.readme_data, c.readme_file = \
+            self.__get_readme_data(c.rhodecode_db_repo)
         return render('summary/summary.html')
 
-    def __get_readme_data(self, repo_name, repo):
-
-        @cache_region('long_term')
-        def _get_readme_from_cache(key):
-            readme_data = None
-            readme_file = None
-            log.debug('Fetching readme file')
-            try:
-                cs = repo.get_changeset()  # fetches TIP
-                renderer = MarkupRenderer()
-                for f in README_FILES:
-                    try:
-                        readme = cs.get_node(f)
-                        if not isinstance(readme, FileNode):
-                            continue
-                        readme_file = f
-                        readme_data = renderer.render(readme.content, f)
-                        log.debug('Found readme %s' % readme_file)
-                        break
-                    except NodeDoesNotExistError:
-                        continue
-            except ChangesetError:
-                log.error(traceback.format_exc())
-                pass
-            except EmptyRepositoryError:
-                pass
-            except Exception:
-                log.error(traceback.format_exc())
-
-            return readme_data, readme_file
-
-        key = repo_name + '_README'
-        inv = CacheInvalidation.invalidate(key)
-        if inv is not None:
-            region_invalidate(_get_readme_from_cache, None, key)
-            CacheInvalidation.set_valid(inv.cache_key)
-        return _get_readme_from_cache(key)
-
-    def _get_download_links(self, repo):
-
-        download_l = []
-
-        branches_group = ([], _("Branches"))
-        tags_group = ([], _("Tags"))
-
-        for name, chs in c.rhodecode_repo.branches.items():
-            #chs = chs.split(':')[-1]
-            branches_group[0].append((chs, name),)
-        download_l.append(branches_group)
-
-        for name, chs in c.rhodecode_repo.tags.items():
-            #chs = chs.split(':')[-1]
-            tags_group[0].append((chs, name),)
-        download_l.append(tags_group)
-
-        return download_l
+    @LoginRequired()
+    @NotAnonymous()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    @jsonify
+    def repo_size(self, repo_name):
+        if request.is_xhr:
+            return c.rhodecode_db_repo._repo_size()
+        else:
+            raise HTTPBadRequest()

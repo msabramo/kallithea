@@ -25,41 +25,33 @@
 
 import logging
 import traceback
-
+import itertools
+import collections
 from pylons import url
 from pylons.i18n.translation import _
 
-from rhodecode.lib.utils2 import safe_unicode, generate_api_key
-from rhodecode.lib.caching_query import FromCache
+from sqlalchemy.exc import DatabaseError
+from sqlalchemy.orm import joinedload
 
+from rhodecode.lib.utils2 import safe_unicode, generate_api_key, get_current_rhodecode_user
+from rhodecode.lib.caching_query import FromCache
 from rhodecode.model import BaseModel
-from rhodecode.model.db import User, UserRepoToPerm, Repository, Permission, \
-    UserToPerm, UsersGroupRepoToPerm, UsersGroupToPerm, UsersGroupMember, \
-    Notification, RepoGroup, UserRepoGroupToPerm, UsersGroupRepoGroupToPerm, \
-    UserEmailMap
+from rhodecode.model.db import User, Repository, Permission, \
+    UserToPerm, UserGroupRepoToPerm, UserGroupToPerm, UserGroupMember, \
+    Notification, RepoGroup, UserGroupRepoGroupToPerm, \
+    UserEmailMap, UserIpMap, UserGroupUserGroupToPerm, UserGroup
 from rhodecode.lib.exceptions import DefaultUserException, \
     UserOwnsReposException
+from rhodecode.model.meta import Session
 
-from sqlalchemy.exc import DatabaseError
-
-from sqlalchemy.orm import joinedload
 
 log = logging.getLogger(__name__)
 
-
-PERM_WEIGHTS = {
-    'repository.none': 0,
-    'repository.read': 1,
-    'repository.write': 3,
-    'repository.admin': 4,
-    'group.none': 0,
-    'group.read': 1,
-    'group.write': 3,
-    'group.admin': 4,
-}
+PERM_WEIGHTS = Permission.PERM_WEIGHTS
 
 
 class UserModel(BaseModel):
+    cls = User
 
     def get(self, user_id, cache=False):
         user = self.sa.query(User)
@@ -76,34 +68,54 @@ class UserModel(BaseModel):
         if case_insensitive:
             user = self.sa.query(User).filter(User.username.ilike(username))
         else:
-            user = self.sa.query(User)\
-                .filter(User.username == username)
+            user = self.sa.query(User).filter(User.username == username)
         if cache:
             user = user.options(FromCache("sql_cache_short",
                                           "get_user_%s" % username))
         return user.scalar()
 
+    def get_by_email(self, email, cache=False, case_insensitive=False):
+        return User.get_by_email(email, case_insensitive, cache)
+
     def get_by_api_key(self, api_key, cache=False):
         return User.get_by_api_key(api_key, cache)
 
-    def create(self, form_data):
+    def create(self, form_data, cur_user=None):
+        if not cur_user:
+            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
+
+        from rhodecode.lib.hooks import log_create_user, check_allowed_create_user
+        _fd = form_data
+        user_data = {
+            'username': _fd['username'], 'password': _fd['password'],
+            'email': _fd['email'], 'firstname': _fd['firstname'], 'lastname': _fd['lastname'],
+            'active': _fd['active'], 'admin': False
+        }
+        # raises UserCreationError if it's not allowed
+        check_allowed_create_user(user_data, cur_user)
+
         from rhodecode.lib.auth import get_crypt_password
         try:
             new_user = User()
             for k, v in form_data.items():
                 if k == 'password':
                     v = get_crypt_password(v)
+                if k == 'firstname':
+                    k = 'name'
                 setattr(new_user, k, v)
 
             new_user.api_key = generate_api_key(form_data['username'])
             self.sa.add(new_user)
+
+            log_create_user(new_user.get_dict(), cur_user)
             return new_user
-        except:
+        except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def create_or_update(self, username, password, email, name, lastname,
-                         active=True, admin=False, ldap_dn=None):
+    def create_or_update(self, username, password, email, firstname='',
+                         lastname='', active=True, admin=False, ldap_dn=None,
+                         cur_user=None):
         """
         Creates a new instance if not found, or updates current one
 
@@ -111,63 +123,97 @@ class UserModel(BaseModel):
         :param password:
         :param email:
         :param active:
-        :param name:
+        :param firstname:
         :param lastname:
         :param active:
         :param admin:
         :param ldap_dn:
+        :param cur_user:
         """
+        if not cur_user:
+            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
 
         from rhodecode.lib.auth import get_crypt_password
+        from rhodecode.lib.hooks import log_create_user, check_allowed_create_user
+        user_data = {
+            'username': username, 'password': password,
+            'email': email, 'firstname': firstname, 'lastname': lastname,
+            'active': active, 'admin': admin
+        }
+        # raises UserCreationError if it's not allowed
+        check_allowed_create_user(user_data, cur_user)
 
         log.debug('Checking for %s account in RhodeCode database' % username)
         user = User.get_by_username(username, case_insensitive=True)
         if user is None:
             log.debug('creating new user %s' % username)
             new_user = User()
+            edit = False
         else:
             log.debug('updating user %s' % username)
             new_user = user
+            edit = True
 
         try:
             new_user.username = username
             new_user.admin = admin
-            new_user.password = get_crypt_password(password)
-            new_user.api_key = generate_api_key(username)
+            # set password only if creating an user or password is changed
+            if not edit or user.password != password:
+                new_user.password = get_crypt_password(password) if password else None
+                new_user.api_key = generate_api_key(username)
             new_user.email = email
             new_user.active = active
             new_user.ldap_dn = safe_unicode(ldap_dn) if ldap_dn else None
-            new_user.name = name
+            new_user.name = firstname
             new_user.lastname = lastname
             self.sa.add(new_user)
+
+            if not edit:
+                log_create_user(new_user.get_dict(), cur_user)
             return new_user
         except (DatabaseError,):
             log.error(traceback.format_exc())
             raise
 
-    def create_for_container_auth(self, username, attrs):
+    def create_for_container_auth(self, username, attrs, cur_user=None):
         """
         Creates the given user if it's not already in the database
 
         :param username:
         :param attrs:
+        :param cur_user:
         """
+        if not cur_user:
+            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
         if self.get_by_username(username, case_insensitive=True) is None:
-
             # autogenerate email for container account without one
             generate_email = lambda usr: '%s@container_auth.account' % usr
+            firstname = attrs['name']
+            lastname = attrs['lastname']
+            active = attrs.get('active', True)
+            email = attrs['email'] or generate_email(username)
+
+            from rhodecode.lib.hooks import log_create_user, check_allowed_create_user
+            user_data = {
+                'username': username, 'password': None,
+                'email': email, 'firstname': firstname, 'lastname': lastname,
+                'active': attrs.get('active', True), 'admin': False
+            }
+            # raises UserCreationError if it's not allowed
+            check_allowed_create_user(user_data, cur_user)
 
             try:
                 new_user = User()
                 new_user.username = username
                 new_user.password = None
                 new_user.api_key = generate_api_key(username)
-                new_user.email = attrs['email']
-                new_user.active = attrs.get('active', True)
-                new_user.name = attrs['name'] or generate_email(username)
-                new_user.lastname = attrs['lastname']
+                new_user.email = email
+                new_user.active = active
+                new_user.name = firstname
+                new_user.lastname = lastname
 
                 self.sa.add(new_user)
+                log_create_user(new_user.get_dict(), cur_user)
                 return new_user
             except (DatabaseError,):
                 log.error(traceback.format_exc())
@@ -177,7 +223,7 @@ class UserModel(BaseModel):
                   ' for container auth.', username)
         return None
 
-    def create_ldap(self, username, password, user_dn, attrs):
+    def create_ldap(self, username, password, user_dn, attrs, cur_user=None):
         """
         Checks if user is in database, if not creates this user marked
         as ldap user
@@ -186,28 +232,45 @@ class UserModel(BaseModel):
         :param password:
         :param user_dn:
         :param attrs:
+        :param cur_user:
         """
+        if not cur_user:
+            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
         from rhodecode.lib.auth import get_crypt_password
         log.debug('Checking for such ldap account in RhodeCode database')
         if self.get_by_username(username, case_insensitive=True) is None:
-
-            # autogenerate email for ldap account without one
+            # autogenerate email for container account without one
             generate_email = lambda usr: '%s@ldap.account' % usr
+            password = get_crypt_password(password)
+            firstname = attrs['name']
+            lastname = attrs['lastname']
+            active = attrs.get('active', True)
+            email = attrs['email'] or generate_email(username)
+
+            from rhodecode.lib.hooks import log_create_user, check_allowed_create_user
+            user_data = {
+                'username': username, 'password': password,
+                'email': email, 'firstname': firstname, 'lastname': lastname,
+                'active': attrs.get('active', True), 'admin': False
+            }
+            # raises UserCreationError if it's not allowed
+            check_allowed_create_user(user_data, cur_user)
 
             try:
                 new_user = User()
                 username = username.lower()
                 # add ldap account always lowercase
                 new_user.username = username
-                new_user.password = get_crypt_password(password)
+                new_user.password = password
                 new_user.api_key = generate_api_key(username)
-                new_user.email = attrs['email'] or generate_email(username)
-                new_user.active = attrs.get('active', True)
+                new_user.email = email
+                new_user.active = active
                 new_user.ldap_dn = safe_unicode(user_dn)
-                new_user.name = attrs['name']
-                new_user.lastname = attrs['lastname']
-
+                new_user.name = firstname
+                new_user.lastname = lastname
                 self.sa.add(new_user)
+
+                log_create_user(new_user.get_dict(), cur_user)
                 return new_user
             except (DatabaseError,):
                 log.error(traceback.format_exc())
@@ -228,14 +291,13 @@ class UserModel(BaseModel):
             self.sa.flush()
 
             # notification to admins
-            subject = _('new user registration')
+            subject = _('New user registration')
             body = ('New user registration\n'
                     '---------------------\n'
                     '- Username: %s\n'
                     '- Full Name: %s\n'
                     '- Email: %s\n')
-            body = body % (new_user.username, new_user.full_name,
-                           new_user.email)
+            body = body % (new_user.username, new_user.full_name, new_user.email)
             edit_url = url('edit_user', id=new_user.user_id, qualified=True)
             kw = {'registered_user_url': edit_url}
             NotificationModel().create(created_by=new_user, subject=subject,
@@ -243,11 +305,12 @@ class UserModel(BaseModel):
                                        type_=Notification.TYPE_REGISTRATION,
                                        email_kwargs=kw)
 
-        except:
+        except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def update(self, user_id, form_data):
+    def update(self, user_id, form_data, skip_attrs=[]):
+        from rhodecode.lib.auth import get_crypt_password
         try:
             user = self.get(user_id, cache=False)
             if user.username == 'default':
@@ -256,40 +319,45 @@ class UserModel(BaseModel):
                                   " crucial for entire application"))
 
             for k, v in form_data.items():
-                if k == 'new_password' and v != '':
-                    user.password = v
+                if k in skip_attrs:
+                    continue
+                if k == 'new_password' and v:
+                    user.password = get_crypt_password(v)
                     user.api_key = generate_api_key(user.username)
                 else:
+                    if k == 'firstname':
+                        k = 'name'
                     setattr(user, k, v)
-
             self.sa.add(user)
-        except:
+        except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def update_my_account(self, user_id, form_data):
+    def update_user(self, user, **kwargs):
         from rhodecode.lib.auth import get_crypt_password
         try:
-            user = self.get(user_id, cache=False)
+            user = self._get_user(user)
             if user.username == 'default':
                 raise DefaultUserException(
                     _("You can't Edit this user since it's"
                       " crucial for entire application")
                 )
-            for k, v in form_data.items():
-                if k == 'new_password' and v != '':
-                    user.password = get_crypt_password(v)
-                    user.api_key = generate_api_key(user.username)
-                else:
-                    if k not in ['admin', 'active']:
-                        setattr(user, k, v)
 
+            for k, v in kwargs.items():
+                if k == 'password' and v:
+                    v = get_crypt_password(v)
+                    user.api_key = generate_api_key(user.username)
+
+                setattr(user, k, v)
             self.sa.add(user)
-        except:
+            return user
+        except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def delete(self, user):
+    def delete(self, user, cur_user=None):
+        if not cur_user:
+            cur_user = getattr(get_current_rhodecode_user(), 'username', None)
         user = self._get_user(user)
 
         try:
@@ -306,17 +374,72 @@ class UserModel(BaseModel):
                     % (user.username, len(repos), ', '.join(repos))
                 )
             self.sa.delete(user)
-        except:
+
+            from rhodecode.lib.hooks import log_delete_user
+            log_delete_user(user.get_dict(), cur_user)
+        except Exception:
             log.error(traceback.format_exc())
             raise
 
     def reset_password_link(self, data):
         from rhodecode.lib.celerylib import tasks, run_task
-        run_task(tasks.send_password_link, data['email'])
+        from rhodecode.model.notification import EmailNotificationModel
+        user_email = data['email']
+        try:
+            user = User.get_by_email(user_email)
+            if user:
+                log.debug('password reset user found %s' % user)
+                link = url('reset_password_confirmation', key=user.api_key,
+                           qualified=True)
+                reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
+                body = EmailNotificationModel().get_email_tmpl(reg_type,
+                                                    **{'user': user.short_contact,
+                                                       'reset_url': link})
+                log.debug('sending email')
+                run_task(tasks.send_email, user_email,
+                         _("Password reset link"), body, body)
+                log.info('send new password mail to %s' % user_email)
+            else:
+                log.debug("password reset email %s not found" % user_email)
+        except Exception:
+            log.error(traceback.format_exc())
+            return False
+
+        return True
 
     def reset_password(self, data):
         from rhodecode.lib.celerylib import tasks, run_task
-        run_task(tasks.reset_user_password, data['email'])
+        from rhodecode.lib import auth
+        user_email = data['email']
+        pre_db = True
+        try:
+            user = User.get_by_email(user_email)
+            new_passwd = auth.PasswordGenerator().gen_password(8,
+                            auth.PasswordGenerator.ALPHABETS_BIG_SMALL)
+            if user:
+                user.password = auth.get_crypt_password(new_passwd)
+                user.api_key = auth.generate_api_key(user.username)
+                Session().add(user)
+                Session().commit()
+                log.info('change password for %s' % user_email)
+            if new_passwd is None:
+                raise Exception('unable to generate new password')
+
+            pre_db = False
+            run_task(tasks.send_email, user_email,
+                     _('Your new password'),
+                     _('Your new RhodeCode password:%s') % (new_passwd,))
+            log.info('send new password mail to %s' % user_email)
+
+        except Exception:
+            log.error('Failed to update user password')
+            log.error(traceback.format_exc())
+            if pre_db:
+                # we rollback only if local db stuff fails. If it goes into
+                # run_task, we're pass rollback state this wouldn't work then
+                Session().rollback()
+
+        return True
 
     def fill_data(self, auth_user, user_id=None, api_key=None):
         """
@@ -345,27 +468,49 @@ class UserModel(BaseModel):
             else:
                 return False
 
-        except:
+        except Exception:
             log.error(traceback.format_exc())
             auth_user.is_authenticated = False
             return False
 
         return True
 
-    def fill_perms(self, user):
+    def fill_perms(self, user, explicit=True, algo='higherwin'):
         """
         Fills user permission attribute with permissions taken from database
         works for permissions given for repositories, and for permissions that
         are granted to groups
 
         :param user: user instance to fill his perms
+        :param explicit: In case there are permissions both for user and a group
+            that user is part of, explicit flag will defiine if user will
+            explicitly override permissions from group, if it's False it will
+            make decision based on the algo
+        :param algo: algorithm to decide what permission should be choose if
+            it's multiple defined, eg user in two different groups. It also
+            decides if explicit flag is turned off how to specify the permission
+            for case when user is in a group + have defined separate permission
         """
         RK = 'repositories'
         GK = 'repositories_groups'
+        UK = 'user_groups'
         GLOBAL = 'global'
         user.permissions[RK] = {}
         user.permissions[GK] = {}
+        user.permissions[UK] = {}
         user.permissions[GLOBAL] = set()
+
+        def _choose_perm(new_perm, cur_perm):
+            new_perm_val = PERM_WEIGHTS[new_perm]
+            cur_perm_val = PERM_WEIGHTS[cur_perm]
+            if algo == 'higherwin':
+                if new_perm_val > cur_perm_val:
+                    return new_perm
+                return cur_perm
+            elif algo == 'lowerwin':
+                if new_perm_val < cur_perm_val:
+                    return new_perm
+                return cur_perm
 
         #======================================================================
         # fetch default permissions
@@ -375,6 +520,7 @@ class UserModel(BaseModel):
 
         default_repo_perms = Permission.get_default_perms(default_user_id)
         default_repo_groups_perms = Permission.get_default_group_perms(default_user_id)
+        default_user_group_perms = Permission.get_default_user_group_perms(default_user_id)
 
         if user.is_admin:
             #==================================================================
@@ -389,19 +535,25 @@ class UserModel(BaseModel):
                 p = 'repository.admin'
                 user.permissions[RK][r_k] = p
 
-            # repositories groups
+            # repository groups
             for perm in default_repo_groups_perms:
                 rg_k = perm.UserRepoGroupToPerm.group.group_name
                 p = 'group.admin'
                 user.permissions[GK][rg_k] = p
+
+            # user groups
+            for perm in default_user_group_perms:
+                u_k = perm.UserUserGroupToPerm.user_group.users_group_name
+                p = 'usergroup.admin'
+                user.permissions[UK][u_k] = p
             return user
 
         #==================================================================
-        # set default permissions first for repositories and groups
+        # SET DEFAULTS GLOBAL, REPOS, REPOSITORY GROUPS
         #==================================================================
         uid = user.user_id
 
-        # default global permissions
+        # default global permissions taken fron the default user
         default_global_perms = self.sa.query(UserToPerm)\
             .filter(UserToPerm.user_id == default_user_id)
 
@@ -422,127 +574,199 @@ class UserModel(BaseModel):
 
             user.permissions[RK][r_k] = p
 
-        # defaults for repositories groups taken from default user permission
+        # defaults for repository groups taken from default user permission
         # on given group
         for perm in default_repo_groups_perms:
             rg_k = perm.UserRepoGroupToPerm.group.group_name
             p = perm.Permission.permission_name
             user.permissions[GK][rg_k] = p
 
-        #==================================================================
-        # overwrite defaults with user permissions if any found
-        #==================================================================
+        # defaults for user groups taken from default user permission
+        # on given user group
+        for perm in default_user_group_perms:
+            u_k = perm.UserUserGroupToPerm.user_group.users_group_name
+            p = perm.Permission.permission_name
+            user.permissions[UK][u_k] = p
 
-        # user global permissions
+        #======================================================================
+        # !! OVERRIDE GLOBALS !! with user permissions if any found
+        #======================================================================
+        # those can be configured from groups or users explicitly
+        _configurable = set([
+            'hg.fork.none', 'hg.fork.repository',
+            'hg.create.none', 'hg.create.repository',
+            'hg.usergroup.create.false', 'hg.usergroup.create.true'
+        ])
+
+        # USER GROUPS comes first
+        # user group global permissions
+        user_perms_from_users_groups = self.sa.query(UserGroupToPerm)\
+            .options(joinedload(UserGroupToPerm.permission))\
+            .join((UserGroupMember, UserGroupToPerm.users_group_id ==
+                   UserGroupMember.users_group_id))\
+            .filter(UserGroupMember.user_id == uid)\
+            .order_by(UserGroupToPerm.users_group_id)\
+            .all()
+        #need to group here by groups since user can be in more than one group
+        _grouped = [[x, list(y)] for x, y in
+                    itertools.groupby(user_perms_from_users_groups,
+                                      lambda x:x.users_group)]
+        for gr, perms in _grouped:
+            # since user can be in multiple groups iterate over them and
+            # select the lowest permissions first (more explicit)
+            ##TODO: do this^^
+            if not gr.inherit_default_permissions:
+                # NEED TO IGNORE all configurable permissions and
+                # replace them with explicitly set
+                user.permissions[GLOBAL] = user.permissions[GLOBAL]\
+                                                .difference(_configurable)
+            for perm in perms:
+                user.permissions[GLOBAL].add(perm.permission.permission_name)
+
+        # user specific global permissions
         user_perms = self.sa.query(UserToPerm)\
                 .options(joinedload(UserToPerm.permission))\
                 .filter(UserToPerm.user_id == uid).all()
 
-        for perm in user_perms:
-            user.permissions[GLOBAL].add(perm.permission.permission_name)
+        if not user.inherit_default_permissions:
+            # NEED TO IGNORE all configurable permissions and
+            # replace them with explicitly set
+            user.permissions[GLOBAL] = user.permissions[GLOBAL]\
+                                            .difference(_configurable)
 
-        # user explicit permissions for repositories
-        user_repo_perms = \
-         self.sa.query(UserRepoToPerm, Permission, Repository)\
-         .join((Repository, UserRepoToPerm.repository_id == Repository.repo_id))\
-         .join((Permission, UserRepoToPerm.permission_id == Permission.permission_id))\
-         .filter(UserRepoToPerm.user_id == uid)\
-         .all()
+            for perm in user_perms:
+                user.permissions[GLOBAL].add(perm.permission.permission_name)
+        ## END GLOBAL PERMISSIONS
 
+        #======================================================================
+        # !! PERMISSIONS FOR REPOSITORIES !!
+        #======================================================================
+        #======================================================================
+        # check if user is part of user groups for this repository and
+        # fill in his permission from it. _choose_perm decides of which
+        # permission should be selected based on selected method
+        #======================================================================
+
+        # user group for repositories permissions
+        user_repo_perms_from_users_groups = \
+         self.sa.query(UserGroupRepoToPerm, Permission, Repository,)\
+            .join((Repository, UserGroupRepoToPerm.repository_id ==
+                   Repository.repo_id))\
+            .join((Permission, UserGroupRepoToPerm.permission_id ==
+                   Permission.permission_id))\
+            .join((UserGroupMember, UserGroupRepoToPerm.users_group_id ==
+                   UserGroupMember.users_group_id))\
+            .filter(UserGroupMember.user_id == uid)\
+            .all()
+
+        multiple_counter = collections.defaultdict(int)
+        for perm in user_repo_perms_from_users_groups:
+            r_k = perm.UserGroupRepoToPerm.repository.repo_name
+            multiple_counter[r_k] += 1
+            p = perm.Permission.permission_name
+            cur_perm = user.permissions[RK][r_k]
+
+            if perm.Repository.user_id == uid:
+                # set admin if owner
+                p = 'repository.admin'
+            else:
+                if multiple_counter[r_k] > 1:
+                    p = _choose_perm(p, cur_perm)
+            user.permissions[RK][r_k] = p
+
+        # user explicit permissions for repositories, overrides any specified
+        # by the group permission
+        user_repo_perms = Permission.get_default_perms(uid)
         for perm in user_repo_perms:
-            # set admin if owner
             r_k = perm.UserRepoToPerm.repository.repo_name
+            cur_perm = user.permissions[RK][r_k]
+            # set admin if owner
             if perm.Repository.user_id == uid:
                 p = 'repository.admin'
             else:
                 p = perm.Permission.permission_name
+                if not explicit:
+                    p = _choose_perm(p, cur_perm)
             user.permissions[RK][r_k] = p
 
-        # USER GROUP
-        #==================================================================
-        # check if user is part of user groups for this repository and
-        # fill in (or replace with higher) permissions
-        #==================================================================
-
-        # users group global
-        user_perms_from_users_groups = self.sa.query(UsersGroupToPerm)\
-            .options(joinedload(UsersGroupToPerm.permission))\
-            .join((UsersGroupMember, UsersGroupToPerm.users_group_id ==
-                   UsersGroupMember.users_group_id))\
-            .filter(UsersGroupMember.user_id == uid).all()
-
-        for perm in user_perms_from_users_groups:
-            user.permissions[GLOBAL].add(perm.permission.permission_name)
-
-        # users group for repositories permissions
-        user_repo_perms_from_users_groups = \
-         self.sa.query(UsersGroupRepoToPerm, Permission, Repository,)\
-         .join((Repository, UsersGroupRepoToPerm.repository_id == Repository.repo_id))\
-         .join((Permission, UsersGroupRepoToPerm.permission_id == Permission.permission_id))\
-         .join((UsersGroupMember, UsersGroupRepoToPerm.users_group_id == UsersGroupMember.users_group_id))\
-         .filter(UsersGroupMember.user_id == uid)\
+        #======================================================================
+        # !! PERMISSIONS FOR REPOSITORY GROUPS !!
+        #======================================================================
+        #======================================================================
+        # check if user is part of user groups for this repository groups and
+        # fill in his permission from it. _choose_perm decides of which
+        # permission should be selected based on selected method
+        #======================================================================
+        # user group for repo groups permissions
+        user_repo_group_perms_from_users_groups = \
+         self.sa.query(UserGroupRepoGroupToPerm, Permission, RepoGroup)\
+         .join((RepoGroup, UserGroupRepoGroupToPerm.group_id == RepoGroup.group_id))\
+         .join((Permission, UserGroupRepoGroupToPerm.permission_id
+                == Permission.permission_id))\
+         .join((UserGroupMember, UserGroupRepoGroupToPerm.users_group_id
+                == UserGroupMember.users_group_id))\
+         .filter(UserGroupMember.user_id == uid)\
          .all()
 
-        for perm in user_repo_perms_from_users_groups:
-            r_k = perm.UsersGroupRepoToPerm.repository.repo_name
+        multiple_counter = collections.defaultdict(int)
+        for perm in user_repo_group_perms_from_users_groups:
+            g_k = perm.UserGroupRepoGroupToPerm.group.group_name
+            multiple_counter[g_k] += 1
             p = perm.Permission.permission_name
-            cur_perm = user.permissions[RK][r_k]
-            # overwrite permission only if it's greater than permission
-            # given from other sources
-            if PERM_WEIGHTS[p] > PERM_WEIGHTS[cur_perm]:
-                user.permissions[RK][r_k] = p
+            cur_perm = user.permissions[GK][g_k]
+            if multiple_counter[g_k] > 1:
+                p = _choose_perm(p, cur_perm)
+            user.permissions[GK][g_k] = p
 
-        # REPO GROUP
-        #==================================================================
-        # get access for this user for repos group and override defaults
-        #==================================================================
-
-        # user explicit permissions for repository
-        user_repo_groups_perms = \
-         self.sa.query(UserRepoGroupToPerm, Permission, RepoGroup)\
-         .join((RepoGroup, UserRepoGroupToPerm.group_id == RepoGroup.group_id))\
-         .join((Permission, UserRepoGroupToPerm.permission_id == Permission.permission_id))\
-         .filter(UserRepoGroupToPerm.user_id == uid)\
-         .all()
-
+        # user explicit permissions for repository groups
+        user_repo_groups_perms = Permission.get_default_group_perms(uid)
         for perm in user_repo_groups_perms:
             rg_k = perm.UserRepoGroupToPerm.group.group_name
             p = perm.Permission.permission_name
             cur_perm = user.permissions[GK][rg_k]
-            if PERM_WEIGHTS[p] > PERM_WEIGHTS[cur_perm]:
-                user.permissions[GK][rg_k] = p
+            if not explicit:
+                p = _choose_perm(p, cur_perm)
+            user.permissions[GK][rg_k] = p
 
-        # REPO GROUP + USER GROUP
-        #==================================================================
-        # check if user is part of user groups for this repo group and
-        # fill in (or replace with higher) permissions
-        #==================================================================
-
-        # users group for repositories permissions
-        user_repo_group_perms_from_users_groups = \
-         self.sa.query(UsersGroupRepoGroupToPerm, Permission, RepoGroup)\
-         .join((RepoGroup, UsersGroupRepoGroupToPerm.group_id == RepoGroup.group_id))\
-         .join((Permission, UsersGroupRepoGroupToPerm.permission_id == Permission.permission_id))\
-         .join((UsersGroupMember, UsersGroupRepoGroupToPerm.users_group_id == UsersGroupMember.users_group_id))\
-         .filter(UsersGroupMember.user_id == uid)\
+        #======================================================================
+        # !! PERMISSIONS FOR USER GROUPS !!
+        #======================================================================
+        # user group for user group permissions
+        user_group_user_groups_perms = \
+         self.sa.query(UserGroupUserGroupToPerm, Permission, UserGroup)\
+         .join((UserGroup, UserGroupUserGroupToPerm.target_user_group_id
+                == UserGroup.users_group_id))\
+         .join((Permission, UserGroupUserGroupToPerm.permission_id
+                == Permission.permission_id))\
+         .join((UserGroupMember, UserGroupUserGroupToPerm.user_group_id
+                == UserGroupMember.users_group_id))\
+         .filter(UserGroupMember.user_id == uid)\
          .all()
 
-        for perm in user_repo_group_perms_from_users_groups:
-            g_k = perm.UsersGroupRepoGroupToPerm.group.group_name
+        multiple_counter = collections.defaultdict(int)
+        for perm in user_group_user_groups_perms:
+            g_k = perm.UserGroupUserGroupToPerm.target_user_group.users_group_name
+            multiple_counter[g_k] += 1
             p = perm.Permission.permission_name
-            cur_perm = user.permissions[GK][g_k]
-            # overwrite permission only if it's greater than permission
-            # given from other sources
-            if PERM_WEIGHTS[p] > PERM_WEIGHTS[cur_perm]:
-                user.permissions[GK][g_k] = p
+            cur_perm = user.permissions[UK][g_k]
+            if multiple_counter[g_k] > 1:
+                p = _choose_perm(p, cur_perm)
+            user.permissions[UK][g_k] = p
+
+        #user explicit permission for user groups
+        user_user_groups_perms = Permission.get_default_user_group_perms(uid)
+        for perm in user_user_groups_perms:
+            u_k = perm.UserUserGroupToPerm.user_group.users_group_name
+            p = perm.Permission.permission_name
+            cur_perm = user.permissions[UK][u_k]
+            if not explicit:
+                p = _choose_perm(p, cur_perm)
+            user.permissions[UK][u_k] = p
 
         return user
 
     def has_perm(self, user, perm):
-        if not isinstance(perm, Permission):
-            raise Exception('perm needs to be an instance of Permission class '
-                            'got %s instead' % type(perm))
-
+        perm = self._get_perm(perm)
         user = self._get_user(user)
 
         return UserToPerm.query().filter(UserToPerm.user == user)\
@@ -593,10 +817,14 @@ class UserModel(BaseModel):
         :param user:
         :param email:
         """
+        from rhodecode.model import forms
+        form = forms.UserExtraEmailForm()()
+        data = form.to_python(dict(email=email))
         user = self._get_user(user)
+
         obj = UserEmailMap()
         obj.user = user
-        obj.email = email
+        obj.email = data['email']
         self.sa.add(obj)
         return obj
 
@@ -609,5 +837,35 @@ class UserModel(BaseModel):
         """
         user = self._get_user(user)
         obj = UserEmailMap.query().get(email_id)
+        if obj:
+            self.sa.delete(obj)
+
+    def add_extra_ip(self, user, ip):
+        """
+        Adds ip address to UserIpMap
+
+        :param user:
+        :param ip:
+        """
+        from rhodecode.model import forms
+        form = forms.UserExtraIpForm()()
+        data = form.to_python(dict(ip=ip))
+        user = self._get_user(user)
+
+        obj = UserIpMap()
+        obj.user = user
+        obj.ip_addr = data['ip']
+        self.sa.add(obj)
+        return obj
+
+    def delete_extra_ip(self, user, ip_id):
+        """
+        Removes ip address from UserIpMap
+
+        :param user:
+        :param ip_id:
+        """
+        user = self._get_user(user)
+        obj = UserIpMap.query().get(ip_id)
         if obj:
             self.sa.delete(obj)

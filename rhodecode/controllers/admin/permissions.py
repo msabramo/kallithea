@@ -33,11 +33,12 @@ from pylons.controllers.util import abort, redirect
 from pylons.i18n.translation import _
 
 from rhodecode.lib import helpers as h
-from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator
+from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator,\
+    AuthUser
 from rhodecode.lib.base import BaseController, render
 from rhodecode.model.forms import DefaultPermissionsForm
 from rhodecode.model.permission import PermissionModel
-from rhodecode.model.db import User
+from rhodecode.model.db import User, UserIpMap, Permission
 from rhodecode.model.meta import Session
 
 log = logging.getLogger(__name__)
@@ -52,24 +53,44 @@ class PermissionsController(BaseController):
     @LoginRequired()
     @HasPermissionAllDecorator('hg.admin')
     def __before__(self):
-        c.admin_user = session.get('admin_user')
-        c.admin_username = session.get('admin_username')
         super(PermissionsController, self).__before__()
 
-        self.perms_choices = [('repository.none', _('None'),),
-                              ('repository.read', _('Read'),),
-                              ('repository.write', _('Write'),),
-                              ('repository.admin', _('Admin'),)]
-        self.register_choices = [
+        c.repo_perms_choices = [('repository.none', _('None'),),
+                                   ('repository.read', _('Read'),),
+                                   ('repository.write', _('Write'),),
+                                   ('repository.admin', _('Admin'),)]
+        c.group_perms_choices = [('group.none', _('None'),),
+                                 ('group.read', _('Read'),),
+                                 ('group.write', _('Write'),),
+                                 ('group.admin', _('Admin'),)]
+        c.user_group_perms_choices = [('usergroup.none', _('None'),),
+                                      ('usergroup.read', _('Read'),),
+                                      ('usergroup.write', _('Write'),),
+                                      ('usergroup.admin', _('Admin'),)]
+        c.register_choices = [
             ('hg.register.none',
-                _('disabled')),
+                _('Disabled')),
             ('hg.register.manual_activate',
-                _('allowed with manual account activation')),
+                _('Allowed with manual account activation')),
             ('hg.register.auto_activate',
-                _('allowed with automatic account activation')), ]
+                _('Allowed with automatic account activation')), ]
 
-        self.create_choices = [('hg.create.none', _('Disabled')),
-                               ('hg.create.repository', _('Enabled'))]
+        c.extern_activate_choices = [
+            ('hg.extern_activate.manual', _('Manual activation of external account')),
+            ('hg.extern_activate.auto', _('Automatic activation of external account')),
+        ]
+
+        c.repo_create_choices = [('hg.create.none', _('Disabled')),
+                                 ('hg.create.repository', _('Enabled'))]
+
+        c.user_group_create_choices = [('hg.usergroup.create.false', _('Disabled')),
+                                       ('hg.usergroup.create.true', _('Enabled'))]
+
+        c.repo_group_create_choices = [('hg.repogroup.create.false', _('Disabled')),
+                                       ('hg.repogroup.create.true', _('Enabled'))]
+
+        c.fork_choices = [('hg.fork.none', _('Disabled')),
+                          ('hg.fork.repository', _('Enabled'))]
 
     def index(self, format='html'):
         """GET /permissions: All items in the collection"""
@@ -91,37 +112,45 @@ class PermissionsController(BaseController):
         #    h.form(url('permission', id=ID),
         #           method='put')
         # url('permission', id=ID)
+        if id == 'default':
+            c.user = default_user = User.get_default_user()
+            c.perm_user = AuthUser(user_id=default_user.user_id)
+            c.user_ip_map = UserIpMap.query()\
+                            .filter(UserIpMap.user == default_user).all()
 
-        permission_model = PermissionModel()
+            _form = DefaultPermissionsForm(
+                    [x[0] for x in c.repo_perms_choices],
+                    [x[0] for x in c.group_perms_choices],
+                    [x[0] for x in c.user_group_perms_choices],
+                    [x[0] for x in c.repo_create_choices],
+                    [x[0] for x in c.repo_group_create_choices],
+                    [x[0] for x in c.user_group_create_choices],
+                    [x[0] for x in c.fork_choices],
+                    [x[0] for x in c.register_choices],
+                    [x[0] for x in c.extern_activate_choices],
+            )()
 
-        _form = DefaultPermissionsForm([x[0] for x in self.perms_choices],
-                                       [x[0] for x in self.register_choices],
-                                       [x[0] for x in self.create_choices])()
+            try:
+                form_result = _form.to_python(dict(request.POST))
+                form_result.update({'perm_user_name': id})
+                PermissionModel().update(form_result)
+                Session().commit()
+                h.flash(_('Default permissions updated successfully'),
+                        category='success')
 
-        try:
-            form_result = _form.to_python(dict(request.POST))
-            form_result.update({'perm_user_name': id})
-            permission_model.update(form_result)
-            Session.commit()
-            h.flash(_('Default permissions updated successfully'),
-                    category='success')
+            except formencode.Invalid, errors:
+                defaults = errors.value
 
-        except formencode.Invalid, errors:
-            c.perms_choices = self.perms_choices
-            c.register_choices = self.register_choices
-            c.create_choices = self.create_choices
-            defaults = errors.value
-
-            return htmlfill.render(
-                render('admin/permissions/permissions.html'),
-                defaults=defaults,
-                errors=errors.error_dict or {},
-                prefix_error=False,
-                encoding="UTF-8")
-        except Exception:
-            log.error(traceback.format_exc())
-            h.flash(_('error occurred during update of permissions'),
-                    category='error')
+                return htmlfill.render(
+                    render('admin/permissions/permissions.html'),
+                    defaults=defaults,
+                    errors=errors.error_dict or {},
+                    prefix_error=False,
+                    encoding="UTF-8")
+            except Exception:
+                log.error(traceback.format_exc())
+                h.flash(_('Error occurred during update of permissions'),
+                        category='error')
 
         return redirect(url('edit_permission', id=id))
 
@@ -137,33 +166,52 @@ class PermissionsController(BaseController):
     def show(self, id, format='html'):
         """GET /permissions/id: Show a specific item"""
         # url('permission', id=ID)
+        Permission.get_or_404(-1)
 
     def edit(self, id, format='html'):
         """GET /permissions/id/edit: Form to edit an existing item"""
         #url('edit_permission', id=ID)
-        c.perms_choices = self.perms_choices
-        c.register_choices = self.register_choices
-        c.create_choices = self.create_choices
 
+        #this form can only edit default user permissions
         if id == 'default':
-            default_user = User.get_by_username('default')
-            defaults = {'_method': 'put',
-                        'anonymous': default_user.active}
-
-            for p in default_user.user_perms:
+            c.user = User.get_default_user()
+            defaults = {'anonymous': c.user.active}
+            c.perm_user = c.user.AuthUser
+            c.user_ip_map = UserIpMap.query()\
+                            .filter(UserIpMap.user == c.user).all()
+            for p in c.user.user_perms:
                 if p.permission.permission_name.startswith('repository.'):
-                    defaults['default_perm'] = p.permission.permission_name
+                    defaults['default_repo_perm'] = p.permission.permission_name
+
+                if p.permission.permission_name.startswith('group.'):
+                    defaults['default_group_perm'] = p.permission.permission_name
+
+                if p.permission.permission_name.startswith('usergroup.'):
+                    defaults['default_user_group_perm'] = p.permission.permission_name
+
+                if p.permission.permission_name.startswith('hg.create.'):
+                    defaults['default_repo_create'] = p.permission.permission_name
+
+                if p.permission.permission_name.startswith('hg.repogroup.'):
+                    defaults['default_repo_group_create'] = p.permission.permission_name
+
+                if p.permission.permission_name.startswith('hg.usergroup.'):
+                    defaults['default_user_group_create'] = p.permission.permission_name
 
                 if p.permission.permission_name.startswith('hg.register.'):
                     defaults['default_register'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.create.'):
-                    defaults['default_create'] = p.permission.permission_name
+                if p.permission.permission_name.startswith('hg.extern_activate.'):
+                    defaults['default_extern_activate'] = p.permission.permission_name
+
+                if p.permission.permission_name.startswith('hg.fork.'):
+                    defaults['default_fork'] = p.permission.permission_name
 
             return htmlfill.render(
-                        render('admin/permissions/permissions.html'),
-                        defaults=defaults,
-                        encoding="UTF-8",
-                        force_defaults=True,)
+                render('admin/permissions/permissions.html'),
+                defaults=defaults,
+                encoding="UTF-8",
+                force_defaults=False
+            )
         else:
             return redirect(url('admin_home'))

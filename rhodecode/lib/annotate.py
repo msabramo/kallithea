@@ -10,13 +10,12 @@
     :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
     :license: GPLv3, see COPYING for more details.
 """
+import StringIO
 
 from rhodecode.lib.vcs.exceptions import VCSError
 from rhodecode.lib.vcs.nodes import FileNode
 from pygments.formatters import HtmlFormatter
 from pygments import highlight
-
-import StringIO
 
 
 def annotate_highlight(filenode, annotate_from_changeset_func=None,
@@ -34,11 +33,12 @@ def annotate_highlight(filenode, annotate_from_changeset_func=None,
     :param headers: dictionary with headers (keys are whats in ``order``
       parameter)
     """
+    from rhodecode.lib.utils import get_custom_lexer
     options['linenos'] = True
     formatter = AnnotateHtmlFormatter(filenode=filenode, order=order,
         headers=headers,
         annotate_from_changeset_func=annotate_from_changeset_func, **options)
-    lexer = filenode.lexer
+    lexer = get_custom_lexer(filenode.extension) or filenode.lexer
     highlighted = highlight(filenode.content, lexer, formatter)
     return highlighted
 
@@ -142,14 +142,15 @@ class AnnotateHtmlFormatter(HtmlFormatter):
                     lines.append('')
             ls = '\n'.join(lines)
 
-        annotate_changesets = [tup[1] for tup in self.filenode.annotate]
-        # If pygments cropped last lines break we need do that too
-        ln_cs = len(annotate_changesets)
-        ln_ = len(ls.splitlines())
-        if  ln_cs > ln_:
-            annotate_changesets = annotate_changesets[:ln_ - ln_cs]
-        annotate = ''.join((self.annotate_from_changeset(changeset)
-            for changeset in annotate_changesets))
+#        annotate_changesets = [tup[1] for tup in self.filenode.annotate]
+##        TODO: not sure what that fixes
+#        # If pygments cropped last lines break we need do that too
+#        ln_cs = len(annotate_changesets)
+#        ln_ = len(ls.splitlines())
+#        if  ln_cs > ln_:
+#            annotate_changesets = annotate_changesets[:ln_ - ln_cs]
+        annotate = ''.join((self.annotate_from_changeset(el[2]())
+                            for el in self.filenode.annotate))
         # in case you wonder about the seemingly redundant <div> here:
         # since the content in the other cell also is wrapped in a div,
         # some browsers in some configurations seem to mess up the formatting.

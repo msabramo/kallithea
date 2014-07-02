@@ -2,14 +2,18 @@ syntax: glob
 *.pyc
 *.swp
 *.sqlite
-Paste*.egg
+*.tox
+*.egg-info
+*.egg
 
 syntax: regexp
 ^rcextensions
 ^build
+^dist/
 ^docs/build/
 ^docs/_build/
 ^data$
+^sql_dumps/
 ^\.settings$
 ^\.project$
 ^\.pydevproject$
@@ -17,6 +21,7 @@ syntax: regexp
 ^rhodecode\.db$
 ^test\.db$
 ^RhodeCode\.egg-info$
-^rc\.ini$
+^rc.*\.ini$
 ^fabfile.py
 ^\.rhodecode$
+^\.idea$

@@ -87,11 +87,11 @@ class ErrorController(BaseController):
         return fapp(request.environ, self.start_response)
 
     def get_error_explanation(self, code):
-        ''' get the error explanations of int codes
-            [400, 401, 403, 404, 500]'''
+        """ get the error explanations of int codes
+            [400, 401, 403, 404, 500]"""
         try:
             code = int(code)
-        except:
+        except Exception:
             code = 500
 
         if code == 400:

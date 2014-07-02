@@ -26,6 +26,7 @@
 
 import re
 import logging
+import traceback
 
 from rhodecode.lib.utils2 import safe_unicode, MENTIONS_REGEX
 
@@ -39,7 +40,7 @@ class MarkupRenderer(object):
     RST_PAT = re.compile(r're?st', re.IGNORECASE)
     PLAIN_PAT = re.compile(r'readme', re.IGNORECASE)
 
-    def __detect_renderer(self, source, filename=None):
+    def _detect_renderer(self, source, filename=None):
         """
         runs detection of what renderer should be used for generating html
         from a markup language
@@ -61,6 +62,49 @@ class MarkupRenderer(object):
 
         return getattr(MarkupRenderer, detected_renderer)
 
+    @classmethod
+    def _flavored_markdown(cls, text):
+        """
+        Github style flavored markdown
+
+        :param text:
+        """
+        from hashlib import md5
+
+        # Extract pre blocks.
+        extractions = {}
+        def pre_extraction_callback(matchobj):
+            digest = md5(matchobj.group(0)).hexdigest()
+            extractions[digest] = matchobj.group(0)
+            return "{gfm-extraction-%s}" % digest
+        pattern = re.compile(r'<pre>.*?</pre>', re.MULTILINE | re.DOTALL)
+        text = re.sub(pattern, pre_extraction_callback, text)
+
+        # Prevent foo_bar_baz from ending up with an italic word in the middle.
+        def italic_callback(matchobj):
+            s = matchobj.group(0)
+            if list(s).count('_') >= 2:
+                return s.replace('_', '\_')
+            return s
+        text = re.sub(r'^(?! {4}|\t)\w+_\w+_\w[\w_]*', italic_callback, text)
+
+        # In very clear cases, let newlines become <br /> tags.
+        def newline_callback(matchobj):
+            if len(matchobj.group(1)) == 1:
+                return matchobj.group(0).rstrip() + '  \n'
+            else:
+                return matchobj.group(0)
+        pattern = re.compile(r'^[\w\<][^\n]*(\n+)', re.MULTILINE)
+        text = re.sub(pattern, newline_callback, text)
+
+        # Insert pre block extractions.
+        def pre_insert_callback(matchobj):
+            return '\n\n' + extractions[matchobj.group(1)]
+        text = re.sub(r'{gfm-extraction-([0-9a-f]{32})\}',
+                      pre_insert_callback, text)
+
+        return text
+
     def render(self, source, filename=None):
         """
         Renders a given filename using detected renderer
@@ -71,7 +115,7 @@ class MarkupRenderer(object):
         :param source:
         """
 
-        renderer = self.__detect_renderer(source, filename)
+        renderer = self._detect_renderer(source, filename)
         readme_data = renderer(source)
         return readme_data
 
@@ -93,17 +137,25 @@ class MarkupRenderer(object):
         return '<br />' + source.replace("\n", '<br />')
 
     @classmethod
-    def markdown(cls, source):
+    def markdown(cls, source, safe=True, flavored=False):
         source = safe_unicode(source)
         try:
             import markdown as __markdown
-            return __markdown.markdown(source, ['codehilite'])
+            if flavored:
+                source = cls._flavored_markdown(source)
+            return __markdown.markdown(source, ['codehilite', 'extra'])
         except ImportError:
             log.warning('Install markdown to use this function')
             return cls.plain(source)
+        except Exception:
+            log.error(traceback.format_exc())
+            if safe:
+                return source
+            else:
+                raise
 
     @classmethod
-    def rst(cls, source):
+    def rst(cls, source, safe=True):
         source = safe_unicode(source)
         try:
             from docutils.core import publish_parts
@@ -125,6 +177,12 @@ class MarkupRenderer(object):
         except ImportError:
             log.warning('Install docutils to use this function')
             return cls.plain(source)
+        except Exception:
+            log.error(traceback.format_exc())
+            if safe:
+                return source
+            else:
+                raise
 
     @classmethod
     def rst_with_mentions(cls, source):

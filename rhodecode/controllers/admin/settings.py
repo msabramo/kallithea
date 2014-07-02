@@ -37,21 +37,25 @@ from pylons.i18n.translation import _
 
 from rhodecode.lib import helpers as h
 from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
-    HasPermissionAnyDecorator, NotAnonymous
+    HasPermissionAnyDecorator, NotAnonymous, HasPermissionAny,\
+    HasReposGroupPermissionAll, HasReposGroupPermissionAny, AuthUser
 from rhodecode.lib.base import BaseController, render
 from rhodecode.lib.celerylib import tasks, run_task
-from rhodecode.lib.utils import repo2db_mapper, invalidate_cache, \
-    set_rhodecode_config, repo_name_slug
+from rhodecode.lib.exceptions import HgsubversionImportError
+from rhodecode.lib.utils import repo2db_mapper, set_rhodecode_config, \
+    check_git_version
 from rhodecode.model.db import RhodeCodeUi, Repository, RepoGroup, \
-    RhodeCodeSetting
+    RhodeCodeSetting, PullRequest, PullRequestReviewers
 from rhodecode.model.forms import UserForm, ApplicationSettingsForm, \
-    ApplicationUiSettingsForm
-from rhodecode.model.scm import ScmModel
+    ApplicationUiSettingsForm, ApplicationVisualisationForm
+from rhodecode.model.scm import ScmModel, RepoGroupList
 from rhodecode.model.user import UserModel
+from rhodecode.model.repo import RepoModel
 from rhodecode.model.db import User
 from rhodecode.model.notification import EmailNotificationModel
 from rhodecode.model.meta import Session
-
+from rhodecode.lib.utils2 import str2bool, safe_unicode
+from rhodecode.lib.compat import json
 log = logging.getLogger(__name__)
 
 
@@ -64,14 +68,13 @@ class SettingsController(BaseController):
 
     @LoginRequired()
     def __before__(self):
-        c.admin_user = session.get('admin_user')
-        c.admin_username = session.get('admin_username')
+        super(SettingsController, self).__before__()
         c.modules = sorted([(p.project_name, p.version)
-                            for p in pkg_resources.working_set],
+                            for p in pkg_resources.working_set]
+                           + [('git', check_git_version())],
                            key=lambda k: k[0].lower())
         c.py_version = platform.python_version()
         c.platform = platform.platform()
-        super(SettingsController, self).__before__()
 
     @HasPermissionAllDecorator('hg.admin')
     def index(self, format='html'):
@@ -79,7 +82,7 @@ class SettingsController(BaseController):
         # url('admin_settings')
 
         defaults = RhodeCodeSetting.get_app_settings()
-        defaults.update(self.get_hg_ui_settings())
+        defaults.update(self._get_hg_ui_settings())
 
         return htmlfill.render(
             render('admin/settings/settings.html'),
@@ -107,161 +110,242 @@ class SettingsController(BaseController):
         #    h.form(url('admin_setting', setting_id=ID),
         #           method='put')
         # url('admin_setting', setting_id=ID)
+
         if setting_id == 'mapping':
             rm_obsolete = request.POST.get('destroy', False)
-            log.debug('Rescanning directories with destroy=%s' % rm_obsolete)
-            initial = ScmModel().repo_scan()
-            log.debug('invalidating all repositories')
-            for repo_name in initial.keys():
-                invalidate_cache('get_repo_cached_%s' % repo_name)
+            invalidate_cache = request.POST.get('invalidate', False)
+            log.debug('rescanning repo location with destroy obsolete=%s'
+                      % (rm_obsolete,))
 
-            added, removed = repo2db_mapper(initial, rm_obsolete)
+            if invalidate_cache:
+                log.debug('invalidating all repositories cache')
+                for repo in Repository.get_all():
+                    ScmModel().mark_for_invalidation(repo.repo_name)
 
-            h.flash(_('Repositories successfully'
-                      ' rescanned added: %s,removed: %s') % (added, removed),
+            filesystem_repos = ScmModel().repo_scan()
+            added, removed = repo2db_mapper(filesystem_repos, rm_obsolete)
+            _repr = lambda l: ', '.join(map(safe_unicode, l)) or '-'
+            h.flash(_('Repositories successfully '
+                      'rescanned added: %s ; removed: %s') %
+                    (_repr(added), _repr(removed)),
                     category='success')
 
         if setting_id == 'whoosh':
-            repo_location = self.get_hg_ui_settings()['paths_root_path']
+            repo_location = self._get_hg_ui_settings()['paths_root_path']
             full_index = request.POST.get('full_index', False)
             run_task(tasks.whoosh_index, repo_location, full_index)
-
             h.flash(_('Whoosh reindex task scheduled'), category='success')
+
         if setting_id == 'global':
 
             application_form = ApplicationSettingsForm()()
             try:
                 form_result = application_form.to_python(dict(request.POST))
-
-                try:
-                    hgsettings1 = RhodeCodeSetting.get_by_name('title')
-                    hgsettings1.app_settings_value = \
-                        form_result['rhodecode_title']
-
-                    hgsettings2 = RhodeCodeSetting.get_by_name('realm')
-                    hgsettings2.app_settings_value = \
-                        form_result['rhodecode_realm']
-
-                    hgsettings3 = RhodeCodeSetting.get_by_name('ga_code')
-                    hgsettings3.app_settings_value = \
-                        form_result['rhodecode_ga_code']
-
-                    self.sa.add(hgsettings1)
-                    self.sa.add(hgsettings2)
-                    self.sa.add(hgsettings3)
-                    self.sa.commit()
-                    set_rhodecode_config(config)
-                    h.flash(_('Updated application settings'),
-                            category='success')
-
-                except Exception:
-                    log.error(traceback.format_exc())
-                    h.flash(_('error occurred during updating '
-                              'application settings'),
-                            category='error')
-
-                    self.sa.rollback()
-
             except formencode.Invalid, errors:
                 return htmlfill.render(
                      render('admin/settings/settings.html'),
                      defaults=errors.value,
                      errors=errors.error_dict or {},
                      prefix_error=False,
-                     encoding="UTF-8")
+                     encoding="UTF-8"
+                )
 
-        if setting_id == 'mercurial':
+            try:
+                sett1 = RhodeCodeSetting.get_by_name_or_create('title')
+                sett1.app_settings_value = form_result['rhodecode_title']
+                Session().add(sett1)
+
+                sett2 = RhodeCodeSetting.get_by_name_or_create('realm')
+                sett2.app_settings_value = form_result['rhodecode_realm']
+                Session().add(sett2)
+
+                sett3 = RhodeCodeSetting.get_by_name_or_create('ga_code')
+                sett3.app_settings_value = form_result['rhodecode_ga_code']
+                Session().add(sett3)
+
+                Session().commit()
+                set_rhodecode_config(config)
+                h.flash(_('Updated application settings'), category='success')
+
+            except Exception:
+                log.error(traceback.format_exc())
+                h.flash(_('Error occurred during updating '
+                          'application settings'),
+                          category='error')
+
+        if setting_id == 'visual':
+
+            application_form = ApplicationVisualisationForm()()
+            try:
+                form_result = application_form.to_python(dict(request.POST))
+            except formencode.Invalid, errors:
+                return htmlfill.render(
+                     render('admin/settings/settings.html'),
+                     defaults=errors.value,
+                     errors=errors.error_dict or {},
+                     prefix_error=False,
+                     encoding="UTF-8"
+                )
+
+            try:
+                #TODO: rewrite this to something less ugly
+                sett1 = RhodeCodeSetting.get_by_name_or_create('show_public_icon')
+                sett1.app_settings_value = \
+                    form_result['rhodecode_show_public_icon']
+                Session().add(sett1)
+
+                sett2 = RhodeCodeSetting.get_by_name_or_create('show_private_icon')
+                sett2.app_settings_value = \
+                    form_result['rhodecode_show_private_icon']
+                Session().add(sett2)
+
+                sett3 = RhodeCodeSetting.get_by_name_or_create('stylify_metatags')
+                sett3.app_settings_value = \
+                    form_result['rhodecode_stylify_metatags']
+                Session().add(sett3)
+
+                sett4 = RhodeCodeSetting.get_by_name_or_create('repository_fields')
+                sett4.app_settings_value = \
+                    form_result['rhodecode_repository_fields']
+                Session().add(sett4)
+
+                sett5 = RhodeCodeSetting.get_by_name_or_create('dashboard_items')
+                sett5.app_settings_value = \
+                    form_result['rhodecode_dashboard_items']
+                Session().add(sett5)
+
+                sett6 = RhodeCodeSetting.get_by_name_or_create('show_version')
+                sett6.app_settings_value = \
+                    form_result['rhodecode_show_version']
+                Session().add(sett6)
+
+                Session().commit()
+                set_rhodecode_config(config)
+                h.flash(_('Updated visualisation settings'),
+                        category='success')
+
+            except Exception:
+                log.error(traceback.format_exc())
+                h.flash(_('Error occurred during updating '
+                          'visualisation settings'),
+                        category='error')
+
+        if setting_id == 'vcs':
             application_form = ApplicationUiSettingsForm()()
             try:
                 form_result = application_form.to_python(dict(request.POST))
-                # fix namespaces for hooks
-                _f = lambda s: s.replace('.', '_')
-                try:
-
-                    hgsettings1 = self.sa.query(RhodeCodeUi)\
-                    .filter(RhodeCodeUi.ui_key == 'push_ssl').one()
-                    hgsettings1.ui_value = form_result['web_push_ssl']
-
-                    hgsettings2 = self.sa.query(RhodeCodeUi)\
-                    .filter(RhodeCodeUi.ui_key == '/').one()
-                    hgsettings2.ui_value = form_result['paths_root_path']
-
-                    #HOOKS
-                    hgsettings3 = self.sa.query(RhodeCodeUi)\
-                    .filter(RhodeCodeUi.ui_key == RhodeCodeUi.HOOK_UPDATE)\
-                    .one()
-                    hgsettings3.ui_active = bool(form_result[_f('hooks_%s' %
-                                                 RhodeCodeUi.HOOK_UPDATE)])
-
-                    hgsettings4 = self.sa.query(RhodeCodeUi)\
-                    .filter(RhodeCodeUi.ui_key == RhodeCodeUi.HOOK_REPO_SIZE)\
-                    .one()
-                    hgsettings4.ui_active = bool(form_result[_f('hooks_%s' %
-                                                 RhodeCodeUi.HOOK_REPO_SIZE)])
-
-                    hgsettings5 = self.sa.query(RhodeCodeUi)\
-                    .filter(RhodeCodeUi.ui_key == RhodeCodeUi.HOOK_PUSH)\
-                    .one()
-                    hgsettings5.ui_active = bool(form_result[_f('hooks_%s' %
-                                                 RhodeCodeUi.HOOK_PUSH)])
-
-                    hgsettings6 = self.sa.query(RhodeCodeUi)\
-                    .filter(RhodeCodeUi.ui_key == RhodeCodeUi.HOOK_PULL)\
-                    .one()
-                    hgsettings6.ui_active = bool(form_result[_f('hooks_%s' %
-                                                 RhodeCodeUi.HOOK_PULL)])
-
-                    self.sa.add(hgsettings1)
-                    self.sa.add(hgsettings2)
-                    self.sa.add(hgsettings3)
-                    self.sa.add(hgsettings4)
-                    self.sa.add(hgsettings5)
-                    self.sa.add(hgsettings6)
-                    self.sa.commit()
-
-                    h.flash(_('Updated mercurial settings'),
-                            category='success')
-
-                except:
-                    log.error(traceback.format_exc())
-                    h.flash(_('error occurred during updating '
-                              'application settings'), category='error')
-
-                    self.sa.rollback()
-
             except formencode.Invalid, errors:
                 return htmlfill.render(
                      render('admin/settings/settings.html'),
                      defaults=errors.value,
                      errors=errors.error_dict or {},
                      prefix_error=False,
-                     encoding="UTF-8")
+                     encoding="UTF-8"
+                )
+
+            try:
+                sett = RhodeCodeUi.get_by_key('push_ssl')
+                sett.ui_value = form_result['web_push_ssl']
+                Session().add(sett)
+                if c.visual.allow_repo_location_change:
+                    sett = RhodeCodeUi.get_by_key('/')
+                    sett.ui_value = form_result['paths_root_path']
+                    Session().add(sett)
+
+                #HOOKS
+                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_UPDATE)
+                sett.ui_active = form_result['hooks_changegroup_update']
+                Session().add(sett)
+
+                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_REPO_SIZE)
+                sett.ui_active = form_result['hooks_changegroup_repo_size']
+                Session().add(sett)
+
+                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_PUSH)
+                sett.ui_active = form_result['hooks_changegroup_push_logger']
+                Session().add(sett)
+
+                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_PULL)
+                sett.ui_active = form_result['hooks_outgoing_pull_logger']
+
+                Session().add(sett)
+
+                ## EXTENSIONS
+                sett = RhodeCodeUi.get_by_key('largefiles')
+                if not sett:
+                    #make one if it's not there !
+                    sett = RhodeCodeUi()
+                    sett.ui_key = 'largefiles'
+                    sett.ui_section = 'extensions'
+                sett.ui_active = form_result['extensions_largefiles']
+                Session().add(sett)
+
+                sett = RhodeCodeUi.get_by_key('hgsubversion')
+                if not sett:
+                    #make one if it's not there !
+                    sett = RhodeCodeUi()
+                    sett.ui_key = 'hgsubversion'
+                    sett.ui_section = 'extensions'
+
+                sett.ui_active = form_result['extensions_hgsubversion']
+                if sett.ui_active:
+                    try:
+                        import hgsubversion
+                    except ImportError:
+                        raise HgsubversionImportError
+                Session().add(sett)
+
+#                sett = RhodeCodeUi.get_by_key('hggit')
+#                if not sett:
+#                    #make one if it's not there !
+#                    sett = RhodeCodeUi()
+#                    sett.ui_key = 'hggit'
+#                    sett.ui_section = 'extensions'
+#
+#                sett.ui_active = form_result['extensions_hggit']
+#                Session().add(sett)
+
+                Session().commit()
+
+                h.flash(_('Updated VCS settings'), category='success')
+
+            except HgsubversionImportError:
+                log.error(traceback.format_exc())
+                h.flash(_('Unable to activate hgsubversion support. '
+                          'The "hgsubversion" library is missing'),
+                        category='error')
+
+            except Exception:
+                log.error(traceback.format_exc())
+                h.flash(_('Error occurred during updating '
+                          'application settings'), category='error')
 
         if setting_id == 'hooks':
-            ui_key = request.POST.get('new_hook_ui_key')
-            ui_value = request.POST.get('new_hook_ui_value')
-            try:
+            if c.visual.allow_custom_hooks_settings:
+                ui_key = request.POST.get('new_hook_ui_key')
+                ui_value = request.POST.get('new_hook_ui_value')
+                try:
 
-                if ui_value and ui_key:
-                    RhodeCodeUi.create_or_update_hook(ui_key, ui_value)
-                    h.flash(_('Added new hook'),
-                            category='success')
+                    if ui_value and ui_key:
+                        RhodeCodeUi.create_or_update_hook(ui_key, ui_value)
+                        h.flash(_('Added new hook'),
+                                category='success')
 
-                # check for edits
-                update = False
-                _d = request.POST.dict_of_lists()
-                for k, v in zip(_d.get('hook_ui_key', []),
-                                _d.get('hook_ui_value_new', [])):
-                    RhodeCodeUi.create_or_update_hook(k, v)
-                    update = True
+                    # check for edits
+                    update = False
+                    _d = request.POST.dict_of_lists()
+                    for k, v in zip(_d.get('hook_ui_key', []),
+                                    _d.get('hook_ui_value_new', [])):
+                        RhodeCodeUi.create_or_update_hook(k, v)
+                        update = True
 
-                if update:
-                    h.flash(_('Updated hooks'), category='success')
-                self.sa.commit()
-            except:
-                log.error(traceback.format_exc())
-                h.flash(_('error occurred during hook creation'),
-                        category='error')
+                    if update:
+                        h.flash(_('Updated hooks'), category='success')
+                    Session().commit()
+                except Exception:
+                    log.error(traceback.format_exc())
+                    h.flash(_('Error occurred during hook creation'),
+                            category='error')
 
             return redirect(url('admin_edit_setting', setting_id='hooks'))
 
@@ -274,7 +358,7 @@ class SettingsController(BaseController):
                 .get_email_tmpl(EmailNotificationModel.TYPE_DEFAULT,
                                 body=test_email_body)
 
-            recipients = [test_email] if [test_email] else None
+            recipients = [test_email] if test_email else None
 
             run_task(tasks.send_email, recipients, test_email_subj,
                      test_email_body, test_email_html_body)
@@ -294,7 +378,7 @@ class SettingsController(BaseController):
         if setting_id == 'hooks':
             hook_id = request.POST.get('hook_id')
             RhodeCodeUi.delete(hook_id)
-            self.sa.commit()
+            Session().commit()
 
     @HasPermissionAllDecorator('hg.admin')
     def show(self, setting_id, format='html'):
@@ -319,6 +403,17 @@ class SettingsController(BaseController):
             force_defaults=False
         )
 
+    def _load_my_repos_data(self):
+        repos_list = Session().query(Repository)\
+                     .filter(Repository.user_id ==
+                             self.rhodecode_user.user_id)\
+                     .order_by(func.lower(Repository.repo_name)).all()
+
+        repos_data = RepoModel().get_repos_as_dict(repos_list=repos_list,
+                                                   admin=True)
+        #json used to render the grid
+        return json.dumps(repos_data)
+
     @NotAnonymous()
     def my_account(self):
         """
@@ -327,16 +422,17 @@ class SettingsController(BaseController):
         # url('admin_settings_my_account')
 
         c.user = User.get(self.rhodecode_user.user_id)
-        all_repos = self.sa.query(Repository)\
-                     .filter(Repository.user_id == c.user.user_id)\
-                     .order_by(func.lower(Repository.repo_name)).all()
-
-        c.user_repos = ScmModel().get_repos(all_repos)
+        c.perm_user = AuthUser(user_id=self.rhodecode_user.user_id,
+                               ip_addr=self.ip_addr)
+        c.ldap_dn = c.user.ldap_dn
 
         if c.user.username == 'default':
             h.flash(_("You can't edit this user since it's"
               " crucial for entire application"), category='warning')
             return redirect(url('users'))
+
+        #json used to render the grid
+        c.data = self._load_my_repos_data()
 
         defaults = c.user.get_dict()
 
@@ -348,6 +444,7 @@ class SettingsController(BaseController):
         )
         return render('admin/users/user_edit_my_account.html')
 
+    @NotAnonymous()
     def my_account_update(self):
         """PUT /_admin/my_account_update: Update an existing item"""
         # Forms posted to this method should contain a hidden field:
@@ -356,26 +453,28 @@ class SettingsController(BaseController):
         #    h.form(url('admin_settings_my_account_update'),
         #           method='put')
         # url('admin_settings_my_account_update', id=ID)
-        user_model = UserModel()
         uid = self.rhodecode_user.user_id
+        c.user = User.get(self.rhodecode_user.user_id)
+        c.perm_user = AuthUser(user_id=self.rhodecode_user.user_id,
+                               ip_addr=self.ip_addr)
+        c.ldap_dn = c.user.ldap_dn
+        email = self.rhodecode_user.email
         _form = UserForm(edit=True,
-                         old_data={'user_id': uid,
-                                   'email': self.rhodecode_user.email})()
+                         old_data={'user_id': uid, 'email': email})()
         form_result = {}
         try:
             form_result = _form.to_python(dict(request.POST))
-            user_model.update_my_account(uid, form_result)
+            skip_attrs = ['admin', 'active']  # skip attr for my account
+            if c.ldap_dn:
+                #forbid updating username for ldap accounts
+                skip_attrs.append('username')
+            UserModel().update(uid, form_result, skip_attrs=skip_attrs)
             h.flash(_('Your account was updated successfully'),
                     category='success')
-            Session.commit()
+            Session().commit()
         except formencode.Invalid, errors:
-            c.user = User.get(self.rhodecode_user.user_id)
-            all_repos = self.sa.query(Repository)\
-                .filter(Repository.user_id == c.user.user_id)\
-                .order_by(func.lower(Repository.repo_name))\
-                .all()
-            c.user_repos = ScmModel().get_repos(all_repos)
-
+            #json used to render the grid
+            c.data = self._load_my_repos_data()
             c.form = htmlfill.render(
                 render('admin/users/user_edit_my_account_form.html'),
                 defaults=errors.value,
@@ -385,27 +484,35 @@ class SettingsController(BaseController):
             return render('admin/users/user_edit_my_account.html')
         except Exception:
             log.error(traceback.format_exc())
-            h.flash(_('error occurred during update of user %s') \
+            h.flash(_('Error occurred during update of user %s') \
                     % form_result.get('username'), category='error')
 
         return redirect(url('my_account'))
 
     @NotAnonymous()
-    @HasPermissionAnyDecorator('hg.admin', 'hg.create.repository')
-    def create_repository(self):
-        """GET /_admin/create_repository: Form to create a new item"""
+    def my_account_my_pullrequests(self):
+        c.show_closed = request.GET.get('pr_show_closed')
 
-        c.repo_groups = RepoGroup.groups_choices()
-        c.repo_groups_choices = map(lambda k: unicode(k[0]), c.repo_groups)
-        c.landing_revs = ScmModel().get_repo_landing_revs()
+        def _filter(pr):
+            s = sorted(pr, key=lambda o: o.created_on, reverse=True)
+            if not c.show_closed:
+                s = filter(lambda p: p.status != PullRequest.STATUS_CLOSED, s)
+            return s
 
-        new_repo = request.GET.get('repo', '')
-        c.new_repo = repo_name_slug(new_repo)
+        c.my_pull_requests = _filter(PullRequest.query()\
+                                .filter(PullRequest.user_id ==
+                                        self.rhodecode_user.user_id)\
+                                .all())
 
-        return render('admin/repos/repo_add_create_repository.html')
+        c.participate_in_pull_requests = _filter([
+                    x.pull_request for x in PullRequestReviewers.query()\
+                    .filter(PullRequestReviewers.user_id ==
+                            self.rhodecode_user.user_id).all()])
 
-    def get_hg_ui_settings(self):
-        ret = self.sa.query(RhodeCodeUi).all()
+        return render('admin/users/user_edit_my_account_pullrequests.html')
+
+    def _get_hg_ui_settings(self):
+        ret = RhodeCodeUi.query().all()
 
         if not ret:
             raise Exception('Could not get application ui settings !')
@@ -416,12 +523,14 @@ class SettingsController(BaseController):
             if k == '/':
                 k = 'root_path'
 
+            if k == 'push_ssl':
+                v = str2bool(v)
+
             if k.find('.') != -1:
                 k = k.replace('.', '_')
 
-            if each.ui_section == 'hooks':
+            if each.ui_section in ['hooks', 'extensions']:
                 v = each.ui_active
 
             settings[each.ui_section + '_' + k] = v
-
         return settings

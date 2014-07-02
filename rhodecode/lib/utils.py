@@ -32,18 +32,19 @@ import paste
 import beaker
 import tarfile
 import shutil
+import decorator
+import warnings
 from os.path import abspath
 from os.path import dirname as dn, join as jn
 
 from paste.script.command import Command, BadCommand
-
-from mercurial import ui, config
 
 from webhelpers.text import collapse, remove_formatting, strip_tags
 
 from rhodecode.lib.vcs import get_backend
 from rhodecode.lib.vcs.backends.base import BaseChangeset
 from rhodecode.lib.vcs.utils.lazy import LazyProperty
+from rhodecode.lib.vcs.utils.hgcompat import ui, config
 from rhodecode.lib.vcs.utils.helpers import get_scm
 from rhodecode.lib.vcs.exceptions import VCSError
 
@@ -51,12 +52,12 @@ from rhodecode.lib.caching_query import FromCache
 
 from rhodecode.model import meta
 from rhodecode.model.db import Repository, User, RhodeCodeUi, \
-    UserLog, RepoGroup, RhodeCodeSetting, UserRepoGroupToPerm,\
-    CacheInvalidation
+    UserLog, RepoGroup, RhodeCodeSetting, CacheInvalidation, UserGroup
 from rhodecode.model.meta import Session
 from rhodecode.model.repos_group import ReposGroupModel
-from rhodecode.lib.utils2 import safe_str, safe_unicode
+from rhodecode.lib.utils2 import safe_str, safe_unicode, get_current_rhodecode_user
 from rhodecode.lib.vcs.utils.fakemod import create_module
+from rhodecode.model.users_group import UserGroupModel
 
 log = logging.getLogger(__name__)
 
@@ -92,13 +93,16 @@ def repo_name_slug(value):
     slug = remove_formatting(value)
     slug = strip_tags(slug)
 
-    for c in """=[]\;'"<>,/~!@#$%^&*()+{}|: """:
+    for c in """`?=[]\;'"<>,/~!@#$%^&*()+{}|: """:
         slug = slug.replace(c, '-')
     slug = recursive_replace(slug, '-')
     slug = collapse(slug, '-')
     return slug
 
 
+#==============================================================================
+# PERM DECORATOR HELPERS FOR EXTRACTING NAMES FOR PERM CHECKS
+#==============================================================================
 def get_repo_slug(request):
     _repo = request.environ['pylons.routes_dict'].get('repo_name')
     if _repo:
@@ -110,6 +114,20 @@ def get_repos_group_slug(request):
     _group = request.environ['pylons.routes_dict'].get('group_name')
     if _group:
         _group = _group.rstrip('/')
+    return _group
+
+
+def get_user_group_slug(request):
+    _group = request.environ['pylons.routes_dict'].get('id')
+    try:
+        _group = UserGroup.get(_group)
+        if _group:
+            _group = _group.users_group_name
+    except Exception:
+        log.debug(traceback.format_exc())
+        #catch all failures here
+        pass
+
     return _group
 
 
@@ -129,20 +147,24 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
     """
 
     if not sa:
-        sa = meta.Session
+        sa = meta.Session()
+    # if we don't get explicit IP address try to get one from registered user
+    # in tmpl context var
+    if not ipaddr:
+        ipaddr = getattr(get_current_rhodecode_user(), 'ip_addr', '')
 
     try:
         if hasattr(user, 'user_id'):
-            user_obj = user
+            user_obj = User.get(user.user_id)
         elif isinstance(user, basestring):
             user_obj = User.get_by_username(user)
         else:
-            raise Exception('You have to provide user object or username')
+            raise Exception('You have to provide a user object or a username')
 
         if hasattr(repo, 'repo_id'):
             repo_obj = Repository.get(repo.repo_id)
             repo_name = repo_obj.repo_name
-        elif  isinstance(repo, basestring):
+        elif isinstance(repo, basestring):
             repo_name = repo.lstrip('/')
             repo_obj = Repository.get_by_repo_name(repo_name)
         else:
@@ -151,6 +173,7 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
 
         user_log = UserLog()
         user_log.user_id = user_obj.user_id
+        user_log.username = user_obj.username
         user_log.action = safe_unicode(action)
 
         user_log.repository = repo_obj
@@ -160,18 +183,16 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
         user_log.user_ip = ipaddr
         sa.add(user_log)
 
-        log.info(
-            'Adding user %s, action %s on %s' % (user_obj, action,
-                                                 safe_unicode(repo))
-        )
+        log.info('Logging action:%s on %s by user:%s ip:%s' %
+                 (action, safe_unicode(repo), user_obj, ipaddr))
         if commit:
             sa.commit()
-    except:
+    except Exception:
         log.error(traceback.format_exc())
         raise
 
 
-def get_repos(path, recursive=False):
+def get_filesystem_repos(path, recursive=False, skip_removed_repos=True):
     """
     Scans given path for repos and return (name,(type,path)) tuple
 
@@ -181,14 +202,27 @@ def get_repos(path, recursive=False):
 
     # remove ending slash for better results
     path = path.rstrip(os.sep)
+    log.debug('now scanning in %s location recursive:%s...' % (path, recursive))
 
     def _get_repos(p):
-        if not os.access(p, os.W_OK):
+        if not os.access(p, os.R_OK) or not os.access(p, os.X_OK):
+            log.warn('ignoring repo path without access: %s' % (p,))
             return
+        if not os.access(p, os.W_OK):
+            log.warn('repo path without write access: %s' % (p,))
         for dirpath in os.listdir(p):
             if os.path.isfile(os.path.join(p, dirpath)):
                 continue
             cur_path = os.path.join(p, dirpath)
+
+            # skip removed repos
+            if skip_removed_repos and REMOVED_REPO_PAT.match(dirpath):
+                continue
+
+            #skip .<somethin> dirs
+            if dirpath.startswith('.'):
+                continue
+
             try:
                 scm_info = get_scm(cur_path)
                 yield scm_info[1].split(path, 1)[-1].lstrip(os.sep), scm_info
@@ -204,27 +238,32 @@ def get_repos(path, recursive=False):
     return _get_repos(path)
 
 
-def is_valid_repo(repo_name, base_path):
+def is_valid_repo(repo_name, base_path, scm=None):
     """
-    Returns True if given path is a valid repository False otherwise
+    Returns True if given path is a valid repository False otherwise.
+    If scm param is given also compare if given scm is the same as expected
+    from scm parameter
 
     :param repo_name:
     :param base_path:
+    :param scm:
 
     :return True: if given path is a valid repository
     """
     full_path = os.path.join(safe_str(base_path), safe_str(repo_name))
 
     try:
-        get_scm(full_path)
+        scm_ = get_scm(full_path)
+        if scm:
+            return scm_[0] == scm
         return True
     except VCSError:
         return False
 
 
-def is_valid_repos_group(repos_group_name, base_path):
+def is_valid_repos_group(repos_group_name, base_path, skip_path_check=False):
     """
-    Returns True if given path is a repos group False otherwise
+    Returns True if given path is a repository group False otherwise
 
     :param repo_name:
     :param base_path:
@@ -235,14 +274,23 @@ def is_valid_repos_group(repos_group_name, base_path):
     if is_valid_repo(repos_group_name, base_path):
         return False
 
+    try:
+        # we need to check bare git repos at higher level
+        # since we might match branches/hooks/info/objects or possible
+        # other things inside bare git repo
+        get_scm(os.path.dirname(full_path))
+        return False
+    except VCSError:
+        pass
+
     # check if it's a valid path
-    if os.path.isdir(full_path):
+    if skip_path_check or os.path.isdir(full_path):
         return True
 
     return False
 
 
-def ask_ok(prompt, retries=4, complaint='Yes or no, please!'):
+def ask_ok(prompt, retries=4, complaint='Yes or no please!'):
     while True:
         ok = raw_input(prompt)
         if ok in ('y', 'ye', 'yes'):
@@ -267,7 +315,7 @@ ui_sections = ['alias', 'auth',
                 'ui', 'web', ]
 
 
-def make_ui(read_from='file', path=None, checkpaths=True):
+def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
     """
     A function that will read python rc files or database
     and make an mercurial ui object from read options
@@ -286,18 +334,18 @@ def make_ui(read_from='file', path=None, checkpaths=True):
 
     if read_from == 'file':
         if not os.path.isfile(path):
-            log.debug('hgrc file is not present at %s skipping...' % path)
+            log.debug('hgrc file is not present at %s, skipping...' % path)
             return False
         log.debug('reading hgrc from %s' % path)
         cfg = config.config()
         cfg.read(path)
         for section in ui_sections:
             for k, v in cfg.items(section):
-                log.debug('settings ui from file[%s]%s:%s' % (section, k, v))
-                baseui.setconfig(section, k, v)
+                log.debug('settings ui from file: [%s] %s=%s' % (section, k, v))
+                baseui.setconfig(safe_str(section), safe_str(k), safe_str(v))
 
     elif read_from == 'db':
-        sa = meta.Session
+        sa = meta.Session()
         ret = sa.query(RhodeCodeUi)\
             .options(FromCache("sql_cache_short", "get_hg_ui_settings"))\
             .all()
@@ -305,11 +353,17 @@ def make_ui(read_from='file', path=None, checkpaths=True):
         hg_ui = ret
         for ui_ in hg_ui:
             if ui_.ui_active:
-                log.debug('settings ui from db[%s]%s:%s', ui_.ui_section,
+                log.debug('settings ui from db: [%s] %s=%s', ui_.ui_section,
                           ui_.ui_key, ui_.ui_value)
-                baseui.setconfig(ui_.ui_section, ui_.ui_key, ui_.ui_value)
-
-        meta.Session.remove()
+                baseui.setconfig(safe_str(ui_.ui_section), safe_str(ui_.ui_key),
+                                 safe_str(ui_.ui_value))
+            if ui_.ui_key == 'push_ssl':
+                # force set push_ssl requirement to False, rhodecode
+                # handles that
+                baseui.setconfig(safe_str(ui_.ui_section), safe_str(ui_.ui_key),
+                                 False)
+        if clear_session:
+            meta.Session.remove()
     return baseui
 
 
@@ -325,61 +379,24 @@ def set_rhodecode_config(config):
         config[k] = v
 
 
-def invalidate_cache(cache_key, *args):
+def set_vcs_config(config):
     """
-    Puts cache invalidation task into db for
-    further global cache invalidation
+    Patch VCS config with some RhodeCode specific stuff
+
+    :param config: rhodecode.CONFIG
     """
+    import rhodecode
+    from rhodecode.lib.vcs import conf
+    from rhodecode.lib.utils2 import aslist
+    conf.settings.BACKENDS = {
+        'hg': 'rhodecode.lib.vcs.backends.hg.MercurialRepository',
+        'git': 'rhodecode.lib.vcs.backends.git.GitRepository',
+    }
 
-    from rhodecode.model.scm import ScmModel
-
-    if cache_key.startswith('get_repo_cached_'):
-        name = cache_key.split('get_repo_cached_')[-1]
-        ScmModel().mark_for_invalidation(name)
-
-
-class EmptyChangeset(BaseChangeset):
-    """
-    An dummy empty changeset. It's possible to pass hash when creating
-    an EmptyChangeset
-    """
-
-    def __init__(self, cs='0' * 40, repo=None, requested_revision=None,
-                 alias=None):
-        self._empty_cs = cs
-        self.revision = -1
-        self.message = ''
-        self.author = ''
-        self.date = ''
-        self.repository = repo
-        self.requested_revision = requested_revision
-        self.alias = alias
-
-    @LazyProperty
-    def raw_id(self):
-        """
-        Returns raw string identifying this changeset, useful for web
-        representation.
-        """
-
-        return self._empty_cs
-
-    @LazyProperty
-    def branch(self):
-        return get_backend(self.alias).DEFAULT_BRANCH_NAME
-
-    @LazyProperty
-    def short_id(self):
-        return self.raw_id[:12]
-
-    def get_file_changeset(self, path):
-        return self
-
-    def get_file_content(self, path):
-        return u''
-
-    def get_file_size(self, path):
-        return 0
+    conf.settings.GIT_EXECUTABLE_PATH = config.get('git_path', 'git')
+    conf.settings.GIT_REV_FILTER = config.get('git_rev_filter', '--all').strip()
+    conf.settings.DEFAULT_ENCODINGS = aslist(config.get('default_encoding',
+                                                        'utf8'), sep=',')
 
 
 def map_groups(path):
@@ -390,7 +407,7 @@ def map_groups(path):
 
     :param paths: full path to repository
     """
-    sa = meta.Session
+    sa = meta.Session()
     groups = path.split(Repository.url_sep())
     parent = None
     group = None
@@ -398,6 +415,7 @@ def map_groups(path):
     # last element is repo in nested groups structure
     groups = groups[:-1]
     rgm = ReposGroupModel(sa)
+    owner = User.get_first_admin()
     for lvl, group_name in enumerate(groups):
         group_name = '/'.join(groups[:lvl] + [group_name])
         group = RepoGroup.get_by_group_name(group_name)
@@ -408,18 +426,22 @@ def map_groups(path):
             break
 
         if group is None:
-            log.debug('creating group level: %s group_name: %s' % (lvl,
-                                                                   group_name))
+            log.debug('creating group level: %s group_name: %s'
+                      % (lvl, group_name))
             group = RepoGroup(group_name, parent)
             group.group_description = desc
+            group.user = owner
             sa.add(group)
-            rgm._create_default_perms(group)
+            perm_obj = rgm._create_default_perms(group)
+            sa.add(perm_obj)
             sa.flush()
+
         parent = group
     return group
 
 
-def repo2db_mapper(initial_repo_list, remove_obsolete=False):
+def repo2db_mapper(initial_repo_list, remove_obsolete=False,
+                   install_git_hook=False):
     """
     maps all repos given in initial_repo_list, non existing repositories
     are created, if remove_obsolete is True it also check for db entries
@@ -427,47 +449,71 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False):
 
     :param initial_repo_list: list of repositories found by scanning methods
     :param remove_obsolete: check for obsolete entries in database
+    :param install_git_hook: if this is True, also check and install githook
+        for a repo if missing
     """
     from rhodecode.model.repo import RepoModel
-    sa = meta.Session
+    from rhodecode.model.scm import ScmModel
+    sa = meta.Session()
     rm = RepoModel()
-    user = sa.query(User).filter(User.admin == True).first()
-    if user is None:
-        raise Exception('Missing administrative account !')
+    user = User.get_first_admin()
     added = []
+
+    ##creation defaults
+    defs = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
+    enable_statistics = defs.get('repo_enable_statistics')
+    enable_locking = defs.get('repo_enable_locking')
+    enable_downloads = defs.get('repo_enable_downloads')
+    private = defs.get('repo_private')
 
     for name, repo in initial_repo_list.items():
         group = map_groups(name)
-        if not rm.get_by_repo_name(name, cache=False):
-            log.info('repository %s not found creating default' % name)
+        db_repo = rm.get_by_repo_name(name)
+        # found repo that is on filesystem not in RhodeCode database
+        if not db_repo:
+            log.info('repository %s not found, creating now' % name)
             added.append(name)
-            form_data = {
-             'repo_name': name,
-             'repo_name_full': name,
-             'repo_type': repo.alias,
-             'description': repo.description \
-                if repo.description != 'unknown' else '%s repository' % name,
-             'private': False,
-             'group_id': getattr(group, 'group_id', None),
-             'landing_rev': repo.DEFAULT_BRANCH_NAME
-            }
-            rm.create(form_data, user, just_db=True)
+            desc = (repo.description
+                    if repo.description != 'unknown'
+                    else '%s repository' % name)
+
+            new_repo = rm.create_repo(
+                repo_name=name,
+                repo_type=repo.alias,
+                description=desc,
+                repos_group=getattr(group, 'group_id', None),
+                owner=user,
+                just_db=True,
+                enable_locking=enable_locking,
+                enable_downloads=enable_downloads,
+                enable_statistics=enable_statistics,
+                private=private
+            )
+            # we added that repo just now, and make sure it has githook
+            # installed
+            if new_repo.repo_type == 'git':
+                ScmModel().install_git_hook(new_repo.scm_instance)
+            new_repo.update_changeset_cache()
+        elif install_git_hook:
+            if db_repo.repo_type == 'git':
+                ScmModel().install_git_hook(db_repo.scm_instance)
+
     sa.commit()
     removed = []
     if remove_obsolete:
         # remove from database those repositories that are not in the filesystem
         for repo in sa.query(Repository).all():
             if repo.repo_name not in initial_repo_list.keys():
-                log.debug("Removing non existing repository found in db %s" %
+                log.debug("Removing non-existing repository found in db `%s`" %
                           repo.repo_name)
-                removed.append(repo.repo_name)
-                sa.delete(repo)
-                sa.commit()
-
-    # clear cache keys
-    log.debug("Clearing cache keys now...")
-    CacheInvalidation.clear_cache()
-    sa.commit()
+                try:
+                    removed.append(repo.repo_name)
+                    RepoModel(sa).delete(repo, forks='detach', fs_remove=False)
+                    sa.commit()
+                except Exception:
+                    #don't hold further removals on error
+                    log.error(traceback.format_exc())
+                    sa.rollback()
     return added, removed
 
 
@@ -514,13 +560,33 @@ def load_rcextensions(root_path):
 
         #OVERRIDE OUR EXTENSIONS FROM RC-EXTENSIONS (if present)
 
-        if getattr(EXT, 'INDEX_EXTENSIONS', []) != []:
+        if getattr(EXT, 'INDEX_EXTENSIONS', []):
             log.debug('settings custom INDEX_EXTENSIONS')
             conf.INDEX_EXTENSIONS = getattr(EXT, 'INDEX_EXTENSIONS', [])
 
         #ADDITIONAL MAPPINGS
         log.debug('adding extra into INDEX_EXTENSIONS')
         conf.INDEX_EXTENSIONS.extend(getattr(EXT, 'EXTRA_INDEX_EXTENSIONS', []))
+
+        # auto check if the module is not missing any data, set to default if is
+        # this will help autoupdate new feature of rcext module
+        from rhodecode.config import rcextensions
+        for k in dir(rcextensions):
+            if not k.startswith('_') and not hasattr(EXT, k):
+                setattr(EXT, k, getattr(rcextensions, k))
+
+
+def get_custom_lexer(extension):
+    """
+    returns a custom lexer if it's defined in rcextensions module, or None
+    if there's no custom lexer defined
+    """
+    import rhodecode
+    from pygments import lexers
+    #check if we didn't define this extension as other lexer
+    if rhodecode.EXTENSIONS and extension in rhodecode.EXTENSIONS.EXTRA_LEXERS:
+        _lexer_name = rhodecode.EXTENSIONS.EXTRA_LEXERS[extension]
+        return lexers.get_lexer_by_name(_lexer_name)
 
 
 #==============================================================================
@@ -578,7 +644,7 @@ def create_test_env(repos_test_path, config):
     dbmanage.admin_prompt()
     dbmanage.create_permissions()
     dbmanage.populate_default_permissions()
-    Session.commit()
+    Session().commit()
     # PART TWO make test repo
     log.debug('making test vcs repositories')
 
@@ -596,12 +662,12 @@ def create_test_env(repos_test_path, config):
 
     #CREATE DEFAULT TEST REPOS
     cur_dir = dn(dn(abspath(__file__)))
-    tar = tarfile.open(jn(cur_dir, 'tests', "vcs_test_hg.tar.gz"))
+    tar = tarfile.open(jn(cur_dir, 'tests', 'fixtures', "vcs_test_hg.tar.gz"))
     tar.extractall(jn(TESTS_TMP_PATH, HG_REPO))
     tar.close()
 
     cur_dir = dn(dn(abspath(__file__)))
-    tar = tarfile.open(jn(cur_dir, 'tests', "vcs_test_git.tar.gz"))
+    tar = tarfile.open(jn(cur_dir, 'tests', 'fixtures', "vcs_test_git.tar.gz"))
     tar.extractall(jn(TESTS_TMP_PATH, GIT_REPO))
     tar.close()
 
@@ -675,3 +741,81 @@ class BasePasterCommand(Command):
         self.path_to_ini_file = os.path.realpath(conf)
         conf = paste.deploy.appconfig('config:' + self.path_to_ini_file)
         pylonsconfig.init_app(conf.global_conf, conf.local_conf)
+
+    def _init_session(self):
+        """
+        Inits SqlAlchemy Session
+        """
+        logging.config.fileConfig(self.path_to_ini_file)
+        from pylons import config
+        from rhodecode.model import init_model
+        from rhodecode.lib.utils2 import engine_from_config
+
+        #get to remove repos !!
+        add_cache(config)
+        engine = engine_from_config(config, 'sqlalchemy.db1.')
+        init_model(engine)
+
+
+def check_git_version():
+    """
+    Checks what version of git is installed in system, and issues a warning
+    if it's too old for RhodeCode to properly work.
+    """
+    from rhodecode import BACKENDS
+    from rhodecode.lib.vcs.backends.git.repository import GitRepository
+    from rhodecode.lib.vcs.conf import settings
+    from distutils.version import StrictVersion
+
+    stdout, stderr = GitRepository._run_git_command('--version', _bare=True,
+                                                    _safe=True)
+
+    ver = (stdout.split(' ')[-1] or '').strip() or '0.0.0'
+    if len(ver.split('.')) > 3:
+        #StrictVersion needs to be only 3 element type
+        ver = '.'.join(ver.split('.')[:3])
+    try:
+        _ver = StrictVersion(ver)
+    except Exception:
+        _ver = StrictVersion('0.0.0')
+        stderr = traceback.format_exc()
+
+    req_ver = '1.7.4'
+    to_old_git = False
+    if  _ver < StrictVersion(req_ver):
+        to_old_git = True
+
+    if 'git' in BACKENDS:
+        log.debug('GIT executable: "%s" version detected: %s'
+                  % (settings.GIT_EXECUTABLE_PATH, stdout))
+        if stderr:
+            log.warning('Unable to detect git version, org error was: %r' % stderr)
+        elif to_old_git:
+            log.warning('RhodeCode detected git version %s, which is too old '
+                        'for the system to function properly. Make sure '
+                        'its version is at least %s' % (ver, req_ver))
+    return _ver
+
+
+@decorator.decorator
+def jsonify(func, *args, **kwargs):
+    """Action decorator that formats output for JSON
+
+    Given a function that will return content, this decorator will turn
+    the result into JSON, with a content-type of 'application/json' and
+    output it.
+
+    """
+    from pylons.decorators.util import get_pylons
+    from rhodecode.lib.compat import json
+    pylons = get_pylons(args)
+    pylons.response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    data = func(*args, **kwargs)
+    if isinstance(data, (list, tuple)):
+        msg = "JSON responses with Array envelopes are susceptible to " \
+              "cross-site data leak attacks, see " \
+              "http://wiki.pylonshq.com/display/pylonsfaq/Warnings"
+        warnings.warn(msg, Warning, 2)
+        log.warning(msg)
+    log.debug("Returning JSON wrapped action output")
+    return json.dumps(data, encoding='utf-8')

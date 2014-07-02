@@ -6,6 +6,7 @@ from rhodecode.lib.auth import check_password
 from rhodecode.model.user import UserModel
 from rhodecode.model import validators
 from rhodecode.lib import helpers as h
+from rhodecode.model.meta import Session
 
 
 class TestAdminUsersController(TestController):
@@ -31,15 +32,14 @@ class TestAdminUsersController(TestController):
                              {'username': username,
                                'password': password,
                                'password_confirmation': password_confirmation,
-                               'name': name,
+                               'firstname': name,
                                'active': True,
                                'lastname': lastname,
                                'email': email})
 
-        self.checkSessionFlash(response, '''created user %s''' % (username))
+        self.checkSessionFlash(response, '''Created user %s''' % (username))
 
-
-        new_user = self.Session.query(User).\
+        new_user = Session().query(User).\
             filter(User.username == username).one()
 
         self.assertEqual(new_user.username, username)
@@ -50,7 +50,7 @@ class TestAdminUsersController(TestController):
 
         response.follow()
         response = response.follow()
-        self.assertTrue("""edit">newtestuser</a>""" in response.body)
+        response.mustcontain("""newtestuser""")
 
     def test_create_err(self):
         self.log_user()
@@ -74,7 +74,7 @@ class TestAdminUsersController(TestController):
         response.mustcontain("""<span class="error-message">An email address must contain a single @</span>""")
 
         def get_user():
-            self.Session.query(User).filter(User.username == username).one()
+            Session().query(User).filter(User.username == username).one()
 
         self.assertRaises(NoResultFound, get_user), 'found user in database'
 
@@ -85,8 +85,45 @@ class TestAdminUsersController(TestController):
     def test_new_as_xml(self):
         response = self.app.get(url('formatted_new_user', format='xml'))
 
-    def test_update(self):
-        response = self.app.put(url('user', id=1))
+    @parameterized.expand([('firstname', 'new_username'),
+                           ('lastname', 'new_username'),
+                           ('admin', True),
+                           ('admin', False),
+                           ('ldap_dn', 'test'),
+                           ('ldap_dn', None),
+                           ('active', False),
+                           ('active', True),
+                           ('email', 'some@email.com'),
+                           ])
+    def test_update(self, name, expected):
+        self.log_user()
+        uname = 'testme'
+        usr = UserModel().create_or_update(username=uname, password='qweqwe',
+                                           email='testme@rhodecod.org')
+        Session().commit()
+        params = usr.get_api_data()
+        params.update({name: expected})
+        params.update({'password_confirmation': ''})
+        params.update({'new_password': ''})
+        if name == 'email':
+            params['emails'] = [expected]
+        if name == 'ldap_dn':
+            #cannot update this via form
+            params['ldap_dn'] = None
+        try:
+            response = self.app.put(url('user', id=usr.user_id), params)
+
+            self.checkSessionFlash(response, '''User updated successfully''')
+
+            updated_user = User.get_by_username(uname)
+            updated_params = updated_user.get_api_data()
+            updated_params.update({'password_confirmation': ''})
+            updated_params.update({'new_password': ''})
+
+            self.assertEqual(params, updated_params)
+
+        finally:
+            UserModel().delete('testme')
 
     def test_update_browser_fakeout(self):
         response = self.app.post(url('user', id=1), params=dict(_method='put'))
@@ -102,19 +139,18 @@ class TestAdminUsersController(TestController):
         response = self.app.post(url('users'), {'username': username,
                                                'password': password,
                                                'password_confirmation': password,
-                                               'name': name,
+                                               'firstname': name,
                                                'active': True,
                                                'lastname': lastname,
                                                'email': email})
 
         response = response.follow()
 
-        new_user = self.Session.query(User)\
+        new_user = Session().query(User)\
             .filter(User.username == username).one()
         response = self.app.delete(url('user', id=new_user.user_id))
 
-        self.assertTrue("""successfully deleted user""" in
-                        response.session['flash'][0])
+        self.checkSessionFlash(response, 'Successfully deleted user')
 
     def test_delete_browser_fakeout(self):
         response = self.app.post(url('user', id=1),
@@ -136,45 +172,118 @@ class TestAdminUsersController(TestController):
         perm_none = Permission.get_by_key('hg.create.none')
         perm_create = Permission.get_by_key('hg.create.repository')
 
-        user = User.get_by_username(TEST_USER_REGULAR_LOGIN)
+        user = UserModel().create_or_update(username='dummy', password='qwe',
+                                            email='dummy', firstname='a',
+                                            lastname='b')
+        Session().commit()
+        uid = user.user_id
 
-        #User should have None permission on creation repository
-        self.assertEqual(UserModel().has_perm(user, perm_none), False)
-        self.assertEqual(UserModel().has_perm(user, perm_create), False)
+        try:
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(user, perm_none), False)
+            self.assertEqual(UserModel().has_perm(user, perm_create), False)
 
-        response = self.app.post(url('user_perm', id=user.user_id),
-                                 params=dict(_method='put',
-                                             create_repo_perm=True))
+            response = self.app.post(url('user_perm', id=uid),
+                                     params=dict(_method='put',
+                                                 create_repo_perm=True))
 
-        perm_none = Permission.get_by_key('hg.create.none')
-        perm_create = Permission.get_by_key('hg.create.repository')
+            perm_none = Permission.get_by_key('hg.create.none')
+            perm_create = Permission.get_by_key('hg.create.repository')
 
-        user = User.get_by_username(TEST_USER_REGULAR_LOGIN)
-        #User should have None permission on creation repository
-        self.assertEqual(UserModel().has_perm(user, perm_none), False)
-        self.assertEqual(UserModel().has_perm(user, perm_create), True)
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(uid, perm_none), False)
+            self.assertEqual(UserModel().has_perm(uid, perm_create), True)
+        finally:
+            UserModel().delete(uid)
+            Session().commit()
 
     def test_revoke_perm_create_repo(self):
         self.log_user()
         perm_none = Permission.get_by_key('hg.create.none')
         perm_create = Permission.get_by_key('hg.create.repository')
 
-        user = User.get_by_username(TEST_USER_REGULAR2_LOGIN)
+        user = UserModel().create_or_update(username='dummy', password='qwe',
+                                            email='dummy', firstname='a',
+                                            lastname='b')
+        Session().commit()
+        uid = user.user_id
 
-        #User should have None permission on creation repository
-        self.assertEqual(UserModel().has_perm(user, perm_none), False)
-        self.assertEqual(UserModel().has_perm(user, perm_create), False)
+        try:
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(user, perm_none), False)
+            self.assertEqual(UserModel().has_perm(user, perm_create), False)
 
-        response = self.app.post(url('user_perm', id=user.user_id),
-                                 params=dict(_method='put'))
+            response = self.app.post(url('user_perm', id=uid),
+                                     params=dict(_method='put'))
 
-        perm_none = Permission.get_by_key('hg.create.none')
-        perm_create = Permission.get_by_key('hg.create.repository')
+            perm_none = Permission.get_by_key('hg.create.none')
+            perm_create = Permission.get_by_key('hg.create.repository')
 
-        user = User.get_by_username(TEST_USER_REGULAR2_LOGIN)
-        #User should have None permission on creation repository
-        self.assertEqual(UserModel().has_perm(user, perm_none), True)
-        self.assertEqual(UserModel().has_perm(user, perm_create), False)
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(uid, perm_none), True)
+            self.assertEqual(UserModel().has_perm(uid, perm_create), False)
+        finally:
+            UserModel().delete(uid)
+            Session().commit()
+
+    def test_add_perm_fork_repo(self):
+        self.log_user()
+        perm_none = Permission.get_by_key('hg.fork.none')
+        perm_fork = Permission.get_by_key('hg.fork.repository')
+
+        user = UserModel().create_or_update(username='dummy', password='qwe',
+                                            email='dummy', firstname='a',
+                                            lastname='b')
+        Session().commit()
+        uid = user.user_id
+
+        try:
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(user, perm_none), False)
+            self.assertEqual(UserModel().has_perm(user, perm_fork), False)
+
+            response = self.app.post(url('user_perm', id=uid),
+                                     params=dict(_method='put',
+                                                 create_repo_perm=True))
+
+            perm_none = Permission.get_by_key('hg.create.none')
+            perm_create = Permission.get_by_key('hg.create.repository')
+
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(uid, perm_none), False)
+            self.assertEqual(UserModel().has_perm(uid, perm_create), True)
+        finally:
+            UserModel().delete(uid)
+            Session().commit()
+
+    def test_revoke_perm_fork_repo(self):
+        self.log_user()
+        perm_none = Permission.get_by_key('hg.fork.none')
+        perm_fork = Permission.get_by_key('hg.fork.repository')
+
+        user = UserModel().create_or_update(username='dummy', password='qwe',
+                                            email='dummy', firstname='a',
+                                            lastname='b')
+        Session().commit()
+        uid = user.user_id
+
+        try:
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(user, perm_none), False)
+            self.assertEqual(UserModel().has_perm(user, perm_fork), False)
+
+            response = self.app.post(url('user_perm', id=uid),
+                                     params=dict(_method='put'))
+
+            perm_none = Permission.get_by_key('hg.create.none')
+            perm_create = Permission.get_by_key('hg.create.repository')
+
+            #User should have None permission on creation repository
+            self.assertEqual(UserModel().has_perm(uid, perm_none), True)
+            self.assertEqual(UserModel().has_perm(uid, perm_create), False)
+        finally:
+            UserModel().delete(uid)
+            Session().commit()
 
     def test_edit_as_xml(self):
         response = self.app.get(url('formatted_edit_user', id=1, format='xml'))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rhodecode.model.pull_reuquest
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    rhodecode.model.pull_request
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     pull request model for RhodeCode
 
@@ -24,164 +24,140 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import binascii
+import datetime
+
 from pylons.i18n.translation import _
 
+from rhodecode.model.meta import Session
 from rhodecode.lib import helpers as h
 from rhodecode.model import BaseModel
-from rhodecode.model.db import PullRequest, PullRequestReviewers, Notification
+from rhodecode.model.db import PullRequest, PullRequestReviewers, Notification,\
+    ChangesetStatus
 from rhodecode.model.notification import NotificationModel
 from rhodecode.lib.utils2 import safe_unicode
 
-from rhodecode.lib.vcs.utils.hgcompat import discovery
 
 log = logging.getLogger(__name__)
 
 
 class PullRequestModel(BaseModel):
 
-    def get_all(self, repo):
-        repo = self._get_repo(repo)
-        return PullRequest.query().filter(PullRequest.other_repo == repo).all()
+    cls = PullRequest
 
-    def create(self, created_by, org_repo, org_ref, other_repo,
-               other_ref, revisions, reviewers, title, description=None):
+    def __get_pull_request(self, pull_request):
+        return self._get_instance(PullRequest, pull_request)
+
+    def get_all(self, repo_name, from_=False, closed=False):
+        """Get all PRs for repo.
+        Default is all PRs to the repo, PRs from the repo if from_.
+        Closed PRs are only included if closed is true."""
+        repo = self._get_repo(repo_name)
+        q = PullRequest.query()
+        if from_:
+            q = q.filter(PullRequest.org_repo == repo)
+        else:
+            q = q.filter(PullRequest.other_repo == repo)
+        if not closed:
+            q = q.filter(PullRequest.status != PullRequest.STATUS_CLOSED)
+        return q.order_by(PullRequest.created_on.desc()).all()
+
+    def create(self, created_by, org_repo, org_ref, other_repo, other_ref,
+               revisions, reviewers, title, description=None):
+        from rhodecode.model.changeset_status import ChangesetStatusModel
+
         created_by_user = self._get_user(created_by)
+        org_repo = self._get_repo(org_repo)
+        other_repo = self._get_repo(other_repo)
 
         new = PullRequest()
-        new.org_repo = self._get_repo(org_repo)
+        new.org_repo = org_repo
         new.org_ref = org_ref
-        new.other_repo = self._get_repo(other_repo)
+        new.other_repo = other_repo
         new.other_ref = other_ref
         new.revisions = revisions
         new.title = title
         new.description = description
         new.author = created_by_user
-        self.sa.add(new)
-
+        Session().add(new)
+        Session().flush()
         #members
-        for member in reviewers:
+        for member in set(reviewers):
             _usr = self._get_user(member)
             reviewer = PullRequestReviewers(_usr, new)
-            self.sa.add(reviewer)
+            Session().add(reviewer)
 
+        #reset state to under-review
+        ChangesetStatusModel().set_status(
+            repo=org_repo,
+            status=ChangesetStatus.STATUS_UNDER_REVIEW,
+            user=created_by_user,
+            pull_request=new
+        )
+        revision_data = [(x.raw_id, x.message)
+                         for x in map(org_repo.get_changeset, revisions)]
         #notification to reviewers
-        notif = NotificationModel()
-
+        pr_url = h.url('pullrequest_show', repo_name=other_repo.repo_name,
+                       pull_request_id=new.pull_request_id,
+                       qualified=True,
+        )
         subject = safe_unicode(
             h.link_to(
-              _('%(user)s wants you to review pull request #%(pr_id)s') % \
+              _('%(user)s wants you to review pull request #%(pr_id)s: %(pr_title)s') % \
                 {'user': created_by_user.username,
+                 'pr_title': new.title,
                  'pr_id': new.pull_request_id},
-              h.url('pullrequest_show', repo_name=other_repo,
-                    pull_request_id=new.pull_request_id,
-                    qualified=True,
-              )
+                pr_url
             )
         )
         body = description
-        notif.create(created_by=created_by, subject=subject, body=body,
-                     recipients=reviewers,
-                     type_=Notification.TYPE_PULL_REQUEST,)
+        kwargs = {
+            'pr_title': title,
+            'pr_user_created': h.person(created_by_user.email),
+            'pr_repo_url': h.url('summary_home', repo_name=other_repo.repo_name,
+                                 qualified=True,),
+            'pr_url': pr_url,
+            'pr_revisions': revision_data
+        }
 
+        NotificationModel().create(created_by=created_by_user, subject=subject, body=body,
+                                   recipients=reviewers,
+                                   type_=Notification.TYPE_PULL_REQUEST, email_kwargs=kwargs)
         return new
 
-    def _get_changesets(self, org_repo, org_ref, other_repo, other_ref,
-                        discovery_data):
-        """
-        Returns a list of changesets that are incoming from org_repo@org_ref
-        to other_repo@other_ref
+    def update_reviewers(self, pull_request, reviewers_ids):
+        reviewers_ids = set(reviewers_ids)
+        pull_request = self.__get_pull_request(pull_request)
+        current_reviewers = PullRequestReviewers.query()\
+                            .filter(PullRequestReviewers.pull_request==
+                                   pull_request)\
+                            .all()
+        current_reviewers_ids = set([x.user.user_id for x in current_reviewers])
 
-        :param org_repo:
-        :type org_repo:
-        :param org_ref:
-        :type org_ref:
-        :param other_repo:
-        :type other_repo:
-        :param other_ref:
-        :type other_ref:
-        :param tmp:
-        :type tmp:
-        """
-        changesets = []
-        #case two independent repos
-        if org_repo != other_repo:
-            common, incoming, rheads = discovery_data
+        to_add = reviewers_ids.difference(current_reviewers_ids)
+        to_remove = current_reviewers_ids.difference(reviewers_ids)
 
-            if not incoming:
-                revs = []
-            else:
-                revs = org_repo._repo.changelog.findmissing(common, rheads)
+        log.debug("Adding %s reviewers" % to_add)
+        log.debug("Removing %s reviewers" % to_remove)
 
-            for cs in reversed(map(binascii.hexlify, revs)):
-                changesets.append(org_repo.get_changeset(cs))
-        else:
-            revs = ['ancestors(%s) and not ancestors(%s)' % (org_ref[1],
-                                                             other_ref[1])]
-            from mercurial import scmutil
-            out = scmutil.revrange(org_repo._repo, revs)
-            for cs in reversed(out):
-                changesets.append(org_repo.get_changeset(cs))
+        for uid in to_add:
+            _usr = self._get_user(uid)
+            reviewer = PullRequestReviewers(_usr, pull_request)
+            Session().add(reviewer)
 
-        return changesets
+        for uid in to_remove:
+            reviewer = PullRequestReviewers.query()\
+                    .filter(PullRequestReviewers.user_id==uid,
+                            PullRequestReviewers.pull_request==pull_request)\
+                    .scalar()
+            if reviewer:
+                Session().delete(reviewer)
 
-    def _get_discovery(self, org_repo, org_ref, other_repo, other_ref):
-        """
-        Get's mercurial discovery data used to calculate difference between
-        repos and refs
+    def delete(self, pull_request):
+        pull_request = self.__get_pull_request(pull_request)
+        Session().delete(pull_request)
 
-        :param org_repo:
-        :type org_repo:
-        :param org_ref:
-        :type org_ref:
-        :param other_repo:
-        :type other_repo:
-        :param other_ref:
-        :type other_ref:
-        """
-
-        other = org_repo._repo
-        repo = other_repo._repo
-        tip = other[org_ref[1]]
-        log.debug('Doing discovery for %s@%s vs %s@%s' % (
-                        org_repo, org_ref, other_repo, other_ref)
-        )
-        log.debug('Filter heads are %s[%s]' % (tip, org_ref[1]))
-        tmp = discovery.findcommonincoming(
-                  repo=repo,  # other_repo we check for incoming
-                  remote=other,  # org_repo source for incoming
-                  heads=[tip.node()],
-                  force=False
-        )
-        return tmp
-
-    def get_compare_data(self, org_repo, org_ref, other_repo, other_ref):
-        """
-        Returns a tuple of incomming changesets, and discoverydata cache
-
-        :param org_repo:
-        :type org_repo:
-        :param org_ref:
-        :type org_ref:
-        :param other_repo:
-        :type other_repo:
-        :param other_ref:
-        :type other_ref:
-        """
-
-        if len(org_ref) != 2 or not isinstance(org_ref, (list, tuple)):
-            raise Exception('org_ref must be a two element list/tuple')
-
-        if len(other_ref) != 2 or not isinstance(org_ref, (list, tuple)):
-            raise Exception('other_ref must be a two element list/tuple')
-
-        discovery_data = self._get_discovery(org_repo.scm_instance,
-                                           org_ref,
-                                           other_repo.scm_instance,
-                                           other_ref)
-        cs_ranges = self._get_changesets(org_repo.scm_instance,
-                                           org_ref,
-                                           other_repo.scm_instance,
-                                           other_ref,
-                                           discovery_data)
-        return cs_ranges, discovery_data
+    def close_pull_request(self, pull_request):
+        pull_request = self.__get_pull_request(pull_request)
+        pull_request.status = PullRequest.STATUS_CLOSED
+        pull_request.updated_on = datetime.datetime.now()
+        Session().add(pull_request)

@@ -13,13 +13,10 @@ import stat
 import posixpath
 import mimetypes
 
-from pygments import lexers
-
+from rhodecode.lib.vcs.backends.base import EmptyChangeset
+from rhodecode.lib.vcs.exceptions import NodeError, RemovedFileNodeError
 from rhodecode.lib.vcs.utils.lazy import LazyProperty
 from rhodecode.lib.vcs.utils import safe_unicode, safe_str
-from rhodecode.lib.vcs.exceptions import NodeError
-from rhodecode.lib.vcs.exceptions import RemovedFileNodeError
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
 
 
 class NodeKind:
@@ -103,8 +100,8 @@ class Node(object):
     def __init__(self, path, kind):
         if path.startswith('/'):
             raise NodeError("Cannot initialize Node objects with slash at "
-                "the beginning as only relative paths are supported")
-        self.path = path.rstrip('/')
+                            "the beginning as only relative paths are supported")
+        self.path = safe_str(path.rstrip('/'))  # we store paths as str
         if path == '' and kind != NodeKind.DIR:
             raise NodeError("Only DirNode and its subclasses may be "
                             "initialized with empty path")
@@ -276,16 +273,20 @@ class FileNode(Node):
             mode = self._mode
         return mode
 
+    def _get_content(self):
+        if self.changeset:
+            content = self.changeset.get_file_content(self.path)
+        else:
+            content = self._content
+        return content
+
     @property
     def content(self):
         """
         Returns lazily content of the FileNode. If possible, would try to
         decode content from UTF-8.
         """
-        if self.changeset:
-            content = self.changeset.get_file_content(self.path)
-        else:
-            content = self._content
+        content = self._get_content()
 
         if bool(content and '\0' in content):
             return content
@@ -357,10 +358,11 @@ class FileNode(Node):
         Returns pygment's lexer class. Would try to guess lexer taking file's
         content, name and mimetype.
         """
+        from pygments import lexers
         try:
-            lexer = lexers.guess_lexer_for_filename(self.name, self.content)
+            lexer = lexers.guess_lexer_for_filename(self.name, self.content, stripnl=False)
         except lexers.ClassNotFound:
-            lexer = lexers.TextLexer()
+            lexer = lexers.TextLexer(stripnl=False)
         # returns first alias
         return lexer
 
@@ -406,7 +408,7 @@ class FileNode(Node):
         """
         Returns True if file has binary content.
         """
-        _bin = '\0' in self.content
+        _bin = '\0' in self._get_content()
         return _bin
 
     @LazyProperty
@@ -414,6 +416,7 @@ class FileNode(Node):
         """Returns filenode extension"""
         return self.name.split('.')[-1]
 
+    @property
     def is_executable(self):
         """
         Returns ``True`` if file has executable flag turned on.
@@ -432,7 +435,7 @@ class RemovedFileNode(FileNode):
     RemovedFileNodeError.
     """
     ALLOWED_ATTRIBUTES = [
-        'name', 'path', 'state', 'is_root', 'is_file', 'is_dir', 'kind', 
+        'name', 'path', 'state', 'is_root', 'is_file', 'is_dir', 'kind',
         'added', 'changed', 'not_changed', 'removed'
     ]
 

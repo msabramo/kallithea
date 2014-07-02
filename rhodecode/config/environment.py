@@ -18,8 +18,9 @@ from rhodecode.config.routing import make_map
 from rhodecode.lib import helpers
 from rhodecode.lib.auth import set_available_permissions
 from rhodecode.lib.utils import repo2db_mapper, make_ui, set_rhodecode_config,\
-    load_rcextensions
+    load_rcextensions, check_git_version, set_vcs_config
 from rhodecode.lib.utils2 import engine_from_config, str2bool
+from rhodecode.lib.db_manage import DbManage
 from rhodecode.model import init_model
 from rhodecode.model.scm import ScmModel
 
@@ -72,26 +73,48 @@ def load_environment(global_conf, app_conf, initial=False):
     config['pylons.strict_tmpl_context'] = True
     test = os.path.split(config['__file__'])[-1] == 'test.ini'
     if test:
+        if os.environ.get('TEST_DB'):
+            # swap config if we pass enviroment variable
+            config['sqlalchemy.db1.url'] = os.environ.get('TEST_DB')
+
         from rhodecode.lib.utils import create_test_env, create_test_index
         from rhodecode.tests import  TESTS_TMP_PATH
-        create_test_env(TESTS_TMP_PATH, config)
-        create_test_index(TESTS_TMP_PATH, config, True)
+        # set RC_NO_TMP_PATH=1 to disable re-creating the database and
+        # test repos
+        if not int(os.environ.get('RC_NO_TMP_PATH', 0)):
+            create_test_env(TESTS_TMP_PATH, config)
+        # set RC_WHOOSH_TEST_DISABLE=1 to disable whoosh index during tests
+        if not int(os.environ.get('RC_WHOOSH_TEST_DISABLE', 0)):
+            create_test_index(TESTS_TMP_PATH, config, True)
 
+    DbManage.check_waitress()
     # MULTIPLE DB configs
     # Setup the SQLAlchemy database engine
     sa_engine_db1 = engine_from_config(config, 'sqlalchemy.db1.')
-
     init_model(sa_engine_db1)
 
-    repos_path = make_ui('db').configitems('paths')[0][1]
-    repo2db_mapper(ScmModel().repo_scan(repos_path))
     set_available_permissions(config)
+    repos_path = make_ui('db').configitems('paths')[0][1]
     config['base_path'] = repos_path
     set_rhodecode_config(config)
+
+    instance_id = rhodecode.CONFIG.get('instance_id')
+    if instance_id == '*':
+        instance_id = '%s-%s' % (os.uname()[1], os.getpid())
+        rhodecode.CONFIG['instance_id'] = instance_id
+
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
 
     # store config reference into our module to skip import magic of
     # pylons
     rhodecode.CONFIG.update(config)
+    set_vcs_config(rhodecode.CONFIG)
+
+    #check git version
+    check_git_version()
+
+    if str2bool(config.get('initial_repo_scan', True)):
+        repo2db_mapper(ScmModel().repo_scan(repos_path),
+                       remove_obsolete=False, install_git_hook=False)
     return config

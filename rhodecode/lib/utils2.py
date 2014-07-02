@@ -23,10 +23,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import re
-from datetime import datetime
+import sys
+import time
+import uuid
+import datetime
+import traceback
+import webob
+
 from pylons.i18n.translation import _, ungettext
 from rhodecode.lib.vcs.utils.lazy import LazyProperty
+from rhodecode.lib.compat import json
 
 
 def __get_lem():
@@ -63,6 +71,7 @@ def __get_lem():
 
     return dict(d)
 
+
 def str2bool(_str):
     """
     returs True/False value from given string, it tries to translate the
@@ -78,6 +87,27 @@ def str2bool(_str):
         return _str
     _str = str(_str).strip().lower()
     return _str in ('t', 'true', 'y', 'yes', 'on', '1')
+
+
+def aslist(obj, sep=None, strip=True):
+    """
+    Returns given string separated by sep as list
+
+    :param obj:
+    :param sep:
+    :param strip:
+    """
+    if isinstance(obj, (basestring)):
+        lst = obj.split(sep)
+        if strip:
+            lst = [v.strip() for v in lst]
+        return lst
+    elif isinstance(obj, (list, tuple)):
+        return obj
+    elif obj is None:
+        return []
+    else:
+        return [obj]
 
 
 def convert_line_endings(line, mode):
@@ -146,6 +176,23 @@ def generate_api_key(username, salt=None):
     return hashlib.sha1(username + salt).hexdigest()
 
 
+def safe_int(val, default=None):
+    """
+    Returns int() of val if val is not convertable to int use default
+    instead
+
+    :param val:
+    :param default:
+    """
+
+    try:
+        val = int(val)
+    except (ValueError, TypeError):
+        val = default
+
+    return val
+
+
 def safe_unicode(str_, from_encoding=None):
     """
     safe unicode function. Does few trick to turn str_ into unicode
@@ -162,18 +209,23 @@ def safe_unicode(str_, from_encoding=None):
 
     if not from_encoding:
         import rhodecode
-        DEFAULT_ENCODING = rhodecode.CONFIG.get('default_encoding','utf8')
-        from_encoding = DEFAULT_ENCODING
+        DEFAULT_ENCODINGS = aslist(rhodecode.CONFIG.get('default_encoding',
+                                                        'utf8'), sep=',')
+        from_encoding = DEFAULT_ENCODINGS
+
+    if not isinstance(from_encoding, (list, tuple)):
+        from_encoding = [from_encoding]
 
     try:
         return unicode(str_)
     except UnicodeDecodeError:
         pass
 
-    try:
-        return unicode(str_, from_encoding)
-    except UnicodeDecodeError:
-        pass
+    for enc in from_encoding:
+        try:
+            return unicode(str_, enc)
+        except UnicodeDecodeError:
+            pass
 
     try:
         import chardet
@@ -182,7 +234,7 @@ def safe_unicode(str_, from_encoding=None):
             raise Exception()
         return str_.decode(encoding)
     except (ImportError, UnicodeDecodeError, Exception):
-        return unicode(str_, from_encoding, 'replace')
+        return unicode(str_, from_encoding[0], 'replace')
 
 
 def safe_str(unicode_, to_encoding=None):
@@ -206,13 +258,18 @@ def safe_str(unicode_, to_encoding=None):
 
     if not to_encoding:
         import rhodecode
-        DEFAULT_ENCODING = rhodecode.CONFIG.get('default_encoding','utf8')
-        to_encoding = DEFAULT_ENCODING
+        DEFAULT_ENCODINGS = aslist(rhodecode.CONFIG.get('default_encoding',
+                                                        'utf8'), sep=',')
+        to_encoding = DEFAULT_ENCODINGS
 
-    try:
-        return unicode_.encode(to_encoding)
-    except UnicodeEncodeError:
-        pass
+    if not isinstance(to_encoding, (list, tuple)):
+        to_encoding = [to_encoding]
+
+    for enc in to_encoding:
+        try:
+            return unicode_.encode(enc)
+        except UnicodeEncodeError:
+            pass
 
     try:
         import chardet
@@ -222,9 +279,19 @@ def safe_str(unicode_, to_encoding=None):
 
         return unicode_.encode(encoding)
     except (ImportError, UnicodeEncodeError):
-        return unicode_.encode(to_encoding, 'replace')
+        return unicode_.encode(to_encoding[0], 'replace')
 
-    return safe_str
+
+def remove_suffix(s, suffix):
+    if s.endswith(suffix):
+        s = s[:-1 * len(suffix)]
+    return s
+
+
+def remove_prefix(s, prefix):
+    if s.startswith(prefix):
+        s = s[len(prefix):]
+    return s
 
 
 def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
@@ -272,7 +339,6 @@ def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
                 context._query_start_time = time.time()
                 log.info(color_sql(">>>>> STARTING QUERY >>>>>"))
 
-
             def after_cursor_execute(conn, cursor, statement,
                                     parameters, context, executemany):
                 total = time.time() - context._query_start_time
@@ -286,26 +352,35 @@ def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
     return engine
 
 
-def age(prevdate):
+def age(prevdate, show_short_version=False, now=None):
     """
     turns a datetime into an age string.
+    If show_short_version is True, then it will generate a not so accurate but shorter string,
+    example: 2days ago, instead of 2 days and 23 hours ago.
 
     :param prevdate: datetime object
+    :param show_short_version: if it should aproximate the date and return a shorter string
     :rtype: unicode
     :returns: unicode words describing age
     """
-
+    now = now or datetime.datetime.now()
     order = ['year', 'month', 'day', 'hour', 'minute', 'second']
     deltas = {}
+    future = False
 
+    if prevdate > now:
+        now, prevdate = prevdate, now
+        future = True
+    if future:
+        prevdate = prevdate.replace(microsecond=0)
     # Get date parts deltas
-    now = datetime.now()
+    from dateutil import relativedelta
     for part in order:
-        deltas[part] = getattr(now, part) - getattr(prevdate, part)
+        d = relativedelta.relativedelta(now, prevdate)
+        deltas[part] = getattr(d, part + 's')
 
     # Fix negative offsets (there is 1 second between 10:59:59 and 11:00:00,
     # not 1 hour, -59 minutes and -59 seconds)
-
     for num, length in [(5, 60), (4, 60), (3, 24)]:  # seconds, minutes, hours
         part = order[num]
         carry_part = order[num - 1]
@@ -351,11 +426,17 @@ def age(prevdate):
         else:
             sub_value = 0
 
-        if sub_value == 0:
-            return _(u'%s ago') % fmt_funcs[part](value)
-
-        return _(u'%s and %s ago') % (fmt_funcs[part](value),
-            fmt_funcs[sub_part](sub_value))
+        if sub_value == 0 or show_short_version:
+            if future:
+                return _(u'in %s') % fmt_funcs[part](value)
+            else:
+                return _(u'%s ago') % fmt_funcs[part](value)
+        if future:
+            return _(u'in %s and %s') % (fmt_funcs[part](value),
+                fmt_funcs[sub_part](sub_value))
+        else:
+            return _(u'%s and %s ago') % (fmt_funcs[part](value),
+                fmt_funcs[sub_part](sub_value))
 
     return _(u'just now')
 
@@ -417,6 +498,7 @@ def get_changeset_safe(repo, rev):
     """
     from rhodecode.lib.vcs.backends.base import BaseRepository
     from rhodecode.lib.vcs.exceptions import RepositoryError
+    from rhodecode.lib.vcs.backends.base import EmptyChangeset
     if not isinstance(repo, BaseRepository):
         raise Exception('You must pass an Repository '
                         'object as first argument got %s', type(repo))
@@ -424,10 +506,23 @@ def get_changeset_safe(repo, rev):
     try:
         cs = repo.get_changeset(rev)
     except RepositoryError:
-        from rhodecode.lib.utils import EmptyChangeset
         cs = EmptyChangeset(requested_revision=rev)
     return cs
 
+
+def datetime_to_time(dt):
+    if dt:
+        return time.mktime(dt.timetuple())
+
+
+def time_to_datetime(tm):
+    if tm:
+        if isinstance(tm, basestring):
+            try:
+                tm = float(tm)
+            except ValueError:
+                return
+        return datetime.datetime.fromtimestamp(tm)
 
 MENTIONS_REGEX = r'(?:^@|\s@)([a-zA-Z0-9]{1}[a-zA-Z0-9\-\_\.]+)(?:\s{1})'
 
@@ -443,3 +538,118 @@ def extract_mentioned_users(s):
         usrs.add(username)
 
     return sorted(list(usrs), key=lambda k: k.lower())
+
+
+class AttributeDict(dict):
+    def __getattr__(self, attr):
+        return self.get(attr, None)
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+
+def fix_PATH(os_=None):
+    """
+    Get current active python path, and append it to PATH variable to fix issues
+    of subprocess calls and different python versions
+    """
+    if os_ is None:
+        import os
+    else:
+        os = os_
+
+    cur_path = os.path.split(sys.executable)[0]
+    if not os.environ['PATH'].startswith(cur_path):
+        os.environ['PATH'] = '%s:%s' % (cur_path, os.environ['PATH'])
+
+
+def obfuscate_url_pw(engine):
+    _url = engine or ''
+    from sqlalchemy.engine import url as sa_url
+    try:
+        _url = sa_url.make_url(engine)
+        if _url.password:
+            _url.password = 'XXXXX'
+    except Exception:
+        pass
+    return str(_url)
+
+
+def get_server_url(environ):
+    req = webob.Request(environ)
+    return req.host_url + req.script_name
+
+
+def _extract_extras(env=None):
+    """
+    Extracts the rc extras data from os.environ, and wraps it into named
+    AttributeDict object
+    """
+    if not env:
+        env = os.environ
+
+    try:
+        rc_extras = json.loads(env['RC_SCM_DATA'])
+    except Exception:
+        print os.environ
+        print >> sys.stderr, traceback.format_exc()
+        rc_extras = {}
+
+    try:
+        for k in ['username', 'repository', 'locked_by', 'scm', 'make_lock',
+                  'action', 'ip']:
+            rc_extras[k]
+    except KeyError, e:
+        raise Exception('Missing key %s in os.environ %s' % (e, rc_extras))
+
+    return AttributeDict(rc_extras)
+
+
+def _set_extras(extras):
+    os.environ['RC_SCM_DATA'] = json.dumps(extras)
+
+
+def unique_id(hexlen=32):
+    alphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjklmnpqrstuvwxyz"
+    return suuid(truncate_to=hexlen, alphabet=alphabet)
+
+
+def suuid(url=None, truncate_to=22, alphabet=None):
+    """
+    Generate and return a short URL safe UUID.
+
+    If the url parameter is provided, set the namespace to the provided
+    URL and generate a UUID.
+
+    :param url to get the uuid for
+    :truncate_to: truncate the basic 22 UUID to shorter version
+
+    The IDs won't be universally unique any longer, but the probability of
+    a collision will still be very low.
+    """
+    # Define our alphabet.
+    _ALPHABET = alphabet or "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+
+    # If no URL is given, generate a random UUID.
+    if url is None:
+        unique_id = uuid.uuid4().int
+    else:
+        unique_id = uuid.uuid3(uuid.NAMESPACE_URL, url).int
+
+    alphabet_length = len(_ALPHABET)
+    output = []
+    while unique_id > 0:
+        digit = unique_id % alphabet_length
+        output.append(_ALPHABET[digit])
+        unique_id = int(unique_id / alphabet_length)
+    return "".join(output)[:truncate_to]
+
+def get_current_rhodecode_user():
+    """
+    Gets rhodecode user from threadlocal tmpl_context variable if it's
+    defined, else returns None.
+    """
+    from pylons import tmpl_context
+    if hasattr(tmpl_context, 'rhodecode_user'):
+        return tmpl_context.rhodecode_user
+
+    return None

@@ -35,24 +35,32 @@ import rhodecode.lib.helpers as h
 
 from rhodecode.lib.helpers import Page
 from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator, \
-    NotAnonymous, HasRepoPermissionAny
+    NotAnonymous, HasRepoPermissionAny, HasPermissionAllDecorator,\
+    HasPermissionAnyDecorator
 from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.model.db import Repository, RepoGroup, UserFollowing, User
+from rhodecode.model.db import Repository, RepoGroup, UserFollowing, User,\
+    RhodeCodeUi
 from rhodecode.model.repo import RepoModel
 from rhodecode.model.forms import RepoForkForm
+from rhodecode.model.scm import ScmModel, RepoGroupList
+from rhodecode.lib.utils2 import safe_int
 
 log = logging.getLogger(__name__)
 
 
 class ForksController(BaseRepoController):
 
-    @LoginRequired()
     def __before__(self):
         super(ForksController, self).__before__()
 
     def __load_defaults(self):
-        c.repo_groups = RepoGroup.groups_choices()
+        acl_groups = RepoGroupList(RepoGroup.query().all(),
+                               perm_set=['group.write', 'group.admin'])
+        c.repo_groups = RepoGroup.groups_choices(groups=acl_groups)
         c.repo_groups_choices = map(lambda k: unicode(k[0]), c.repo_groups)
+        choices, c.landing_revs = ScmModel().get_repo_landing_revs()
+        c.landing_revs_choices = choices
+        c.can_update = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_UPDATE).ui_active
 
     def __load_data(self, repo_name=None):
         """
@@ -66,15 +74,10 @@ class ForksController(BaseRepoController):
         repo = db_repo.scm_instance
 
         if c.repo_info is None:
-            h.flash(_('%s repository is not mapped to db perhaps'
-                      ' it was created or renamed from the filesystem'
-                      ' please run the application again'
-                      ' in order to rescan repositories') % repo_name,
-                      category='error')
-
+            h.not_mapped_error(repo_name)
             return redirect(url('repos'))
 
-        c.default_user_id = User.get_by_username('default').user_id
+        c.default_user_id = User.get_default_user().user_id
         c.in_public_journal = UserFollowing.query()\
             .filter(UserFollowing.user_id == c.default_user_id)\
             .filter(UserFollowing.follows_repository == c.repo_info).scalar()
@@ -94,14 +97,20 @@ class ForksController(BaseRepoController):
                                             c.repo_last_rev) * 100)
 
         defaults = RepoModel()._get_defaults(repo_name)
-        # add prefix to fork
-        defaults['repo_name'] = 'fork-' + defaults['repo_name']
+        # alter the description to indicate a fork
+        defaults['description'] = ('fork of repository: %s \n%s'
+                                   % (defaults['repo_name'],
+                                      defaults['description']))
+        # add suffix to fork
+        defaults['repo_name'] = '%s-fork' % defaults['repo_name']
+
         return defaults
 
+    @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def forks(self, repo_name):
-        p = int(request.params.get('page', 1))
+        p = safe_int(request.GET.get('page', 1), 1)
         repo_id = c.rhodecode_db_repo.repo_id
         d = []
         for r in Repository.get_repo_forks(repo_id):
@@ -119,18 +128,15 @@ class ForksController(BaseRepoController):
 
         return render('/forks/forks.html')
 
+    @LoginRequired()
     @NotAnonymous()
+    @HasPermissionAnyDecorator('hg.admin', 'hg.fork.repository')
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def fork(self, repo_name):
         c.repo_info = Repository.get_by_repo_name(repo_name)
         if not c.repo_info:
-            h.flash(_('%s repository is not mapped to db perhaps'
-                      ' it was created or renamed from the file system'
-                      ' please run the application again'
-                      ' in order to rescan repositories') % repo_name,
-                      category='error')
-
+            h.not_mapped_error(repo_name)
             return redirect(url('home'))
 
         defaults = self.__load_data(repo_name)
@@ -142,26 +148,33 @@ class ForksController(BaseRepoController):
             force_defaults=False
         )
 
-
+    @LoginRequired()
     @NotAnonymous()
+    @HasPermissionAnyDecorator('hg.admin', 'hg.fork.repository')
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def fork_create(self, repo_name):
         self.__load_defaults()
         c.repo_info = Repository.get_by_repo_name(repo_name)
         _form = RepoForkForm(old_data={'repo_type': c.repo_info.repo_type},
-                             repo_groups=c.repo_groups_choices,)()
+                             repo_groups=c.repo_groups_choices,
+                             landing_revs=c.landing_revs_choices)()
         form_result = {}
         try:
             form_result = _form.to_python(dict(request.POST))
-            # add org_path of repo so we can do a clone from it later
-            form_result['org_path'] = c.repo_info.repo_name
+
+            # an approximation that is better than nothing
+            if not RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_UPDATE).ui_active:
+                form_result['update_after_clone'] = False
 
             # create fork is done sometimes async on celery, db transaction
             # management is handled there.
-            RepoModel().create_fork(form_result, self.rhodecode_user)
-            h.flash(_('forked %s repository as %s') \
-                      % (repo_name, form_result['repo_name']),
+            RepoModel().create_fork(form_result, self.rhodecode_user.user_id)
+            fork_url = h.link_to(form_result['repo_name_full'],
+                    h.url('summary_home', repo_name=form_result['repo_name_full']))
+
+            h.flash(h.literal(_('Forked repository %s as %s') \
+                      % (repo_name, fork_url)),
                     category='success')
         except formencode.Invalid, errors:
             c.new_repo = errors.value['repo_name']
@@ -177,4 +190,4 @@ class ForksController(BaseRepoController):
             h.flash(_('An error occurred during repository forking %s') %
                     repo_name, category='error')
 
-        return redirect(url('home'))
+        return redirect(h.url('summary_home', repo_name=repo_name))

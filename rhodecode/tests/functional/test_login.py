@@ -3,18 +3,18 @@ from rhodecode.tests import *
 from rhodecode.model.db import User, Notification
 from rhodecode.lib.utils2 import generate_api_key
 from rhodecode.lib.auth import check_password
-from rhodecode.model.meta import Session
 from rhodecode.lib import helpers as h
 from rhodecode.model import validators
+from rhodecode.model.meta import Session
 
 
 class TestLoginController(TestController):
 
     def tearDown(self):
         for n in Notification.query().all():
-            Session.delete(n)
+            Session().delete(n)
 
-        Session.commit()
+        Session().commit()
         self.assertEqual(Notification.query().all(), [])
 
     def test_index(self):
@@ -30,7 +30,7 @@ class TestLoginController(TestController):
         self.assertEqual(response.session['rhodecode_user'].get('username'),
                          'test_admin')
         response = response.follow()
-        self.assertTrue('%s repository' % HG_REPO in response.body)
+        response.mustcontain('/%s' % HG_REPO)
 
     def test_login_regular_ok(self):
         response = self.app.post(url(controller='login', action='index'),
@@ -41,8 +41,7 @@ class TestLoginController(TestController):
         self.assertEqual(response.session['rhodecode_user'].get('username'),
                          'test_regular')
         response = response.follow()
-        self.assertTrue('%s repository' % HG_REPO in response.body)
-        self.assertTrue('<a title="Admin" href="/_admin">' not in response.body)
+        response.mustcontain('/%s' % HG_REPO)
 
     def test_login_ok_came_from(self):
         test_came_from = '/_admin/users'
@@ -54,7 +53,26 @@ class TestLoginController(TestController):
         response = response.follow()
 
         self.assertEqual(response.status, '200 OK')
-        self.assertTrue('Users administration' in response.body)
+        response.mustcontain('Users administration')
+
+    @parameterized.expand([
+          ('data:text/html,<script>window.alert("xss")</script>',),
+          ('mailto:test@rhodecode.org',),
+          ('file:///etc/passwd',),
+          ('ftp://some.ftp.server',),
+          ('http://other.domain',),
+    ])
+    def test_login_bad_came_froms(self, url_came_from):
+        response = self.app.post(url(controller='login', action='index',
+                                     came_from=url_came_from),
+                                 {'username': 'test_admin',
+                                  'password': 'test12'})
+        self.assertEqual(response.status, '302 Found')
+        self.assertEqual(response._environ['paste.testing_variables']
+                         ['tmpl_context'].came_from, '/')
+        response = response.follow()
+
+        self.assertEqual(response.status, '200 OK')
 
     def test_login_short_password(self):
         response = self.app.post(url(controller='login', action='index'),
@@ -62,22 +80,22 @@ class TestLoginController(TestController):
                                   'password': 'as'})
         self.assertEqual(response.status, '200 OK')
 
-        self.assertTrue('Enter 3 characters or more' in response.body)
+        response.mustcontain('Enter 3 characters or more')
 
     def test_login_wrong_username_password(self):
         response = self.app.post(url(controller='login', action='index'),
                                  {'username': 'error',
                                   'password': 'test12'})
 
-        self.assertTrue('invalid user name' in response.body)
-        self.assertTrue('invalid password' in response.body)
+        response.mustcontain('invalid user name')
+        response.mustcontain('invalid password')
 
     #==========================================================================
     # REGISTRATIONS
     #==========================================================================
     def test_register(self):
         response = self.app.get(url(controller='login', action='register'))
-        self.assertTrue('Sign Up to RhodeCode' in response.body)
+        response.mustcontain('Sign Up to RhodeCode')
 
     def test_register_err_same_username(self):
         uname = 'test_admin'
@@ -86,7 +104,7 @@ class TestLoginController(TestController):
                                              'password': 'test12',
                                              'password_confirmation': 'test12',
                                              'email': 'goodmail@domain.com',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
 
         msg = validators.ValidUsername()._messages['username_exists']
@@ -99,7 +117,7 @@ class TestLoginController(TestController):
                                              'password': 'test12',
                                              'password_confirmation': 'test12',
                                              'email': 'test_admin@mail.com',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
 
         msg = validators.UniqSystemEmail()()._messages['email_taken']
@@ -111,7 +129,7 @@ class TestLoginController(TestController):
                                              'password': 'test12',
                                              'password_confirmation': 'test12',
                                              'email': 'TesT_Admin@mail.COM',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
         msg = validators.UniqSystemEmail()()._messages['email_taken']
         response.mustcontain(msg)
@@ -122,7 +140,7 @@ class TestLoginController(TestController):
                                              'password': 'test',
                                              'password_confirmation': 'test',
                                              'email': 'goodmailm',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
         self.assertEqual(response.status, '200 OK')
         response.mustcontain('An email address must contain a single @')
@@ -134,7 +152,7 @@ class TestLoginController(TestController):
                                              'password': 'test12',
                                              'password_confirmation': 'test12',
                                              'email': 'goodmailm',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
 
         response.mustcontain('An email address must contain a single @')
@@ -150,7 +168,7 @@ class TestLoginController(TestController):
                                              'password': 'test12',
                                              'password_confirmation': 'test12',
                                              'email': 'goodmailm',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
 
         response.mustcontain('An email address must contain a single @')
@@ -164,7 +182,7 @@ class TestLoginController(TestController):
                                          'password': 'ąćźżąśśśś',
                                          'password_confirmation': 'ąćźżąśśśś',
                                          'email': 'goodmailm@test.plx',
-                                         'name': 'test',
+                                         'firstname': 'test',
                                          'lastname': 'test'})
 
         msg = validators.ValidPassword()._messages['invalid_password']
@@ -176,7 +194,7 @@ class TestLoginController(TestController):
                                              'password': '123qwe',
                                              'password_confirmation': 'qwe123',
                                              'email': 'goodmailm@test.plxa',
-                                             'name': 'test',
+                                             'firstname': 'test',
                                              'lastname': 'test'})
         msg = validators.ValidPasswordsMatch()._messages['password_mismatch']
         response.mustcontain(msg)
@@ -193,13 +211,13 @@ class TestLoginController(TestController):
                                              'password': password,
                                              'password_confirmation': password,
                                              'email': email,
-                                             'name': name,
+                                             'firstname': name,
                                              'lastname': lastname,
                                              'admin': True})  # This should be overriden
         self.assertEqual(response.status, '302 Found')
-        self.checkSessionFlash(response, 'You have successfully registered into rhodecode')
+        self.checkSessionFlash(response, 'You have successfully registered into RhodeCode')
 
-        ret = self.Session.query(User).filter(User.username == 'test_regular4').one()
+        ret = Session().query(User).filter(User.username == 'test_regular4').one()
         self.assertEqual(ret.username, username)
         self.assertEqual(check_password(password, ret.password), True)
         self.assertEqual(ret.email, email)
@@ -237,8 +255,8 @@ class TestLoginController(TestController):
         new.name = name
         new.lastname = lastname
         new.api_key = generate_api_key(username)
-        self.Session.add(new)
-        self.Session.commit()
+        Session().add(new)
+        Session().commit()
 
         response = self.app.post(url(controller='login',
                                      action='password_reset'),

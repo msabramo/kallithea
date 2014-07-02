@@ -1,8 +1,9 @@
 import datetime
 import functools
 import decimal
+import imp
 
-__all__ = ['json', 'simplejson', 'stdjson']
+__all__ = ['json', 'simplejson', 'stdlibjson']
 
 
 def _is_aware(value):
@@ -60,7 +61,7 @@ def _obj_dump(obj):
 # Import simplejson
 try:
     # import simplejson initially
-    import simplejson as _sj
+    _sj = imp.load_module('_sj', *imp.find_module('simplejson'))
 
     def extended_encode(obj):
         try:
@@ -70,20 +71,31 @@ try:
         raise TypeError("%r is not JSON serializable" % (obj,))
     # we handle decimals our own it makes unified behavior of json vs
     # simplejson
-    _sj.dumps = functools.partial(_sj.dumps, default=extended_encode,
-                                  use_decimal=False)
-    _sj.dump = functools.partial(_sj.dump, default=extended_encode,
-                                 use_decimal=False)
+    sj_version = [int(x) for x in _sj.__version__.split('.')]
+    major, minor = sj_version[0], sj_version[1]
+    if major < 2 or (major == 2 and minor < 1):
+        # simplejson < 2.1 doesnt support use_decimal
+        _sj.dumps = functools.partial(_sj.dumps,
+                                             default=extended_encode)
+        _sj.dump = functools.partial(_sj.dump,
+                                            default=extended_encode)
+    else:
+        _sj.dumps = functools.partial(_sj.dumps,
+                                             default=extended_encode,
+                                             use_decimal=False)
+        _sj.dump = functools.partial(_sj.dump,
+                                            default=extended_encode,
+                                            use_decimal=False)
     simplejson = _sj
 
 except ImportError:
     # no simplejson set it to None
-    _sj = None
+    simplejson = None
 
 
 try:
     # simplejson not found try out regular json module
-    import json as _json
+    _json = imp.load_module('_json', *imp.find_module('json'))
 
     # extended JSON encoder for json
     class ExtendedEncoder(_json.JSONEncoder):
@@ -92,15 +104,19 @@ try:
                 return _obj_dump(obj)
             except NotImplementedError:
                 pass
-            return _json.JSONEncoder.default(self, obj)
+            raise TypeError("%r is not JSON serializable" % (obj,))
     # monkey-patch JSON encoder to use extended version
     _json.dumps = functools.partial(_json.dumps, cls=ExtendedEncoder)
     _json.dump = functools.partial(_json.dump, cls=ExtendedEncoder)
-    stdlib = _json
+
+    stdlibjson = _json
 except ImportError:
-    _json = None
+    stdlibjson = None
 
 # set all available json modules
-simplejson = _sj
-stdjson = _json
-json = _sj if _sj else _json
+if simplejson:
+    json = _sj
+elif stdlibjson:
+    json = _json
+else:
+    raise ImportError('Could not find any json modules')

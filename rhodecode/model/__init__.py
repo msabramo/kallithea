@@ -42,8 +42,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from rhodecode.model.db import User, Repository, Permission
 from rhodecode.model import meta
+from rhodecode.lib.utils2 import safe_str, obfuscate_url_pw
 
 log = logging.getLogger(__name__)
 
@@ -56,7 +56,8 @@ def init_model(engine):
 
     :param engine: engine to bind to
     """
-    log.info("initializing db for %s" % engine)
+    engine_str = obfuscate_url_pw(str(engine.url))
+    log.info("initializing db for %s" % engine_str)
     meta.Base.metadata.bind = engine
 
 
@@ -68,15 +69,17 @@ class BaseModel(object):
     :param sa: If passed it reuses this session instead of creating a new one
     """
 
+    cls = None  # override in child class
+
     def __init__(self, sa=None):
         if sa is not None:
             self.sa = sa
         else:
-            self.sa = meta.Session
+            self.sa = meta.Session()
 
     def _get_instance(self, cls, instance, callback=None):
         """
-        Get's instance of given cls using some simple lookup mechanism.
+        Gets instance of given cls using some simple lookup mechanism.
 
         :param cls: class to fetch
         :param instance: int or Instance
@@ -85,7 +88,7 @@ class BaseModel(object):
 
         if isinstance(instance, cls):
             return instance
-        elif isinstance(instance, (int, long)) or str(instance).isdigit():
+        elif isinstance(instance, (int, long)) or safe_str(instance).isdigit():
             return cls.get(instance)
         else:
             if instance:
@@ -101,9 +104,9 @@ class BaseModel(object):
         """
         Helper method to get user by ID, or username fallback
 
-        :param user:
-        :type user: UserID, username, or User instance
+        :param user: UserID, username, or User instance
         """
+        from rhodecode.model.db import User
         return self._get_instance(User, user,
                                   callback=User.get_by_username)
 
@@ -111,9 +114,9 @@ class BaseModel(object):
         """
         Helper method to get repository by ID, or repository name
 
-        :param repository:
-        :type repository: RepoID, repository name or Repository Instance
+        :param repository: RepoID, repository name or Repository Instance
         """
+        from rhodecode.model.db import Repository
         return self._get_instance(Repository, repository,
                                   callback=Repository.get_by_repo_name)
 
@@ -121,8 +124,14 @@ class BaseModel(object):
         """
         Helper method to get permission by ID, or permission name
 
-        :param permission:
-        :type permission: PermissionID, permission_name or Permission instance
+        :param permission: PermissionID, permission_name or Permission instance
         """
+        from rhodecode.model.db import Permission
         return self._get_instance(Permission, permission,
                                   callback=Permission.get_by_key)
+
+    def get_all(self):
+        """
+        Returns all instances of what is defined in `cls` class variable
+        """
+        return self.cls.getAll()

@@ -1,27 +1,28 @@
 from rhodecode.tests import *
 from rhodecode.model.db import ChangesetComment, Notification, User, \
     UserNotification
+from rhodecode.model.meta import Session
 
 
 class TestChangeSetCommentsController(TestController):
 
     def setUp(self):
         for x in ChangesetComment.query().all():
-            self.Session.delete(x)
-        self.Session.commit()
+            Session().delete(x)
+        Session().commit()
 
         for x in Notification.query().all():
-            self.Session.delete(x)
-        self.Session.commit()
+            Session().delete(x)
+        Session().commit()
 
     def tearDown(self):
         for x in ChangesetComment.query().all():
-            self.Session.delete(x)
-        self.Session.commit()
+            Session().delete(x)
+        Session().commit()
 
         for x in Notification.query().all():
-            self.Session.delete(x)
-        self.Session.commit()
+            Session().delete(x)
+        Session().commit()
 
     def test_create(self):
         self.log_user()
@@ -121,7 +122,7 @@ class TestChangeSetCommentsController(TestController):
         self.assertEqual(Notification.query().count(), 2)
         users = [x.user.username for x in UserNotification.query().all()]
 
-        # test_regular get's notification by @mention
+        # test_regular gets notification by @mention
         self.assertEqual(sorted(users), [u'test_admin', u'test_regular'])
 
     def test_delete(self):

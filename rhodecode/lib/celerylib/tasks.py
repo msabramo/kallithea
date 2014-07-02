@@ -50,6 +50,7 @@ from rhodecode.lib.compat import json, OrderedDict
 from rhodecode.lib.hooks import log_create_repository
 
 from rhodecode.model.db import Statistics, Repository, User
+from rhodecode.model.scm import ScmModel
 
 
 add_cache(config)
@@ -86,12 +87,12 @@ def whoosh_index(repo_location, full_index):
 
 @task(ignore_result=True)
 @dbsession
-def get_commits_stats(repo_name, ts_min_y, ts_max_y):
+def get_commits_stats(repo_name, ts_min_y, ts_max_y, recurse_limit=100):
     log = get_logger(get_commits_stats)
     DBS = get_session()
     lockkey = __get_lockkey('get_commits_stats', repo_name, ts_min_y,
                             ts_max_y)
-    lockkey_path = config['here']
+    lockkey_path = config['app_conf']['cache_dir']
 
     log.info('running task with lockkey %s' % lockkey)
 
@@ -159,9 +160,9 @@ def get_commits_stats(repo_name, ts_min_y, ts_max_y):
                          co_day_auth_aggr[akc(cs.author)]['data']]
                     time_pos = l.index(k)
                 except ValueError:
-                    time_pos = False
+                    time_pos = None
 
-                if time_pos >= 0 and time_pos is not False:
+                if time_pos >= 0 and time_pos is not None:
 
                     datadict = \
                         co_day_auth_aggr[akc(cs.author)]['data'][time_pos]
@@ -239,83 +240,21 @@ def get_commits_stats(repo_name, ts_min_y, ts_max_y):
         lock.release()
 
         # execute another task if celery is enabled
-        if len(repo.revisions) > 1 and CELERY_ON:
-            run_task(get_commits_stats, repo_name, ts_min_y, ts_max_y)
+        if len(repo.revisions) > 1 and CELERY_ON and recurse_limit > 0:
+            recurse_limit -= 1
+            run_task(get_commits_stats, repo_name, ts_min_y, ts_max_y,
+                     recurse_limit)
+        if recurse_limit <= 0:
+            log.debug('Breaking recursive mode due to reach of recurse limit')
         return True
     except LockHeld:
         log.info('LockHeld')
         return 'Task with key %s already running' % lockkey
 
-@task(ignore_result=True)
-@dbsession
-def send_password_link(user_email):
-    from rhodecode.model.notification import EmailNotificationModel
-
-    log = get_logger(send_password_link)
-    DBS = get_session()
-
-    try:
-        user = User.get_by_email(user_email)
-        if user:
-            log.debug('password reset user found %s' % user)
-            link = url('reset_password_confirmation', key=user.api_key,
-                       qualified=True)
-            reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
-            body = EmailNotificationModel().get_email_tmpl(reg_type,
-                                                **{'user':user.short_contact,
-                                                   'reset_url':link})
-            log.debug('sending email')
-            run_task(send_email, user_email,
-                     _("password reset link"), body)
-            log.info('send new password mail to %s' % user_email)
-        else:
-            log.debug("password reset email %s not found" % user_email)
-    except:
-        log.error(traceback.format_exc())
-        return False
-
-    return True
 
 @task(ignore_result=True)
 @dbsession
-def reset_user_password(user_email):
-    from rhodecode.lib import auth
-
-    log = get_logger(reset_user_password)
-    DBS = get_session()
-
-    try:
-        try:
-            user = User.get_by_email(user_email)
-            new_passwd = auth.PasswordGenerator().gen_password(8,
-                             auth.PasswordGenerator.ALPHABETS_BIG_SMALL)
-            if user:
-                user.password = auth.get_crypt_password(new_passwd)
-                user.api_key = auth.generate_api_key(user.username)
-                DBS.add(user)
-                DBS.commit()
-                log.info('change password for %s' % user_email)
-            if new_passwd is None:
-                raise Exception('unable to generate new password')
-        except:
-            log.error(traceback.format_exc())
-            DBS.rollback()
-
-        run_task(send_email, user_email,
-                 'Your new password',
-                 'Your new RhodeCode password:%s' % (new_passwd))
-        log.info('send new password mail to %s' % user_email)
-
-    except:
-        log.error('Failed to update user password')
-        log.error(traceback.format_exc())
-
-    return True
-
-
-@task(ignore_result=True)
-@dbsession
-def send_email(recipients, subject, body, html_body=''):
+def send_email(recipients, subject, body='', html_body=''):
     """
     Sends an email with defined parameters from the .ini files.
 
@@ -343,8 +282,12 @@ def send_email(recipients, subject, body, html_body=''):
     mail_port = email_config.get('smtp_port')
     tls = str2bool(email_config.get('smtp_use_tls'))
     ssl = str2bool(email_config.get('smtp_use_ssl'))
-    debug = str2bool(config.get('debug'))
+    debug = str2bool(email_config.get('debug'))
     smtp_auth = email_config.get('smtp_auth')
+
+    if not mail_server:
+        log.error("SMTP mail server not configured - cannot send mail")
+        return False
 
     try:
         m = SmtpMailer(mail_from, user, passwd, mail_server, smtp_auth,
@@ -367,37 +310,64 @@ def create_repo_fork(form_data, cur_user):
     :param cur_user:
     """
     from rhodecode.model.repo import RepoModel
+    from rhodecode.model.user import UserModel
 
     log = get_logger(create_repo_fork)
     DBS = get_session()
 
     base_path = Repository.base_path()
+    cur_user = UserModel(DBS)._get_user(cur_user)
 
-    fork_repo = RepoModel(DBS).create(form_data, cur_user,
-                                      just_db=True, fork=True)
-
-    alias = form_data['repo_type']
-    org_repo_name = form_data['org_path']
     fork_name = form_data['repo_name_full']
+    repo_type = form_data['repo_type']
+    description = form_data['description']
+    owner = cur_user
+    private = form_data['private']
+    clone_uri = form_data.get('clone_uri')
+    repos_group = form_data['repo_group']
+    landing_rev = form_data['landing_rev']
+    copy_fork_permissions = form_data.get('copy_permissions')
+    fork_of = RepoModel(DBS)._get_repo(form_data.get('fork_parent_id'))
+
+    fork_repo = RepoModel(DBS).create_repo(
+        fork_name, repo_type, description, owner, private, clone_uri,
+        repos_group, landing_rev, just_db=True, fork_of=fork_of,
+        copy_fork_permissions=copy_fork_permissions
+    )
+
     update_after_clone = form_data['update_after_clone']
-    source_repo_path = os.path.join(base_path, org_repo_name)
+
+    source_repo_path = os.path.join(base_path, fork_of.repo_name)
     destination_fork_path = os.path.join(base_path, fork_name)
 
     log.info('creating fork of %s as %s', source_repo_path,
              destination_fork_path)
-    backend = get_backend(alias)
-    backend(safe_str(destination_fork_path), create=True,
-            src_url=safe_str(source_repo_path),
-            update_after_clone=update_after_clone)
+    backend = get_backend(repo_type)
+
+    if repo_type == 'git':
+        r = backend(safe_str(destination_fork_path), create=True,
+                src_url=safe_str(source_repo_path),
+                update_after_clone=update_after_clone,
+                bare=True)
+        # add rhodecode hook into this repo
+        ScmModel().install_git_hook(repo=r)
+    elif repo_type == 'hg':
+        r = backend(safe_str(destination_fork_path), create=True,
+                src_url=safe_str(source_repo_path),
+                update_after_clone=update_after_clone)
+    else:
+        raise Exception('Unknown backend type %s' % repo_type)
+
     log_create_repository(fork_repo.get_dict(), created_by=cur_user.username)
 
     action_logger(cur_user, 'user_forked_repo:%s' % fork_name,
-                   org_repo_name, '', DBS)
+                   fork_of.repo_name, '', DBS)
 
     action_logger(cur_user, 'user_created_fork:%s' % fork_name,
                    fork_name, '', DBS)
     # finally commit at latest possible stage
     DBS.commit()
+    fork_repo.update_changeset_cache()
 
 
 def __get_codes_stats(repo_name):

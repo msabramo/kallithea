@@ -6,6 +6,16 @@ command.
 
 This module initializes the application via ``websetup`` (`paster
 setup-app`) and provides the base testing objects.
+
+nosetests -x - fail on first error
+nosetests rhodecode.tests.functional.test_admin_settings:TestSettingsController.test_my_account
+nosetests --pdb --pdb-failures
+nosetests --with-coverage --cover-package=rhodecode.model.validators rhodecode.tests.test_validators
+
+optional FLAGS:
+    RC_WHOOSH_TEST_DISABLE=1 - skip whoosh index building and tests
+    RC_NO_TMP_PATH=1 - disable new temp path for tests, used mostly for test_vcs_operations
+
 """
 import os
 import time
@@ -15,21 +25,27 @@ import hashlib
 import tempfile
 from os.path import join as jn
 
-from unittest import TestCase
 from tempfile import _RandomNameSequence
 
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
+
+import pylons
+import pylons.test
 from pylons import config, url
+from pylons.i18n.translation import _get_translator
+from pylons.util import ContextObj
+
 from routes.util import URLGenerator
 from webtest import TestApp
+from nose.plugins.skip import SkipTest
 
+from rhodecode.lib.compat import unittest
 from rhodecode import is_windows
 from rhodecode.model.meta import Session
 from rhodecode.model.db import User
 from rhodecode.tests.nose_parametrized import parameterized
- 
-import pylons.test
+from rhodecode.lib.utils2 import safe_unicode, safe_str
 
 
 os.environ['TZ'] = 'UTC'
@@ -40,22 +56,20 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     'parameterized', 'environ', 'url', 'get_new_dir', 'TestController',
+    'SkipTest', 'ldap_lib_installed', 'BaseTestCase', 'init_stack',
     'TESTS_TMP_PATH', 'HG_REPO', 'GIT_REPO', 'NEW_HG_REPO', 'NEW_GIT_REPO',
-    'HG_FORK', 'GIT_FORK', 'TEST_USER_ADMIN_LOGIN', 'TEST_USER_REGULAR_LOGIN',
-    'TEST_USER_REGULAR_PASS', 'TEST_USER_REGULAR_EMAIL',
-    'TEST_USER_REGULAR2_LOGIN', 'TEST_USER_REGULAR2_PASS',
-    'TEST_USER_REGULAR2_EMAIL', 'TEST_HG_REPO', 'TEST_HG_REPO_CLONE',
-    'TEST_HG_REPO_PULL', 'TEST_GIT_REPO', 'TEST_GIT_REPO_CLONE',
-    'TEST_GIT_REPO_PULL', 'HG_REMOTE_REPO', 'GIT_REMOTE_REPO', 'SCM_TESTS',
+    'HG_FORK', 'GIT_FORK', 'TEST_USER_ADMIN_LOGIN', 'TEST_USER_ADMIN_PASS',
+    'TEST_USER_REGULAR_LOGIN', 'TEST_USER_REGULAR_PASS',
+    'TEST_USER_REGULAR_EMAIL', 'TEST_USER_REGULAR2_LOGIN',
+    'TEST_USER_REGULAR2_PASS', 'TEST_USER_REGULAR2_EMAIL', 'TEST_HG_REPO',
+    'TEST_HG_REPO_CLONE', 'TEST_HG_REPO_PULL', 'TEST_GIT_REPO',
+    'TEST_GIT_REPO_CLONE', 'TEST_GIT_REPO_PULL', 'HG_REMOTE_REPO',
+    'GIT_REMOTE_REPO', 'SCM_TESTS',
 ]
 
 # Invoke websetup with the current config file
 # SetupCommand('setup-app').run([config_file])
 
-##RUNNING DESIRED TESTS
-# nosetests -x rhodecode.tests.functional.test_admin_settings:TestSettingsController.test_my_account
-# nosetests --pdb --pdb-failures
-# nosetests --with-coverage --cover-package=rhodecode.model.validators rhodecode.tests.test_validators
 environ = {}
 
 #SOME GLOBALS FOR TESTS
@@ -107,6 +121,15 @@ TEST_REPO_PREFIX = 'vcs-test'
 GIT_REMOTE_REPO = jn(TESTS_TMP_PATH, GIT_REPO)
 HG_REMOTE_REPO = jn(TESTS_TMP_PATH, HG_REPO)
 
+#skip ldap tests if LDAP lib is not installed
+ldap_lib_installed = False
+try:
+    import ldap
+    ldap_lib_installed = True
+except ImportError:
+    # means that python-ldap is not installed
+    pass
+
 
 def get_new_dir(title):
     """
@@ -122,17 +145,31 @@ def get_new_dir(title):
     return get_normalized_path(path)
 
 
-class TestController(TestCase):
+def init_stack(config=None):
+    if not config:
+        config = pylons.test.pylonsapp.config
+    url._push_object(URLGenerator(config['routes.map'], environ))
+    pylons.app_globals._push_object(config['pylons.app_globals'])
+    pylons.config._push_object(config)
+    pylons.tmpl_context._push_object(ContextObj())
+    # Initialize a translator for tests that utilize i18n
+    translator = _get_translator(pylons.config.get('lang'))
+    pylons.translator._push_object(translator)
+
+
+class BaseTestCase(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        self.wsgiapp = pylons.test.pylonsapp
+        init_stack(self.wsgiapp.config)
+        unittest.TestCase.__init__(self, *args, **kwargs)
+
+
+class TestController(BaseTestCase):
 
     def __init__(self, *args, **kwargs):
-        wsgiapp = pylons.test.pylonsapp
-        config = wsgiapp.config
-
-        self.app = TestApp(wsgiapp)
-        url._push_object(URLGenerator(config['routes.map'], environ))
-        self.Session = Session
+        BaseTestCase.__init__(self, *args, **kwargs)
+        self.app = TestApp(self.wsgiapp)
         self.index_location = config['app_conf']['index_dir']
-        TestCase.__init__(self, *args, **kwargs)
 
     def log_user(self, username=TEST_USER_ADMIN_LOGIN,
                  password=TEST_USER_ADMIN_PASS):
@@ -156,5 +193,10 @@ class TestController(TestCase):
         return User.get_by_username(self._logged_username)
 
     def checkSessionFlash(self, response, msg):
-        self.assertTrue('flash' in response.session)
-        self.assertTrue(msg in response.session['flash'][0][1])
+        self.assertTrue('flash' in response.session,
+                        msg='Response session:%r have no flash'
+                        % response.session)
+        if not msg in response.session['flash'][0][1]:
+            msg = u'msg `%s` not found in session flash: got `%s` instead' % (
+                      msg, response.session['flash'][0][1])
+            self.fail(safe_str(msg))

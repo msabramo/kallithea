@@ -2,10 +2,12 @@ import os
 import socket
 import logging
 import subprocess
+import traceback
 
 from webob import Request, Response, exc
 
-from rhodecode.lib import subprocessio
+import rhodecode
+from rhodecode.lib.vcs import subprocessio
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class GitRepository(object):
     git_folder_signature = set(['config', 'head', 'info', 'objects', 'refs'])
     commands = ['git-upload-pack', 'git-receive-pack']
 
-    def __init__(self, repo_name, content_path, username):
+    def __init__(self, repo_name, content_path, extras):
         files = set([f.lower() for f in os.listdir(content_path)])
         if  not (self.git_folder_signature.intersection(files)
                 == self.git_folder_signature):
@@ -50,14 +52,13 @@ class GitRepository(object):
         self.valid_accepts = ['application/x-%s-result' %
                               c for c in self.commands]
         self.repo_name = repo_name
-        self.username = username
+        self.extras = extras
 
     def _get_fixedpath(self, path):
         """
         Small fix for repo_path
 
         :param path:
-        :type path:
         """
         return path.split(self.repo_name, 1)[-1].strip('/')
 
@@ -67,7 +68,7 @@ class GitRepository(object):
         HTTP /info/refs request.
         """
 
-        git_command = request.GET['service']
+        git_command = request.GET.get('service')
         if git_command not in self.commands:
             log.debug('command %s not allowed' % git_command)
             return exc.HTTPMethodNotAllowed()
@@ -79,21 +80,23 @@ class GitRepository(object):
         # blows up if you sprinkle "flush" (0000) as "0001\n".
         # It reads binary, per number of bytes specified.
         # if you do add '\n' as part of data, count it.
-        smart_server_advert = '# service=%s' % git_command
+        server_advert = '# service=%s' % git_command
+        packet_len = str(hex(len(server_advert) + 4)[2:].rjust(4, '0')).lower()
+        _git_path = rhodecode.CONFIG.get('git_path', 'git')
         try:
             out = subprocessio.SubprocessIOChunker(
-                r'git %s --stateless-rpc --advertise-refs "%s"' % (
-                                git_command[4:], self.content_path),
+                r'%s %s --stateless-rpc --advertise-refs "%s"' % (
+                            _git_path, git_command[4:], self.content_path),
                 starting_values=[
-                    str(hex(len(smart_server_advert) + 4)[2:]
-                        .rjust(4, '0') + smart_server_advert + '0000')
+                    packet_len + server_advert + '0000'
                 ]
             )
         except EnvironmentError, e:
-            log.exception(e)
+            log.error(traceback.format_exc())
             raise exc.HTTPExpectationFailed()
         resp = Response()
         resp.content_type = 'application/x-%s-advertisement' % str(git_command)
+        resp.charset = None
         resp.app_iter = out
         return resp
 
@@ -117,38 +120,36 @@ class GitRepository(object):
 
         try:
             gitenv = os.environ
-            from rhodecode import CONFIG
-            from rhodecode.lib.base import _get_ip_addr
-            gitenv['RHODECODE_USER'] = self.username
-            gitenv['RHODECODE_CONFIG_IP'] = _get_ip_addr(environ)
             # forget all configs
             gitenv['GIT_CONFIG_NOGLOBAL'] = '1'
-            # we need current .ini file used to later initialize rhodecode
-            # env and connect to db
-            gitenv['RHODECODE_CONFIG_FILE'] = CONFIG['__file__']
             opts = dict(
                 env=gitenv,
                 cwd=os.getcwd()
             )
+            cmd = r'git %s --stateless-rpc "%s"' % (git_command[4:],
+                                                    self.content_path),
+            log.debug('handling cmd %s' % cmd)
             out = subprocessio.SubprocessIOChunker(
-                r'git %s --stateless-rpc "%s"' % (git_command[4:],
-                                                  self.content_path),
+                cmd,
                 inputstream=inputstream,
                 **opts
             )
         except EnvironmentError, e:
-            log.exception(e)
+            log.error(traceback.format_exc())
             raise exc.HTTPExpectationFailed()
 
         if git_command in [u'git-receive-pack']:
             # updating refs manually after each push.
             # Needed for pre-1.7.0.4 git clients using regular HTTP mode.
-            subprocess.call(u'git --git-dir "%s" '
-                            'update-server-info' % self.content_path,
-                            shell=True)
+            _git_path = rhodecode.CONFIG.get('git_path', 'git')
+            cmd = (u'%s --git-dir "%s" '
+                    'update-server-info' % (_git_path, self.content_path))
+            log.debug('handling cmd %s' % cmd)
+            subprocess.call(cmd, shell=True)
 
         resp = Response()
         resp.content_type = 'application/x-%s-result' % git_command.encode('utf8')
+        resp.charset = None
         resp.app_iter = out
         return resp
 
@@ -163,16 +164,16 @@ class GitRepository(object):
             resp = app(request, environ)
         except exc.HTTPException, e:
             resp = e
-            log.exception(e)
+            log.error(traceback.format_exc())
         except Exception, e:
-            log.exception(e)
+            log.error(traceback.format_exc())
             resp = exc.HTTPInternalServerError()
         return resp(environ, start_response)
 
 
 class GitDirectory(object):
 
-    def __init__(self, repo_root, repo_name, username):
+    def __init__(self, repo_root, repo_name, extras):
         repo_location = os.path.join(repo_root, repo_name)
         if not os.path.isdir(repo_location):
             raise OSError(repo_location)
@@ -180,20 +181,20 @@ class GitDirectory(object):
         self.content_path = repo_location
         self.repo_name = repo_name
         self.repo_location = repo_location
-        self.username = username
+        self.extras = extras
 
     def __call__(self, environ, start_response):
         content_path = self.content_path
         try:
-            app = GitRepository(self.repo_name, content_path, self.username)
+            app = GitRepository(self.repo_name, content_path, self.extras)
         except (AssertionError, OSError):
-            if os.path.isdir(os.path.join(content_path, '.git')):
-                app = GitRepository(self.repo_name,
-                                    os.path.join(content_path, '.git'))
+            content_path = os.path.join(content_path, '.git')
+            if os.path.isdir(content_path):
+                app = GitRepository(self.repo_name, content_path, self.extras)
             else:
-                return exc.HTTPNotFound()(environ, start_response, self.username)
+                return exc.HTTPNotFound()(environ, start_response)
         return app(environ, start_response)
 
 
-def make_wsgi_app(repo_name, repo_root, username):
-    return GitDirectory(repo_root, repo_name, username)
+def make_wsgi_app(repo_name, repo_root, extras):
+    return GitDirectory(repo_root, repo_name, extras)

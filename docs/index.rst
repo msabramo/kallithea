@@ -13,7 +13,7 @@ Users Guide
    installation
    setup
    upgrade
-   
+
 **Usage**
 
 .. toctree::
@@ -21,15 +21,19 @@ Users Guide
 
    usage/general
    usage/git_support
+   usage/performance
+   usage/locking
    usage/statistics
    usage/backup
+   usage/subrepos
    usage/debugging
+   usage/troubleshooting
 
 **Develop**
 
 .. toctree::
    :maxdepth: 1
-   
+
    contributing
    changelog
 
@@ -40,7 +44,7 @@ Users Guide
 
    api/api
    api/models
-   
+
 
 Other topics
 ------------

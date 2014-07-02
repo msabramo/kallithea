@@ -32,26 +32,50 @@ def make_map(config):
         from rhodecode.model.db import Repository
         repo_name = match_dict.get('repo_name')
 
+        if match_dict.get('f_path'):
+            #fix for multiple initial slashes that causes errors
+            match_dict['f_path'] = match_dict['f_path'].lstrip('/')
+
         try:
             by_id = repo_name.split('_')
-            if len(by_id) == 2 and by_id[1].isdigit():
+            if len(by_id) == 2 and by_id[1].isdigit() and by_id[0] == '':
                 repo_name = Repository.get(by_id[1]).repo_name
                 match_dict['repo_name'] = repo_name
-        except:
+        except Exception:
             pass
 
         return is_valid_repo(repo_name, config['base_path'])
 
     def check_group(environ, match_dict):
         """
-        check for valid repositories group for proper 404 handling
+        check for valid repository group for proper 404 handling
 
         :param environ:
         :param match_dict:
         """
         repos_group_name = match_dict.get('group_name')
-
         return is_valid_repos_group(repos_group_name, config['base_path'])
+
+    def check_group_skip_path(environ, match_dict):
+        """
+        check for valid repository group for proper 404 handling, but skips
+        verification of existing path
+
+        :param environ:
+        :param match_dict:
+        """
+        repos_group_name = match_dict.get('group_name')
+        return is_valid_repos_group(repos_group_name, config['base_path'],
+                                    skip_path_check=True)
+
+    def check_user_group(environ, match_dict):
+        """
+        check for valid user group for proper 404 handling
+
+        :param environ:
+        :param match_dict:
+        """
+        return True
 
     def check_int(environ, match_dict):
         return match_dict.get('id').isdigit()
@@ -69,11 +93,8 @@ def make_map(config):
     rmap.connect('home', '/', controller='home', action='index')
     rmap.connect('repo_switcher', '/repos', controller='home',
                  action='repo_switcher')
-    rmap.connect('branch_tag_switcher', '/branches-tags/{repo_name:.*}',
+    rmap.connect('branch_tag_switcher', '/branches-tags/{repo_name:.*?}',
                  controller='home', action='branch_tag_switcher')
-    rmap.connect('bugtracker',
-                 "http://bitbucket.org/marcinkuzminski/rhodecode/issues",
-                 _static=True)
     rmap.connect('rst_help',
                  "http://docutils.sourceforge.net/docs/user/rst/quickref.html",
                  _static=True)
@@ -89,54 +110,65 @@ def make_map(config):
         m.connect("formatted_repos", "/repos.{format}",
              action="index",
             conditions=dict(method=["GET"]))
-        m.connect("new_repo", "/repos/new",
-             action="new", conditions=dict(method=["GET"]))
-        m.connect("formatted_new_repo", "/repos/new.{format}",
-             action="new", conditions=dict(method=["GET"]))
-        m.connect("/repos/{repo_name:.*}",
+        m.connect("new_repo", "/create_repository",
+                  action="create_repository", conditions=dict(method=["GET"]))
+        m.connect("/repos/{repo_name:.*?}",
              action="update", conditions=dict(method=["PUT"],
                                               function=check_repo))
-        m.connect("/repos/{repo_name:.*}",
+        m.connect("/repos/{repo_name:.*?}",
              action="delete", conditions=dict(method=["DELETE"],
                                               function=check_repo))
-        m.connect("edit_repo", "/repos/{repo_name:.*}/edit",
+        m.connect("formatted_edit_repo", "/repos/{repo_name:.*?}.{format}/edit",
              action="edit", conditions=dict(method=["GET"],
                                             function=check_repo))
-        m.connect("formatted_edit_repo", "/repos/{repo_name:.*}.{format}/edit",
-             action="edit", conditions=dict(method=["GET"],
-                                            function=check_repo))
-        m.connect("repo", "/repos/{repo_name:.*}",
+        m.connect("repo", "/repos/{repo_name:.*?}",
              action="show", conditions=dict(method=["GET"],
                                             function=check_repo))
-        m.connect("formatted_repo", "/repos/{repo_name:.*}.{format}",
+        m.connect("formatted_repo", "/repos/{repo_name:.*?}.{format}",
              action="show", conditions=dict(method=["GET"],
                                             function=check_repo))
-        #ajax delete repo perm user
-        m.connect('delete_repo_user', "/repos_delete_user/{repo_name:.*}",
-             action="delete_perm_user",
-             conditions=dict(method=["DELETE"], function=check_repo))
+        #add repo perm member
+        m.connect('set_repo_perm_member',
+                  "/repos/{repo_name:.*?}/grant_perm",
+                  action="set_repo_perm_member",
+                  conditions=dict(method=["POST"], function=check_repo))
 
-        #ajax delete repo perm users_group
-        m.connect('delete_repo_users_group',
-                  "/repos_delete_users_group/{repo_name:.*}",
-                  action="delete_perm_users_group",
+        #ajax delete repo perm user
+        m.connect('delete_repo_perm_member',
+                  "/repos/{repo_name:.*?}/revoke_perm",
+                  action="delete_repo_perm_member",
                   conditions=dict(method=["DELETE"], function=check_repo))
 
         #settings actions
-        m.connect('repo_stats', "/repos_stats/{repo_name:.*}",
+        m.connect('repo_stats', "/repos_stats/{repo_name:.*?}",
                   action="repo_stats", conditions=dict(method=["DELETE"],
                                                        function=check_repo))
-        m.connect('repo_cache', "/repos_cache/{repo_name:.*}",
+        m.connect('repo_cache', "/repos_cache/{repo_name:.*?}",
                   action="repo_cache", conditions=dict(method=["DELETE"],
                                                        function=check_repo))
-        m.connect('repo_public_journal', "/repos_public_journal/{repo_name:.*}",
+        m.connect('repo_public_journal', "/repos_public_journal/{repo_name:.*?}",
                   action="repo_public_journal", conditions=dict(method=["PUT"],
                                                         function=check_repo))
-        m.connect('repo_pull', "/repo_pull/{repo_name:.*}",
+        m.connect('repo_pull', "/repo_pull/{repo_name:.*?}",
                   action="repo_pull", conditions=dict(method=["PUT"],
                                                       function=check_repo))
-        m.connect('repo_as_fork', "/repo_as_fork/{repo_name:.*}",
+        m.connect('repo_as_fork', "/repo_as_fork/{repo_name:.*?}",
                   action="repo_as_fork", conditions=dict(method=["PUT"],
+                                                      function=check_repo))
+        m.connect('repo_locking', "/repo_locking/{repo_name:.*?}",
+                  action="repo_locking", conditions=dict(method=["PUT"],
+                                                      function=check_repo))
+        m.connect('toggle_locking', "/locking_toggle/{repo_name:.*?}",
+                  action="toggle_locking", conditions=dict(method=["GET"],
+                                                      function=check_repo))
+
+        #repo fields
+        m.connect('create_repo_fields', "/repo_fields/{repo_name:.*?}/new",
+                  action="create_repo_field", conditions=dict(method=["PUT"],
+                                                      function=check_repo))
+
+        m.connect('delete_repo_fields', "/repo_fields/{repo_name:.*?}/{field_id}",
+                  action="delete_repo_field", conditions=dict(method=["DELETE"],
                                                       function=check_repo))
 
     with rmap.submapper(path_prefix=ADMIN_PREFIX,
@@ -151,36 +183,37 @@ def make_map(config):
                   action="new", conditions=dict(method=["GET"]))
         m.connect("formatted_new_repos_group", "/repos_groups/new.{format}",
                   action="new", conditions=dict(method=["GET"]))
-        m.connect("update_repos_group", "/repos_groups/{id}",
+        m.connect("update_repos_group", "/repos_groups/{group_name:.*?}",
                   action="update", conditions=dict(method=["PUT"],
-                                                   function=check_int))
-        m.connect("delete_repos_group", "/repos_groups/{id}",
-                  action="delete", conditions=dict(method=["DELETE"],
-                                                   function=check_int))
-        m.connect("edit_repos_group", "/repos_groups/{id}/edit",
-                  action="edit", conditions=dict(method=["GET"],
-                                                 function=check_int))
-        m.connect("formatted_edit_repos_group",
-                  "/repos_groups/{id}.{format}/edit",
-                  action="edit", conditions=dict(method=["GET"],
-                                                 function=check_int))
-        m.connect("repos_group", "/repos_groups/{id}",
-                  action="show", conditions=dict(method=["GET"],
-                                                 function=check_int))
-        m.connect("formatted_repos_group", "/repos_groups/{id}.{format}",
-                  action="show", conditions=dict(method=["GET"],
-                                                 function=check_int))
-        # ajax delete repos group perm user
-        m.connect('delete_repos_group_user_perm',
-                  "/delete_repos_group_user_perm/{group_name:.*}",
-             action="delete_repos_group_user_perm",
-             conditions=dict(method=["DELETE"], function=check_group))
+                                                   function=check_group))
+        #add repo group perm member
+        m.connect('set_repo_group_perm_member',
+                  "/repos_groups/{group_name:.*?}/grant_perm",
+                  action="set_repo_group_perm_member",
+                  conditions=dict(method=["POST"], function=check_group))
 
-        # ajax delete repos group perm users_group
-        m.connect('delete_repos_group_users_group_perm',
-                  "/delete_repos_group_users_group_perm/{group_name:.*}",
-                  action="delete_repos_group_users_group_perm",
+        #ajax delete repo group perm
+        m.connect('delete_repo_group_perm_member',
+                  "/repos_groups/{group_name:.*?}/revoke_perm",
+                  action="delete_repo_group_perm_member",
                   conditions=dict(method=["DELETE"], function=check_group))
+
+        m.connect("delete_repos_group", "/repos_groups/{group_name:.*?}",
+                  action="delete", conditions=dict(method=["DELETE"],
+                                                   function=check_group_skip_path))
+        m.connect("edit_repos_group", "/repos_groups/{group_name:.*?}/edit",
+                  action="edit", conditions=dict(method=["GET"],
+                                                 function=check_group))
+        m.connect("formatted_edit_repos_group",
+                  "/repos_groups/{group_name:.*?}.{format}/edit",
+                  action="edit", conditions=dict(method=["GET"],
+                                                 function=check_group))
+        m.connect("repos_group", "/repos_groups/{group_name:.*?}",
+                  action="show", conditions=dict(method=["GET"],
+                                                 function=check_group))
+        m.connect("formatted_repos_group", "/repos_groups/{group_name:.*?}.{format}",
+                  action="show", conditions=dict(method=["GET"],
+                                                 function=check_group))
 
     #ADMIN USER REST ROUTES
     with rmap.submapper(path_prefix=ADMIN_PREFIX,
@@ -216,8 +249,12 @@ def make_map(config):
                   action="add_email", conditions=dict(method=["PUT"]))
         m.connect("user_emails_delete", "/users_emails/{id}",
                   action="delete_email", conditions=dict(method=["DELETE"]))
+        m.connect("user_ips", "/users_ips/{id}",
+                  action="add_ip", conditions=dict(method=["PUT"]))
+        m.connect("user_ips_delete", "/users_ips/{id}",
+                  action="delete_ip", conditions=dict(method=["DELETE"]))
 
-    #ADMIN USERS GROUPS REST ROUTES
+    #ADMIN USER GROUPS REST ROUTES
     with rmap.submapper(path_prefix=ADMIN_PREFIX,
                         controller='admin/users_groups') as m:
         m.connect("users_groups", "/users_groups",
@@ -235,7 +272,8 @@ def make_map(config):
         m.connect("delete_users_group", "/users_groups/{id}",
                   action="delete", conditions=dict(method=["DELETE"]))
         m.connect("edit_users_group", "/users_groups/{id}/edit",
-                  action="edit", conditions=dict(method=["GET"]))
+                  action="edit", conditions=dict(method=["GET"]),
+                  function=check_user_group)
         m.connect("formatted_edit_users_group",
                   "/users_groups/{id}.{format}/edit",
                   action="edit", conditions=dict(method=["GET"]))
@@ -245,8 +283,19 @@ def make_map(config):
                   action="show", conditions=dict(method=["GET"]))
 
         #EXTRAS USER ROUTES
-        m.connect("users_group_perm", "/users_groups_perm/{id}",
+        # update
+        m.connect("users_group_perm", "/users_groups/{id}/update_global_perm",
                   action="update_perm", conditions=dict(method=["PUT"]))
+
+        #add user group perm member
+        m.connect('set_user_group_perm_member', "/users_groups/{id}/grant_perm",
+             action="set_user_group_perm_member",
+             conditions=dict(method=["POST"]))
+
+        #ajax delete user group perm
+        m.connect('delete_user_group_perm_member', "/users_groups/{id}/revoke_perm",
+             action="delete_user_group_perm_member",
+             conditions=dict(method=["DELETE"]))
 
     #ADMIN GROUP REST ROUTES
     rmap.resource('group', 'groups',
@@ -255,6 +304,10 @@ def make_map(config):
     #ADMIN PERMISSIONS REST ROUTES
     rmap.resource('permission', 'permissions',
                   controller='admin/permissions', path_prefix=ADMIN_PREFIX)
+
+    #ADMIN DEFAULTS REST ROUTES
+    rmap.resource('default', 'defaults',
+                  controller='admin/defaults', path_prefix=ADMIN_PREFIX)
 
     ##ADMIN LDAP SETTINGS
     rmap.connect('ldap_settings', '%s/ldap' % ADMIN_PREFIX,
@@ -294,8 +347,10 @@ def make_map(config):
                   action="my_account", conditions=dict(method=["GET"]))
         m.connect("admin_settings_my_account_update", "/my_account_update",
                   action="my_account_update", conditions=dict(method=["PUT"]))
-        m.connect("admin_settings_create_repository", "/create_repository",
-                  action="create_repository", conditions=dict(method=["GET"]))
+        m.connect("admin_settings_my_repos", "/my_account/repos",
+                  action="my_account_my_repos", conditions=dict(method=["GET"]))
+        m.connect("admin_settings_my_pullrequests", "/my_account/pull_requests",
+                  action="my_account_my_pullrequests", conditions=dict(method=["GET"]))
 
     #NOTIFICATION REST ROUTES
     with rmap.submapper(path_prefix=ADMIN_PREFIX,
@@ -312,18 +367,47 @@ def make_map(config):
                   action="new", conditions=dict(method=["GET"]))
         m.connect("formatted_new_notification", "/notifications/new.{format}",
                   action="new", conditions=dict(method=["GET"]))
-        m.connect("/notification/{notification_id}",
+        m.connect("/notifications/{notification_id}",
                   action="update", conditions=dict(method=["PUT"]))
-        m.connect("/notification/{notification_id}",
+        m.connect("/notifications/{notification_id}",
                   action="delete", conditions=dict(method=["DELETE"]))
-        m.connect("edit_notification", "/notification/{notification_id}/edit",
+        m.connect("edit_notification", "/notifications/{notification_id}/edit",
                   action="edit", conditions=dict(method=["GET"]))
         m.connect("formatted_edit_notification",
-                  "/notification/{notification_id}.{format}/edit",
+                  "/notifications/{notification_id}.{format}/edit",
                   action="edit", conditions=dict(method=["GET"]))
-        m.connect("notification", "/notification/{notification_id}",
+        m.connect("notification", "/notifications/{notification_id}",
                   action="show", conditions=dict(method=["GET"]))
         m.connect("formatted_notification", "/notifications/{notification_id}.{format}",
+                  action="show", conditions=dict(method=["GET"]))
+
+    #ADMIN GIST
+    with rmap.submapper(path_prefix=ADMIN_PREFIX,
+                        controller='admin/gists') as m:
+        m.connect("gists", "/gists",
+                  action="create", conditions=dict(method=["POST"]))
+        m.connect("gists", "/gists",
+                  action="index", conditions=dict(method=["GET"]))
+        m.connect("new_gist", "/gists/new",
+                  action="new", conditions=dict(method=["GET"]))
+        m.connect("formatted_new_gist", "/gists/new.{format}",
+                  action="new", conditions=dict(method=["GET"]))
+        m.connect("formatted_gists", "/gists.{format}",
+                  action="index", conditions=dict(method=["GET"]))
+        m.connect("/gists/{gist_id}",
+                  action="update", conditions=dict(method=["PUT"]))
+        m.connect("/gists/{gist_id}",
+                  action="delete", conditions=dict(method=["DELETE"]))
+        m.connect("edit_gist", "/gists/{gist_id}/edit",
+                  action="edit", conditions=dict(method=["GET"]))
+        m.connect("formatted_edit_gist",
+                  "/gists/{gist_id}/{format}/edit",
+                  action="edit", conditions=dict(method=["GET"]))
+        m.connect("gist", "/gists/{gist_id}",
+                  action="show", conditions=dict(method=["GET"]))
+        m.connect("formatted_gist", "/gists/{gist_id}/{format}",
+                  action="show", conditions=dict(method=["GET"]))
+        m.connect("formatted_gist_file", "/gists/{gist_id}/{format}/{revision}/{f_path:.*}",
                   action="show", conditions=dict(method=["GET"]))
 
     #ADMIN MAIN PAGES
@@ -332,7 +416,6 @@ def make_map(config):
         m.connect('admin_home', '', action='index')
         m.connect('admin_add_repo', '/add_repo/{new_repo:[a-z0-9\. _-]*}',
                   action='add_repo')
-
     #==========================================================================
     # API V2
     #==========================================================================
@@ -371,8 +454,13 @@ def make_map(config):
 
     #SEARCH
     rmap.connect('search', '%s/search' % ADMIN_PREFIX, controller='search',)
-    rmap.connect('search_repo', '%s/search/{search_repo:.*}' % ADMIN_PREFIX,
-                  controller='search')
+    rmap.connect('search_repo_admin', '%s/search/{repo_name:.*}' % ADMIN_PREFIX,
+                 controller='search',
+                 conditions=dict(function=check_repo))
+    rmap.connect('search_repo', '/{repo_name:.*?}/search',
+                 controller='search',
+                 conditions=dict(function=check_repo),
+                 )
 
     #LOGIN/LOGOUT/REGISTER/SIGN IN
     rmap.connect('login_home', '%s/login' % ADMIN_PREFIX, controller='login')
@@ -390,168 +478,231 @@ def make_map(config):
                  controller='login', action='password_reset_confirmation')
 
     #FEEDS
-    rmap.connect('rss_feed_home', '/{repo_name:.*}/feed/rss',
+    rmap.connect('rss_feed_home', '/{repo_name:.*?}/feed/rss',
                 controller='feed', action='rss',
                 conditions=dict(function=check_repo))
 
-    rmap.connect('atom_feed_home', '/{repo_name:.*}/feed/atom',
+    rmap.connect('atom_feed_home', '/{repo_name:.*?}/feed/atom',
                 controller='feed', action='atom',
                 conditions=dict(function=check_repo))
 
     #==========================================================================
     # REPOSITORY ROUTES
     #==========================================================================
-    rmap.connect('summary_home', '/{repo_name:.*}',
+    rmap.connect('summary_home', '/{repo_name:.*?}',
                 controller='summary',
+                conditions=dict(function=check_repo))
+
+    rmap.connect('repo_size', '/{repo_name:.*?}/repo_size',
+                controller='summary', action='repo_size',
                 conditions=dict(function=check_repo))
 
     rmap.connect('repos_group_home', '/{group_name:.*}',
                 controller='admin/repos_groups', action="show_by_name",
                 conditions=dict(function=check_group))
 
-    rmap.connect('changeset_home', '/{repo_name:.*}/changeset/{revision}',
+    rmap.connect('changeset_home', '/{repo_name:.*?}/changeset/{revision}',
                 controller='changeset', revision='tip',
                 conditions=dict(function=check_repo))
 
+    # no longer user, but kept for routes to work
+    rmap.connect("_edit_repo", "/{repo_name:.*?}/edit",
+                 controller='admin/repos', action="edit",
+                 conditions=dict(method=["GET"], function=check_repo)
+                 )
+
+    rmap.connect("edit_repo", "/{repo_name:.*?}/settings",
+                 controller='admin/repos', action="edit",
+                 conditions=dict(method=["GET"], function=check_repo)
+                 )
+
+    #still working url for backward compat.
+    rmap.connect('raw_changeset_home_depraced',
+                 '/{repo_name:.*?}/raw-changeset/{revision}',
+                 controller='changeset', action='changeset_raw',
+                 revision='tip', conditions=dict(function=check_repo))
+
+    ## new URLs
+    rmap.connect('changeset_raw_home',
+                 '/{repo_name:.*?}/changeset-diff/{revision}',
+                 controller='changeset', action='changeset_raw',
+                 revision='tip', conditions=dict(function=check_repo))
+
+    rmap.connect('changeset_patch_home',
+                 '/{repo_name:.*?}/changeset-patch/{revision}',
+                 controller='changeset', action='changeset_patch',
+                 revision='tip', conditions=dict(function=check_repo))
+
+    rmap.connect('changeset_download_home',
+                 '/{repo_name:.*?}/changeset-download/{revision}',
+                 controller='changeset', action='changeset_download',
+                 revision='tip', conditions=dict(function=check_repo))
+
     rmap.connect('changeset_comment',
-                 '/{repo_name:.*}/changeset/{revision}/comment',
+                 '/{repo_name:.*?}/changeset/{revision}/comment',
                 controller='changeset', revision='tip', action='comment',
                 conditions=dict(function=check_repo))
 
+    rmap.connect('changeset_comment_preview',
+                 '/{repo_name:.*?}/changeset/comment/preview',
+                controller='changeset', action='preview_comment',
+                conditions=dict(function=check_repo, method=["POST"]))
+
     rmap.connect('changeset_comment_delete',
-                 '/{repo_name:.*}/changeset/comment/{comment_id}/delete',
+                 '/{repo_name:.*?}/changeset/comment/{comment_id}/delete',
                 controller='changeset', action='delete_comment',
                 conditions=dict(function=check_repo, method=["DELETE"]))
 
-    rmap.connect('raw_changeset_home',
-                 '/{repo_name:.*}/raw-changeset/{revision}',
-                 controller='changeset', action='raw_changeset',
-                 revision='tip', conditions=dict(function=check_repo))
+    rmap.connect('changeset_info', '/changeset_info/{repo_name:.*?}/{revision}',
+                 controller='changeset', action='changeset_info')
 
     rmap.connect('compare_url',
-                 '/{repo_name:.*}/compare/{org_ref_type}@{org_ref}...{other_ref_type}@{other_ref}',
+                 '/{repo_name:.*?}/compare/{org_ref_type}@{org_ref:.*?}...{other_ref_type}@{other_ref:.*?}',
                  controller='compare', action='index',
                  conditions=dict(function=check_repo),
-                 requirements=dict(org_ref_type='(branch|book|tag)',
-                                   other_ref_type='(branch|book|tag)'))
+                 requirements=dict(
+                            org_ref_type='(branch|book|tag|rev|__other_ref_type__)',
+                            other_ref_type='(branch|book|tag|rev|__org_ref_type__)')
+                 )
 
     rmap.connect('pullrequest_home',
-                 '/{repo_name:.*}/pull-request/new', controller='pullrequests',
+                 '/{repo_name:.*?}/pull-request/new', controller='pullrequests',
                  action='index', conditions=dict(function=check_repo,
                                                  method=["GET"]))
 
     rmap.connect('pullrequest',
-                 '/{repo_name:.*}/pull-request/new', controller='pullrequests',
+                 '/{repo_name:.*?}/pull-request/new', controller='pullrequests',
                  action='create', conditions=dict(function=check_repo,
                                                   method=["POST"]))
 
     rmap.connect('pullrequest_show',
-                 '/{repo_name:.*}/pull-request/{pull_request_id}',
+                 '/{repo_name:.*?}/pull-request/{pull_request_id}',
                  controller='pullrequests',
                  action='show', conditions=dict(function=check_repo,
                                                 method=["GET"]))
+    rmap.connect('pullrequest_update',
+                 '/{repo_name:.*?}/pull-request/{pull_request_id}',
+                 controller='pullrequests',
+                 action='update', conditions=dict(function=check_repo,
+                                                method=["PUT"]))
+    rmap.connect('pullrequest_delete',
+                 '/{repo_name:.*?}/pull-request/{pull_request_id}',
+                 controller='pullrequests',
+                 action='delete', conditions=dict(function=check_repo,
+                                                method=["DELETE"]))
 
     rmap.connect('pullrequest_show_all',
-                 '/{repo_name:.*}/pull-request',
+                 '/{repo_name:.*?}/pull-request',
                  controller='pullrequests',
                  action='show_all', conditions=dict(function=check_repo,
                                                 method=["GET"]))
 
     rmap.connect('pullrequest_comment',
-                 '/{repo_name:.*}/pull-request-comment/{pull_request_id}',
+                 '/{repo_name:.*?}/pull-request-comment/{pull_request_id}',
                  controller='pullrequests',
                  action='comment', conditions=dict(function=check_repo,
                                                 method=["POST"]))
 
-    rmap.connect('summary_home', '/{repo_name:.*}/summary',
+    rmap.connect('pullrequest_comment_delete',
+                 '/{repo_name:.*?}/pull-request-comment/{comment_id}/delete',
+                controller='pullrequests', action='delete_comment',
+                conditions=dict(function=check_repo, method=["DELETE"]))
+
+    rmap.connect('summary_home_summary', '/{repo_name:.*?}/summary',
                 controller='summary', conditions=dict(function=check_repo))
 
-    rmap.connect('shortlog_home', '/{repo_name:.*}/shortlog',
-                controller='shortlog', conditions=dict(function=check_repo))
-
-    rmap.connect('branches_home', '/{repo_name:.*}/branches',
+    rmap.connect('branches_home', '/{repo_name:.*?}/branches',
                 controller='branches', conditions=dict(function=check_repo))
 
-    rmap.connect('tags_home', '/{repo_name:.*}/tags',
+    rmap.connect('tags_home', '/{repo_name:.*?}/tags',
                 controller='tags', conditions=dict(function=check_repo))
 
-    rmap.connect('bookmarks_home', '/{repo_name:.*}/bookmarks',
+    rmap.connect('bookmarks_home', '/{repo_name:.*?}/bookmarks',
                 controller='bookmarks', conditions=dict(function=check_repo))
 
-    rmap.connect('changelog_home', '/{repo_name:.*}/changelog',
+    rmap.connect('changelog_home', '/{repo_name:.*?}/changelog',
                 controller='changelog', conditions=dict(function=check_repo))
 
-    rmap.connect('changelog_details', '/{repo_name:.*}/changelog_details/{cs}',
+    rmap.connect('changelog_summary_home', '/{repo_name:.*?}/changelog_summary',
+                controller='changelog', action='changelog_summary',
+                conditions=dict(function=check_repo))
+
+    rmap.connect('changelog_file_home', '/{repo_name:.*?}/changelog/{revision}/{f_path:.*}',
+                controller='changelog', f_path=None,
+                conditions=dict(function=check_repo))
+
+    rmap.connect('changelog_details', '/{repo_name:.*?}/changelog_details/{cs}',
                 controller='changelog', action='changelog_details',
                 conditions=dict(function=check_repo))
 
-    rmap.connect('files_home', '/{repo_name:.*}/files/{revision}/{f_path:.*}',
+    rmap.connect('files_home', '/{repo_name:.*?}/files/{revision}/{f_path:.*}',
                 controller='files', revision='tip', f_path='',
                 conditions=dict(function=check_repo))
 
-    rmap.connect('files_diff_home', '/{repo_name:.*}/diff/{f_path:.*}',
+    rmap.connect('files_home_nopath', '/{repo_name:.*?}/files/{revision}',
+                controller='files', revision='tip', f_path='',
+                conditions=dict(function=check_repo))
+
+    rmap.connect('files_history_home',
+                 '/{repo_name:.*?}/history/{revision}/{f_path:.*}',
+                 controller='files', action='history', revision='tip', f_path='',
+                 conditions=dict(function=check_repo))
+
+    rmap.connect('files_diff_home', '/{repo_name:.*?}/diff/{f_path:.*}',
                 controller='files', action='diff', revision='tip', f_path='',
                 conditions=dict(function=check_repo))
 
+    rmap.connect('files_diff_2way_home', '/{repo_name:.*?}/diff-2way/{f_path:.*}',
+                controller='files', action='diff_2way', revision='tip', f_path='',
+                conditions=dict(function=check_repo))
+
     rmap.connect('files_rawfile_home',
-                 '/{repo_name:.*}/rawfile/{revision}/{f_path:.*}',
+                 '/{repo_name:.*?}/rawfile/{revision}/{f_path:.*}',
                  controller='files', action='rawfile', revision='tip',
                  f_path='', conditions=dict(function=check_repo))
 
     rmap.connect('files_raw_home',
-                 '/{repo_name:.*}/raw/{revision}/{f_path:.*}',
+                 '/{repo_name:.*?}/raw/{revision}/{f_path:.*}',
                  controller='files', action='raw', revision='tip', f_path='',
                  conditions=dict(function=check_repo))
 
     rmap.connect('files_annotate_home',
-                 '/{repo_name:.*}/annotate/{revision}/{f_path:.*}',
+                 '/{repo_name:.*?}/annotate/{revision}/{f_path:.*}',
                  controller='files', action='index', revision='tip',
                  f_path='', annotate=True, conditions=dict(function=check_repo))
 
     rmap.connect('files_edit_home',
-                 '/{repo_name:.*}/edit/{revision}/{f_path:.*}',
+                 '/{repo_name:.*?}/edit/{revision}/{f_path:.*}',
                  controller='files', action='edit', revision='tip',
                  f_path='', conditions=dict(function=check_repo))
 
     rmap.connect('files_add_home',
-                 '/{repo_name:.*}/add/{revision}/{f_path:.*}',
+                 '/{repo_name:.*?}/add/{revision}/{f_path:.*}',
                  controller='files', action='add', revision='tip',
                  f_path='', conditions=dict(function=check_repo))
 
-    rmap.connect('files_archive_home', '/{repo_name:.*}/archive/{fname}',
+    rmap.connect('files_archive_home', '/{repo_name:.*?}/archive/{fname}',
                 controller='files', action='archivefile',
                 conditions=dict(function=check_repo))
 
     rmap.connect('files_nodelist_home',
-                 '/{repo_name:.*}/nodelist/{revision}/{f_path:.*}',
+                 '/{repo_name:.*?}/nodelist/{revision}/{f_path:.*}',
                 controller='files', action='nodelist',
                 conditions=dict(function=check_repo))
 
-    rmap.connect('repo_settings_delete', '/{repo_name:.*}/settings',
-                controller='settings', action="delete",
-                conditions=dict(method=["DELETE"], function=check_repo))
-
-    rmap.connect('repo_settings_update', '/{repo_name:.*}/settings',
-                controller='settings', action="update",
-                conditions=dict(method=["PUT"], function=check_repo))
-
-    rmap.connect('repo_settings_home', '/{repo_name:.*}/settings',
-                controller='settings', action='index',
-                conditions=dict(function=check_repo))
-
-    rmap.connect('repo_fork_create_home', '/{repo_name:.*}/fork',
+    rmap.connect('repo_fork_create_home', '/{repo_name:.*?}/fork',
                 controller='forks', action='fork_create',
                 conditions=dict(function=check_repo, method=["POST"]))
 
-    rmap.connect('repo_fork_home', '/{repo_name:.*}/fork',
+    rmap.connect('repo_fork_home', '/{repo_name:.*?}/fork',
                 controller='forks', action='fork',
                 conditions=dict(function=check_repo))
 
-    rmap.connect('repo_forks_home', '/{repo_name:.*}/forks',
+    rmap.connect('repo_forks_home', '/{repo_name:.*?}/forks',
                  controller='forks', action='forks',
                  conditions=dict(function=check_repo))
 
-    rmap.connect('repo_followers_home', '/{repo_name:.*}/followers',
+    rmap.connect('repo_followers_home', '/{repo_name:.*?}/followers',
                  controller='followers', action='followers',
                  conditions=dict(function=check_repo))
 

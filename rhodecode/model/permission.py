@@ -28,11 +28,10 @@ import traceback
 
 from sqlalchemy.exc import DatabaseError
 
-from rhodecode.lib.caching_query import FromCache
-
 from rhodecode.model import BaseModel
 from rhodecode.model.db import User, Permission, UserToPerm, UserRepoToPerm,\
-    UserRepoGroupToPerm
+    UserRepoGroupToPerm, UserUserGroupToPerm
+from rhodecode.lib.utils2 import str2bool
 
 log = logging.getLogger(__name__)
 
@@ -42,85 +41,123 @@ class PermissionModel(BaseModel):
     Permissions model for RhodeCode
     """
 
-    def get_permission(self, permission_id, cache=False):
-        """
-        Get's permissions by id
+    cls = Permission
 
-        :param permission_id: id of permission to get from database
-        :param cache: use Cache for this query
+    def create_permissions(self):
         """
-        perm = self.sa.query(Permission)
-        if cache:
-            perm = perm.options(FromCache("sql_cache_short",
-                                          "get_permission_%s" % permission_id))
-        return perm.get(permission_id)
+        Create permissions for whole system
+        """
+        for p in Permission.PERMS:
+            if not Permission.get_by_key(p[0]):
+                new_perm = Permission()
+                new_perm.permission_name = p[0]
+                new_perm.permission_longname = p[0]  #translation err with p[1]
+                self.sa.add(new_perm)
 
-    def get_permission_by_name(self, name, cache=False):
+    def create_default_permissions(self, user):
         """
-        Get's permissions by given name
+        Creates only missing default permissions for user
 
-        :param name: name to fetch
-        :param cache: Use cache for this query
+        :param user:
         """
-        perm = self.sa.query(Permission)\
-            .filter(Permission.permission_name == name)
-        if cache:
-            perm = perm.options(FromCache("sql_cache_short",
-                                          "get_permission_%s" % name))
-        return perm.scalar()
+        user = self._get_user(user)
+
+        def _make_perm(perm):
+            new_perm = UserToPerm()
+            new_perm.user = user
+            new_perm.permission = Permission.get_by_key(perm)
+            return new_perm
+
+        def _get_group(perm_name):
+            return '.'.join(perm_name.split('.')[:1])
+
+        perms = UserToPerm.query().filter(UserToPerm.user == user).all()
+        defined_perms_groups = map(_get_group,
+                                (x.permission.permission_name for x in perms))
+        log.debug('GOT ALREADY DEFINED:%s' % perms)
+        DEFAULT_PERMS = Permission.DEFAULT_USER_PERMISSIONS
+
+        # for every default permission that needs to be created, we check if
+        # it's group is already defined, if it's not we create default perm
+        for perm_name in DEFAULT_PERMS:
+            gr = _get_group(perm_name)
+            if gr not in defined_perms_groups:
+                log.debug('GR:%s not found, creating permission %s'
+                          % (gr, perm_name))
+                new_perm = _make_perm(perm_name)
+                self.sa.add(new_perm)
 
     def update(self, form_result):
-        perm_user = self.sa.query(User)\
-                        .filter(User.username ==
-                                form_result['perm_user_name']).scalar()
-        u2p = self.sa.query(UserToPerm).filter(UserToPerm.user ==
-                                               perm_user).all()
-        if len(u2p) != 3:
-            raise Exception('Defined: %s should be 3  permissions for default'
-                            ' user. This should not happen please verify'
-                            ' your database' % len(u2p))
+        perm_user = User.get_by_username(username=form_result['perm_user_name'])
 
         try:
-            # stage 1 change defaults
+            # stage 1 set anonymous access
+            if perm_user.username == 'default':
+                perm_user.active = str2bool(form_result['anonymous'])
+                self.sa.add(perm_user)
+
+            # stage 2 reset defaults and set them from form data
+            def _make_new(usr, perm_name):
+                log.debug('Creating new permission:%s' % (perm_name))
+                new = UserToPerm()
+                new.user = usr
+                new.permission = Permission.get_by_key(perm_name)
+                return new
+            # clear current entries, to make this function idempotent
+            # it will fix even if we define more permissions or permissions
+            # are somehow missing
+            u2p = self.sa.query(UserToPerm)\
+                .filter(UserToPerm.user == perm_user)\
+                .all()
             for p in u2p:
-                if p.permission.permission_name.startswith('repository.'):
-                    p.permission = self.get_permission_by_name(
-                                       form_result['default_perm'])
-                    self.sa.add(p)
+                self.sa.delete(p)
+            #create fresh set of permissions
+            for def_perm_key in ['default_repo_perm', 'default_group_perm',
+                                 'default_user_group_perm',
+                                 'default_repo_create',
+                                 #'default_repo_group_create', #not implemented yet
+                                 'default_user_group_create',
+                                 'default_fork', 'default_register',
+                                 'default_extern_activate']:
+                p = _make_new(perm_user, form_result[def_perm_key])
+                self.sa.add(p)
 
-                elif p.permission.permission_name.startswith('hg.register.'):
-                    p.permission = self.get_permission_by_name(
-                                       form_result['default_register'])
-                    self.sa.add(p)
-
-                elif p.permission.permission_name.startswith('hg.create.'):
-                    p.permission = self.get_permission_by_name(
-                                        form_result['default_create'])
-                    self.sa.add(p)
-
-            _def_name = form_result['default_perm'].split('repository.')[-1]
-            #stage 2 update all default permissions for repos if checked
-            if form_result['overwrite_default'] == True:
-                _def = self.get_permission_by_name('repository.' + _def_name)
+            #stage 3 update all default permissions for repos if checked
+            if form_result['overwrite_default_repo']:
+                _def_name = form_result['default_repo_perm'].split('repository.')[-1]
+                _def = Permission.get_by_key('repository.' + _def_name)
                 # repos
                 for r2p in self.sa.query(UserRepoToPerm)\
                                .filter(UserRepoToPerm.user == perm_user)\
                                .all():
-                    r2p.permission = _def
-                    self.sa.add(r2p)
+
+                    #don't reset PRIVATE repositories
+                    if not r2p.repository.private:
+                        r2p.permission = _def
+                        self.sa.add(r2p)
+
+            if form_result['overwrite_default_group']:
+                _def_name = form_result['default_group_perm'].split('group.')[-1]
                 # groups
-                _def = self.get_permission_by_name('group.' + _def_name)
+                _def = Permission.get_by_key('group.' + _def_name)
                 for g2p in self.sa.query(UserRepoGroupToPerm)\
                                .filter(UserRepoGroupToPerm.user == perm_user)\
                                .all():
                     g2p.permission = _def
                     self.sa.add(g2p)
 
-            # stage 3 set anonymous access
-            if perm_user.username == 'default':
-                perm_user.active = bool(form_result['anonymous'])
-                self.sa.add(perm_user)
+            if form_result['overwrite_default_user_group']:
+                _def_name = form_result['default_user_group_perm'].split('usergroup.')[-1]
+                # groups
+                _def = Permission.get_by_key('usergroup.' + _def_name)
+                for g2p in self.sa.query(UserUserGroupToPerm)\
+                               .filter(UserUserGroupToPerm.user == perm_user)\
+                               .all():
+                    g2p.permission = _def
+                    self.sa.add(g2p)
 
+            self.sa.commit()
         except (DatabaseError,):
             log.error(traceback.format_exc())
+            self.sa.rollback()
             raise

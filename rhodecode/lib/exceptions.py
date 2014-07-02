@@ -23,6 +23,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from webob.exc import HTTPClientError
+
 
 class LdapUsernameError(Exception):
     pass
@@ -48,5 +50,55 @@ class UserOwnsReposException(Exception):
     pass
 
 
-class UsersGroupsAssignedException(Exception):
+class UserGroupsAssignedException(Exception):
+    pass
+
+
+class StatusChangeOnClosedPullRequestError(Exception):
+    pass
+
+
+class AttachedForksError(Exception):
+    pass
+
+
+class RepoGroupAssignmentError(Exception):
+    pass
+
+
+class NonRelativePathError(Exception):
+    pass
+
+
+class HTTPLockedRC(HTTPClientError):
+    """
+    Special Exception For locked Repos in RhodeCode, the return code can
+    be overwritten by _code keyword argument passed into constructors
+    """
+    code = 423
+    title = explanation = 'Repository Locked'
+
+    def __init__(self, reponame, username, *args, **kwargs):
+        from rhodecode import CONFIG
+        from rhodecode.lib.utils2 import safe_int
+        _code = CONFIG.get('lock_ret_code')
+        self.code = safe_int(_code, self.code)
+        self.title = self.explanation = ('Repository `%s` locked by '
+                                         'user `%s`' % (reponame, username))
+        super(HTTPLockedRC, self).__init__(*args, **kwargs)
+
+
+class IMCCommitError(Exception):
+    pass
+
+
+class UserCreationError(Exception):
+    pass
+
+
+class RepositoryCreationError(Exception):
+    pass
+
+
+class HgsubversionImportError(Exception):
     pass

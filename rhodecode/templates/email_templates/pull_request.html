@@ -1,0 +1,19 @@
+## -*- coding: utf-8 -*-
+<%inherit file="main.html"/>
+
+<p>${_('URL')}: <a href="${pr_url}">${pr_url}</a></p>
+
+<h4>${_('%s opened a pull request for repository %s and wants you to review changes.') % (pr_user_created,pr_repo_url) |n}</h4>
+
+<p>${_('Title')}: <b>${pr_title}</b></p>
+<p>${_('Description')}:</p>
+<p style="white-space: pre-wrap;">${body}</p>
+
+<p>${_('Changesets')}:</p>
+<p style="white-space: pre-wrap;">
+%for r,r_msg in pr_revisions:
+<b>${h.short_id(r)}</b>:
+${h.shorter(r_msg, 256)}
+
+%endfor
+</p>

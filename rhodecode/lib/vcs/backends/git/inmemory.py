@@ -46,7 +46,7 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
         for node in self.added + self.changed:
             # Compute subdirs if needed
             dirpath, nodename = posixpath.split(node.path)
-            dirnames = dirpath and dirpath.split('/') or []
+            dirnames = map(safe_str, dirpath and dirpath.split('/') or [])
             parent = commit_tree
             ancestors = [('', parent)]
 
@@ -63,10 +63,16 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
                     # If found, updates parent
                     parent = self.repository._repo[dir_id]
                     ancestors.append((curdir, parent))
-            # Now parent is deepest exising tree and we need to create subtrees
+            # Now parent is deepest existing tree and we need to create subtrees
             # for dirnames (in reverse order) [this only applies for nodes from added]
             new_trees = []
-            blob = objects.Blob.from_string(node.content.encode(ENCODING))
+
+            if not node.is_binary:
+                content = node.content.encode(ENCODING)
+            else:
+                content = node.content
+            blob = objects.Blob.from_string(content)
+
             node_path = node.name.encode(ENCODING)
             if dirnames:
                 # If there are trees which should be created we need to build
@@ -144,11 +150,11 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
 
         ref = 'refs/heads/%s' % branch
         repo.refs[ref] = commit.id
-        repo.refs.set_symbolic_ref('HEAD', ref)
 
         # Update vcs repository object & recreate dulwich repo
         self.repository.revisions.append(commit.id)
-        self.repository._repo = Repo(self.repository.path)
+        # invalidate parsed refs after commit
+        self.repository._parsed_refs = self.repository._get_parsed_refs()
         tip = self.repository.get_changeset()
         self.reset()
         return tip

@@ -87,7 +87,7 @@ class MailBase(object):
         del self.headers[normalize_header(key)]
 
     def __nonzero__(self):
-        return self.body != None or len(self.headers) > 0 or len(self.parts) > 0
+        return self.body is not None or len(self.headers) > 0 or len(self.parts) > 0
 
     def keys(self):
         """Returns the sorted keys."""
@@ -388,7 +388,7 @@ class MIMEPart(MIMEBase):
         self.set_payload(encoded, charset=charset)
 
     def extract_payload(self, mail):
-        if mail.body == None:
+        if mail.body is None:
             return  # only None, '' is still ok
 
         ctype, ctype_params = mail.content_encoding['Content-Type']
@@ -444,7 +444,7 @@ def properly_encode_header(value, encoder, not_email):
     try:
         return value.encode("ascii")
     except UnicodeEncodeError:
-        if not_email is False and VALUE_IS_EMAIL_ADDRESS(value):
+        if not not_email and VALUE_IS_EMAIL_ADDRESS(value):
             # this could have an email address, make sure we don't screw it up
             name, address = parseaddr(value)
             return '"%s" <%s>' % (

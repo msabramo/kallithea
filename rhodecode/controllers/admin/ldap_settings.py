@@ -40,6 +40,7 @@ from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator
 from rhodecode.lib.exceptions import LdapImportError
 from rhodecode.model.forms import LdapSettingsForm
 from rhodecode.model.db import RhodeCodeSetting
+from rhodecode.model.meta import Session
 
 log = logging.getLogger(__name__)
 
@@ -70,8 +71,6 @@ class LdapSettingsController(BaseController):
     @LoginRequired()
     @HasPermissionAllDecorator('hg.admin')
     def __before__(self):
-        c.admin_user = session.get('admin_user')
-        c.admin_username = session.get('admin_username')
         c.search_scope_choices = self.search_scope_choices
         c.tls_reqcert_choices = self.tls_reqcert_choices
         c.tls_kind_choices = self.tls_kind_choices
@@ -116,18 +115,18 @@ class LdapSettingsController(BaseController):
                 for k, v in form_result.items():
                     if k.startswith('ldap_'):
                         if k == 'ldap_active':
-                            v = ldap_active
+                            v = v if ldap_active else False
                         setting = RhodeCodeSetting.get_by_name(k)
                         setting.app_settings_value = v
-                        self.sa.add(setting)
+                        Session().add(setting)
 
-                self.sa.commit()
-                h.flash(_('Ldap settings updated successfully'),
+                Session().commit()
+                h.flash(_('LDAP settings updated successfully'),
                         category='success')
                 if not ldap_active:
                     #if ldap is missing send an info to user
-                    h.flash(_('Unable to activate ldap. The "python-ldap" library '
-                              'is missing.'), category='warning')
+                    h.flash(_('Unable to activate ldap. The "python-ldap" '
+                              'library is missing.'), category='warning')
 
             except (DatabaseError,):
                 raise
@@ -143,7 +142,7 @@ class LdapSettingsController(BaseController):
                 encoding="UTF-8")
         except Exception:
             log.error(traceback.format_exc())
-            h.flash(_('error occurred during update of ldap settings'),
+            h.flash(_('Error occurred during update of ldap settings'),
                     category='error')
 
         return redirect(url('ldap_home'))

@@ -1,15 +1,23 @@
+# encoding: utf8
 from __future__ import with_statement
 
-from rhodecode.lib import vcs
+import time
 import datetime
-from base import BackendTestMixin
-from conf import SCM_TESTS
+from rhodecode.lib import vcs
+from rhodecode.tests.vcs.base import BackendTestMixin
+from rhodecode.tests.vcs.conf import SCM_TESTS
+
 from rhodecode.lib.vcs.backends.base import BaseChangeset
-from rhodecode.lib.vcs.nodes import FileNode
-from rhodecode.lib.vcs.exceptions import BranchDoesNotExistError
-from rhodecode.lib.vcs.exceptions import ChangesetDoesNotExistError
-from rhodecode.lib.vcs.exceptions import RepositoryError
+from rhodecode.lib.vcs.nodes import (
+    FileNode, AddedFileNodesGenerator,
+    ChangedFileNodesGenerator, RemovedFileNodesGenerator
+)
+from rhodecode.lib.vcs.exceptions import (
+    BranchDoesNotExistError, ChangesetDoesNotExistError,
+    RepositoryError, EmptyRepositoryError
+)
 from rhodecode.lib.vcs.utils.compat import unittest
+from rhodecode.tests.vcs.conf import get_new_dir
 
 
 class TestBaseChangeset(unittest.TestCase):
@@ -119,6 +127,14 @@ class ChangesetsWithCommitsTestCaseixin(BackendTestMixin):
             branch_name=self.repo.DEFAULT_BRANCH_NAME)
         self.assertNotIn(doc_changeset, default_branch_changesets)
 
+    def test_get_changeset_by_branch(self):
+        for branch, sha in self.repo.branches.iteritems():
+            self.assertEqual(sha, self.repo.get_changeset(branch).raw_id)
+
+    def test_get_changeset_by_tag(self):
+        for tag, sha in self.repo.tags.iteritems():
+            self.assertEqual(sha, self.repo.get_changeset(tag).raw_id)
+
 
 class ChangesetsTestCaseMixin(BackendTestMixin):
     recreate_repo_per_test = False
@@ -184,6 +200,14 @@ class ChangesetsTestCaseMixin(BackendTestMixin):
         changesets = list(self.repo.get_changesets(start=2, end=3))
         self.assertEqual(len(changesets), 2)
 
+    def test_get_changesets_on_empty_repo_raises_EmptyRepository_error(self):
+        Backend = self.get_backend()
+        repo_path = get_new_dir(str(time.time()))
+        repo = Backend(repo_path, create=True)
+
+        with self.assertRaises(EmptyRepositoryError):
+            list(repo.get_changesets(start='foobar'))
+
     def test_get_changesets_includes_end_changeset(self):
         second_id = self.repo.revisions[1]
         changesets = list(self.repo.get_changesets(end=second_id))
@@ -195,6 +219,14 @@ class ChangesetsTestCaseMixin(BackendTestMixin):
             self.assertGreaterEqual(cs.date, start_date)
 
     def test_get_changesets_respects_end_date(self):
+        start_date = datetime.datetime(2010, 1, 1)
+        end_date = datetime.datetime(2010, 2, 1)
+        for cs in self.repo.get_changesets(start_date=start_date,
+                                           end_date=end_date):
+            self.assertGreaterEqual(cs.date, start_date)
+            self.assertLessEqual(cs.date, end_date)
+
+    def test_get_changesets_respects_start_date_and_end_date(self):
         end_date = datetime.datetime(2010, 2, 1)
         for cs in self.repo.get_changesets(end_date=end_date):
             self.assertLessEqual(cs.date, end_date)
@@ -271,6 +303,7 @@ class ChangesetsChangesTestCaseMixin(BackendTestMixin):
                 'date': datetime.datetime(2010, 1, 1, 20),
                 'added': [
                     FileNode('foo/bar', content='foo'),
+                    FileNode('foo/bał', content='foo'),
                     FileNode('foobar', content='foo'),
                     FileNode('qwe', content='foo'),
                 ],
@@ -292,6 +325,7 @@ class ChangesetsChangesTestCaseMixin(BackendTestMixin):
         changeset = self.repo.get_changeset(0)
         self.assertItemsEqual(changeset.added, [
             changeset.get_node('foo/bar'),
+            changeset.get_node('foo/bał'),
             changeset.get_node('foobar'),
             changeset.get_node('qwe'),
         ])
@@ -300,16 +334,27 @@ class ChangesetsChangesTestCaseMixin(BackendTestMixin):
 
     def test_head_added(self):
         changeset = self.repo.get_changeset()
+        self.assertTrue(isinstance(changeset.added, AddedFileNodesGenerator))
         self.assertItemsEqual(changeset.added, [
             changeset.get_node('fallout'),
         ])
+        self.assertTrue(isinstance(changeset.changed, ChangedFileNodesGenerator))
         self.assertItemsEqual(changeset.changed, [
             changeset.get_node('foo/bar'),
             changeset.get_node('foobar'),
         ])
+        self.assertTrue(isinstance(changeset.removed, RemovedFileNodesGenerator))
         self.assertEqual(len(changeset.removed), 1)
         self.assertEqual(list(changeset.removed)[0].path, 'qwe')
 
+    def test_get_filemode(self):
+        changeset = self.repo.get_changeset()
+        self.assertEqual(33188, changeset.get_file_mode('foo/bar'))
+
+    def test_get_filemode_non_ascii(self):
+        changeset = self.repo.get_changeset()
+        self.assertEqual(33188, changeset.get_file_mode('foo/bał'))
+        self.assertEqual(33188, changeset.get_file_mode(u'foo/bał'))
 
 # For each backend create test case class
 for alias in SCM_TESTS:
