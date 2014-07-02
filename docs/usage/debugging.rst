@@ -1,10 +1,10 @@
 .. _debugging:
 
 ===================
-Debugging RhodeCode
+Debugging Kallithea
 ===================
 
-If you encountered problems with RhodeCode here are some instructions how to
+If you encountered problems with Kallithea here are some instructions how to
 possibly debug them.
 
 ** First make sure you're using the latest version available.**
@@ -12,7 +12,7 @@ possibly debug them.
 enable detailed debug
 ---------------------
 
-RhodeCode uses standard python logging modules to log it's output.
+Kallithea uses standard python logging modules to log it's output.
 By default only loggers with INFO level are displayed. To enable full output
 change `level = DEBUG` for all logging handlers in currently used .ini file.
 This change will allow to see much more detailed output in the logfile or

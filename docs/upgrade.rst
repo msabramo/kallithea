@@ -12,16 +12,16 @@ Upgrading from PyPI (aka "Cheeseshop")
    configuration backup before doing an upgrade.
 
    (These directions will use '{version}' to note that this is the version of
-   Rhodecode that these files were used with.  If backing up your RhodeCode
+   Kallithea that these files were used with.  If backing up your Kallithea
    instance from version 1.3.6 to 1.4.0, the ``production.ini`` file would be
    backed up to ``production.ini.1-3-6``.)
 
 
-If using a sqlite database, stop the Rhodecode process/daemon/service, and
+If using a sqlite database, stop the Kallithea process/daemon/service, and
 then make a copy of the database file::
 
  service kallithea stop
- cp rhodecode.db rhodecode.db.{version}
+ cp kallithea.db kallithea.db.{version}
 
 
 Back up your configuration file::
@@ -30,30 +30,30 @@ Back up your configuration file::
 
 
 Ensure that you are using the Python Virtual Environment that you'd originally
-installed Rhodecode in::
+installed Kallithea in::
 
  pip freeze
 
-will list all packages installed in the current environment.  If Rhodecode
+will list all packages installed in the current environment.  If Kallithea
 isn't listed, change virtual environments to your venv location::
 
- source /opt/rhodecode-venv/bin/activate
+ source /opt/kallithea-venv/bin/activate
 
 
-Once you have verified the environment you can upgrade ``Rhodecode`` with::
+Once you have verified the environment you can upgrade ``Kallithea`` with::
 
- easy_install -U rhodecode
+ easy_install -U kallithea
 
 Or::
 
- pip install --upgrade rhodecode
+ pip install --upgrade kallithea
 
 
 Then run the following command from the installation directory::
 
- paster make-config RhodeCode production.ini
+ paster make-config Kallithea production.ini
 
-This will display any changes made by the new version of RhodeCode to your
+This will display any changes made by the new version of Kallithea to your
 current configuration. It will try to perform an automerge. It's recommended
 that you re-check the content after the automerge.
 
@@ -80,21 +80,21 @@ options that need to be set.
    DB schema upgrade library has some limitations and can sometimes fail if you try to
    upgrade from older major releases. In such case simply run upgrades sequentially, eg.
    upgrading from 1.2.X to 1.5.X should be done like that: 1.2.X. > 1.3.X > 1.4.X > 1.5.X
-   You can always specify what version of RhodeCode you want to install for example in pip
-   `pip install RhodeCode==1.3.6`
+   You can always specify what version of Kallithea you want to install for example in pip
+   `pip install Kallithea==1.3.6`
 
 You may find it helpful to clear out your log file so that new errors are
 readily apparent::
 
- echo > rhodecode.log
+ echo > kallithea.log
 
-Once that is complete, you may now start your upgraded Rhodecode Instance::
+Once that is complete, you may now start your upgraded Kallithea Instance::
 
  service kallithea start
 
 Or::
 
- paster serve /var/www/rhodecode/production.ini
+ paster serve /var/www/kallithea/production.ini
 
 .. note::
    If you're using Celery, make sure you restart all instances of it after

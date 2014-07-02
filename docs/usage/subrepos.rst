@@ -1,10 +1,10 @@
 .. _subrepos:
 
 =============================================
-working with RhodeCode and mercurial subrepos
+working with Kallithea and mercurial subrepos
 =============================================
 
-example usage of Subrepos with RhodeCode::
+example usage of Subrepos with Kallithea::
 
     ## init a simple repo
     hg init repo1
@@ -16,7 +16,7 @@ example usage of Subrepos with RhodeCode::
     #clone subrepo we want to add
     hg clone http://rc.local/subrepo
 
-    ## use path like url to existing repo in RhodeCode
+    ## use path like url to existing repo in Kallithea
     echo "subrepo = http://rc.local/subrepo" > .hgsub
 
     hg add .hgsub
@@ -26,11 +26,11 @@ example usage of Subrepos with RhodeCode::
 
 In file list of repo1 you will see a connected subrepo at revision it was
 during cloning.
-Clicking in subrepos link should send you to proper repository in RhodeCode
+Clicking in subrepos link should send you to proper repository in Kallithea
 
 cloning repo1 will also clone attached subrepository.
 
-Next we can edit the subrepo data, and push back to RhodeCode. This will update
+Next we can edit the subrepo data, and push back to Kallithea. This will update
 both of repositories.
 
 see http://mercurial.aragost.com/kick-start/en/subrepositories/ for more

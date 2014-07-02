@@ -1,17 +1,17 @@
 .. _general:
 
 =======================
-General RhodeCode usage
+General Kallithea usage
 =======================
 
 
 Repository deleting
 -------------------
 
-Currently when admin/owner deletes a repository, RhodeCode does not physically
+Currently when admin/owner deletes a repository, Kallithea does not physically
 delete a repository from filesystem, it renames it in a special way so it's
 not possible to push,clone or access repository. It's worth a notice that,
-even if someone will be given administrative access to RhodeCode and will
+even if someone will be given administrative access to Kallithea and will
 delete a repository You can easy restore such action by restoring `rm__<date>`
 from the repository name, and internal repository storage (.hg/.git). There
 is also a special command for cleaning such archived repos::
@@ -60,7 +60,7 @@ example::
 
 This can be an issue for build systems and any other hardcoded scripts, moving
 repository to a group leads to a need for changing external systems. To
-overcome this RhodeCode introduces a non changable replacement url. It's
+overcome this Kallithea introduces a non changable replacement url. It's
 simply an repository ID prefixed with `_` above urls are also accessible as::
 
   http://server.com/_<ID>
@@ -74,13 +74,13 @@ Mailing
 -------
 
 When administrator will fill up the mailing settings in .ini files
-RhodeCode will send mails on user registration, or when RhodeCode errors occur
+Kallithea will send mails on user registration, or when Kallithea errors occur
 on errors the mails will have a detailed traceback of error.
 
 
 Mails are also sent for code comments. If someone comments on a changeset
 mail is sent to all participants, the person who commited the changeset
-(if present in RhodeCode), and to all people mentioned with @mention system.
+(if present in Kallithea), and to all people mentioned with @mention system.
 
 
 Trending source files
@@ -95,7 +95,7 @@ located in `/kallithea/lib/celerylib/tasks.py`
 Cloning remote repositories
 ---------------------------
 
-RhodeCode has an ability to clone remote repos from given remote locations.
+Kallithea has an ability to clone remote repos from given remote locations.
 Currently it support following options:
 
 - hg  -> hg clone
@@ -109,9 +109,9 @@ Currently it support following options:
 
 If you need to clone repositories that are protected via basic auth, you
 might pass the url with stored credentials inside eg.
-`http://user:passw@remote.server/repo`, RhodeCode will try to login and clone
+`http://user:passw@remote.server/repo`, Kallithea will try to login and clone
 using given credentials. Please take a note that they will be stored as
-plaintext inside the database. RhodeCode will remove auth info when showing the
+plaintext inside the database. Kallithea will remove auth info when showing the
 clone url in summary page.
 
 
@@ -120,7 +120,7 @@ Visual settings in admin pannel
 -------------------------------
 
 
-Visualisation settings in RhodeCode settings view are extra customizations
+Visualisation settings in Kallithea settings view are extra customizations
 of server behavior. There are 3 main section in the settings.
 
 General
@@ -133,7 +133,7 @@ define company specific information into repositories eg. defining repo_manager
 key that would add give info about a manager of each repository. There's no
 limit for adding custom fields. Newly created fields are accessible via API.
 
-`Show RhodeCode version` option toggles displaying exact RhodeCode version in
+`Show Kallithea version` option toggles displaying exact Kallithea version in
 the footer
 
 
@@ -153,7 +153,7 @@ public/private icons should be shown in the UI.
 Meta-Tagging
 ~~~~~~~~~~~~
 
-With this option enabled, special metatags that are recognisible by RhodeCode
+With this option enabled, special metatags that are recognisible by Kallithea
 will be turned into colored tags. Currently available tags are::
 
     [featured]

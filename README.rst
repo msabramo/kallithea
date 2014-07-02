@@ -25,15 +25,15 @@ Installation
 ------------
 Stable releases of RhodeCode are best installed via::
 
-    easy_install rhodecode
+    easy_install kallithea
 
 Or::
 
-    pip install rhodecode
+    pip install kallithea
 
 Detailed instructions and links may be found on the Installation page.
 
-Please visit http://packages.python.org/RhodeCode/installation.html for
+Please visit http://packages.python.org/Kallithea/installation.html for
 more details
 
 
@@ -138,8 +138,8 @@ Online documentation
 --------------------
 
 Online documentation for the current version of RhodeCode is available at
- - http://packages.python.org/RhodeCode/
- - http://rhodecode.readthedocs.org/en/latest/index.html
+ - http://packages.python.org/Kallithea/
+ - http://kallithea.readthedocs.org/
 
 You may also build the documentation for yourself - go into ``docs/`` and run::
 

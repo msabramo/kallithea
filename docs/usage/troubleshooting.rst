@@ -14,14 +14,14 @@ Troubleshooting
 |
 
 :Q: **Can't install celery/rabbitmq?**
-:A: Don't worry RhodeCode works without them too. No extra setup is required.
+:A: Don't worry Kallithea works without them too. No extra setup is required.
     Try out great celery docs for further help.
 
 |
 
 :Q: **Long lasting push timeouts?**
 :A: Make sure you set a longer timeouts in your proxy/fcgi settings, timeouts
-    are caused by https server and not RhodeCode.
+    are caused by https server and not Kallithea.
 
 |
 
@@ -43,16 +43,16 @@ Troubleshooting
 
 |
 
-:Q: **How i use hooks in RhodeCode?**
+:Q: **How i use hooks in Kallithea?**
 :A: It's easy if they are python hooks just use advanced link in hooks section
     in Admin panel, that works only for Mercurial. If you want to use githooks,
     just install proper one in repository eg. create file in
-    `/gitrepo/hooks/pre-receive`. You can also use RhodeCode-extensions to
+    `/gitrepo/hooks/pre-receive`. You can also use Kallithea-extensions to
     connect to callback hooks, for both Git and Mercurial.
 
 |
 
-:Q: **RhodeCode is slow for me, how can i make it faster?**
+:Q: **Kallithea is slow for me, how can i make it faster?**
 :A: See the :ref:`performance` section
 
 |

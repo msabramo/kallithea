@@ -5,31 +5,31 @@ Setup
 =====
 
 
-Setting up RhodeCode
+Setting up Kallithea
 --------------------
 
-First, you will need to create a RhodeCode configuration file. Run the
+First, you will need to create a Kallithea configuration file. Run the
 following command to do this::
 
-    paster make-config RhodeCode production.ini
+    paster make-config Kallithea production.ini
 
 - This will create the file `production.ini` in the current directory. This
-  configuration file contains the various settings for RhodeCode, e.g proxy
+  configuration file contains the various settings for Kallithea, e.g proxy
   port, email settings, usage of static files, cache, celery settings and
   logging.
 
 
-Next, you need to create the databases used by RhodeCode. I recommend that you
+Next, you need to create the databases used by Kallithea. I recommend that you
 use postgresql or sqlite (default). If you choose a database other than the
 default ensure you properly adjust the db url in your production.ini
-configuration file to use this other database. RhodeCode currently supports
+configuration file to use this other database. Kallithea currently supports
 postgresql, sqlite and mysql databases. Create the database by running
 the following command::
 
     paster setup-db production.ini
 
 This will prompt you for a "root" path. This "root" path is the location where
-RhodeCode will store all of its repositories on the current machine. After
+Kallithea will store all of its repositories on the current machine. After
 entering this "root" path ``setup-db`` will also prompt you for a username
 and password for the initial admin account which ``setup-db`` sets
 up for you.
@@ -42,19 +42,19 @@ setup process can be fully automated, example for lazy::
 - The ``setup-db`` command will create all of the needed tables and an
   admin account. When choosing a root path you can either use a new empty
   location, or a location which already contains existing repositories. If you
-  choose a location which contains existing repositories RhodeCode will simply
+  choose a location which contains existing repositories Kallithea will simply
   add all of the repositories at the chosen location to it's database.
   (Note: make sure you specify the correct path to the root).
 - Note: the given path for mercurial_ repositories **must** be write accessible
-  for the application. It's very important since the RhodeCode web interface
+  for the application. It's very important since the Kallithea web interface
   will work without write access, but when trying to do a push it will
   eventually fail with permission denied errors unless it has write access.
 
-You are now ready to use RhodeCode, to run it simply execute::
+You are now ready to use Kallithea, to run it simply execute::
 
     paster serve production.ini
 
-- This command runs the RhodeCode server. The web app should be available at the
+- This command runs the Kallithea server. The web app should be available at the
   127.0.0.1:5000. This ip and port is configurable via the production.ini
   file created in previous step
 - Use the admin account you created above when running ``setup-db``
@@ -64,7 +64,7 @@ You are now ready to use RhodeCode, to run it simply execute::
 - In the admin panel you can toggle ldap, anonymous, permissions settings. As
   well as edit more advanced options on users and repositories
 
-Optionally users can create `rcextensions` package that extends RhodeCode
+Optionally users can create `rcextensions` package that extends Kallithea
 functionality. To do this simply execute::
 
     paster make-rcext production.ini
@@ -77,36 +77,36 @@ Please see the `__init__.py` file inside `rcextensions` package
 for more details.
 
 
-Using RhodeCode with SSH
+Using Kallithea with SSH
 ------------------------
 
-RhodeCode currently only hosts repositories using http and https. (The addition
+Kallithea currently only hosts repositories using http and https. (The addition
 of ssh hosting is a planned future feature.) However you can easily use ssh in
-parallel with RhodeCode. (Repository access via ssh is a standard "out of
+parallel with Kallithea. (Repository access via ssh is a standard "out of
 the box" feature of mercurial_ and you can use this to access any of the
-repositories that RhodeCode is hosting. See PublishingRepositories_)
+repositories that Kallithea is hosting. See PublishingRepositories_)
 
-RhodeCode repository structures are kept in directories with the same name
+Kallithea repository structures are kept in directories with the same name
 as the project. When using repository groups, each group is a subdirectory.
 This allows you to easily use ssh for accessing repositories.
 
 In order to use ssh you need to make sure that your web-server and the users
 login accounts have the correct permissions set on the appropriate directories.
 (Note that these permissions are independent of any permissions you have set up
-using the RhodeCode web interface.)
+using the Kallithea web interface.)
 
-If your main directory (the same as set in RhodeCode settings) is for example
-set to **/home/hg** and the repository you are using is named `rhodecode`, then
+If your main directory (the same as set in Kallithea settings) is for example
+set to **/home/hg** and the repository you are using is named `kallithea`, then
 to clone via ssh you should run::
 
-    hg clone ssh://user@server.com/home/hg/rhodecode
+    hg clone ssh://user@server.com/home/hg/kallithea
 
 Using other external tools such as mercurial-server_ or using ssh key based
 authentication is fully supported.
 
 Note: In an advanced setup, in order for your ssh access to use the same
-permissions as set up via the RhodeCode web interface, you can create an
-authentication hook to connect to the rhodecode db and runs check functions for
+permissions as set up via the Kallithea web interface, you can create an
+authentication hook to connect to the Kallithea db and runs check functions for
 permissions against that.
 
 Setting up Whoosh full text search
@@ -116,7 +116,7 @@ Starting from version 1.1 the whoosh index can be build by using the paster
 command ``make-index``. To use ``make-index`` you must specify the configuration
 file that stores the location of the index. You may specify the location of the
 repositories (`--repo-location`).  If not specified, this value is retrieved
-from the RhodeCode database.  This was required prior to 1.2.  Starting from
+from the Kallithea database.  This was required prior to 1.2.  Starting from
 version 1.2 it is also possible to specify a comma separated list of
 repositories (`--index-only`) to build index only on chooses repositories
 skipping any other found in repos location
@@ -135,14 +135,14 @@ For a full index rebuild use::
 
 building index just for chosen repositories is possible with such command::
 
- paster make-index production.ini --index-only=vcs,rhodecode
+ paster make-index production.ini --index-only=vcs,kallithea
 
 
 In order to do periodical index builds and keep your index always up to date.
 It's recommended to do a crontab entry for incremental indexing.
 An example entry might look like this::
 
-    /path/to/python/bin/paster make-index /path/to/rhodecode/production.ini
+    /path/to/python/bin/paster make-index /path/to/kallithea/production.ini
 
 When using incremental mode (the default) whoosh will check the last
 modification date of each file and add it to be reindexed if a newer file is
@@ -156,7 +156,7 @@ or in the admin panel you can check `build from scratch` flag.
 Setting up LDAP support
 -----------------------
 
-RhodeCode starting from version 1.1 supports ldap authentication. In order
+Kallithea starting from version 1.1 supports ldap authentication. In order
 to use LDAP, you have to install the python-ldap_ package. This package is
 available via pypi, so you can install it by running
 
@@ -314,7 +314,7 @@ LDAP Search Scope : required
 
 Login Attribute : required
     The LDAP record attribute that will be matched as the USERNAME or
-    ACCOUNT used to connect to RhodeCode.  This will be added to `LDAP
+    ACCOUNT used to connect to Kallithea.  This will be added to `LDAP
     Filter`_ for locating the User object.  If `LDAP Filter`_ is specified as
     "LDAPFILTER", `Login Attribute`_ is specified as "uid" and the user has
     connected as "jsmith" then the `LDAP Filter`_ will be augmented as below
@@ -338,19 +338,19 @@ Email Attribute : required
     The LDAP record attribute which represents the user's email address.
 
 If all data are entered correctly, and python-ldap_ is properly installed
-users should be granted access to RhodeCode with ldap accounts.  At this
-time user information is copied from LDAP into the RhodeCode user database.
+users should be granted access to Kallithea with ldap accounts.  At this
+time user information is copied from LDAP into the Kallithea user database.
 This means that updates of an LDAP user object may not be reflected as a
-user update in RhodeCode.
+user update in Kallithea.
 
 If You have problems with LDAP access and believe You entered correct
-information check out the RhodeCode logs, any error messages sent from LDAP
+information check out the Kallithea logs, any error messages sent from LDAP
 will be saved there.
 
 Active Directory
 ''''''''''''''''
 
-RhodeCode can use Microsoft Active Directory for user authentication.  This
+Kallithea can use Microsoft Active Directory for user authentication.  This
 is done through an LDAP or LDAPS connection to Active Directory.  The
 following LDAP configuration settings are typical for using Active
 Directory ::
@@ -368,32 +368,32 @@ appropriately configured.
 Authentication by container or reverse-proxy
 --------------------------------------------
 
-Starting with version 1.3, RhodeCode supports delegating the authentication
+Starting with version 1.3, Kallithea supports delegating the authentication
 of users to its WSGI container, or to a reverse-proxy server through which all
 clients access the application.
 
-When these authentication methods are enabled in RhodeCode, it uses the
+When these authentication methods are enabled in Kallithea, it uses the
 username that the container/proxy (Apache/Nginx/etc) authenticated and doesn't
 perform the authentication itself. The authorization, however, is still done by
-RhodeCode according to its settings.
+Kallithea according to its settings.
 
 When a user logs in for the first time using these authentication methods,
-a matching user account is created in RhodeCode with default permissions. An
-administrator can then modify it using RhodeCode's admin interface.
+a matching user account is created in Kallithea with default permissions. An
+administrator can then modify it using Kallithea's admin interface.
 It's also possible for an administrator to create accounts and configure their
 permissions before the user logs in for the first time.
 
 Container-based authentication
 ''''''''''''''''''''''''''''''
 
-In a container-based authentication setup, RhodeCode reads the user name from
+In a container-based authentication setup, Kallithea reads the user name from
 the ``REMOTE_USER`` server variable provided by the WSGI container.
 
 After setting up your container (see `Apache's WSGI config`_), you'd need
 to configure it to require authentication on the location configured for
-RhodeCode.
+Kallithea.
 
-In order for RhodeCode to start using the provided username, you should set the
+In order for Kallithea to start using the provided username, you should set the
 following in the [app:main] section of your .ini file::
 
     container_auth_enabled = true
@@ -402,7 +402,7 @@ following in the [app:main] section of your .ini file::
 Proxy pass-through authentication
 '''''''''''''''''''''''''''''''''
 
-In a proxy pass-through authentication setup, RhodeCode reads the user name
+In a proxy pass-through authentication setup, Kallithea reads the user name
 from the ``X-Forwarded-User`` request header, which should be configured to be
 sent by the reverse-proxy server.
 
@@ -420,8 +420,8 @@ reverse-proxy setup with basic auth::
       SetEnvIf X-Url-Scheme https HTTPS=1
 
       AuthType Basic
-      AuthName "RhodeCode authentication"
-      AuthUserFile /home/web/rhodecode/.htpasswd
+      AuthName "Kallithea authentication"
+      AuthUserFile /home/web/kallithea/.htpasswd
       require valid-user
 
       RequestHeader unset X-Forwarded-User
@@ -432,7 +432,7 @@ reverse-proxy setup with basic auth::
       RequestHeader set X-Forwarded-User %{RU}e
     </Location>
 
-In order for RhodeCode to start using the forwarded username, you should set
+In order for Kallithea to start using the forwarded username, you should set
 the following in the [app:main] section of your .ini file::
 
     proxypass_auth_enabled = true
@@ -446,7 +446,7 @@ the following in the [app:main] section of your .ini file::
 Integration with Issue trackers
 -------------------------------
 
-RhodeCode provides a simple integration with issue trackers. It's possible
+Kallithea provides a simple integration with issue trackers. It's possible
 to define a regular expression that will fetch issue id stored in commit
 messages and replace that with an url to this issue. To enable this simply
 uncomment following variables in the ini file::
@@ -483,18 +483,18 @@ can be found at *kallithea.lib.hooks*.
 Changing default encoding
 -------------------------
 
-By default RhodeCode uses utf8 encoding, starting from 1.3 series this
+By default Kallithea uses utf8 encoding, starting from 1.3 series this
 can be changed, simply edit default_encoding in .ini file to desired one.
-This affects many parts in rhodecode including committers names, filenames,
-encoding of commit messages. In addition RhodeCode can detect if `chardet`
-library is installed. If `chardet` is detected RhodeCode will fallback to it
+This affects many parts in Kallithea including committers names, filenames,
+encoding of commit messages. In addition Kallithea can detect if `chardet`
+library is installed. If `chardet` is detected Kallithea will fallback to it
 when there are encode/decode errors.
 
 
 Setting Up Celery
 -----------------
 
-Since version 1.1 celery is configured by the rhodecode ini configuration files.
+Since version 1.1 celery is configured by the Kallithea ini configuration files.
 Simply set use_celery=true in the ini file then add / change the configuration
 variables inside the ini file.
 
@@ -509,14 +509,14 @@ In order to start using celery run::
 
 .. note::
    Make sure you run this command from the same virtualenv, and with the same
-   user that rhodecode runs.
+   user that Kallithea runs.
 
 HTTPS support
 -------------
 
 There are two ways to enable https:
 
-- Set HTTP_X_URL_SCHEME in your http server headers, than rhodecode will
+- Set HTTP_X_URL_SCHEME in your http server headers, than Kallithea will
   recognize this headers and make proper https redirections
 - Alternatively, change the `force_https = true` flag in the ini configuration
   to force using https, no headers are needed than to enable https
@@ -558,8 +558,8 @@ Sample config for nginx using proxy::
     server {
        listen          443;
        server_name     your.kallithea.server;
-       access_log      /var/log/nginx/rhodecode.access.log;
-       error_log       /var/log/nginx/rhodecode.error.log;
+       access_log      /var/log/nginx/kallithea.access.log;
+       error_log       /var/log/nginx/kallithea.error.log;
 
        ssl on;
        ssl_certificate     your.kallithea.server.crt;
@@ -626,7 +626,7 @@ Here is a sample configuration file for apache using proxy::
             #Directive to properly generate url (clone url) for pylons
             ProxyPreserveHost On
 
-            #rhodecode instance
+            #kallithea instance
             ProxyPass / http://127.0.0.1:5000/
             ProxyPassReverse / http://127.0.0.1:5000/
 
@@ -668,7 +668,7 @@ then change <someprefix> into your chosen prefix
 Apache's WSGI config
 --------------------
 
-Alternatively, RhodeCode can be set up with Apache under mod_wsgi. For
+Alternatively, Kallithea can be set up with Apache under mod_wsgi. For
 that, you'll need to:
 
 - Install mod_wsgi. If using a Debian-based distro, you can install
@@ -681,7 +681,7 @@ that, you'll need to:
     a2enmod wsgi
 
 - Create a wsgi dispatch script, like the one below. Make sure you
-  check the paths correctly point to where you installed RhodeCode
+  check the paths correctly point to where you installed Kallithea
   and its Python Virtual Environment.
 - Enable the WSGIScriptAlias directive for the wsgi dispatch script,
   as in the following example. Once again, check the paths are
@@ -691,8 +691,8 @@ Here is a sample excerpt from an Apache Virtual Host configuration file::
 
     WSGIDaemonProcess pylons \
         threads=4 \
-        python-path=/home/web/rhodecode/pyenv/lib/python2.6/site-packages
-    WSGIScriptAlias / /home/web/rhodecode/dispatch.wsgi
+        python-path=/home/web/kallithea/pyenv/lib/python2.6/site-packages
+    WSGIScriptAlias / /home/web/kallithea/dispatch.wsgi
     WSGIPassAuthorization On
 
 .. note::
@@ -700,7 +700,7 @@ Here is a sample excerpt from an Apache Virtual Host configuration file::
    into above configuration
 
 .. note::
-   Running RhodeCode in multiprocess mode in apache is not supported,
+   Running Kallithea in multiprocess mode in apache is not supported,
    make sure you don't specify `processes=num` directive in the config
 
 
@@ -708,22 +708,22 @@ Example wsgi dispatch script::
 
     import os
     os.environ["HGENCODING"] = "UTF-8"
-    os.environ['PYTHON_EGG_CACHE'] = '/home/web/rhodecode/.egg-cache'
+    os.environ['PYTHON_EGG_CACHE'] = '/home/web/kallithea/.egg-cache'
 
     # sometimes it's needed to set the curent dir
-    os.chdir('/home/web/rhodecode/')
+    os.chdir('/home/web/kallithea/')
 
     import site
-    site.addsitedir("/home/web/rhodecode/pyenv/lib/python2.6/site-packages")
+    site.addsitedir("/home/web/kallithea/pyenv/lib/python2.6/site-packages")
 
     from paste.deploy import loadapp
     from paste.script.util.logging_config import fileConfig
 
-    fileConfig('/home/web/rhodecode/production.ini')
-    application = loadapp('config:/home/web/rhodecode/production.ini')
+    fileConfig('/home/web/kallithea/production.ini')
+    application = loadapp('config:/home/web/kallithea/production.ini')
 
 Note: when using mod_wsgi you'll need to install the same version of
-Mercurial that's inside RhodeCode's virtualenv also on the system's Python
+Mercurial that's inside Kallithea's virtualenv also on the system's Python
 environment.
 
 

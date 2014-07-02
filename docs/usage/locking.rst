@@ -1,7 +1,7 @@
 .. _locking:
 
 ===================================
-RhodeCode repository locking system
+Kallithea repository locking system
 ===================================
 
 
@@ -20,7 +20,7 @@ influence this state:
   user has write/admin permissions on this repo
 
 
-RhodeCode will remember the user id who locked the repo
+Kallithea will remember the user id who locked the repo
 only this specific user can unlock the repo (locked=false) by calling
 
 - `hg/git push <repo>`

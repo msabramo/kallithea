@@ -5,7 +5,7 @@ Step by step Installation for Windows
 =====================================
 
 
-RhodeCode step-by-step install Guide for Windows
+Kallithea step-by-step install Guide for Windows
 
 Target OS: Windows XP SP3 32bit English (Clean installation)
 + All Windows Updates until 24-may-2012
@@ -121,22 +121,22 @@ that came preinstalled in Vista/7 and can be installed in Windows XP.
   Typically: C:\\Python27
 
 
-Step5 - RhodeCode folder structure
+Step5 - Kallithea folder structure
 ----------------------------------
 
-Create a RhodeCode folder structure
+Create a Kallithea folder structure
 
-This is only a example to install RhodeCode, you can of course change
+This is only a example to install Kallithea, you can of course change
 it. However, this guide will follow the proposed structure, so please
 later adapt the paths if you change them. My recommendation is to use
 folders with NO SPACES. But you can try if you are brave...
 
 Create the following folder structure::
 
-  C:\RhodeCode
-  C:\RhodeCode\Bin
-  C:\RhodeCode\Env
-  C:\RhodeCode\Repos
+  C:\Kallithea
+  C:\Kallithea\Bin
+  C:\Kallithea\Env
+  C:\Kallithea\Repos
 
 
 Step6 - Install virtualenv
@@ -146,24 +146,24 @@ Install Virtual Env for Python
 
 Navigate to: http://www.virtualenv.org/en/latest/index.html#installation
 Right click on "virtualenv.py" file and choose "Save link as...".
-Download to C:\\RhodeCode (or whatever you want)
+Download to C:\\Kallithea (or whatever you want)
 (the file is located at
 https://raw.github.com/pypa/virtualenv/master/virtualenv.py)
 
-Create a virtual Python environment in C:\\RhodeCode\\Env (or similar). To
+Create a virtual Python environment in C:\\Kallithea\\Env (or similar). To
 do so, open a CMD (Python Path should be included in Step3), navigate
 where you downloaded "virtualenv.py", and write::
 
- python virtualenv.py C:\RhodeCode\Env
+ python virtualenv.py C:\Kallithea\Env
 
 (--no-site-packages is now the default behaviour of virtualenv, no need
 to include it)
 
 
-Step7 - Install RhodeCode
+Step7 - Install Kallithea
 -------------------------
 
-Finally, install RhodeCode
+Finally, install Kallithea
 
 Close previously opened command prompt/s, and open a Visual Studio 2008
 Command Prompt (**IMPORTANT!!**). To do so, go to Start Menu, and then open
@@ -186,31 +186,31 @@ to::
 
 In that CMD (loaded with VS2008 PATHs) type::
 
-  cd C:\RhodeCode\Env\Scripts (or similar)
+  cd C:\Kallithea\Env\Scripts (or similar)
   activate
 
-The prompt will change into "(Env) C:\\RhodeCode\\Env\\Scripts" or similar
+The prompt will change into "(Env) C:\\Kallithea\\Env\\Scripts" or similar
 (depending of your folder structure). Then type::
 
- pip install rhodecode
+ pip install kallithea
 
 (long step, please wait until fully complete)
 
 Some warnings will appear, don't worry as they are normal.
 
 
-Step8 - Configuring RhodeCode
+Step8 - Configuring Kallithea
 -----------------------------
 
 
-steps taken from http://packages.python.org/RhodeCode/setup.html
+steps taken from http://packages.python.org/Kallithea/setup.html
 
 You have to use the same Visual Studio 2008 command prompt as Step7, so
 if you closed it reopen it following the same commands (including the
 "activate" one). When ready, just type::
 
-  cd C:\RhodeCode\Bin
-  paster make-config RhodeCode production.ini
+  cd C:\Kallithea\Bin
+  paster make-config Kallithea production.ini
 
 Then, you must edit production.ini to fit your needs (ip address, ip
 port, mail settings, database, whatever). I recommend using NotePad++
@@ -224,11 +224,11 @@ your edits (if any), in the previous Command Prompt, type::
  paster setup-db production.ini
 
 (this time a NEW database will be installed, you must follow a different
-step to later UPGRADE to a newer RhodeCode version)
+step to later UPGRADE to a newer Kallithea version)
 
 The script will ask you for confirmation about creating a NEW database,
 answer yes (y)
-The script will ask you for repository path, answer C:\\RhodeCode\\Repos
+The script will ask you for repository path, answer C:\\Kallithea\\Repos
 (or similar)
 The script will ask you for admin username and password, answer "admin"
 + "123456" (or whatever you want)
@@ -239,11 +239,11 @@ If you make some mistake and the script does not end, don't worry, start
 it again.
 
 
-Step9 - Running RhodeCode
+Step9 - Running Kallithea
 -------------------------
 
 
-In the previous command prompt, being in the C:\\RhodeCode\\Bin folder,
+In the previous command prompt, being in the C:\\Kallithea\\Bin folder,
 just type::
 
  paster serve production.ini
@@ -261,7 +261,7 @@ again. Don't forget the "http://" in Internet Explorer
 What this Guide does not cover:
 
 - Installing Celery
-- Running RhodeCode as Windows Service. You can investigate here:
+- Running Kallithea as Windows Service. You can investigate here:
 
   - http://pypi.python.org/pypi/wsgisvc
   - http://ryrobes.com/python/running-python-scripts-as-a-windows-service/
@@ -275,18 +275,18 @@ What this Guide does not cover:
 Upgrading
 =========
 
-Stop running RhodeCode
+Stop running Kallithea
 Open a CommandPrompt like in Step7 (VS2008 path + activate) and type::
 
- easy_install -U rhodecode
- cd \RhodeCode\Bin
+ easy_install -U kallithea
+ cd \Kallithea\Bin
 
 { backup your production.ini file now} ::
 
- paster make-config RhodeCode production.ini
+ paster make-config Kallithea production.ini
 
 (check changes and update your production.ini accordingly) ::
 
  paster upgrade-db production.ini (update database)
 
-Full steps in http://packages.python.org/RhodeCode/upgrade.html
+Full steps in http://packages.python.org/Kallithea/upgrade.html

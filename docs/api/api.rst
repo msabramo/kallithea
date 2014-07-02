@@ -5,15 +5,15 @@ API
 ===
 
 
-Starting from RhodeCode version 1.2 a simple API was implemented.
+Starting from Kallithea version 1.2 a simple API was implemented.
 There's a single schema for calling all api methods. API is implemented
-with JSON protocol both ways. An url to send API request to RhodeCode is
+with JSON protocol both ways. An url to send API request to Kallithea is
 <your_server>/_admin/api
 
 API ACCESS FOR WEB VIEWS
 ++++++++++++++++++++++++
 
-API access can also be turned on for each web view in RhodeCode that is
+API access can also be turned on for each web view in Kallithea that is
 decorated with `@LoginRequired` decorator. To enable API access simple change
 the standard login decorator to `@LoginRequired(api_access=True)`.
 
@@ -21,7 +21,7 @@ To make this operation easier, starting from version 1.7.0 there's a white list
 of views that will have API access enabled. Simply edit `api_access_controllers_whitelist`
 option in your .ini file, and define views that should have API access enabled.
 Following example shows how to enable API access to patch/diff raw file and archive
-in RhodeCode::
+in Kallithea::
 
     api_access_controllers_whitelist =
         ChangesetController:changeset_patch,
@@ -30,7 +30,7 @@ in RhodeCode::
         FilesController:archivefile
 
 
-After this change, a rhodecode view can be accessed without login by adding a
+After this change, a Kallithea view can be accessed without login by adding a
 GET parameter `?api_key=<api_key>` to url. By default this is only
 enabled on RSS/ATOM feed views. Exposing raw diffs is a good way to integrate with
 3rd party services like code review, or build farms that could download archives.
@@ -62,7 +62,7 @@ Simply provide
     api_key can be found in your user account page
 
 
-RhodeCode API will return always a JSON-RPC response::
+Kallithea API will return always a JSON-RPC response::
 
     {
         "id":<id>, # matching id sent by request
@@ -78,8 +78,8 @@ and result will be null.
 API CLIENT
 ++++++++++
 
-From version 1.4 RhodeCode adds a script that allows to easily
-communicate with API. After installing RhodeCode a `kallithea-api` script
+From version 1.4 Kallithea adds a script that allows to easily
+communicate with API. After installing Kallithea a `kallithea-api` script
 will be available.
 
 To get started quickly simply run::
@@ -96,7 +96,7 @@ after that simply run any api command for example get_repo::
  kallithea-api get_repo
 
  calling {"api_key": "<apikey>", "id": 75, "args": {}, "method": "get_repo"} to http://127.0.0.1:5000
- rhodecode said:
+ Kallithea said:
  {'error': 'Missing non optional `repoid` arg in JSON DATA',
   'id': 75,
   'result': None}
@@ -105,10 +105,10 @@ Ups looks like we forgot to add an argument
 
 Let's try again now giving the repoid as parameters::
 
-    kallithea-api get_repo repoid:rhodecode
+    kallithea-api get_repo repoid:myrepo
 
-    calling {"api_key": "<apikey>", "id": 39, "args": {"repoid": "rhodecode"}, "method": "get_repo"} to http://127.0.0.1:5000
-    rhodecode said:
+    calling {"api_key": "<apikey>", "id": 39, "args": {"repoid": "myrepo"}, "method": "get_repo"} to http://127.0.0.1:5000
+    Kallithea said:
     {'error': None,
      'id': 39,
      'result': <json data...>}
@@ -146,7 +146,7 @@ rescan_repos
 ------------
 
 Dispatch rescan repositories action. If remove_obsolete is set
-RhodeCode will delete repos that are in database but not in the filesystem.
+Kallithea will delete repos that are in database but not in the filesystem.
 This command can be executed only using api_key belonging to user with admin
 rights.
 
@@ -225,7 +225,7 @@ OUTPUT::
 show_ip
 -------
 
-Shows IP address as seen from RhodeCode server, together with all
+Shows IP address as seen from Kallithea server, together with all
 defined IP addresses for given user.
 This command can be executed only using api_key belonging to user with admin
 rights.
