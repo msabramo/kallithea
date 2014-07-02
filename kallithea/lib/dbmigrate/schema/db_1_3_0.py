@@ -215,7 +215,7 @@ class Setting(Base, BaseModel):
             raise Exception('Could not get application settings !')
         settings = {}
         for each in ret:
-            settings['rhodecode_' + each.app_settings_name] = \
+            settings[each.app_settings_name] = \
                 each.app_settings_value
 
         return settings

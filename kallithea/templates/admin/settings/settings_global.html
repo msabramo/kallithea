@@ -5,48 +5,48 @@ ${h.form(url('admin_settings_global'), method='post')}
 
              <div class="field">
                 <div class="label">
-                    <label for="rhodecode_title">${_('Site branding')}:</label>
+                    <label for="title">${_('Site branding')}:</label>
                 </div>
                 <div class="input">
-                    ${h.text('rhodecode_title',size=30)}
+                    ${h.text('title',size=30)}
                     <span class="help-block">${_('Set a custom title for your Kallithea Service.')}</span>
                 </div>
              </div>
 
             <div class="field">
                 <div class="label">
-                    <label for="rhodecode_realm">${_('HTTP authentication realm')}:</label>
+                    <label for="realm">${_('HTTP authentication realm')}:</label>
                 </div>
                 <div class="input">
-                    ${h.text('rhodecode_realm',size=30)}
+                    ${h.text('realm',size=30)}
                 </div>
             </div>
 
             <div class="field">
                 <div class="label">
-                    <label for="rhodecode_ga_code">${_('Google Analytics code')}:</label>
+                    <label for="ga_code">${_('Google Analytics code')}:</label>
                 </div>
                 <div class="input">
-                    ${h.text('rhodecode_ga_code',size=30)}
+                    ${h.text('ga_code',size=30)}
                 </div>
             </div>
 
             <div class="field">
                 <div class="label">
-                    <label for="rhodecode_captcha_public_key">${_('ReCaptcha public key')}:</label>
+                    <label for="captcha_public_key">${_('ReCaptcha public key')}:</label>
                 </div>
                 <div class="input">
-                    ${h.text('rhodecode_captcha_public_key',size=60)}
+                    ${h.text('captcha_public_key',size=60)}
                     <span class="help-block">${_('Public key for reCaptcha system.')}</span>
                 </div>
             </div>
 
             <div class="field">
                 <div class="label">
-                    <label for="rhodecode_captcha_private_key">${_('ReCaptcha private key')}:</label>
+                    <label for="captcha_private_key">${_('ReCaptcha private key')}:</label>
                 </div>
                 <div class="input">
-                    ${h.text('rhodecode_captcha_private_key',size=60)}
+                    ${h.text('captcha_private_key',size=60)}
                     <span class="help-block">${_('Private key for reCaptcha system. Setting this value will enable captcha on registration')}</span>
                 </div>
             </div>

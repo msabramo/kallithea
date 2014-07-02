@@ -303,11 +303,11 @@ def ApplicationSettingsForm():
     class _ApplicationSettingsForm(formencode.Schema):
         allow_extra_fields = True
         filter_extra_fields = False
-        rhodecode_title = v.UnicodeString(strip=True, not_empty=False)
-        rhodecode_realm = v.UnicodeString(strip=True, min=1, not_empty=True)
-        rhodecode_ga_code = v.UnicodeString(strip=True, min=1, not_empty=False)
-        rhodecode_captcha_public_key = v.UnicodeString(strip=True, min=1, not_empty=False)
-        rhodecode_captcha_private_key = v.UnicodeString(strip=True, min=1, not_empty=False)
+        title = v.UnicodeString(strip=True, not_empty=False)
+        realm = v.UnicodeString(strip=True, min=1, not_empty=True)
+        ga_code = v.UnicodeString(strip=True, min=1, not_empty=False)
+        captcha_public_key = v.UnicodeString(strip=True, min=1, not_empty=False)
+        captcha_private_key = v.UnicodeString(strip=True, min=1, not_empty=False)
 
     return _ApplicationSettingsForm
 
@@ -316,18 +316,18 @@ def ApplicationVisualisationForm():
     class _ApplicationVisualisationForm(formencode.Schema):
         allow_extra_fields = True
         filter_extra_fields = False
-        rhodecode_show_public_icon = v.StringBoolean(if_missing=False)
-        rhodecode_show_private_icon = v.StringBoolean(if_missing=False)
-        rhodecode_stylify_metatags = v.StringBoolean(if_missing=False)
+        show_public_icon = v.StringBoolean(if_missing=False)
+        show_private_icon = v.StringBoolean(if_missing=False)
+        stylify_metatags = v.StringBoolean(if_missing=False)
 
-        rhodecode_repository_fields = v.StringBoolean(if_missing=False)
-        rhodecode_lightweight_journal = v.StringBoolean(if_missing=False)
-        rhodecode_dashboard_items = v.Int(min=5, not_empty=True)
-        rhodecode_admin_grid_items = v.Int(min=5, not_empty=True)
-        rhodecode_show_version = v.StringBoolean(if_missing=False)
-        rhodecode_use_gravatar = v.StringBoolean(if_missing=False)
-        rhodecode_gravatar_url = v.UnicodeString(min=3)
-        rhodecode_clone_uri_tmpl = v.UnicodeString(min=3)
+        repository_fields = v.StringBoolean(if_missing=False)
+        lightweight_journal = v.StringBoolean(if_missing=False)
+        dashboard_items = v.Int(min=5, not_empty=True)
+        admin_grid_items = v.Int(min=5, not_empty=True)
+        show_version = v.StringBoolean(if_missing=False)
+        use_gravatar = v.StringBoolean(if_missing=False)
+        gravatar_url = v.UnicodeString(min=3)
+        clone_uri_tmpl = v.UnicodeString(min=3)
 
     return _ApplicationVisualisationForm
 

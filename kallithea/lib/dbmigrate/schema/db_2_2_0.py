@@ -272,7 +272,7 @@ class Setting(Base, BaseModel):
             raise Exception('Could not get application settings !')
         settings = {}
         for each in ret:
-            settings['rhodecode_' + each.app_settings_name] = \
+            settings[each.app_settings_name] = \
                 each.app_settings_value
 
         return settings
@@ -1188,7 +1188,7 @@ class Repository(Base, BaseModel):
                 if self.locked[1] else None
         )
         rc_config = Setting.get_app_settings()
-        repository_fields = str2bool(rc_config.get('rhodecode_repository_fields'))
+        repository_fields = str2bool(rc_config.get('repository_fields'))
         if repository_fields:
             for f in self.extra_fields:
                 data[f.field_key_prefixed] = f.field_value

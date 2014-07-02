@@ -80,17 +80,17 @@ class TestAdminSettingsController(TestController):
         old_realm = 'Kallithea authentication'
         new_ga_code = 'ga-test-123456789'
         response = self.app.post(url('admin_settings_global'),
-                        params=dict(rhodecode_title=old_title,
-                                 rhodecode_realm=old_realm,
-                                 rhodecode_ga_code=new_ga_code,
-                                 rhodecode_captcha_private_key='',
-                                 rhodecode_captcha_public_key='',
+                        params=dict(title=old_title,
+                                 realm=old_realm,
+                                 ga_code=new_ga_code,
+                                 captcha_private_key='',
+                                 captcha_public_key='',
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
 
         self.assertEqual(Setting
-                         .get_app_settings()['rhodecode_ga_code'], new_ga_code)
+                         .get_app_settings()['ga_code'], new_ga_code)
 
         response = response.follow()
         response.mustcontain("""_gaq.push(['_setAccount', '%s']);""" % new_ga_code)
@@ -101,16 +101,16 @@ class TestAdminSettingsController(TestController):
         old_realm = 'Kallithea authentication'
         new_ga_code = ''
         response = self.app.post(url('admin_settings_global'),
-                        params=dict(rhodecode_title=old_title,
-                                 rhodecode_realm=old_realm,
-                                 rhodecode_ga_code=new_ga_code,
-                                 rhodecode_captcha_private_key='',
-                                 rhodecode_captcha_public_key='',
+                        params=dict(title=old_title,
+                                 realm=old_realm,
+                                 ga_code=new_ga_code,
+                                 captcha_private_key='',
+                                 captcha_public_key='',
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
         self.assertEqual(Setting
-                        .get_app_settings()['rhodecode_ga_code'], new_ga_code)
+                        .get_app_settings()['ga_code'], new_ga_code)
 
         response = response.follow()
         response.mustcontain(no=["_gaq.push(['_setAccount', '%s']);" % new_ga_code])
@@ -121,16 +121,16 @@ class TestAdminSettingsController(TestController):
         old_realm = 'Kallithea authentication'
         new_ga_code = ''
         response = self.app.post(url('admin_settings_global'),
-                        params=dict(rhodecode_title=old_title,
-                                 rhodecode_realm=old_realm,
-                                 rhodecode_ga_code=new_ga_code,
-                                 rhodecode_captcha_private_key='1234567890',
-                                 rhodecode_captcha_public_key='1234567890',
+                        params=dict(title=old_title,
+                                 realm=old_realm,
+                                 ga_code=new_ga_code,
+                                 captcha_private_key='1234567890',
+                                 captcha_public_key='1234567890',
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
         self.assertEqual(Setting
-                        .get_app_settings()['rhodecode_captcha_private_key'], '1234567890')
+                        .get_app_settings()['captcha_private_key'], '1234567890')
 
         response = self.app.get(url('register'))
         response.mustcontain('captcha')
@@ -141,16 +141,16 @@ class TestAdminSettingsController(TestController):
         old_realm = 'Kallithea authentication'
         new_ga_code = ''
         response = self.app.post(url('admin_settings_global'),
-                        params=dict(rhodecode_title=old_title,
-                                 rhodecode_realm=old_realm,
-                                 rhodecode_ga_code=new_ga_code,
-                                 rhodecode_captcha_private_key='',
-                                 rhodecode_captcha_public_key='1234567890',
+                        params=dict(title=old_title,
+                                 realm=old_realm,
+                                 ga_code=new_ga_code,
+                                 captcha_private_key='',
+                                 captcha_public_key='1234567890',
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
         self.assertEqual(Setting
-                        .get_app_settings()['rhodecode_captcha_private_key'], '')
+                        .get_app_settings()['captcha_private_key'], '')
 
         response = self.app.get(url('register'))
         response.mustcontain(no=['captcha'])
@@ -163,16 +163,16 @@ class TestAdminSettingsController(TestController):
 
         for new_title in ['Changed', 'Żółwik', old_title]:
             response = self.app.post(url('admin_settings_global'),
-                        params=dict(rhodecode_title=new_title,
-                                 rhodecode_realm=old_realm,
-                                 rhodecode_ga_code='',
-                                 rhodecode_captcha_private_key='',
-                                 rhodecode_captcha_public_key='',
+                        params=dict(title=new_title,
+                                 realm=old_realm,
+                                 ga_code='',
+                                 captcha_private_key='',
+                                 captcha_public_key='',
                                 ))
 
             self.checkSessionFlash(response, 'Updated application settings')
             self.assertEqual(Setting
-                             .get_app_settings()['rhodecode_title'],
+                             .get_app_settings()['title'],
                              new_title.decode('utf-8'))
 
             response = response.follow()

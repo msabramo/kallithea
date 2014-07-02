@@ -291,19 +291,19 @@ class BaseController(WSGIController):
         c.visual = AttributeDict({})
 
         ## DB stored
-        c.visual.show_public_icon = str2bool(rc_config.get('rhodecode_show_public_icon'))
-        c.visual.show_private_icon = str2bool(rc_config.get('rhodecode_show_private_icon'))
-        c.visual.stylify_metatags = str2bool(rc_config.get('rhodecode_stylify_metatags'))
-        c.visual.dashboard_items = safe_int(rc_config.get('rhodecode_dashboard_items', 100))
-        c.visual.admin_grid_items = safe_int(rc_config.get('rhodecode_admin_grid_items', 100))
-        c.visual.repository_fields = str2bool(rc_config.get('rhodecode_repository_fields'))
-        c.visual.show_version = str2bool(rc_config.get('rhodecode_show_version'))
-        c.visual.use_gravatar = str2bool(rc_config.get('rhodecode_use_gravatar'))
-        c.visual.gravatar_url = rc_config.get('rhodecode_gravatar_url')
+        c.visual.show_public_icon = str2bool(rc_config.get('show_public_icon'))
+        c.visual.show_private_icon = str2bool(rc_config.get('show_private_icon'))
+        c.visual.stylify_metatags = str2bool(rc_config.get('stylify_metatags'))
+        c.visual.dashboard_items = safe_int(rc_config.get('dashboard_items', 100))
+        c.visual.admin_grid_items = safe_int(rc_config.get('admin_grid_items', 100))
+        c.visual.repository_fields = str2bool(rc_config.get('repository_fields'))
+        c.visual.show_version = str2bool(rc_config.get('show_version'))
+        c.visual.use_gravatar = str2bool(rc_config.get('use_gravatar'))
+        c.visual.gravatar_url = rc_config.get('gravatar_url')
 
-        c.ga_code = rc_config.get('rhodecode_ga_code')
-        c.site_name = rc_config.get('rhodecode_title')
-        c.clone_uri_tmpl = rc_config.get('rhodecode_clone_uri_tmpl')
+        c.ga_code = rc_config.get('ga_code')
+        c.site_name = rc_config.get('title')
+        c.clone_uri_tmpl = rc_config.get('clone_uri_tmpl')
 
         ## INI stored
         c.visual.allow_repo_location_change = str2bool(config.get('allow_repo_location_change', True))

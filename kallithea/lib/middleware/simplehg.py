@@ -135,7 +135,7 @@ class SimpleHg(BaseVCSController):
                 # If not authenticated by the container, running basic auth
                 if not username:
                     self.authenticate.realm = \
-                        safe_str(self.config['rhodecode_realm'])
+                        safe_str(self.config['realm'])
                     result = self.authenticate(environ)
                     if isinstance(result, str):
                         AUTH_TYPE.update(environ, 'basic')

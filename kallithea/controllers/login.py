@@ -166,9 +166,9 @@ class LoginController(BaseController):
             .AuthUser.permissions['global']
 
         settings = Setting.get_app_settings()
-        captcha_private_key = settings.get('rhodecode_captcha_private_key')
+        captcha_private_key = settings.get('captcha_private_key')
         c.captcha_active = bool(captcha_private_key)
-        c.captcha_public_key = settings.get('rhodecode_captcha_public_key')
+        c.captcha_public_key = settings.get('captcha_public_key')
 
         if request.POST:
             register_form = RegisterForm()()
@@ -213,9 +213,9 @@ class LoginController(BaseController):
 
     def password_reset(self):
         settings = Setting.get_app_settings()
-        captcha_private_key = settings.get('rhodecode_captcha_private_key')
+        captcha_private_key = settings.get('captcha_private_key')
         c.captcha_active = bool(captcha_private_key)
-        c.captcha_public_key = settings.get('rhodecode_captcha_public_key')
+        c.captcha_public_key = settings.get('captcha_public_key')
 
         if request.POST:
             password_reset_form = PasswordResetForm()()

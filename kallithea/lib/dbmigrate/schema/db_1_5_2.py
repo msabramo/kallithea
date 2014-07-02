@@ -217,7 +217,7 @@ class Setting(Base, BaseModel):
             raise Exception('Could not get application settings !')
         settings = {}
         for each in ret:
-            settings['rhodecode_' + each.app_settings_name] = \
+            settings[each.app_settings_name] = \
                 each.app_settings_value
 
         return settings
@@ -879,7 +879,7 @@ class Repository(Base, BaseModel):
 
         # inject ui extra param to log this action via push logger
         for k, v in extras.items():
-            repo._repo.ui.setconfig('rhodecode_extras', k, v)
+            repo._repo.ui.setconfig('extras', k, v)
 
     @classmethod
     def is_valid(cls, repo_name):

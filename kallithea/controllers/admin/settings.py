@@ -246,23 +246,23 @@ class SettingsController(BaseController):
 
             try:
                 sett1 = Setting.create_or_update('title',
-                                            form_result['rhodecode_title'])
+                                            form_result['title'])
                 Session().add(sett1)
 
                 sett2 = Setting.create_or_update('realm',
-                                            form_result['rhodecode_realm'])
+                                            form_result['realm'])
                 Session().add(sett2)
 
                 sett3 = Setting.create_or_update('ga_code',
-                                            form_result['rhodecode_ga_code'])
+                                            form_result['ga_code'])
                 Session().add(sett3)
 
                 sett4 = Setting.create_or_update('captcha_public_key',
-                                    form_result['rhodecode_captcha_public_key'])
+                                    form_result['captcha_public_key'])
                 Session().add(sett4)
 
                 sett5 = Setting.create_or_update('captcha_private_key',
-                                    form_result['rhodecode_captcha_private_key'])
+                                    form_result['captcha_private_key'])
                 Session().add(sett5)
 
                 Session().commit()
@@ -306,16 +306,16 @@ class SettingsController(BaseController):
 
             try:
                 settings = [
-                    ('show_public_icon', 'rhodecode_show_public_icon', 'bool'),
-                    ('show_private_icon', 'rhodecode_show_private_icon', 'bool'),
-                    ('stylify_metatags', 'rhodecode_stylify_metatags', 'bool'),
-                    ('repository_fields', 'rhodecode_repository_fields', 'bool'),
-                    ('dashboard_items', 'rhodecode_dashboard_items', 'int'),
-                    ('admin_grid_items', 'rhodecode_admin_grid_items', 'int'),
-                    ('show_version', 'rhodecode_show_version', 'bool'),
-                    ('use_gravatar', 'rhodecode_use_gravatar', 'bool'),
-                    ('gravatar_url', 'rhodecode_gravatar_url', 'unicode'),
-                    ('clone_uri_tmpl', 'rhodecode_clone_uri_tmpl', 'unicode'),
+                    ('show_public_icon', 'show_public_icon', 'bool'),
+                    ('show_private_icon', 'show_private_icon', 'bool'),
+                    ('stylify_metatags', 'stylify_metatags', 'bool'),
+                    ('repository_fields', 'repository_fields', 'bool'),
+                    ('dashboard_items', 'dashboard_items', 'int'),
+                    ('admin_grid_items', 'admin_grid_items', 'int'),
+                    ('show_version', 'show_version', 'bool'),
+                    ('use_gravatar', 'use_gravatar', 'bool'),
+                    ('gravatar_url', 'gravatar_url', 'unicode'),
+                    ('clone_uri_tmpl', 'clone_uri_tmpl', 'unicode'),
                 ]
                 for setting, form_key, type_ in settings:
                     sett = Setting.create_or_update(setting,
@@ -464,7 +464,7 @@ class SettingsController(BaseController):
 
         import kallithea
         c.ini = kallithea.CONFIG
-        c.rhodecode_update_url = defaults.get('rhodecode_update_url')
+        c.update_url = defaults.get('update_url')
         server_info = Setting.get_server_info()
         for key, val in server_info.iteritems():
             setattr(c, key, val)
@@ -486,7 +486,7 @@ class SettingsController(BaseController):
 
         defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
-        _update_url = defaults.get('rhodecode_update_url', '')
+        _update_url = defaults.get('update_url', '')
         _update_url = "" # FIXME: disabled
 
         _err = lambda s: '<div style="color:#ff8888; padding:4px 0px">%s</div>' % (s)
