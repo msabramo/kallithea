@@ -2080,6 +2080,78 @@ var YUI_paginator = function(links_per_page, containers){
     return pagi
 }
 
+var YUI_datatable = function(data, fields, columns, countnode, sortkey){
+    var myDataSource = new YAHOO.util.DataSource(data);
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "records",
+        fields: fields,
+        };
+    myDataSource.doBeforeCallback = function(req, raw, res, cb) {
+        // This is the filter function
+        var data     = res.results || [],
+            filtered = [],
+            i, l;
+
+        if (req) {
+            req = req.toLowerCase();
+            for (i = 0; i<data.length; i++) {
+                var pos = data[i].raw_name.toLowerCase().indexOf(req)
+                if (pos != -1) {
+                    filtered.push(data[i]);
+                }
+            }
+            res.results = filtered;
+        }
+        $(countnode).html(res.results.length);
+        return res;
+    }
+
+    var myDataTable = new YAHOO.widget.DataTable("datatable_list_wrap", columns, myDataSource, {
+        sortedBy: {key:sortkey, dir:"asc"},
+        paginator: YUI_paginator(25, ['user-paginator']),
+        MSG_SORTASC: _TM['MSG_SORTASC'],
+        MSG_SORTDESC: _TM['MSG_SORTDESC'],
+        MSG_EMPTY: _TM['MSG_EMPTY'],
+        MSG_ERROR: _TM['MSG_ERROR'],
+        MSG_LOADING: _TM['MSG_LOADING'],
+        });
+    myDataTable.subscribe('postRenderEvent',function(oArgs) {
+        tooltip_activate();
+        quick_repo_menu();
+        });
+
+    var filterTimeout = null;
+    var $q_filter = $('#q_filter');
+
+    updateFilter  = function () {
+        // Reset timeout
+        filterTimeout = null;
+
+        // Reset sort
+        var state = myDataTable.getState();
+        state.sortedBy = {key:sortkey, dir:YAHOO.widget.DataTable.CLASS_ASC};
+
+        // Get filtered data
+        myDataSource.sendRequest($q_filter.val(), {
+            success : myDataTable.onDataReturnInitializeTable,
+            failure : myDataTable.onDataReturnInitializeTable,
+            scope   : myDataTable,
+            argument: state});
+        };
+
+    $q_filter.click(function(){
+            if(!$q_filter.hasClass('loaded')){
+                //TODO: load here full list later to do search within groups
+                $q_filter.addClass('loaded');
+            }
+        });
+
+    $q_filter.keyup(function (e) {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(updateFilter, 600);
+        });
+}
 
 // global hooks after DOM is loaded
 
