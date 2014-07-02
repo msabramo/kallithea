@@ -62,13 +62,13 @@ def fixups(models, _SESSION):
         _SESSION().add(gr)
         _SESSION().commit()
 
-    repo_store_path = models.RhodeCodeUi.get_repos_location()
+    repo_store_path = models.Ui.get_repos_location()
     _store = os.path.join(repo_store_path, '.cache', 'largefiles')
     notify('Setting largefiles usercache')
     print _store
 
-    if not models.RhodeCodeUi.get_by_key('usercache'):
-        largefiles = models.RhodeCodeUi()
+    if not models.Ui.get_by_key('usercache'):
+        largefiles = models.Ui()
         largefiles.ui_section = 'largefiles'
         largefiles.ui_key = 'usercache'
         largefiles.ui_value = _store

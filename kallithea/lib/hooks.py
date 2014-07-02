@@ -388,7 +388,7 @@ def handle_git_receive(repo_path, revs, env, hook_type='post'):
     from sqlalchemy import engine_from_config
     from kallithea.config.environment import load_environment
     from kallithea.model import init_model
-    from kallithea.model.db import RhodeCodeUi
+    from kallithea.model.db import Ui
     from kallithea.lib.utils import make_ui
     extras = _extract_extras(env)
 
@@ -422,7 +422,7 @@ def handle_git_receive(repo_path, revs, env, hook_type='post'):
         pre_push(baseui, repo)
 
     # if push hook is enabled via web interface
-    elif hook_type == 'post' and _hooks.get(RhodeCodeUi.HOOK_PUSH):
+    elif hook_type == 'post' and _hooks.get(Ui.HOOK_PUSH):
         rev_data = []
         for l in revs:
             old_rev, new_rev, ref = l.split(' ')

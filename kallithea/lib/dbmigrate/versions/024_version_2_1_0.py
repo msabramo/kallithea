@@ -42,7 +42,7 @@ def fixups(models, _SESSION):
     notify('migrating options from .ini file')
     use_gravatar = str2bool(config.get('use_gravatar'))
     print('Setting gravatar use to: %s' % use_gravatar)
-    sett = models.RhodeCodeSetting.create_or_update('use_gravatar',
+    sett = models.Setting.create_or_update('use_gravatar',
                                                     use_gravatar, 'bool')
     _SESSION().add(sett)
     _SESSION.commit()
@@ -52,7 +52,7 @@ def fixups(models, _SESSION):
         gravatar_url = config.get('alternative_gravatar_url')
 
     print('Setting gravatar url to:%s' % gravatar_url)
-    sett = models.RhodeCodeSetting.create_or_update('gravatar_url',
+    sett = models.Setting.create_or_update('gravatar_url',
                                                     gravatar_url, 'unicode')
     _SESSION().add(sett)
     _SESSION.commit()
@@ -61,7 +61,7 @@ def fixups(models, _SESSION):
     clone_uri_tmpl = models.Repository.DEFAULT_CLONE_URI
     print('settings new clone url template to %s' % clone_uri_tmpl)
 
-    sett = models.RhodeCodeSetting.create_or_update('clone_uri_tmpl',
+    sett = models.Setting.create_or_update('clone_uri_tmpl',
                                                     clone_uri_tmpl, 'unicode')
     _SESSION().add(sett)
     _SESSION.commit()

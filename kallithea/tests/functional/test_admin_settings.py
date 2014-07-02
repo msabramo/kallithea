@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from kallithea.lib.auth import get_crypt_password, check_password
-from kallithea.model.db import User, RhodeCodeSetting, Repository, RhodeCodeUi
+from kallithea.model.db import User, Setting, Repository, Ui
 from kallithea.tests import *
 from kallithea.tests.fixture import Fixture
 from kallithea.lib import helpers as h
@@ -58,7 +58,7 @@ class TestAdminSettingsController(TestController):
         response.mustcontain('test_hooks_2')
         response.mustcontain('cd /tmp2')
 
-        hook_id = RhodeCodeUi.get_by_key('test_hooks_2').ui_id
+        hook_id = Ui.get_by_key('test_hooks_2').ui_id
         ## delete
         self.app.post(url('admin_settings_hooks'),
                         params=dict(hook_id=hook_id))
@@ -89,7 +89,7 @@ class TestAdminSettingsController(TestController):
 
         self.checkSessionFlash(response, 'Updated application settings')
 
-        self.assertEqual(RhodeCodeSetting
+        self.assertEqual(Setting
                          .get_app_settings()['rhodecode_ga_code'], new_ga_code)
 
         response = response.follow()
@@ -109,7 +109,7 @@ class TestAdminSettingsController(TestController):
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
-        self.assertEqual(RhodeCodeSetting
+        self.assertEqual(Setting
                         .get_app_settings()['rhodecode_ga_code'], new_ga_code)
 
         response = response.follow()
@@ -129,7 +129,7 @@ class TestAdminSettingsController(TestController):
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
-        self.assertEqual(RhodeCodeSetting
+        self.assertEqual(Setting
                         .get_app_settings()['rhodecode_captcha_private_key'], '1234567890')
 
         response = self.app.get(url('register'))
@@ -149,7 +149,7 @@ class TestAdminSettingsController(TestController):
                                  ))
 
         self.checkSessionFlash(response, 'Updated application settings')
-        self.assertEqual(RhodeCodeSetting
+        self.assertEqual(Setting
                         .get_app_settings()['rhodecode_captcha_private_key'], '')
 
         response = self.app.get(url('register'))
@@ -171,7 +171,7 @@ class TestAdminSettingsController(TestController):
                                 ))
 
             self.checkSessionFlash(response, 'Updated application settings')
-            self.assertEqual(RhodeCodeSetting
+            self.assertEqual(Setting
                              .get_app_settings()['rhodecode_title'],
                              new_title.decode('utf-8'))
 

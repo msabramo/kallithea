@@ -33,7 +33,7 @@ import datetime
 from kallithea.lib.utils2 import LazyProperty
 
 from kallithea.model import BaseModel
-from kallithea.model.db import RepoGroup, RhodeCodeUi, UserRepoGroupToPerm, \
+from kallithea.model.db import RepoGroup, Ui, UserRepoGroupToPerm, \
     User, Permission, UserGroupRepoGroupToPerm, UserGroup, Repository
 
 log = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ class RepoGroupModel(BaseModel):
         Gets the repositories root path from database
         """
 
-        q = RhodeCodeUi.get_by_key('/')
+        q = Ui.get_by_key('/')
         return q.ui_value
 
     def _create_default_perms(self, new_group):

@@ -34,7 +34,7 @@ import traceback
 from paste.httpheaders import REMOTE_USER, AUTH_TYPE
 from webob.exc import HTTPNotFound, HTTPForbidden, HTTPInternalServerError, \
     HTTPNotAcceptable
-from kallithea.model.db import User, RhodeCodeUi
+from kallithea.model.db import User, Ui
 
 from kallithea.lib.utils2 import safe_str, fix_PATH, get_server_url,\
     _set_extras
@@ -289,7 +289,7 @@ class SimpleGit(BaseVCSController):
         if action == 'pull':
             # stupid git, emulate pre-pull hook !
             pre_pull(ui=baseui, repo=_repo._repo)
-        if action == 'pull' and _hooks.get(RhodeCodeUi.HOOK_PULL):
+        if action == 'pull' and _hooks.get(Ui.HOOK_PULL):
             log_pull_action(ui=baseui, repo=_repo._repo)
 
     def __inject_extras(self, repo_path, baseui, extras={}):

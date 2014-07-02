@@ -1,5 +1,5 @@
 from kallithea.tests import *
-from kallithea.model.db import RhodeCodeSetting
+from kallithea.model.db import Setting
 
 
 class TestAuthSettingsController(TestController):
@@ -47,7 +47,7 @@ class TestAuthSettingsController(TestController):
         response = self.app.post(url=test_url, params=params)
         self.checkSessionFlash(response, 'Auth settings updated successfully')
 
-        new_settings = RhodeCodeSetting.get_auth_settings()
+        new_settings = Setting.get_auth_settings()
         self.assertEqual(new_settings['auth_ldap_host'], u'dc.example.com',
                          'fail db write compare')
 

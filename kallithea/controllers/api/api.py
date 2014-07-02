@@ -45,7 +45,7 @@ from kallithea.model.user import UserModel
 from kallithea.model.user_group import UserGroupModel
 from kallithea.model.gist import GistModel
 from kallithea.model.db import (
-    Repository, RhodeCodeSetting, UserIpMap, Permission, User, Gist,
+    Repository, Setting, UserIpMap, Permission, User, Gist,
     RepoGroup)
 from kallithea.lib.compat import json
 from kallithea.lib.exceptions import (
@@ -528,7 +528,7 @@ class ApiController(JSONRPCController):
           }
           error :  null
         """
-        return RhodeCodeSetting.get_server_info()
+        return Setting.get_server_info()
 
     def get_user(self, apiuser, userid=Optional(OAttr('apiuser'))):
         """
@@ -1464,7 +1464,7 @@ class ApiController(JSONRPCController):
         if RepoModel().get_by_repo_name(repo_name):
             raise JSONRPCError("repo `%s` already exist" % repo_name)
 
-        defs = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
+        defs = Setting.get_default_repo_settings(strip_prefix=True)
         if isinstance(private, Optional):
             private = defs.get('repo_private') or Optional.extract(private)
         if isinstance(repo_type, Optional):

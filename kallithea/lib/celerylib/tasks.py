@@ -305,7 +305,7 @@ def send_email(recipients, subject, body='', html_body=''):
 def create_repo(form_data, cur_user):
     from kallithea.model.repo import RepoModel
     from kallithea.model.user import UserModel
-    from kallithea.model.db import RhodeCodeSetting
+    from kallithea.model.db import Setting
 
     log = get_logger(create_repo)
     DBS = get_session()
@@ -327,7 +327,7 @@ def create_repo(form_data, cur_user):
     state = form_data.get('repo_state', Repository.STATE_PENDING)
 
     # repo creation defaults, private and repo_type are filled in form
-    defs = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
+    defs = Setting.get_default_repo_settings(strip_prefix=True)
     enable_statistics = defs.get('repo_enable_statistics')
     enable_locking = defs.get('repo_enable_locking')
     enable_downloads = defs.get('repo_enable_downloads')

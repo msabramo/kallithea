@@ -42,8 +42,8 @@ from kallithea.lib.hooks import log_create_repository, log_delete_repository
 from kallithea.model import BaseModel
 from kallithea.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \
     UserRepoGroupToPerm, UserGroupRepoGroupToPerm, User, Permission, \
-    Statistics, UserGroup, RhodeCodeUi, RepoGroup, \
-    RhodeCodeSetting, RepositoryField
+    Statistics, UserGroup, Ui, RepoGroup, \
+    Setting, RepositoryField
 
 from kallithea.lib import helpers as h
 from kallithea.lib.auth import HasRepoPermissionAny, HasUserGroupPermissionAny
@@ -91,7 +91,7 @@ class RepoModel(BaseModel):
         Gets the repositories root path from database
         """
 
-        q = self.sa.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key == '/').one()
+        q = self.sa.query(Ui).filter(Ui.ui_key == '/').one()
         return q.ui_value
 
     def get(self, repo_id, cache=False):

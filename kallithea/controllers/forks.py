@@ -40,7 +40,7 @@ from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator, \
     NotAnonymous, HasRepoPermissionAny, HasPermissionAnyDecorator
 from kallithea.lib.base import BaseRepoController, render
 from kallithea.model.db import Repository, RepoGroup, UserFollowing, User,\
-    RhodeCodeUi
+    Ui
 from kallithea.model.repo import RepoModel
 from kallithea.model.forms import RepoForkForm
 from kallithea.model.scm import ScmModel, RepoGroupList
@@ -62,7 +62,7 @@ class ForksController(BaseRepoController):
         c.repo_groups_choices = map(lambda k: unicode(k[0]), c.repo_groups)
         choices, c.landing_revs = ScmModel().get_repo_landing_revs()
         c.landing_revs_choices = choices
-        c.can_update = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_UPDATE).ui_active
+        c.can_update = Ui.get_by_key(Ui.HOOK_UPDATE).ui_active
 
     def __load_data(self, repo_name=None):
         """
@@ -167,7 +167,7 @@ class ForksController(BaseRepoController):
             form_result = _form.to_python(dict(request.POST))
 
             # an approximation that is better than nothing
-            if not RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_UPDATE).ui_active:
+            if not Ui.get_by_key(Ui.HOOK_UPDATE).ui_active:
                 form_result['update_after_clone'] = False
 
             # create fork is done sometimes async on celery, db transaction

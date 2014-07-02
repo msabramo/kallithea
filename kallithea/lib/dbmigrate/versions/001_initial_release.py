@@ -14,7 +14,7 @@ from kallithea.lib.dbmigrate.migrate import *
 
 log = logging.getLogger(__name__)
 
-class RhodeCodeSetting(Base):
+class Setting(Base):
     __tablename__ = 'rhodecode_settings'
     __table_args__ = (UniqueConstraint('app_settings_name'), {'useexisting':True})
     app_settings_id = Column("app_settings_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
@@ -26,10 +26,10 @@ class RhodeCodeSetting(Base):
         self.app_settings_value = v
 
     def __repr__(self):
-        return "<RhodeCodeSetting('%s:%s')>" % (self.app_settings_name,
+        return "<Setting('%s:%s')>" % (self.app_settings_name,
                                                 self.app_settings_value)
 
-class RhodeCodeUi(Base):
+class Ui(Base):
     __tablename__ = 'rhodecode_ui'
     __table_args__ = {'useexisting':True}
     ui_id = Column("ui_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)

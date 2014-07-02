@@ -37,8 +37,8 @@ from kallithea import __dbversion__, __py_version__
 from kallithea.model.user import UserModel
 from kallithea.lib.utils import ask_ok
 from kallithea.model import init_model
-from kallithea.model.db import User, Permission, RhodeCodeUi, \
-    RhodeCodeSetting, UserToPerm, DbMigrateVersion, RepoGroup, \
+from kallithea.model.db import User, Permission, Ui, \
+    Setting, UserToPerm, DbMigrateVersion, RepoGroup, \
     UserRepoGroupToPerm, CacheInvalidation, UserGroup, Repository
 
 from sqlalchemy.engine import create_engine
@@ -185,8 +185,8 @@ class DbManage(object):
         Fixes a old rhodecode version path into new one without a '*'
         """
 
-        paths = self.sa.query(RhodeCodeUi)\
-                .filter(RhodeCodeUi.ui_key == '/')\
+        paths = self.sa.query(Ui)\
+                .filter(Ui.ui_key == '/')\
                 .scalar()
 
         paths.ui_value = paths.ui_value.replace('*', '')
@@ -223,7 +223,7 @@ class DbManage(object):
         Fixes rhodecode settings adds ga_code key for google analytics
         """
 
-        hgsettings3 = RhodeCodeSetting('ga_code', '')
+        hgsettings3 = Setting('ga_code', '')
 
         try:
             self.sa.add(hgsettings3)
@@ -291,52 +291,52 @@ class DbManage(object):
         """
 
         #HOOKS
-        hooks1_key = RhodeCodeUi.HOOK_UPDATE
-        hooks1_ = self.sa.query(RhodeCodeUi)\
-            .filter(RhodeCodeUi.ui_key == hooks1_key).scalar()
+        hooks1_key = Ui.HOOK_UPDATE
+        hooks1_ = self.sa.query(Ui)\
+            .filter(Ui.ui_key == hooks1_key).scalar()
 
-        hooks1 = RhodeCodeUi() if hooks1_ is None else hooks1_
+        hooks1 = Ui() if hooks1_ is None else hooks1_
         hooks1.ui_section = 'hooks'
         hooks1.ui_key = hooks1_key
         hooks1.ui_value = 'hg update >&2'
         hooks1.ui_active = False
         self.sa.add(hooks1)
 
-        hooks2_key = RhodeCodeUi.HOOK_REPO_SIZE
-        hooks2_ = self.sa.query(RhodeCodeUi)\
-            .filter(RhodeCodeUi.ui_key == hooks2_key).scalar()
-        hooks2 = RhodeCodeUi() if hooks2_ is None else hooks2_
+        hooks2_key = Ui.HOOK_REPO_SIZE
+        hooks2_ = self.sa.query(Ui)\
+            .filter(Ui.ui_key == hooks2_key).scalar()
+        hooks2 = Ui() if hooks2_ is None else hooks2_
         hooks2.ui_section = 'hooks'
         hooks2.ui_key = hooks2_key
         hooks2.ui_value = 'python:kallithea.lib.hooks.repo_size'
         self.sa.add(hooks2)
 
-        hooks3 = RhodeCodeUi()
+        hooks3 = Ui()
         hooks3.ui_section = 'hooks'
-        hooks3.ui_key = RhodeCodeUi.HOOK_PUSH
+        hooks3.ui_key = Ui.HOOK_PUSH
         hooks3.ui_value = 'python:kallithea.lib.hooks.log_push_action'
         self.sa.add(hooks3)
 
-        hooks4 = RhodeCodeUi()
+        hooks4 = Ui()
         hooks4.ui_section = 'hooks'
-        hooks4.ui_key = RhodeCodeUi.HOOK_PRE_PUSH
+        hooks4.ui_key = Ui.HOOK_PRE_PUSH
         hooks4.ui_value = 'python:kallithea.lib.hooks.pre_push'
         self.sa.add(hooks4)
 
-        hooks5 = RhodeCodeUi()
+        hooks5 = Ui()
         hooks5.ui_section = 'hooks'
-        hooks5.ui_key = RhodeCodeUi.HOOK_PULL
+        hooks5.ui_key = Ui.HOOK_PULL
         hooks5.ui_value = 'python:kallithea.lib.hooks.log_pull_action'
         self.sa.add(hooks5)
 
-        hooks6 = RhodeCodeUi()
+        hooks6 = Ui()
         hooks6.ui_section = 'hooks'
-        hooks6.ui_key = RhodeCodeUi.HOOK_PRE_PULL
+        hooks6.ui_key = Ui.HOOK_PRE_PULL
         hooks6.ui_value = 'python:kallithea.lib.hooks.pre_pull'
         self.sa.add(hooks6)
 
         # enable largefiles
-        largefiles = RhodeCodeUi()
+        largefiles = Ui()
         largefiles.ui_section = 'extensions'
         largefiles.ui_key = 'largefiles'
         largefiles.ui_value = ''
@@ -344,7 +344,7 @@ class DbManage(object):
 
         # set default largefiles cache dir, defaults to
         # /repo location/.cache/largefiles
-        largefiles = RhodeCodeUi()
+        largefiles = Ui()
         largefiles.ui_section = 'largefiles'
         largefiles.ui_key = 'usercache'
         largefiles.ui_value = os.path.join(repo_store_path, '.cache',
@@ -352,7 +352,7 @@ class DbManage(object):
         self.sa.add(largefiles)
 
         # enable hgsubversion disabled by default
-        hgsubversion = RhodeCodeUi()
+        hgsubversion = Ui()
         hgsubversion.ui_section = 'extensions'
         hgsubversion.ui_key = 'hgsubversion'
         hgsubversion.ui_value = ''
@@ -360,7 +360,7 @@ class DbManage(object):
         self.sa.add(hgsubversion)
 
         # enable hggit disabled by default
-        hggit = RhodeCodeUi()
+        hggit = Ui()
         hggit.ui_section = 'extensions'
         hggit.ui_key = 'hggit'
         hggit.ui_value = ''
@@ -376,10 +376,10 @@ class DbManage(object):
 
         for k, v, t in [('auth_plugins', 'kallithea.lib.auth_modules.auth_rhodecode', 'list'),
                      ('auth_rhodecode_enabled', 'True', 'bool')]:
-            if skip_existing and RhodeCodeSetting.get_by_name(k) != None:
+            if skip_existing and Setting.get_by_name(k) != None:
                 log.debug('Skipping option %s' % k)
                 continue
-            setting = RhodeCodeSetting(k, v, t)
+            setting = Setting(k, v, t)
             self.sa.add(setting)
 
     def create_default_options(self, skip_existing=False):
@@ -392,10 +392,10 @@ class DbManage(object):
             ('default_repo_private', False, 'bool'),
             ('default_repo_type', 'hg', 'unicode')]:
 
-            if skip_existing and RhodeCodeSetting.get_by_name(k) is not None:
+            if skip_existing and Setting.get_by_name(k) is not None:
                 log.debug('Skipping option %s' % k)
                 continue
-            setting = RhodeCodeSetting(k, v, t)
+            setting = Setting(k, v, t)
             self.sa.add(setting)
 
     def fixup_groups(self):
@@ -506,7 +506,7 @@ class DbManage(object):
             #('phases', 'publish', 'false')
         ]
         for section, key, value in ui_config:
-            ui_conf = RhodeCodeUi()
+            ui_conf = Ui()
             setattr(ui_conf, 'ui_section', section)
             setattr(ui_conf, 'ui_key', key)
             setattr(ui_conf, 'ui_value', value)
@@ -525,10 +525,10 @@ class DbManage(object):
             ('use_gravatar', True, 'bool'),
             ('gravatar_url', User.DEFAULT_GRAVATAR_URL, 'unicode'),
             ('clone_uri_tmpl', Repository.DEFAULT_CLONE_URI, 'unicode'),
-            ('update_url', RhodeCodeSetting.DEFAULT_UPDATE_URL, 'unicode'),
+            ('update_url', Setting.DEFAULT_UPDATE_URL, 'unicode'),
         ]
         for key, val, type_ in settings:
-            sett = RhodeCodeSetting(key, val, type_)
+            sett = Setting(key, val, type_)
             self.sa.add(sett)
 
         self.create_auth_plugin_options()

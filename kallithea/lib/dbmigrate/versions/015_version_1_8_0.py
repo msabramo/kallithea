@@ -24,7 +24,7 @@ def upgrade(migrate_engine):
     """
     _reset_base(migrate_engine)
     from kallithea.lib.dbmigrate.schema import db_1_8_0
-    tbl = db_1_8_0.RhodeCodeSetting.__table__
+    tbl = db_1_8_0.Setting.__table__
     app_settings_type = Column("app_settings_type",
                                String(255, convert_unicode=False, assert_unicode=None),
                                nullable=True, unique=None, default=None)
@@ -64,10 +64,10 @@ def fixups(models, _SESSION):
     ]
 
     for name, default, type_ in settings:
-        setting = models.RhodeCodeSetting.get_by_name(name)
+        setting = models.Setting.get_by_name(name)
         if not setting:
             # if we don't have this option create it
-            setting = models.RhodeCodeSetting(name, default, type_)
+            setting = models.Setting(name, default, type_)
 
         # fix certain key to new defaults
         if name in ['title', 'show_public_icon']:

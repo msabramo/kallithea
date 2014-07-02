@@ -49,7 +49,7 @@ from kallithea.lib.utils import get_repo_slug
 from kallithea.lib.exceptions import UserCreationError
 from kallithea.model import meta
 
-from kallithea.model.db import Repository, RhodeCodeUi, User, RhodeCodeSetting
+from kallithea.model.db import Repository, Ui, User, Setting
 from kallithea.model.notification import NotificationModel
 from kallithea.model.scm import ScmModel
 from kallithea.model.meta import Session
@@ -215,7 +215,7 @@ class BaseVCSController(object):
         """
         org_proto = environ['wsgi._org_proto']
         #check if we have SSL required  ! if not it's a bad request !
-        require_ssl = str2bool(RhodeCodeUi.get_by_key('push_ssl').ui_value)
+        require_ssl = str2bool(Ui.get_by_key('push_ssl').ui_value)
         if require_ssl and org_proto == 'http':
             log.debug('proto is %s and SSL is required BAD REQUEST !'
                       % org_proto)
@@ -283,7 +283,7 @@ class BaseController(WSGIController):
         __before__ is called before controller methods and after __call__
         """
         c.kallithea_version = __version__
-        rc_config = RhodeCodeSetting.get_app_settings()
+        rc_config = Setting.get_app_settings()
 
         # Visual options
         c.visual = AttributeDict({})

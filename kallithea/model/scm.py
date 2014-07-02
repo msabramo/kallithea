@@ -52,7 +52,7 @@ from kallithea.lib.auth import HasRepoPermissionAny, HasRepoGroupPermissionAny,\
 from kallithea.lib.utils import get_filesystem_repos, make_ui, \
     action_logger
 from kallithea.model import BaseModel
-from kallithea.model.db import Repository, RhodeCodeUi, CacheInvalidation, \
+from kallithea.model.db import Repository, Ui, CacheInvalidation, \
     UserFollowing, UserLog, User, RepoGroup, PullRequest
 from kallithea.lib.hooks import log_push_action
 from kallithea.lib.exceptions import NonRelativePathError, IMCCommitError
@@ -256,7 +256,7 @@ class ScmModel(BaseModel):
         Gets the repositories root path from database
         """
 
-        q = self.sa.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key == '/').one()
+        q = self.sa.query(Ui).filter(Ui.ui_key == '/').one()
 
         return q.ui_value
 

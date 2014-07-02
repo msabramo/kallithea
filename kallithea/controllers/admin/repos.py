@@ -43,7 +43,7 @@ from kallithea.lib.helpers import get_token
 from kallithea.lib.vcs import RepositoryError
 from kallithea.model.meta import Session
 from kallithea.model.db import User, Repository, UserFollowing, RepoGroup,\
-    RhodeCodeSetting, RepositoryField
+    Setting, RepositoryField
 from kallithea.model.forms import RepoForm, RepoFieldForm, RepoPermsForm
 from kallithea.model.scm import ScmModel, RepoGroupList, RepoList
 from kallithea.model.repo import RepoModel
@@ -192,7 +192,7 @@ class ReposController(BaseRepoController):
         c.new_repo = repo_name_slug(new_repo)
 
         ## apply the defaults from defaults page
-        defaults = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
+        defaults = Setting.get_default_repo_settings(strip_prefix=True)
         if parent_group:
             defaults.update({'repo_group': parent_group})
 

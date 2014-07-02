@@ -154,7 +154,7 @@ class BaseModel(object):
         return '<DB:%s>' % (self.__class__.__name__)
 
 
-class RhodeCodeSetting(Base, BaseModel):
+class Setting(Base, BaseModel):
     SETTINGS_TYPES = {
         'str': safe_str,
         'int': safe_int,
@@ -317,7 +317,7 @@ class RhodeCodeSetting(Base, BaseModel):
         return info
 
 
-class RhodeCodeUi(Base, BaseModel):
+class Ui(Base, BaseModel):
     __tablename__ = 'rhodecode_ui'
     __table_args__ = (
         UniqueConstraint('ui_key'),
@@ -960,8 +960,8 @@ class Repository(Base, BaseModel):
 
         :param cls:
         """
-        q = Session().query(RhodeCodeUi)\
-            .filter(RhodeCodeUi.ui_key == cls.url_sep())
+        q = Session().query(Ui)\
+            .filter(Ui.ui_key == cls.url_sep())
         q = q.options(FromCache("sql_cache_short", "repository_repo_path"))
         return q.one().ui_value
 
@@ -1010,7 +1010,7 @@ class Repository(Base, BaseModel):
         Returns base full path for that repository means where it actually
         exists on a filesystem
         """
-        q = Session().query(RhodeCodeUi).filter(RhodeCodeUi.ui_key ==
+        q = Session().query(Ui).filter(Ui.ui_key ==
                                               Repository.url_sep())
         q = q.options(FromCache("sql_cache_short", "repository_repo_path"))
         return q.one().ui_value
@@ -1089,7 +1089,7 @@ class Repository(Base, BaseModel):
             locked_date=time_to_datetime(self.locked[1]) \
                 if self.locked[1] else None
         )
-        rc_config = RhodeCodeSetting.get_app_settings()
+        rc_config = Setting.get_app_settings()
         repository_fields = str2bool(rc_config.get('rhodecode_repository_fields'))
         if repository_fields:
             for f in self.extra_fields:
@@ -2284,8 +2284,8 @@ class Gist(Base, BaseModel):
         :param cls:
         """
         from kallithea.model.gist import GIST_STORE_LOC
-        q = Session().query(RhodeCodeUi)\
-            .filter(RhodeCodeUi.ui_key == URL_SEP)
+        q = Session().query(Ui)\
+            .filter(Ui.ui_key == URL_SEP)
         q = q.options(FromCache("sql_cache_short", "repository_repo_path"))
         return os.path.join(q.one().ui_value, GIST_STORE_LOC)
 

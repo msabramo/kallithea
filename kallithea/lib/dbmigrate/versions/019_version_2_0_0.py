@@ -25,7 +25,7 @@ def upgrade(migrate_engine):
     """
     _reset_base(migrate_engine)
     from kallithea.lib.dbmigrate.schema import db_2_0_0
-    tbl = db_2_0_0.RhodeCodeSetting.__table__
+    tbl = db_2_0_0.Setting.__table__
     settings_value = tbl.columns.app_settings_value
     settings_value.alter(type=String(4096))
 

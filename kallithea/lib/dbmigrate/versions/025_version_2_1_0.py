@@ -37,7 +37,7 @@ def downgrade(migrate_engine):
 
 def fixups(models, _SESSION):
     notify('Creating upgrade URL')
-    sett = models.RhodeCodeSetting.create_or_update('update_url',
-                            models.RhodeCodeSetting.DEFAULT_UPDATE_URL, 'unicode')
+    sett = models.Setting.create_or_update('update_url',
+                            models.Setting.DEFAULT_UPDATE_URL, 'unicode')
     _SESSION().add(sett)
     _SESSION.commit()

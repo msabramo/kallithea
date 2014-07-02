@@ -1,5 +1,5 @@
 from kallithea.tests import *
-from kallithea.model.db import RhodeCodeSetting
+from kallithea.model.db import Setting
 
 
 class TestDefaultsController(TestController):
@@ -36,7 +36,7 @@ class TestDefaultsController(TestController):
         response = self.app.put(url('default', id='default'), params=params)
         self.checkSessionFlash(response, 'Default settings updated successfully')
 
-        defs = RhodeCodeSetting.get_default_repo_settings()
+        defs = Setting.get_default_repo_settings()
         self.assertEqual(params, defs)
 
     def test_update_params_false_git(self):
@@ -50,7 +50,7 @@ class TestDefaultsController(TestController):
         }
         response = self.app.put(url('default', id='default'), params=params)
         self.checkSessionFlash(response, 'Default settings updated successfully')
-        defs = RhodeCodeSetting.get_default_repo_settings()
+        defs = Setting.get_default_repo_settings()
         self.assertEqual(params, defs)
 
     def test_update_browser_fakeout(self):

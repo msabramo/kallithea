@@ -52,8 +52,8 @@ from kallithea.lib.vcs.exceptions import VCSError
 from kallithea.lib.caching_query import FromCache
 
 from kallithea.model import meta
-from kallithea.model.db import Repository, User, RhodeCodeUi, \
-    UserLog, RepoGroup, RhodeCodeSetting, CacheInvalidation, UserGroup
+from kallithea.model.db import Repository, User, Ui, \
+    UserLog, RepoGroup, Setting, CacheInvalidation, UserGroup
 from kallithea.model.meta import Session
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.lib.utils2 import safe_str, safe_unicode, get_current_authuser
@@ -373,7 +373,7 @@ def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
 
     elif read_from == 'db':
         sa = meta.Session()
-        ret = sa.query(RhodeCodeUi)\
+        ret = sa.query(Ui)\
             .options(FromCache("sql_cache_short", "get_hg_ui_settings"))\
             .all()
 
@@ -400,7 +400,7 @@ def set_app_settings(config):
 
     :param config:
     """
-    hgsettings = RhodeCodeSetting.get_app_settings()
+    hgsettings = Setting.get_app_settings()
 
     for k, v in hgsettings.items():
         config[k] = v
@@ -487,7 +487,7 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
     added = []
 
     ##creation defaults
-    defs = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
+    defs = Setting.get_default_repo_settings(strip_prefix=True)
     enable_statistics = defs.get('repo_enable_statistics')
     enable_locking = defs.get('repo_enable_locking')
     enable_downloads = defs.get('repo_enable_downloads')

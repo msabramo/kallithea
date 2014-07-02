@@ -119,10 +119,10 @@ def fixups(models, _SESSION):
         ('default_repo_private', False),
         ('default_repo_type', 'hg')]:
 
-        if skip_existing and models.RhodeCodeSetting.get_by_name(k) is not None:
+        if skip_existing and models.Setting.get_by_name(k) is not None:
             log.debug('Skipping option %s' % k)
             continue
-        setting = models.RhodeCodeSetting(k, v)
+        setting = models.Setting(k, v)
         _SESSION().add(setting)
 
     _SESSION().commit()

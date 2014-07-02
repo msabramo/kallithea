@@ -43,10 +43,10 @@ def fixups(models, _SESSION):
     ]
 
     for name, default, type_ in settings:
-        setting = models.RhodeCodeSetting.get_by_name(name)
+        setting = models.Setting.get_by_name(name)
         if not setting:
             # if we don't have this option create it
-            setting = models.RhodeCodeSetting(name, default, type_)
+            setting = models.Setting(name, default, type_)
         setting._app_settings_type = type_
         _SESSION().add(setting)
         _SESSION().commit()

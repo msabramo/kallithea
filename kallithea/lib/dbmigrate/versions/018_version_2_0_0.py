@@ -40,7 +40,7 @@ def fixups(models, _SESSION):
     plugins = 'kallithea.lib.auth_modules.auth_rhodecode'
     opts = []
     ldap_enabled = str2bool(getattr(
-        models.RhodeCodeSetting.get_by_name('ldap_active'),
+        models.Setting.get_by_name('ldap_active'),
         'app_settings_value', False))
     if ldap_enabled:
         plugins += ',kallithea.lib.auth_modules.auth_ldap'
@@ -50,10 +50,10 @@ def fixups(models, _SESSION):
     opts.append(('auth_rhodecode_enabled', 'True', 'bool'))
 
     for name, default, type_ in opts:
-        setting = models.RhodeCodeSetting.get_by_name(name)
+        setting = models.Setting.get_by_name(name)
         if not setting:
             # if we don't have this option create it
-            setting = models.RhodeCodeSetting(name, default, type_)
+            setting = models.Setting(name, default, type_)
 
         _SESSION().add(setting)
         _SESSION().commit()
@@ -67,12 +67,12 @@ def fixups(models, _SESSION):
                 ('ldap_attr_login', '', 'unicode'), ('ldap_attr_firstname', '', 'unicode'),
                 ('ldap_attr_lastname', '', 'unicode'), ('ldap_attr_email', '', 'unicode')]
     for k, v, t in old_ldap:
-        old_setting = models.RhodeCodeSetting.get_by_name(k)
+        old_setting = models.Setting.get_by_name(k)
         name = 'auth_%s' % k
-        setting = models.RhodeCodeSetting.get_by_name(name)
+        setting = models.Setting.get_by_name(name)
         if not setting:
             # if we don't have this option create it
-            setting = models.RhodeCodeSetting(name, old_setting.app_settings_value, t)
+            setting = models.Setting(name, old_setting.app_settings_value, t)
 
         _SESSION().add(setting)
         _SESSION().commit()

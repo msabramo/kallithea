@@ -34,7 +34,7 @@ from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.meta import Session
 from kallithea.model.scm import ScmModel
 from kallithea.model.gist import GistModel
-from kallithea.model.db import Repository, User, RhodeCodeSetting
+from kallithea.model.db import Repository, User, Setting
 from kallithea.lib.utils2 import time_to_datetime
 
 
@@ -2291,5 +2291,5 @@ class BaseTestApi(object):
     def test_api_get_server_info(self):
         id_, params = _build_data(self.apikey, 'get_server_info')
         response = api_call(self, params)
-        expected = RhodeCodeSetting.get_server_info()
+        expected = Setting.get_server_info()
         self._compare_ok(id_, expected, given=response.body)

@@ -39,7 +39,7 @@ from kallithea.lib.base import BaseController, render
 from kallithea.lib.celerylib import tasks, run_task
 from kallithea.lib.exceptions import HgsubversionImportError
 from kallithea.lib.utils import repo2db_mapper, set_app_settings
-from kallithea.model.db import RhodeCodeUi, Repository, RhodeCodeSetting
+from kallithea.model.db import Ui, Repository, Setting
 from kallithea.model.forms import ApplicationSettingsForm, \
     ApplicationUiSettingsForm, ApplicationVisualisationForm
 from kallithea.model.scm import ScmModel
@@ -62,7 +62,7 @@ class SettingsController(BaseController):
         super(SettingsController, self).__before__()
 
     def _get_hg_ui_settings(self):
-        ret = RhodeCodeUi.query().all()
+        ret = Ui.query().all()
 
         if not ret:
             raise Exception('Could not get application ui settings !')
@@ -104,46 +104,46 @@ class SettingsController(BaseController):
                 )
 
             try:
-                sett = RhodeCodeUi.get_by_key('push_ssl')
+                sett = Ui.get_by_key('push_ssl')
                 sett.ui_value = form_result['web_push_ssl']
                 Session().add(sett)
                 if c.visual.allow_repo_location_change:
-                    sett = RhodeCodeUi.get_by_key('/')
+                    sett = Ui.get_by_key('/')
                     sett.ui_value = form_result['paths_root_path']
                     Session().add(sett)
 
                 #HOOKS
-                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_UPDATE)
+                sett = Ui.get_by_key(Ui.HOOK_UPDATE)
                 sett.ui_active = form_result['hooks_changegroup_update']
                 Session().add(sett)
 
-                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_REPO_SIZE)
+                sett = Ui.get_by_key(Ui.HOOK_REPO_SIZE)
                 sett.ui_active = form_result['hooks_changegroup_repo_size']
                 Session().add(sett)
 
-                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_PUSH)
+                sett = Ui.get_by_key(Ui.HOOK_PUSH)
                 sett.ui_active = form_result['hooks_changegroup_push_logger']
                 Session().add(sett)
 
-                sett = RhodeCodeUi.get_by_key(RhodeCodeUi.HOOK_PULL)
+                sett = Ui.get_by_key(Ui.HOOK_PULL)
                 sett.ui_active = form_result['hooks_outgoing_pull_logger']
 
                 Session().add(sett)
 
                 ## EXTENSIONS
-                sett = RhodeCodeUi.get_by_key('largefiles')
+                sett = Ui.get_by_key('largefiles')
                 if not sett:
                     #make one if it's not there !
-                    sett = RhodeCodeUi()
+                    sett = Ui()
                     sett.ui_key = 'largefiles'
                     sett.ui_section = 'extensions'
                 sett.ui_active = form_result['extensions_largefiles']
                 Session().add(sett)
 
-                sett = RhodeCodeUi.get_by_key('hgsubversion')
+                sett = Ui.get_by_key('hgsubversion')
                 if not sett:
                     #make one if it's not there !
-                    sett = RhodeCodeUi()
+                    sett = Ui()
                     sett.ui_key = 'hgsubversion'
                     sett.ui_section = 'extensions'
 
@@ -155,10 +155,10 @@ class SettingsController(BaseController):
                         raise HgsubversionImportError
                 Session().add(sett)
 
-#                sett = RhodeCodeUi.get_by_key('hggit')
+#                sett = Ui.get_by_key('hggit')
 #                if not sett:
 #                    #make one if it's not there !
-#                    sett = RhodeCodeUi()
+#                    sett = Ui()
 #                    sett.ui_key = 'hggit'
 #                    sett.ui_section = 'extensions'
 #
@@ -180,7 +180,7 @@ class SettingsController(BaseController):
                 h.flash(_('Error occurred during updating '
                           'application settings'), category='error')
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         return htmlfill.render(
@@ -216,7 +216,7 @@ class SettingsController(BaseController):
                     category='success')
             return redirect(url('admin_settings_mapping'))
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         return htmlfill.render(
@@ -243,23 +243,23 @@ class SettingsController(BaseController):
                     encoding="UTF-8")
 
             try:
-                sett1 = RhodeCodeSetting.create_or_update('title',
+                sett1 = Setting.create_or_update('title',
                                             form_result['rhodecode_title'])
                 Session().add(sett1)
 
-                sett2 = RhodeCodeSetting.create_or_update('realm',
+                sett2 = Setting.create_or_update('realm',
                                             form_result['rhodecode_realm'])
                 Session().add(sett2)
 
-                sett3 = RhodeCodeSetting.create_or_update('ga_code',
+                sett3 = Setting.create_or_update('ga_code',
                                             form_result['rhodecode_ga_code'])
                 Session().add(sett3)
 
-                sett4 = RhodeCodeSetting.create_or_update('captcha_public_key',
+                sett4 = Setting.create_or_update('captcha_public_key',
                                     form_result['rhodecode_captcha_public_key'])
                 Session().add(sett4)
 
-                sett5 = RhodeCodeSetting.create_or_update('captcha_private_key',
+                sett5 = Setting.create_or_update('captcha_private_key',
                                     form_result['rhodecode_captcha_private_key'])
                 Session().add(sett5)
 
@@ -275,7 +275,7 @@ class SettingsController(BaseController):
 
             return redirect(url('admin_settings_global'))
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         return htmlfill.render(
@@ -316,7 +316,7 @@ class SettingsController(BaseController):
                     ('clone_uri_tmpl', 'rhodecode_clone_uri_tmpl', 'unicode'),
                 ]
                 for setting, form_key, type_ in settings:
-                    sett = RhodeCodeSetting.create_or_update(setting,
+                    sett = Setting.create_or_update(setting,
                                         form_result[form_key], type_)
                     Session().add(sett)
 
@@ -333,7 +333,7 @@ class SettingsController(BaseController):
 
             return redirect(url('admin_settings_visual'))
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         return htmlfill.render(
@@ -368,7 +368,7 @@ class SettingsController(BaseController):
             h.flash(_('Send email task created'), category='success')
             return redirect(url('admin_settings_email'))
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         import kallithea
@@ -394,10 +394,10 @@ class SettingsController(BaseController):
 
                 try:
                     if ui_value and ui_key:
-                        RhodeCodeUi.create_or_update_hook(ui_key, ui_value)
+                        Ui.create_or_update_hook(ui_key, ui_value)
                         h.flash(_('Added new hook'), category='success')
                     elif hook_id:
-                        RhodeCodeUi.delete(hook_id)
+                        Ui.delete(hook_id)
                         Session().commit()
 
                     # check for edits
@@ -405,7 +405,7 @@ class SettingsController(BaseController):
                     _d = request.POST.dict_of_lists()
                     for k, v in zip(_d.get('hook_ui_key', []),
                                     _d.get('hook_ui_value_new', [])):
-                        RhodeCodeUi.create_or_update_hook(k, v)
+                        Ui.create_or_update_hook(k, v)
                         update = True
 
                     if update:
@@ -418,11 +418,11 @@ class SettingsController(BaseController):
 
                 return redirect(url('admin_settings_hooks'))
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
-        c.hooks = RhodeCodeUi.get_builtin_hooks()
-        c.custom_hooks = RhodeCodeUi.get_custom_hooks()
+        c.hooks = Ui.get_builtin_hooks()
+        c.custom_hooks = Ui.get_custom_hooks()
 
         return htmlfill.render(
             render('admin/settings/settings.html'),
@@ -442,7 +442,7 @@ class SettingsController(BaseController):
             h.flash(_('Whoosh reindex task scheduled'), category='success')
             return redirect(url('admin_settings_search'))
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         return htmlfill.render(
@@ -457,13 +457,13 @@ class SettingsController(BaseController):
         # url('admin_settings_system')
         c.active = 'system'
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
 
         import kallithea
         c.rhodecode_ini = kallithea.CONFIG
         c.rhodecode_update_url = defaults.get('rhodecode_update_url')
-        server_info = RhodeCodeSetting.get_server_info()
+        server_info = Setting.get_server_info()
         for key, val in server_info.iteritems():
             setattr(c, key, val)
 
@@ -482,7 +482,7 @@ class SettingsController(BaseController):
         from kallithea.lib.verlib import NormalizedVersion
         from kallithea import __version__
 
-        defaults = RhodeCodeSetting.get_app_settings()
+        defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
         _update_url = defaults.get('rhodecode_update_url', '')
 

@@ -139,7 +139,7 @@ class BaseModel(object):
         Session.commit()
 
 
-class RhodeCodeSetting(Base, BaseModel):
+class Setting(Base, BaseModel):
     __tablename__ = 'rhodecode_settings'
     __table_args__ = (UniqueConstraint('app_settings_name'), {'extend_existing':True})
     app_settings_id = Column("app_settings_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
@@ -210,7 +210,7 @@ class RhodeCodeSetting(Base, BaseModel):
         return fd
 
 
-class RhodeCodeUi(Base, BaseModel):
+class Ui(Base, BaseModel):
     __tablename__ = 'rhodecode_ui'
     __table_args__ = (UniqueConstraint('ui_key'), {'extend_existing':True})
 
@@ -539,7 +539,7 @@ class Repository(Base, BaseModel):
 
         :param cls:
         """
-        q = Session.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key ==
+        q = Session.query(Ui).filter(Ui.ui_key ==
                                               cls.url_sep())
         q.options(FromCache("sql_cache_short", "repository_repo_path"))
         return q.one().ui_value
@@ -575,7 +575,7 @@ class Repository(Base, BaseModel):
         Returns base full path for that repository means where it actually
         exists on a filesystem
         """
-        q = Session.query(RhodeCodeUi).filter(RhodeCodeUi.ui_key ==
+        q = Session.query(Ui).filter(Ui.ui_key ==
                                               Repository.url_sep())
         q.options(FromCache("sql_cache_short", "repository_repo_path"))
         return q.one().ui_value
@@ -613,7 +613,7 @@ class Repository(Base, BaseModel):
         baseui._tcfg = config.config()
 
 
-        ret = RhodeCodeUi.query()\
+        ret = Ui.query()\
             .options(FromCache("sql_cache_short", "repository_repo_ui")).all()
 
         hg_ui = ret

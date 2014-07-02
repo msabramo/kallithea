@@ -40,7 +40,7 @@ from kallithea.lib.auth import AuthUser, HasPermissionAnyDecorator
 from kallithea.lib.auth_modules import importplugin
 from kallithea.lib.base import BaseController, render
 from kallithea.lib.exceptions import UserCreationError
-from kallithea.model.db import User, RhodeCodeSetting
+from kallithea.model.db import User, Setting
 from kallithea.model.forms import LoginForm, RegisterForm, PasswordResetForm
 from kallithea.model.user import UserModel
 from kallithea.model.meta import Session
@@ -141,7 +141,7 @@ class LoginController(BaseController):
                 h.flash(e, 'error')
 
         # check if we use container plugin, and try to login using it.
-        auth_plugins = RhodeCodeSetting.get_auth_plugins()
+        auth_plugins = Setting.get_auth_plugins()
         if any((importplugin(name).is_container_auth for name in auth_plugins)):
             from kallithea.lib import auth_modules
             try:
@@ -163,7 +163,7 @@ class LoginController(BaseController):
         c.auto_active = 'hg.register.auto_activate' in User.get_default_user()\
             .AuthUser.permissions['global']
 
-        settings = RhodeCodeSetting.get_app_settings()
+        settings = Setting.get_app_settings()
         captcha_private_key = settings.get('rhodecode_captcha_private_key')
         c.captcha_active = bool(captcha_private_key)
         c.captcha_public_key = settings.get('rhodecode_captcha_public_key')
@@ -210,7 +210,7 @@ class LoginController(BaseController):
         return render('/register.html')
 
     def password_reset(self):
-        settings = RhodeCodeSetting.get_app_settings()
+        settings = Setting.get_app_settings()
         captcha_private_key = settings.get('rhodecode_captcha_private_key')
         c.captcha_active = bool(captcha_private_key)
         c.captcha_public_key = settings.get('rhodecode_captcha_public_key')

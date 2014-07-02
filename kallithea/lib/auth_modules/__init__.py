@@ -23,7 +23,7 @@ from kallithea.lib.utils2 import str2bool
 from kallithea.lib.compat import formatted_json, hybrid_property
 from kallithea.lib.auth import PasswordGenerator
 from kallithea.model.user import UserModel
-from kallithea.model.db import RhodeCodeSetting, User, UserGroup
+from kallithea.model.db import Setting, User, UserGroup
 from kallithea.model.meta import Session
 from kallithea.model.user_group import UserGroupModel
 
@@ -358,7 +358,7 @@ def authenticate(username, password, environ=None):
     :returns: None if auth failed, plugin_user dict if auth is correct
     """
 
-    auth_plugins = RhodeCodeSetting.get_auth_plugins()
+    auth_plugins = Setting.get_auth_plugins()
     log.debug('Authentication against %s plugins' % (auth_plugins,))
     for module in auth_plugins:
         try:
@@ -372,7 +372,7 @@ def authenticate(username, password, environ=None):
         plugin_settings = {}
         for v in plugin.plugin_settings():
             conf_key = "auth_%s_%s" % (plugin_name, v["name"])
-            setting = RhodeCodeSetting.get_by_name(conf_key)
+            setting = Setting.get_by_name(conf_key)
             plugin_settings[v["name"]] = setting.app_settings_value if setting else None
         log.debug('Plugin settings \n%s' % formatted_json(plugin_settings))
 

@@ -38,7 +38,7 @@ from kallithea.lib.base import BaseController, render
 from kallithea.model.forms import DefaultsForm
 from kallithea.model.meta import Session
 from kallithea import BACKENDS
-from kallithea.model.db import RhodeCodeSetting
+from kallithea.model.db import Setting
 
 log = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class DefaultsController(BaseController):
         """GET /defaults: All items in the collection"""
         # url('defaults')
         c.backends = BACKENDS.keys()
-        defaults = RhodeCodeSetting.get_default_repo_settings()
+        defaults = Setting.get_default_repo_settings()
 
         return htmlfill.render(
             render('admin/defaults/defaults.html'),
@@ -89,7 +89,7 @@ class DefaultsController(BaseController):
         try:
             form_result = _form.to_python(dict(request.POST))
             for k, v in form_result.iteritems():
-                setting = RhodeCodeSetting.create_or_update(k, v)
+                setting = Setting.create_or_update(k, v)
                 Session().add(setting)
             Session().commit()
             h.flash(_('Default settings updated successfully'),
