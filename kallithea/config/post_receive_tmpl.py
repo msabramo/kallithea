@@ -4,8 +4,8 @@ import sys
 
 try:
     import kallithea
-    RC_HOOK_VER = '_TMPL_'
-    os.environ['RC_HOOK_VER'] = RC_HOOK_VER
+    KALLITHEA_HOOK_VER = '_TMPL_'
+    os.environ['KALLITHEA_HOOK_VER'] = KALLITHEA_HOOK_VER
     from kallithea.lib.hooks import handle_git_post_receive as _handler
 except ImportError:
     if os.environ.get('RC_DEBUG_GIT_HOOK'):

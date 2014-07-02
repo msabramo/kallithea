@@ -853,7 +853,7 @@ class ScmModel(BaseModel):
 
         for h_type, tmpl in [('pre', tmpl_pre), ('post', tmpl_post)]:
             _hook_file = jn(loc, '%s-receive' % h_type)
-            _rhodecode_hook = False
+            has_hook = False
             log.debug('Installing git hook in repo %s' % repo)
             if os.path.exists(_hook_file):
                 # let's take a look at this hook, maybe it's rhodecode ?
@@ -861,19 +861,19 @@ class ScmModel(BaseModel):
                 with open(_hook_file, 'rb') as f:
                     data = f.read()
                     matches = re.compile(r'(?:%s)\s*=\s*(.*)'
-                                         % 'RC_HOOK_VER').search(data)
+                                         % 'KALLITHEA_HOOK_VER').search(data)
                     if matches:
                         try:
                             ver = matches.groups()[0]
                             log.debug('got %s it is rhodecode' % (ver))
-                            _rhodecode_hook = True
+                            has_hook = True
                         except Exception:
                             log.error(traceback.format_exc())
             else:
                 # there is no hook in this dir, so we want to create one
-                _rhodecode_hook = True
+                has_hook = True
 
-            if _rhodecode_hook or force_create:
+            if has_hook or force_create:
                 log.debug('writing %s hook file !' % (h_type,))
                 try:
                     with open(_hook_file, 'wb') as f:
