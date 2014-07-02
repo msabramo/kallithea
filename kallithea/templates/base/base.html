@@ -45,8 +45,8 @@
                %endif
                which is
                <a href="${h.url('about')}#copyright">&copy; 2010&ndash;2014 by various authors &amp; licensed under GPLv3</a>.
-               %if c.rhodecode_bugtracker:
-                   &ndash; <a href="${c.rhodecode_bugtracker}" target="_blank">${_('Support')}</a>
+               %if c.issues_url:
+                   &ndash; <a href="${c.issues_url}" target="_blank">${_('Support')}</a>
                %endif
            </p>
        </div>
