@@ -524,7 +524,7 @@ class ApiController(JSONRPCController):
             'modules': [<module name>,...]
             'py_version': <python version>,
             'platform': <platform type>,
-            'rhodecode_version': <rhodecode version>
+            'kallithea_version': <rhodecode version>
           }
           error :  null
         """

@@ -307,7 +307,7 @@ class RhodeCodeSetting(Base, BaseModel):
             'modules': sorted(mods, key=lambda k: k[0].lower()),
             'py_version': platform.python_version(),
             'platform': platform.platform(),
-            'rhodecode_version': kallithea.__version__,
+            'kallithea_version': kallithea.__version__,
             'git_version': str(check_git_version()),
             'git_path': kallithea.CONFIG.get('git_path')
         }

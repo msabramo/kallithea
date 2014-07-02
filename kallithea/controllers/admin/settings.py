@@ -351,7 +351,7 @@ class SettingsController(BaseController):
             test_email = request.POST.get('test_email')
             test_email_subj = 'RhodeCode test email'
             test_email_body = ('RhodeCode Email test, '
-                               'RhodeCode version: %s' % c.rhodecode_version)
+                               'RhodeCode version: %s' % c.kallithea_version)
             if not test_email:
                 h.flash(_('Please enter email address'), category='error')
                 return redirect(url('admin_settings_email'))

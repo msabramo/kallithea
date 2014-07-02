@@ -262,7 +262,7 @@ class RhodeCodeSetting(Base, BaseModel):
             'modules': sorted(mods, key=lambda k: k[0].lower()),
             'py_version': platform.python_version(),
             'platform': platform.platform(),
-            'rhodecode_version': kallithea.__version__
+            'kallithea_version': kallithea.__version__
         }
         return info
 

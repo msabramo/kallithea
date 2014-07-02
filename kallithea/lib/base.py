@@ -282,7 +282,7 @@ class BaseController(WSGIController):
         """
         __before__ is called before controller methods and after __call__
         """
-        c.rhodecode_version = __version__
+        c.kallithea_version = __version__
         rc_config = RhodeCodeSetting.get_app_settings()
 
         # Visual options

@@ -10,10 +10,10 @@
 
         ## CSS ###
         <%def name="css()">
-            <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.rhodecode_version)}"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.rhodecode_version)}"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.rhodecode_version)}" media="screen"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.rhodecode_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.kallithea_version)}"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.kallithea_version)}"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.kallithea_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.kallithea_version)}" media="screen"/>
             ## EXTRA FOR CSS
             ${self.css_extra()}
         </%def>
@@ -81,18 +81,18 @@
                 var REPO_NAME = "${c.repo_name}";
             %endif
             </script>
-            <script type="text/javascript" src="${h.url('/js/yui.2.9.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/jquery-1.10.2.min.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/bootstrap.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/select2/select2.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/mousetrap.js', ver=c.rhodecode_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/yui.2.9.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/jquery-1.10.2.min.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/bootstrap.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/select2/select2.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/mousetrap.js', ver=c.kallithea_version)}"></script>
             <!--[if lt IE 9]>
                <script language="javascript" type="text/javascript" src="${h.url('/js/excanvas.min.js')}"></script>
             <![endif]-->
-            <script type="text/javascript" src="${h.url('/js/yui.flot.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/native.history.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/pyroutes_map.js', ver=c.rhodecode_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/base.js', ver=c.rhodecode_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/yui.flot.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/native.history.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/pyroutes_map.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/base.js', ver=c.kallithea_version)}"></script>
            ## EXTRA FOR JS
            ${self.js_extra()}
             <script type="text/javascript">
