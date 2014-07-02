@@ -19,6 +19,8 @@ Kallithea works on \*nix systems and Windows it is powered by a vcs_ library
 that Lukasz Balcerzak and Marcin Kuzminski created to handle multiple
 different version control systems.
 
+Kallithea was forked from RhodeCode in July 2014 and has been heavily modified.
+
 Installation
 ------------
 Stable releases of Kallithea are best installed via::
