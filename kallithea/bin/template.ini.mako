@@ -521,7 +521,7 @@ sqlalchemy.db1.convert_unicode = true
 ################################
 </%text>
 [loggers]
-keys = root, routes, rhodecode, sqlalchemy, beaker, templates, whoosh_indexer
+keys = root, routes, kallithea, sqlalchemy, beaker, templates, whoosh_indexer
 
 [handlers]
 keys = console, console_sql
@@ -556,10 +556,10 @@ handlers =
 qualname = pylons.templating
 propagate = 1
 
-[logger_rhodecode]
+[logger_kallithea]
 level = DEBUG
 handlers =
-qualname = rhodecode
+qualname = kallithea
 propagate = 1
 
 [logger_sqlalchemy]
