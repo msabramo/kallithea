@@ -1660,32 +1660,9 @@ var quick_repo_menu = function(){
  * TABLE SORTING
  */
 
-// returns a node from given html;
-var fromHTML = function(html){
-    var _html = document.createElement('element');
-    _html.innerHTML = html;
-    return _html;
-}
-
-var get_rev = function(node){
-    var n = node.firstElementChild.firstElementChild;
-
-    if (n===null){
-        return -1
-    }
-    else{
-        out = n.firstElementChild.innerHTML.split(':')[0].replace('r','');
-        return parseInt(out);
-    }
-}
-
-var get_date = function(node){
-    return $(node.firstElementChild).attr('date');
-}
-
 var revisionSort = function(a, b, desc, field) {
-    var a_ = get_rev(fromHTML(a.getData(field)));
-    var b_ = get_rev(fromHTML(b.getData(field)));
+    var a_ = parseInt(a.getData('last_rev_raw') || 0);
+    var b_ = parseInt(b.getData('last_rev_raw') || 0);
 
     return YAHOO.util.Sort.compare(a_, b_, desc);
 };
@@ -1699,8 +1676,8 @@ var ageSort = function(a, b, desc, field) {
 };
 
 var lastLoginSort = function(a, b, desc, field) {
-    var a_ = a.getData('last_login_raw') || 0;
-    var b_ = b.getData('last_login_raw') || 0;
+    var a_ = parseFloat(a.getData('last_login_raw') || 0);
+    var b_ = parseFloat(b.getData('last_login_raw') || 0);
 
     return YAHOO.util.Sort.compare(a_, b_, desc);
 };
@@ -1713,8 +1690,8 @@ var nameSort = function(a, b, desc, field) {
 };
 
 var dateSort = function(a, b, desc, field) {
-    var a_ = get_date(fromHTML(a.getData(field)));
-    var b_ = get_date(fromHTML(b.getData(field)));
+    var a_ = parseFloat(a.getData('raw_date') || 0);
+    var b_ = parseFloat(b.getData('raw_date') || 0);
 
     return YAHOO.util.Sort.compare(a_, b_, desc);
 };
