@@ -145,24 +145,24 @@ class SummaryController(BaseRepoController):
         elif '{repoid}' in _def_clone_uri:
             _def_clone_uri_by_id = _def_clone_uri.replace('_{repoid}', '{repo}')
 
-        c.clone_repo_url = c.rhodecode_db_repo.clone_url(user=username,
+        c.clone_repo_url = c.db_repo.clone_url(user=username,
                                                 uri_tmpl=_def_clone_uri)
-        c.clone_repo_url_id = c.rhodecode_db_repo.clone_url(user=username,
+        c.clone_repo_url_id = c.db_repo.clone_url(user=username,
                                                 uri_tmpl=_def_clone_uri_by_id)
 
-        if c.rhodecode_db_repo.enable_statistics:
+        if c.db_repo.enable_statistics:
             c.show_stats = True
         else:
             c.show_stats = False
 
         stats = self.sa.query(Statistics)\
-            .filter(Statistics.repository == c.rhodecode_db_repo)\
+            .filter(Statistics.repository == c.db_repo)\
             .scalar()
 
         c.stats_percentage = 0
 
         if stats and stats.languages:
-            c.no_data = False is c.rhodecode_db_repo.enable_statistics
+            c.no_data = False is c.db_repo.enable_statistics
             lang_stats_d = json.loads(stats.languages)
 
             lang_stats = ((x, {"count": y,
@@ -176,9 +176,9 @@ class SummaryController(BaseRepoController):
             c.no_data = True
             c.trending_languages = json.dumps({})
 
-        c.enable_downloads = c.rhodecode_db_repo.enable_downloads
+        c.enable_downloads = c.db_repo.enable_downloads
         c.readme_data, c.readme_file = \
-            self.__get_readme_data(c.rhodecode_db_repo)
+            self.__get_readme_data(c.db_repo)
         return render('summary/summary.html')
 
     @LoginRequired()
@@ -188,7 +188,7 @@ class SummaryController(BaseRepoController):
     @jsonify
     def repo_size(self, repo_name):
         if request.is_xhr:
-            return c.rhodecode_db_repo._repo_size()
+            return c.db_repo._repo_size()
         else:
             raise HTTPBadRequest()
 
@@ -196,7 +196,7 @@ class SummaryController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def statistics(self, repo_name):
-        if c.rhodecode_db_repo.enable_statistics:
+        if c.db_repo.enable_statistics:
             c.show_stats = True
             c.no_data_msg = _('No data loaded yet')
         else:
@@ -214,10 +214,10 @@ class SummaryController(BaseRepoController):
         c.ts_max = ts_max_y
 
         stats = self.sa.query(Statistics)\
-            .filter(Statistics.repository == c.rhodecode_db_repo)\
+            .filter(Statistics.repository == c.db_repo)\
             .scalar()
         if stats and stats.languages:
-            c.no_data = False is c.rhodecode_db_repo.enable_statistics
+            c.no_data = False is c.db_repo.enable_statistics
             lang_stats_d = json.loads(stats.languages)
             c.commit_data = stats.commit_activity
             c.overview_data = stats.commit_activity_combined
@@ -244,6 +244,6 @@ class SummaryController(BaseRepoController):
             c.no_data = True
 
         recurse_limit = 500  # don't recurse more than 500 times when parsing
-        run_task(get_commits_stats, c.rhodecode_db_repo.repo_name, ts_min_y,
+        run_task(get_commits_stats, c.db_repo.repo_name, ts_min_y,
                  ts_max_y, recurse_limit)
         return render('summary/statistics.html')

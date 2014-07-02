@@ -42,11 +42,11 @@ ${self.repo_context_bar('changelog')}
                             <a href="#" class="btn btn-mini" id="rev_range_container" style="display:none"></a>
                             <a href="#" class="btn btn-mini" id="rev_range_clear" style="display:none">${_('Clear selection')}</a>
 
-                            %if c.rhodecode_db_repo.fork:
+                            %if c.db_repo.fork:
                                 <a id="compare_fork"
-                                   title="${_('Compare fork with %s' % c.rhodecode_db_repo.fork.repo_name)}"
-                                   href="${h.url('compare_url',repo_name=c.rhodecode_db_repo.fork.repo_name,org_ref_type=c.rhodecode_db_repo.landing_rev[0],org_ref=c.rhodecode_db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.rhodecode_db_repo.landing_rev[0],other_ref=request.GET.get('branch') or c.rhodecode_db_repo.landing_rev[1], merge=1)}"
-                                   class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with Parent(%s)' % c.rhodecode_db_repo.fork.repo_name)}</a>
+                                   title="${_('Compare fork with %s' % c.db_repo.fork.repo_name)}"
+                                   href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
+                                   class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with Parent(%s)' % c.db_repo.fork.repo_name)}</a>
                             %endif
                             <a id="open_new_pr" href="${h.url('pullrequest_home',repo_name=c.repo_name)}" class="btn btn-mini">${_('Open new pull request')}</a>
                        </div>

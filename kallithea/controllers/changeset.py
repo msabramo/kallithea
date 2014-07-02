@@ -227,15 +227,15 @@ class ChangesetController(BaseRepoController):
             inlines = []
             if method == 'show':
                 c.statuses.extend([ChangesetStatusModel().get_status(
-                            c.rhodecode_db_repo.repo_id, changeset.raw_id)])
+                            c.db_repo.repo_id, changeset.raw_id)])
 
                 c.comments.extend(ChangesetCommentsModel()\
-                                  .get_comments(c.rhodecode_db_repo.repo_id,
+                                  .get_comments(c.db_repo.repo_id,
                                                 revision=changeset.raw_id))
 
                 #comments from PR
                 st = ChangesetStatusModel().get_statuses(
-                            c.rhodecode_db_repo.repo_id, changeset.raw_id,
+                            c.db_repo.repo_id, changeset.raw_id,
                             with_revisions=True)
                 # from associated statuses, check the pull requests, and
                 # show comments from them
@@ -246,7 +246,7 @@ class ChangesetController(BaseRepoController):
                 for pr in prs:
                     c.comments.extend(pr.comments)
                 inlines = ChangesetCommentsModel()\
-                            .get_inline_comments(c.rhodecode_db_repo.repo_id,
+                            .get_inline_comments(c.db_repo.repo_id,
                                                  revision=changeset.raw_id)
                 c.inline_comments.extend(inlines)
 
@@ -355,7 +355,7 @@ class ChangesetController(BaseRepoController):
 
         c.co = comm = ChangesetCommentsModel().create(
             text=text,
-            repo=c.rhodecode_db_repo.repo_id,
+            repo=c.db_repo.repo_id,
             user=c.rhodecode_user.user_id,
             revision=revision,
             f_path=request.POST.get('f_path'),
@@ -372,7 +372,7 @@ class ChangesetController(BaseRepoController):
 
             try:
                 ChangesetStatusModel().set_status(
-                    c.rhodecode_db_repo.repo_id,
+                    c.db_repo.repo_id,
                     status,
                     c.rhodecode_user.user_id,
                     comm,
@@ -388,7 +388,7 @@ class ChangesetController(BaseRepoController):
                                       revision=revision))
         action_logger(self.rhodecode_user,
                       'user_commented_revision:%s' % revision,
-                      c.rhodecode_db_repo, self.ip_addr, self.sa)
+                      c.db_repo, self.ip_addr, self.sa)
 
         Session().commit()
 

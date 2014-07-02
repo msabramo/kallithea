@@ -185,7 +185,7 @@ class CompareController(BaseRepoController):
                                    'repository.admin')
     def index(self, repo_name):
         c.compare_home = True
-        org_repo = c.rhodecode_db_repo.repo_name
+        org_repo = c.db_repo.repo_name
         other_repo = request.GET.get('other_repo', org_repo)
         c.org_repo = Repository.get_by_repo_name(org_repo)
         c.other_repo = Repository.get_by_repo_name(other_repo)
@@ -197,7 +197,7 @@ class CompareController(BaseRepoController):
                                    'repository.admin')
     def compare(self, repo_name, org_ref_type, org_ref, other_ref_type, other_ref):
         # org_ref will be evaluated in org_repo
-        org_repo = c.rhodecode_db_repo.repo_name
+        org_repo = c.db_repo.repo_name
         org_ref = (org_ref_type, org_ref)
         # other_ref will be evaluated in other_repo
         other_ref = (other_ref_type, other_ref)
@@ -260,7 +260,7 @@ class CompareController(BaseRepoController):
         c.cs_ranges, c.ancestor = self._get_changesets(
             org_repo.scm_instance.alias, org_repo.scm_instance, org_rev,
             other_repo.scm_instance, other_rev, merge)
-        c.statuses = c.rhodecode_db_repo.statuses(
+        c.statuses = c.db_repo.statuses(
             [x.raw_id for x in c.cs_ranges])
 
         if merge and not c.ancestor:

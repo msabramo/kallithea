@@ -57,7 +57,7 @@ class BranchesController(BaseRepoController):
         cs_g = c.rhodecode_repo.get_changeset
 
         c.repo_closed_branches = {}
-        if c.rhodecode_db_repo.repo_type == 'hg':
+        if c.db_repo.repo_type == 'hg':
             bt_closed = _branchtags(c.rhodecode_repo._repo)
             _closed_branches = [(safe_unicode(n), cs_g(binascii.hexlify(h)),)
                                 for n, h in bt_closed.items()]

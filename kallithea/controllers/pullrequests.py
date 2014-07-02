@@ -255,7 +255,7 @@ class PullrequestsController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def index(self):
-        org_repo = c.rhodecode_db_repo
+        org_repo = c.db_repo
 
         try:
             org_repo.scm_instance.get_changeset()
@@ -440,14 +440,14 @@ class PullrequestsController(BaseRepoController):
         # inline comments
         c.inline_cnt = 0
         c.inline_comments = cc_model.get_inline_comments(
-                                c.rhodecode_db_repo.repo_id,
+                                c.db_repo.repo_id,
                                 pull_request=pull_request_id)
         # count inline comments
         for __, lines in c.inline_comments:
             for comments in lines.values():
                 c.inline_cnt += len(comments)
         # comments
-        c.comments = cc_model.get_comments(c.rhodecode_db_repo.repo_id,
+        c.comments = cc_model.get_comments(c.db_repo.repo_id,
                                            pull_request=pull_request_id)
 
         # (badly named) pull-request status calculation based on reviewer votes
@@ -484,7 +484,7 @@ class PullrequestsController(BaseRepoController):
             text = text or _def
         comm = ChangesetCommentsModel().create(
             text=text,
-            repo=c.rhodecode_db_repo.repo_id,
+            repo=c.db_repo.repo_id,
             user=c.rhodecode_user.user_id,
             pull_request=pull_request_id,
             f_path=request.POST.get('f_path'),
@@ -497,13 +497,13 @@ class PullrequestsController(BaseRepoController):
 
         action_logger(self.rhodecode_user,
                       'user_commented_pull_request:%s' % pull_request_id,
-                      c.rhodecode_db_repo, self.ip_addr, self.sa)
+                      c.db_repo, self.ip_addr, self.sa)
 
         if allowed_to_change_status:
             # get status if set !
             if status and change_status:
                 ChangesetStatusModel().set_status(
-                    c.rhodecode_db_repo.repo_id,
+                    c.db_repo.repo_id,
                     status,
                     c.rhodecode_user.user_id,
                     comm,
@@ -515,7 +515,7 @@ class PullrequestsController(BaseRepoController):
                     PullRequestModel().close_pull_request(pull_request_id)
                     action_logger(self.rhodecode_user,
                               'user_closed_pull_request:%s' % pull_request_id,
-                              c.rhodecode_db_repo, self.ip_addr, self.sa)
+                              c.db_repo, self.ip_addr, self.sa)
                 else:
                     h.flash(_('Closing pull request on other statuses than '
                               'rejected or approved forbidden'),

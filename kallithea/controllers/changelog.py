@@ -51,7 +51,7 @@ def _load_changelog_summary():
 
     def url_generator(**kw):
         return url('changelog_summary_home',
-                   repo_name=c.rhodecode_db_repo.repo_name, size=size, **kw)
+                   repo_name=c.db_repo.repo_name, size=size, **kw)
 
     collection = c.rhodecode_repo
 
@@ -59,8 +59,8 @@ def _load_changelog_summary():
                                  items_per_page=size,
                                  url=url_generator)
     page_revisions = [x.raw_id for x in list(c.repo_changesets)]
-    c.comments = c.rhodecode_db_repo.get_comments(page_revisions)
-    c.statuses = c.rhodecode_db_repo.statuses(page_revisions)
+    c.comments = c.db_repo.get_comments(page_revisions)
+    c.statuses = c.db_repo.statuses(page_revisions)
 
 
 class ChangelogController(BaseRepoController):
@@ -170,8 +170,8 @@ class ChangelogController(BaseRepoController):
                                     items_per_page=c.size, branch=branch_name,)
             collection = list(c.pagination)
             page_revisions = [x.raw_id for x in c.pagination]
-            c.comments = c.rhodecode_db_repo.get_comments(page_revisions)
-            c.statuses = c.rhodecode_db_repo.statuses(page_revisions)
+            c.comments = c.db_repo.get_comments(page_revisions)
+            c.statuses = c.db_repo.statuses(page_revisions)
         except (EmptyRepositoryError), e:
             h.flash(safe_str(e), category='warning')
             return redirect(url('summary_home', repo_name=c.repo_name))

@@ -54,7 +54,7 @@ ${self.repo_context_bar('showpullrequest')}
                     <div>
                         <div>
                             <div style="padding:5px 3px 3px 3px;">
-                            <b>${_('Origin repository')}:</b> ${c.rhodecode_db_repo.description}
+                            <b>${_('Origin repository')}:</b> ${c.db_repo.description}
                             </div>
                             <span style="font-size: 20px">
                             ${h.select('org_repo','',c.org_repos,class_='refs')}:${h.select('org_ref',c.default_org_ref,c.org_refs,class_='refs')}

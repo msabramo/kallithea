@@ -11,25 +11,25 @@
     ${_('Summary')}
 
     ## locking icon
-    %if c.rhodecode_db_repo.enable_locking:
-     %if c.rhodecode_db_repo.locked[0]:
-       <span class="locking_locked tooltip" title="${_('Repository locked by %s') % h.person_by_id(c.rhodecode_db_repo.locked[0])}"></span>
+    %if c.db_repo.enable_locking:
+     %if c.db_repo.locked[0]:
+       <span class="locking_locked tooltip" title="${_('Repository locked by %s') % h.person_by_id(c.db_repo.locked[0])}"></span>
      %else:
        <span class="locking_unlocked tooltip" title="${_('Repository unlocked')}"></span>
      %endif
     %endif
 
     ##FORK
-    %if c.rhodecode_db_repo.fork:
+    %if c.db_repo.fork:
     <span>
-        - <i class="icon-code-fork"></i> ${_('Fork of')} "<a href="${h.url('summary_home',repo_name=c.rhodecode_db_repo.fork.repo_name)}">${c.rhodecode_db_repo.fork.repo_name}</a>"
+        - <i class="icon-code-fork"></i> ${_('Fork of')} "<a href="${h.url('summary_home',repo_name=c.db_repo.fork.repo_name)}">${c.db_repo.fork.repo_name}</a>"
     </span>
     %endif
 
     ##REMOTE
-    %if c.rhodecode_db_repo.clone_uri:
+    %if c.db_repo.clone_uri:
     <span>
-       - <i class="icon-code-fork"></i> ${_('Clone from')} "<a href="${h.url(str(h.hide_credentials(c.rhodecode_db_repo.clone_uri)))}">${h.hide_credentials(c.rhodecode_db_repo.clone_uri)}</a>"
+       - <i class="icon-code-fork"></i> ${_('Clone from')} "<a href="${h.url(str(h.hide_credentials(c.db_repo.clone_uri)))}">${h.hide_credentials(c.db_repo.clone_uri)}</a>"
     <span>
     %endif
 </%def>
@@ -39,8 +39,8 @@
 </%def>
 
 <%def name="head_extra()">
-<link href="${h.url('atom_feed_home',repo_name=c.rhodecode_db_repo.repo_name,api_key=c.rhodecode_user.api_key)}" rel="alternate" title="${_('%s ATOM feed') % c.repo_name}" type="application/atom+xml" />
-<link href="${h.url('rss_feed_home',repo_name=c.rhodecode_db_repo.repo_name,api_key=c.rhodecode_user.api_key)}" rel="alternate" title="${_('%s RSS feed') % c.repo_name}" type="application/rss+xml" />
+<link href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.rhodecode_user.api_key)}" rel="alternate" title="${_('%s ATOM feed') % c.repo_name}" type="application/atom+xml" />
+<link href="${h.url('rss_feed_home',repo_name=c.db_repo.repo_name,api_key=c.rhodecode_user.api_key)}" rel="alternate" title="${_('%s RSS feed') % c.repo_name}" type="application/rss+xml" />
 
 <script>
 redirect_hash_branch = function(){
@@ -88,9 +88,9 @@ summary = lambda n:{False:'summary-short'}.get(n)
                   <label>${_('Description')}:</label>
               </div>
                  %if c.visual.stylify_metatags:
-                   <div class="input ${summary(c.show_stats)} desc">${h.urlify_text(h.desc_stylize(c.rhodecode_db_repo.description))}</div>
+                   <div class="input ${summary(c.show_stats)} desc">${h.urlify_text(h.desc_stylize(c.db_repo.description))}</div>
                  %else:
-                   <div class="input ${summary(c.show_stats)} desc">${h.urlify_text(c.rhodecode_db_repo.description)}</div>
+                   <div class="input ${summary(c.show_stats)} desc">${h.urlify_text(c.db_repo.description)}</div>
                  %endif
             </div>
 
@@ -124,7 +124,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
                     %endif
                 %else:
                     <span id="${'zip_link'}">
-                        <a class="btn btn-small" href="${h.url('files_archive_home',repo_name=c.rhodecode_db_repo.repo_name,fname='tip.zip')}"><i class="icon-archive"></i> ${_('Download as zip')}</a>
+                        <a class="btn btn-small" href="${h.url('files_archive_home',repo_name=c.db_repo.repo_name,fname='tip.zip')}"><i class="icon-archive"></i> ${_('Download as zip')}</a>
                     </span>
                     ${h.hidden('download_options')}
                     <span style="vertical-align: bottom">
@@ -138,10 +138,10 @@ summary = lambda n:{False:'summary-short'}.get(n)
         <div id="summary-menu-stats">
           <ul>
             <li>
-               <a title="${_('Owner')} ${c.rhodecode_db_repo.user.email}">
-                <i class="icon-user"></i> ${c.rhodecode_db_repo.user.username}
-                  <div class="gravatar" style="float: right; margin: 0px 0px 0px 0px" title="${c.rhodecode_db_repo.user.name} ${c.rhodecode_db_repo.user.lastname}">
-                     <img alt="gravatar" src="${h.gravatar_url(c.rhodecode_db_repo.user.email, 18)}"/>
+               <a title="${_('Owner')} ${c.db_repo.user.email}">
+                <i class="icon-user"></i> ${c.db_repo.user.username}
+                  <div class="gravatar" style="float: right; margin: 0px 0px 0px 0px" title="${c.db_repo.user.name} ${c.db_repo.user.lastname}">
+                     <img alt="gravatar" src="${h.gravatar_url(c.db_repo.user.email, 18)}"/>
                   </div>
               </a>
             </li>
@@ -160,16 +160,16 @@ summary = lambda n:{False:'summary-short'}.get(n)
 
             %if c.rhodecode_user.username != 'default':
             <li class="repo_size">
-              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.rhodecode_db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-archive"></i> ${_('Repository Size')}</a>
+              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-archive"></i> ${_('Repository Size')}</a>
               <span  class="stats-bullet" id="repo_size_2"></span>
             </li>
             %endif
 
             <li>
             %if c.rhodecode_user.username != 'default':
-              <a href="${h.url('atom_feed_home',repo_name=c.rhodecode_db_repo.repo_name,api_key=c.rhodecode_user.api_key)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
+              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.rhodecode_user.api_key)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
             %else:
-              <a href="${h.url('atom_feed_home',repo_name=c.rhodecode_db_repo.repo_name)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
+              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
             %endif
             </li>
 
@@ -206,7 +206,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
 %if c.readme_data:
 <div id="readme" class="anchor">
 <div class="box" style="background-color: #FAFAFA">
-    <div class="title" title="${_('Readme file from revision %s:%s') % (c.rhodecode_db_repo.landing_rev[0], c.rhodecode_db_repo.landing_rev[1])}">
+    <div class="title" title="${_('Readme file from revision %s:%s') % (c.db_repo.landing_rev[0], c.db_repo.landing_rev[1])}">
         <div class="breadcrumbs">
             <a href="${h.url('files_home',repo_name=c.repo_name,revision='tip',f_path=c.readme_file)}">${c.readme_file}</a>
         </div>
@@ -312,7 +312,7 @@ $(document).ready(function(){
 
     var tmpl_links = {};
     %for cnt,archive in enumerate(c.rhodecode_repo._get_archives()):
-      tmpl_links["${archive['type']}"] = '${h.link_to('__NAME__', h.url('files_archive_home',repo_name=c.rhodecode_db_repo.repo_name, fname='__CS__'+archive['extension'],subrepos='__SUB__'),class_='btn btn-small')}';
+      tmpl_links["${archive['type']}"] = '${h.link_to('__NAME__', h.url('files_archive_home',repo_name=c.db_repo.repo_name, fname='__CS__'+archive['extension'],subrepos='__SUB__'),class_='btn btn-small')}';
     %endfor
 })
 </script>

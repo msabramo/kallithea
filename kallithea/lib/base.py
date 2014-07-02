@@ -370,7 +370,7 @@ class BaseRepoController(BaseController):
     repository loaded items are
 
     c.rhodecode_repo: instance of scm repository
-    c.rhodecode_db_repo: instance of db
+    c.db_repo: instance of db
     c.repository_followers: number of followers
     c.repository_forks: number of forks
     c.repository_following: weather the current user is following the current repo
@@ -397,8 +397,8 @@ class BaseRepoController(BaseController):
                 check_url = url('repo_creating_home', repo_name=c.repo_name)
                 return redirect(check_url)
 
-            dbr = c.rhodecode_db_repo = _dbr
-            c.rhodecode_repo = c.rhodecode_db_repo.scm_instance
+            dbr = c.db_repo = _dbr
+            c.rhodecode_repo = c.db_repo.scm_instance
             if c.rhodecode_repo is None:
                 log.error('%s this repository is present in database but it '
                           'cannot be created as an scm instance', c.repo_name)

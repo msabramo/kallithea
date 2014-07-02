@@ -111,9 +111,9 @@ class HomeController(BaseController):
                                    'repository.admin')
     def branch_tag_switcher(self, repo_name):
         if request.is_xhr:
-            c.rhodecode_db_repo = Repository.get_by_repo_name(repo_name)
-            if c.rhodecode_db_repo:
-                c.rhodecode_repo = c.rhodecode_db_repo.scm_instance
+            c.db_repo = Repository.get_by_repo_name(repo_name)
+            if c.db_repo:
+                c.rhodecode_repo = c.db_repo.scm_instance
                 return render('/switch_to_list.html')
         raise HTTPBadRequest()
 

@@ -294,7 +294,7 @@ class FilesController(BaseRepoController):
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.write', 'repository.admin')
     def delete(self, repo_name, revision, f_path):
-        repo = c.rhodecode_db_repo
+        repo = c.db_repo
         if repo.enable_locking and repo.locked[0]:
             h.flash(_('This repository is has been locked by %s on %s')
                 % (h.person_by_id(repo.locked[0]),
@@ -334,7 +334,7 @@ class FilesController(BaseRepoController):
                     }
                 }
                 self.scm_model.delete_nodes(
-                    user=c.rhodecode_user.user_id, repo=c.rhodecode_db_repo,
+                    user=c.rhodecode_user.user_id, repo=c.db_repo,
                     message=message,
                     nodes=nodes,
                     parent_cs=c.cs,
@@ -354,7 +354,7 @@ class FilesController(BaseRepoController):
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.write', 'repository.admin')
     def edit(self, repo_name, revision, f_path):
-        repo = c.rhodecode_db_repo
+        repo = c.db_repo
         if repo.enable_locking and repo.locked[0]:
             h.flash(_('This repository is has been locked by %s on %s')
                 % (h.person_by_id(repo.locked[0]),
@@ -475,7 +475,7 @@ class FilesController(BaseRepoController):
                     }
                 }
                 self.scm_model.create_nodes(
-                    user=c.rhodecode_user.user_id, repo=c.rhodecode_db_repo,
+                    user=c.rhodecode_user.user_id, repo=c.db_repo,
                     message=message,
                     nodes=nodes,
                     parent_cs=c.cs,

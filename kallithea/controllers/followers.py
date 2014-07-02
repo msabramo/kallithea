@@ -46,7 +46,7 @@ class FollowersController(BaseRepoController):
                                    'repository.admin')
     def followers(self, repo_name):
         p = safe_int(request.GET.get('page', 1), 1)
-        repo_id = c.rhodecode_db_repo.repo_id
+        repo_id = c.db_repo.repo_id
         d = UserFollowing.get_repo_followers(repo_id)\
             .order_by(UserFollowing.follows_from)
         c.followers_pager = Page(d, page=p, items_per_page=20)
