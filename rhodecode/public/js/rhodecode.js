@@ -1452,16 +1452,22 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 }
 
 var addReviewMember = function(id,fname,lname,nname,gravatar_link){
-    var tmpl = '<li id="reviewer_{2}">'+
-    '<div class="reviewers_member">'+
-      '<div class="gravatar"><img alt="gravatar" src="{0}"/> </div>'+
-      '<div style="float:left">{1}</div>'+
-      '<input type="hidden" value="{2}" name="review_members" />'+
-      '<span class="delete_icon action_button" onclick="removeReviewMember({2})"></span>'+
-    '</div>'+
-    '</li>' ;
-    var displayname = "{0} {1} ({2})".format(fname,lname,nname);
-    var element = tmpl.format(gravatar_link,displayname,id);
+    var displayname = "{0} {1} ({2})".format(fname, lname, nname);
+    var element = (
+        '     <li id="reviewer_{2}">\n'+
+        '       <div class="reviewers_member">\n'+
+        '           <div class="reviewer_status tooltip" title="not_reviewed">\n'+
+        '             <img src="/images/icons/flag_status_not_reviewed.png"/>\n'+
+        '           </div>\n'+
+        '         <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="{0}"/> </div>\n'+
+        '         <div style="float:left;">{1}</div>\n'+
+        '         <input type="hidden" value="{2}" name="review_members" />\n'+
+        '         <div class="reviewer_member_remove action_button" onclick="removeReviewMember({2})">\n'+
+        '             <i class="icon-remove-sign" style="color: #FF4444;"></i>\n'+
+        '         </div>\n'+
+        '       </div>\n'+
+        '     </li>\n'
+        ).format(gravatar_link, displayname, id);
     // check if we don't have this ID already in
     var ids = [];
     $('#review_members').find('li').each(function() {
