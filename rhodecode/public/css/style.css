@@ -3571,7 +3571,7 @@ div.gravatar img {
     border: 1px solid #316293;
 }
 
-.ui-btn {
+.btn {
     color: #515151;
     background-color: #DADADA;
     background-repeat: repeat-x;
@@ -3600,23 +3600,42 @@ div.gravatar img {
 
 }
 
-.ui-btn.badge {
+/* make .btn inputs and buttons and divs look the same */
+button.btn,
+input.btn {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.btn::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+.btn.badge {
     cursor: default !important;
 }
 
-.ui-btn.disabled {
+.btn.disabled {
     color: #999;
 }
 
-.ui-btn.xsmall {
-    padding: 1px 2px 1px 1px;
+.btn.btn-danger.disabled {
+    color: #eee;
+    background-color: #c77;
+    border-color: #b66
 }
 
-.ui-btn.large {
-    padding: 6px 12px;
+.btn.btn-small {
+    padding: 2px 6px;
 }
 
-.ui-btn.clone {
+.btn.btn-mini {
+    padding: 0px 4px;
+}
+
+.btn.clone {
     padding: 5px 2px 6px 1px;
     margin: 0px 0px 3px -4px;
     -webkit-border-radius: 0px 4px 4px 0px !important;
@@ -3628,26 +3647,26 @@ div.gravatar img {
     position: relative;
     top: -2px;
 }
-.ui-btn:focus {
+.btn:focus {
     outline: none;
 }
-.ui-btn:hover {
+.btn:hover {
     background-position: 0 -100px;
     text-decoration: none;
     color: #515151;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 0 3px #FFFFFF !important;
 }
-.ui-btn.badge:hover {
+.btn.badge:hover {
     box-shadow: none !important;
 }
-.ui-btn.disabled:hover {
+.btn.disabled:hover {
     background-position: 0;
     color: #999;
     text-decoration: none;
     box-shadow: none !important;
 }
 
-.ui-btn.red {
+.btn.red {
     color: #fff;
     background-color: #c43c35;
     background-repeat: repeat-x;
@@ -3664,7 +3683,7 @@ div.gravatar img {
 }
 
 
-.ui-btn.blue {
+.btn.blue {
     color: #fff;
     background-color: #339bb9;
     background-repeat: repeat-x;
@@ -3680,7 +3699,7 @@ div.gravatar img {
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 
-.ui-btn.green {
+.btn.green {
     color: #fff;
     background-color: #57a957;
     background-repeat: repeat-x;
@@ -3696,7 +3715,7 @@ div.gravatar img {
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 
-.ui-btn.yellow {
+.btn.yellow {
     color: #fff;
     background-color: #faa732;
     background-repeat: repeat-x;
@@ -3716,11 +3735,11 @@ label.disabled {
     color: #aaa;
 }
 
-.ui-btn.blue.hidden {
+.btn.blue.hidden {
     display: none;
 }
 
-.ui-btn.active {
+.btn.active {
     font-weight: bold;
 }
 
