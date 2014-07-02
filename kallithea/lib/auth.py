@@ -93,7 +93,7 @@ class PasswordGenerator(object):
         return self.passwd
 
 
-class RhodeCodeCrypto(object):
+class KallitheaCrypto(object):
 
     @classmethod
     def hash_string(cls, str_):
@@ -135,11 +135,11 @@ class RhodeCodeCrypto(object):
 
 
 def get_crypt_password(password):
-    return RhodeCodeCrypto.hash_string(password)
+    return KallitheaCrypto.hash_string(password)
 
 
 def check_password(password, hashed):
-    return RhodeCodeCrypto.hash_check(password, hashed)
+    return KallitheaCrypto.hash_check(password, hashed)
 
 
 def generate_api_key(str_, salt=None):
