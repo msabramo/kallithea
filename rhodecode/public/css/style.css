@@ -3101,6 +3101,11 @@ table.code-browser .submodule-dir {
     padding: 4px 3px 2px 2px;
 }
 
+.info_box_elem {
+    display: inline-block;
+    padding: 0 2px;
+}
+
 .yui-overlay, .yui-panel-container {
     visibility: hidden;
     position: absolute;
