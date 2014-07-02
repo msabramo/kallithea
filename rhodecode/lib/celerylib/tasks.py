@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.celerylib.tasks
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    RhodeCode task modules, containing all task that suppose to be run
-    by celery daemon
-
-    :created_on: Oct 6, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +11,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.celerylib.tasks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+RhodeCode task modules, containing all task that suppose to be run
+by celery daemon
+
+:created_on: Oct 6, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 from celery.decorators import task
 
 import os
@@ -53,7 +54,7 @@ from rhodecode.model.db import Statistics, Repository, User
 from rhodecode.model.scm import ScmModel
 
 
-add_cache(config)
+add_cache(config)  # pragma: no cover
 
 __all__ = ['whoosh_index', 'get_commits_stats',
            'reset_user_password', 'send_email']
@@ -63,7 +64,7 @@ def get_logger(cls):
     if CELERY_ON:
         try:
             log = cls.get_logger()
-        except:
+        except Exception:
             log = logging.getLogger(__name__)
     else:
         log = logging.getLogger(__name__)
@@ -299,8 +300,96 @@ def send_email(recipients, subject, body='', html_body=''):
         return False
     return True
 
+@task(ignore_result=False)
+@dbsession
+def create_repo(form_data, cur_user):
+    from rhodecode.model.repo import RepoModel
+    from rhodecode.model.user import UserModel
+    from rhodecode.model.db import RhodeCodeSetting
 
-@task(ignore_result=True)
+    log = get_logger(create_repo)
+    DBS = get_session()
+
+    cur_user = UserModel(DBS)._get_user(cur_user)
+
+    owner = cur_user
+    repo_name = form_data['repo_name']
+    repo_name_full = form_data['repo_name_full']
+    repo_type = form_data['repo_type']
+    description = form_data['repo_description']
+    private = form_data['repo_private']
+    clone_uri = form_data.get('clone_uri')
+    repo_group = form_data['repo_group']
+    landing_rev = form_data['repo_landing_rev']
+    copy_fork_permissions = form_data.get('copy_permissions')
+    copy_group_permissions = form_data.get('repo_copy_permissions')
+    fork_of = form_data.get('fork_parent_id')
+    state = form_data.get('repo_state', Repository.STATE_PENDING)
+
+    # repo creation defaults, private and repo_type are filled in form
+    defs = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
+    enable_statistics = defs.get('repo_enable_statistics')
+    enable_locking = defs.get('repo_enable_locking')
+    enable_downloads = defs.get('repo_enable_downloads')
+
+    try:
+        repo = RepoModel(DBS)._create_repo(
+            repo_name=repo_name_full,
+            repo_type=repo_type,
+            description=description,
+            owner=owner,
+            private=private,
+            clone_uri=clone_uri,
+            repo_group=repo_group,
+            landing_rev=landing_rev,
+            fork_of=fork_of,
+            copy_fork_permissions=copy_fork_permissions,
+            copy_group_permissions=copy_group_permissions,
+            enable_statistics=enable_statistics,
+            enable_locking=enable_locking,
+            enable_downloads=enable_downloads,
+            state=state
+        )
+
+        action_logger(cur_user, 'user_created_repo',
+                      form_data['repo_name_full'], '', DBS)
+
+        DBS.commit()
+        # now create this repo on Filesystem
+        RepoModel(DBS)._create_filesystem_repo(
+            repo_name=repo_name,
+            repo_type=repo_type,
+            repo_group=RepoModel(DBS)._get_repo_group(repo_group),
+            clone_uri=clone_uri,
+        )
+        repo = Repository.get_by_repo_name(repo_name_full)
+        log_create_repository(repo.get_dict(), created_by=owner.username)
+
+        # update repo changeset caches initially
+        repo.update_changeset_cache()
+
+        # set new created state
+        repo.set_state(Repository.STATE_CREATED)
+        DBS.commit()
+    except Exception, e:
+        log.warning('Exception %s occured when forking repository, '
+                    'doing cleanup...' % e)
+        # rollback things manually !
+        repo = Repository.get_by_repo_name(repo_name_full)
+        if repo:
+            Repository.delete(repo.repo_id)
+            DBS.commit()
+            RepoModel(DBS)._delete_filesystem_repo(repo)
+        raise
+
+    # it's an odd fix to make celery fail task when exception occurs
+    def on_failure(self, *args, **kwargs):
+        pass
+
+    return True
+
+
+@task(ignore_result=False)
 @dbsession
 def create_repo_fork(form_data, cur_user):
     """
@@ -318,60 +407,75 @@ def create_repo_fork(form_data, cur_user):
     base_path = Repository.base_path()
     cur_user = UserModel(DBS)._get_user(cur_user)
 
-    fork_name = form_data['repo_name_full']
+    repo_name = form_data['repo_name']  # fork in this case
+    repo_name_full = form_data['repo_name_full']
+
     repo_type = form_data['repo_type']
-    description = form_data['description']
     owner = cur_user
     private = form_data['private']
     clone_uri = form_data.get('clone_uri')
-    repos_group = form_data['repo_group']
+    repo_group = form_data['repo_group']
     landing_rev = form_data['landing_rev']
     copy_fork_permissions = form_data.get('copy_permissions')
-    fork_of = RepoModel(DBS)._get_repo(form_data.get('fork_parent_id'))
 
-    fork_repo = RepoModel(DBS).create_repo(
-        fork_name, repo_type, description, owner, private, clone_uri,
-        repos_group, landing_rev, just_db=True, fork_of=fork_of,
-        copy_fork_permissions=copy_fork_permissions
-    )
+    try:
+        fork_of = RepoModel(DBS)._get_repo(form_data.get('fork_parent_id'))
 
-    update_after_clone = form_data['update_after_clone']
+        fork_repo = RepoModel(DBS)._create_repo(
+            repo_name=repo_name_full,
+            repo_type=repo_type,
+            description=form_data['description'],
+            owner=owner,
+            private=private,
+            clone_uri=clone_uri,
+            repo_group=repo_group,
+            landing_rev=landing_rev,
+            fork_of=fork_of,
+            copy_fork_permissions=copy_fork_permissions
+        )
+        action_logger(cur_user, 'user_forked_repo:%s' % repo_name_full,
+                      fork_of.repo_name, '', DBS)
+        DBS.commit()
 
-    source_repo_path = os.path.join(base_path, fork_of.repo_name)
-    destination_fork_path = os.path.join(base_path, fork_name)
+        update_after_clone = form_data['update_after_clone']
+        source_repo_path = os.path.join(base_path, fork_of.repo_name)
 
-    log.info('creating fork of %s as %s', source_repo_path,
-             destination_fork_path)
-    backend = get_backend(repo_type)
+        # now create this repo on Filesystem
+        RepoModel(DBS)._create_filesystem_repo(
+            repo_name=repo_name,
+            repo_type=repo_type,
+            repo_group=RepoModel(DBS)._get_repo_group(repo_group),
+            clone_uri=source_repo_path,
+        )
+        repo = Repository.get_by_repo_name(repo_name_full)
+        log_create_repository(repo.get_dict(), created_by=owner.username)
 
-    if repo_type == 'git':
-        r = backend(safe_str(destination_fork_path), create=True,
-                src_url=safe_str(source_repo_path),
-                update_after_clone=update_after_clone,
-                bare=True)
-        # add rhodecode hook into this repo
-        ScmModel().install_git_hook(repo=r)
-    elif repo_type == 'hg':
-        r = backend(safe_str(destination_fork_path), create=True,
-                src_url=safe_str(source_repo_path),
-                update_after_clone=update_after_clone)
-    else:
-        raise Exception('Unknown backend type %s' % repo_type)
+        # update repo changeset caches initially
+        repo.update_changeset_cache()
 
-    log_create_repository(fork_repo.get_dict(), created_by=cur_user.username)
+        # set new created state
+        repo.set_state(Repository.STATE_CREATED)
+        DBS.commit()
+    except Exception, e:
+        log.warning('Exception %s occured when forking repository, '
+                    'doing cleanup...' % e)
+        #rollback things manually !
+        repo = Repository.get_by_repo_name(repo_name_full)
+        if repo:
+            Repository.delete(repo.repo_id)
+            DBS.commit()
+            RepoModel(DBS)._delete_filesystem_repo(repo)
+        raise
 
-    action_logger(cur_user, 'user_forked_repo:%s' % fork_name,
-                   fork_of.repo_name, '', DBS)
+    # it's an odd fix to make celery fail task when exception occurs
+    def on_failure(self, *args, **kwargs):
+        pass
 
-    action_logger(cur_user, 'user_created_fork:%s' % fork_name,
-                   fork_name, '', DBS)
-    # finally commit at latest possible stage
-    DBS.commit()
-    fork_repo.update_changeset_cache()
+    return True
 
 
 def __get_codes_stats(repo_name):
-    from rhodecode.config.conf import  LANGUAGES_EXTENSIONS_MAP
+    from rhodecode.config.conf import LANGUAGES_EXTENSIONS_MAP
     repo = Repository.get_by_repo_name(repo_name).scm_instance
 
     tip = repo.get_changeset()

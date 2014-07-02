@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.files
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Files controller for RhodeCode
-
-    :created_on: Apr 21, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Files controller for RhodeCode
+
+:created_on: Apr 21, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 from __future__ import with_statement
 import os
 import logging
@@ -85,13 +86,17 @@ class FilesController(BaseRepoController):
                 return None
             url_ = url('files_add_home',
                        repo_name=c.repo_name,
-                       revision=0, f_path='')
-            add_new = h.link_to(_('Click here to add new file'), url_)
-            h.flash(h.literal(_('There are no files yet %s') % add_new),
+                       revision=0, f_path='', anchor='edit')
+            add_new = h.link_to(_('Click here to add new file'), url_, class_="alert-link")
+            h.flash(h.literal(_('There are no files yet. %s') % add_new),
                     category='warning')
             redirect(h.url('summary_home', repo_name=repo_name))
-
-        except RepositoryError, e:  # including ChangesetDoesNotExistError
+        except(ChangesetDoesNotExistError, LookupError), e:
+            log.error(traceback.format_exc())
+            msg = _('Such revision does not exist for this repository')
+            h.flash(msg, category='error')
+            raise HTTPNotFound()
+        except RepositoryError, e:
             h.flash(safe_str(e), category='error')
             raise HTTPNotFound()
 
@@ -109,6 +114,11 @@ class FilesController(BaseRepoController):
             file_node = cs.get_node(path)
             if file_node.is_dir():
                 raise RepositoryError('given path is a directory')
+        except(ChangesetDoesNotExistError,), e:
+            log.error(traceback.format_exc())
+            msg = _('Such revision does not exist for this repository')
+            h.flash(msg, category='error')
+            raise HTTPNotFound()
         except RepositoryError, e:
             h.flash(safe_str(e), category='error')
             raise HTTPNotFound()
@@ -186,22 +196,40 @@ class FilesController(BaseRepoController):
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
-    def history(self, repo_name, revision, f_path, annotate=False):
-        if request.environ.get('HTTP_X_PARTIAL_XHR'):
-            c.changeset = self.__get_cs_or_redirect(revision, repo_name)
-            c.f_path = f_path
-            c.annotate = annotate
-            c.file = c.changeset.get_node(f_path)
-            if c.file.is_file():
-                file_last_cs = c.file.last_changeset
-                c.file_changeset = (c.changeset
-                                    if c.changeset.revision < file_last_cs.revision
-                                    else file_last_cs)
-                c.file_history, _hist = self._get_node_history(c.changeset, f_path)
-                c.authors = []
-                for a in set([x.author for x in _hist]):
-                    c.authors.append((h.email(a), h.person(a)))
-                return render('files/files_history_box.html')
+    @jsonify
+    def history(self, repo_name, revision, f_path):
+        changeset = self.__get_cs_or_redirect(revision, repo_name)
+        f_path = f_path
+        _file = changeset.get_node(f_path)
+        if _file.is_file():
+            file_history, _hist = self._get_node_history(changeset, f_path)
+
+            res = []
+            for obj in file_history:
+                res.append({
+                    'text': obj[1],
+                    'children': [{'id': o[0], 'text': o[1]} for o in obj[0]]
+                })
+
+            data = {
+                'more': False,
+                'results': res
+            }
+            return data
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    def authors(self, repo_name, revision, f_path):
+        changeset = self.__get_cs_or_redirect(revision, repo_name)
+        f_path = f_path
+        _file = changeset.get_node(f_path)
+        if _file.is_file():
+            file_history, _hist = self._get_node_history(changeset, f_path)
+            c.authors = []
+            for a in set([x.author for x in _hist]):
+                c.authors.append((h.email(a), h.person(a)))
+            return render('files/files_history_box.html')
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
@@ -262,6 +290,66 @@ class FilesController(BaseRepoController):
         response.content_disposition = dispo
         response.content_type = mimetype
         return file_node.content
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.write', 'repository.admin')
+    def delete(self, repo_name, revision, f_path):
+        repo = c.rhodecode_db_repo
+        if repo.enable_locking and repo.locked[0]:
+            h.flash(_('This repository is has been locked by %s on %s')
+                % (h.person_by_id(repo.locked[0]),
+                   h.fmt_date(h.time_to_datetime(repo.locked[1]))),
+                'warning')
+            return redirect(h.url('files_home',
+                                  repo_name=repo_name, revision='tip'))
+
+        # check if revision is a branch identifier- basically we cannot
+        # create multiple heads via file editing
+        _branches = repo.scm_instance.branches
+        # check if revision is a branch name or branch hash
+        if revision not in _branches.keys() + _branches.values():
+            h.flash(_('You can only delete files with revision '
+                      'being a valid branch '), category='warning')
+            return redirect(h.url('files_home',
+                                  repo_name=repo_name, revision='tip',
+                                  f_path=f_path))
+
+        r_post = request.POST
+
+        c.cs = self.__get_cs_or_redirect(revision, repo_name)
+        c.file = self.__get_filenode_or_redirect(repo_name, c.cs, f_path)
+
+        c.default_message = _('Deleted file %s via RhodeCode') % (f_path)
+        c.f_path = f_path
+        node_path = f_path
+        author = self.rhodecode_user.full_contact
+
+        if r_post:
+            message = r_post.get('message') or c.default_message
+
+            try:
+                nodes = {
+                    node_path: {
+                        'content': ''
+                    }
+                }
+                self.scm_model.delete_nodes(
+                    user=c.rhodecode_user.user_id, repo=c.rhodecode_db_repo,
+                    message=message,
+                    nodes=nodes,
+                    parent_cs=c.cs,
+                    author=author,
+                )
+
+                h.flash(_('Successfully deleted file %s') % f_path,
+                        category='success')
+            except Exception:
+                log.error(traceback.format_exc())
+                h.flash(_('Error occurred during commit'), category='error')
+            return redirect(url('changeset_home',
+                                repo_name=c.repo_name, revision='tip'))
+
+        return render('files/files_delete.html')
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.write', 'repository.admin')
@@ -468,19 +556,21 @@ class FilesController(BaseRepoController):
                 log.debug('Archive %s is not yet cached' % (archive_name))
 
         if not use_cached_archive:
-            #generate new archive
+            # generate new archive
+            temp_stream = None
             try:
                 fd, archive = tempfile.mkstemp()
-                t = open(archive, 'wb')
+                temp_stream = open(archive, 'wb')
                 log.debug('Creating new temp archive in %s' % archive)
-                cs.fill_archive(stream=t, kind=fileformat, subrepos=subrepos)
-                if archive_cache_enabled:
+                cs.fill_archive(stream=temp_stream, kind=fileformat, subrepos=subrepos)
+                if not subrepos and archive_cache_enabled:
                     #if we generated the archive and use cache rename that
                     log.debug('Storing new archive in %s' % cached_archive_path)
                     shutil.move(archive, cached_archive_path)
                     archive = cached_archive_path
             finally:
-                t.close()
+                if temp_stream:
+                    temp_stream.close()
 
         def get_chunked_archive(archive):
             stream = open(archive, 'rb')
@@ -654,28 +744,6 @@ class FilesController(BaseRepoController):
             log.error(traceback.format_exc())
             return redirect(url('files_home', repo_name=c.repo_name,
                                 f_path=f_path))
-        if node2.is_binary:
-            node2_content = 'binary file'
-        else:
-            node2_content = node2.content
-
-        if node1.is_binary:
-            node1_content = 'binary file'
-        else:
-            node1_content = node1.content
-
-        html_escape_table = {
-            "&": "\u0026",
-            '"': "\u0022",
-            "'": "\u0027",
-            ">": "\u003e",
-            "<": "\u003c",
-            '\\': "\u005c",
-            '\n': '\\n'
-        }
-
-        c.orig1 = h.html_escape((node1_content), html_escape_table)
-        c.orig2 = h.html_escape((node2_content), html_escape_table)
         c.node1 = node1
         c.node2 = node2
         c.cs1 = c.changeset_1

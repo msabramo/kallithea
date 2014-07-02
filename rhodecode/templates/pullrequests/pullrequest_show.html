@@ -1,7 +1,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Pull Request #%s') % (c.repo_name, c.pull_request.pull_request_id)} &middot; ${c.rhodecode_name}
+    ${_('%s Pull Request #%s') % (c.repo_name, c.pull_request.pull_request_id)}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -20,14 +23,13 @@ ${self.repo_context_bar('showpullrequest')}
         ${self.breadcrumbs()}
     </div>
 
-    <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
-        ${_('Title')}: ${c.pull_request.title}
-        %if c.pull_request.is_closed():
-            (${_('Closed')})
-        %endif
-    </div>
-
-    <div class="form">
+    <div class="form" style="float: left">
+        <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
+            ${_('Title')}: ${c.pull_request.title}
+            %if c.pull_request.is_closed():
+                (${_('Closed')})
+            %endif
+        </div>
       <div id="summary" class="fields">
          <div class="field">
           <div class="label-summary">
@@ -36,7 +38,8 @@ ${self.repo_context_bar('showpullrequest')}
           <div class="input">
             <div class="changeset-status-container" style="float:none;clear:both">
             %if c.current_changeset_status:
-              <div class="changeset-status-ico" style="padding:0px 4px 0px 0px"><img src="${h.url('/images/icons/flag_status_%s.png' % c.current_changeset_status)}" title="${_('Pull request status calculated from votes')}"/></div>
+              <div class="changeset-status-ico" style="padding:0px 4px 0px 0px">
+                  <img src="${h.url('/images/icons/flag_status_%s.png' % c.current_changeset_status)}" title="${_('Pull request status calculated from votes')}"/></div>
               <div class="changeset-status-lbl tooltip" title="${_('Pull request status calculated from votes')}">
                 %if c.pull_request.is_closed():
                     ${_('Closed')},
@@ -66,11 +69,6 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
           <div class="input">
               <div>
-             ##%if h.is_hg(c.pull_request.org_repo):
-             ##  <img class="icon" title="${_('Mercurial repository')}" alt="${_('Mercurial repository')}" src="${h.url('/images/icons/hgicon.png')}"/>
-             ##%elif h.is_git(c.pull_request.org_repo):
-             ##  <img class="icon" title="${_('Git repository')}" alt="${_('Git repository')}" src="${h.url('/images/icons/giticon.png')}"/>
-             ##%endif
 
               ## branch link is only valid if it is a branch
               <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.pull_request.org_ref_parts[1])}">${c.pull_request.org_ref_parts[0]}: ${c.pull_request.org_ref_parts[1]}</a></span>
@@ -78,7 +76,7 @@ ${self.repo_context_bar('showpullrequest')}
                %if h.is_hg(c.pull_request.org_repo):
                  | ${_('Pull changes')} <span style="font-family: monospace">hg pull -r ${h.short_id(c.cs_ranges[-1].raw_id)} <a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
                %elif h.is_git(c.pull_request.org_repo):
-                 | ${_('Pull changes')}
+                 | ${_('Pull changes')} <span style="font-family: monospace">git pull <a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a> ${c.pull_request.org_ref_parts[1]} </span>
                %endif
               </div>
           </div>
@@ -88,7 +86,7 @@ ${self.repo_context_bar('showpullrequest')}
               <label>${_('Description')}:</label>
           </div>
           <div class="input">
-              <div style="white-space:pre-wrap">${h.urlify_commit(c.pull_request.description)}</div>
+              <div style="white-space:pre-wrap">${h.urlify_commit(c.pull_request.description, c.repo_name)}</div>
           </div>
          </div>
          <div class="field">
@@ -101,8 +99,50 @@ ${self.repo_context_bar('showpullrequest')}
          </div>
       </div>
     </div>
+    ## REVIEWERS
+    <div style="float:left; border-left:1px dashed #eee">
+       <div class="pr-details-title">${_('Pull request reviewers')}</div>
+        <div id="reviewers" style="padding:0px 0px 5px 10px">
+          ## members goes here !
+          <div style="min-height:30px">
+            <ul id="review_members" class="group_members">
+            %for member,status in c.pull_request_reviewers:
+              <li id="reviewer_${member.user_id}">
+                <div class="reviewers_member">
+                    <div class="reviewer_status tooltip" title="${h.tooltip(h.changeset_status_lbl(status[0][1].status if status else 'not_reviewed'))}">
+                      <img src="${h.url(str('/images/icons/flag_status_%s.png' % (status[0][1].status if status else 'not_reviewed')))}"/>
+                    </div>
+                  <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email,14)}"/> </div>
+                  <div style="float:left;">${member.full_name} (${_('owner') if c.pull_request.user_id == member.user_id else _('reviewer')})</div>
+                  <input type="hidden" value="${member.user_id}" name="review_members" />
+                  %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.user_id == c.rhodecode_user.user_id):
+                  <div class="reviewer_member_remove action_button" onclick="removeReviewMember(${member.user_id})">
+                      <i class="icon-remove-sign" style="color: #FF4444;"></i>
+                  </div>
+                  %endif
+                </div>
+              </li>
+            %endfor
+            </ul>
+          </div>
+          %if not c.pull_request.is_closed():
+          <div class='ac'>
+            %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.rhodecode_user.user_id:
+            <div class="reviewer_ac">
+               ${h.text('user', class_='yui-ac-input')}
+               <span class="help-block">${_('Add or remove reviewer to this pull request.')}</span>
+               <div id="reviewers_container"></div>
+            </div>
+            <div style="padding:0px 10px">
+             <span id="update_pull_request" class="btn btn-mini">${_('Save Changes')}</span>
+            </div>
+            %endif
+          </div>
+          %endif
+        </div>
+       </div>
 
-    <div style="overflow: auto;">
+    <div style="overflow: auto; clear: both">
       ##DIFF
       <div class="table" style="float:left;clear:none">
           <div id="body" class="diffblock">
@@ -139,50 +179,10 @@ ${self.repo_context_bar('showpullrequest')}
               % endif
           </div>
       </div>
-      ## REVIEWERS
-       <div style="float:left; border-left:1px dashed #eee">
-       <h4>${_('Pull request reviewers')}</h4>
-        <div id="reviewers" style="padding:0px 0px 5px 10px">
-          ## members goes here !
-          <div class="group_members_wrap" style="min-height:45px">
-            <ul id="review_members" class="group_members">
-            %for member,status in c.pull_request_reviewers:
-              <li id="reviewer_${member.user_id}">
-                <div class="reviewers_member">
-                    <div style="float:left;padding:0px 3px 0px 0px" class="tooltip" title="${h.tooltip(h.changeset_status_lbl(status[0][1].status if status else 'not_reviewed'))}">
-                      <img src="${h.url(str('/images/icons/flag_status_%s.png' % (status[0][1].status if status else 'not_reviewed')))}"/>
-                    </div>
-                  <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email,14)}"/> </div>
-                  <div style="float:left">${member.full_name} (${_('owner') if c.pull_request.user_id == member.user_id else _('reviewer')})</div>
-                  <input type="hidden" value="${member.user_id}" name="review_members" />
-                  %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.user_id == c.rhodecode_user.user_id):
-                  <span class="delete_icon action_button" onclick="removeReviewMember(${member.user_id})"></span>
-                  %endif
-                </div>
-              </li>
-            %endfor
-            </ul>
-          </div>
-          %if not c.pull_request.is_closed():
-          <div class='ac'>
-            %if h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.author.user_id == c.rhodecode_user.user_id:
-            <div class="reviewer_ac">
-               ${h.text('user', class_='yui-ac-input')}
-               <span class="help-block">${_('Add or remove reviewer to this pull request.')}</span>
-               <div id="reviewers_container"></div>
-            </div>
-            <div style="padding:0px 10px">
-             <span id="update_pull_request" class="ui-btn xsmall">${_('Save changes')}</span>
-            </div>
-            %endif
-          </div>
-          %endif
-        </div>
-       </div>
     </div>
     <script>
     var _USERS_AC_DATA = ${c.users_array|n};
-    var _GROUPS_AC_DATA = ${c.users_groups_array|n};
+    var _GROUPS_AC_DATA = ${c.user_groups_array|n};
     // TODO: switch this to pyroutes
     AJAX_COMMENT_URL = "${url('pullrequest_comment',repo_name=c.repo_name,pull_request_id=c.pull_request.pull_request_id)}";
     AJAX_COMMENT_DELETE_URL = "${url('pullrequest_comment_delete',repo_name=c.repo_name,comment_id='__COMMENT_ID__')}";

@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.db_1_2_0
-    ~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Database Models for RhodeCode <=1.2.X
-
-    :created_on: Apr 08, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.db_1_2_0
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Database Models for RhodeCode <=1.2.X
+
+:created_on: Apr 08, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import os
 import logging
@@ -903,7 +903,7 @@ class UserToPerm(Base, BaseModel):
             raise Exception('perm needs to be an instance of Permission class')
 
         try:
-            cls.query().filter(cls.user_id == user_id)\
+            cls.query().filter(cls.user_id == user_id) \
                 .filter(cls.permission == perm).delete()
             Session.commit()
         except:
@@ -966,7 +966,7 @@ class UserGroupToPerm(Base, BaseModel):
             raise Exception('perm needs to be an instance of Permission class')
 
         try:
-            cls.query().filter(cls.users_group_id == users_group_id)\
+            cls.query().filter(cls.users_group_id == users_group_id) \
                 .filter(cls.permission == perm).delete()
             Session.commit()
         except:

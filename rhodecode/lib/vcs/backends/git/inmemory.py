@@ -1,6 +1,7 @@
 import time
 import datetime
 import posixpath
+import stat
 from dulwich import objects
 from dulwich.repo import Repo
 from rhodecode.lib.vcs.backends.base import BaseInMemoryChangeset
@@ -38,7 +39,6 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
         object_store = repo.object_store
 
         ENCODING = "UTF-8"
-        DIRMOD = 040000
 
         # Create tree and populates it with blobs
         commit_tree = self.parents[0] and repo[self.parents[0]._commit.tree] or\
@@ -83,11 +83,11 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
                 new_trees.append(curtree)
                 for dirname in reversed_dirnames[:-1]:
                     newtree = objects.Tree()
-                    #newtree.add(DIRMOD, dirname, curtree.id)
-                    newtree[dirname] = DIRMOD, curtree.id
+                    #newtree.add(stat.S_IFDIR, dirname, curtree.id)
+                    newtree[dirname] = stat.S_IFDIR, curtree.id
                     new_trees.append(newtree)
                     curtree = newtree
-                parent[reversed_dirnames[-1]] = DIRMOD, curtree.id
+                parent[reversed_dirnames[-1]] = stat.S_IFDIR, curtree.id
             else:
                 parent.add(name=node_path, mode=node.mode, hexsha=blob.id)
 
@@ -95,7 +95,7 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
             # Update ancestors
             for parent, tree, path in reversed([(a[1], b[1], b[0]) for a, b in
                 zip(ancestors, ancestors[1:])]):
-                parent[path] = DIRMOD, tree.id
+                parent[path] = stat.S_IFDIR, tree.id
                 object_store.add_object(tree)
 
             object_store.add_object(blob)
@@ -192,8 +192,7 @@ class GitInMemoryChangeset(BaseInMemoryChangeset):
             tree = get_tree_for_dir(parent, dirname)
             if tree is None:
                 tree = objects.Tree()
-                dirmode = 040000
-                parent.add(dirmode, dirname, tree.id)
+                parent.add(stat.S_IFDIR, dirname, tree.id)
                 parent = tree
             # Always append tree
             trees.append(tree)

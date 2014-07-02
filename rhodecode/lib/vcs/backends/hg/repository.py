@@ -33,7 +33,7 @@ from rhodecode.lib.vcs.utils.paths import abspath
 from rhodecode.lib.vcs.utils.hgcompat import (
     ui, nullid, match, patch, diffopts, clone, get_contact, pull,
     localrepository, RepoLookupError, Abort, RepoError, hex, scmutil, hg_url,
-    httpbasicauthhandler, httpdigestauthhandler, peer
+    httpbasicauthhandler, httpdigestauthhandler, peer, httppeer
 )
 
 from .changeset import MercurialChangeset
@@ -288,26 +288,28 @@ class MercurialRepository(BaseRepository):
                                         context=context)))
 
     @classmethod
-    def _check_url(cls, url):
+    def _check_url(cls, url, repoui=None):
         """
         Function will check given url and try to verify if it's a valid
         link. Sometimes it may happened that mercurial will issue basic
         auth request that can cause whole API to hang when used from python
         or other external calls.
 
-        On failures it'll raise urllib2.HTTPError, return code 200 if url
-        is valid or True if it's a local path
+        On failures it'll raise urllib2.HTTPError, exception is also thrown
+        when the return code is non 200
         """
-
         # check first if it's not an local url
         if os.path.isdir(url) or url.startswith('file:'):
             return True
 
-        if('+' in url[:url.find('://')]):
+        if '+' in url[:url.find('://')]:
             url = url[url.find('+') + 1:]
 
         handlers = []
-        test_uri, authinfo = hg_url(url).authinfo()
+        url_obj = hg_url(url)
+        test_uri, authinfo = url_obj.authinfo()
+        url_obj.passwd = '*****'
+        cleaned_uri = str(url_obj)
 
         if authinfo:
             #create a password manager
@@ -329,10 +331,21 @@ class MercurialRepository(BaseRepository):
 
         try:
             resp = o.open(req)
-            return resp.code == 200
+            if resp.code != 200:
+                raise Exception('Return Code is not 200')
         except Exception, e:
             # means it cannot be cloned
-            raise urllib2.URLError("[%s] %s" % (url, e))
+            raise urllib2.URLError("[%s] org_exc: %s" % (cleaned_uri, e))
+
+        # now check if it's a proper hg repo
+        try:
+            repo_id = httppeer(repoui or ui.ui(), url).lookup('tip')
+        except Exception, e:
+            raise urllib2.URLError(
+                "url [%s] does not look like an hg repo org_exc: %s"
+                % (cleaned_uri, e))
+
+        return True
 
     def _get_repo(self, create, src_url=None, update_after_clone=False):
         """
@@ -352,7 +365,7 @@ class MercurialRepository(BaseRepository):
                 if not update_after_clone:
                     opts.update({'noupdate': True})
                 try:
-                    MercurialRepository._check_url(url)
+                    MercurialRepository._check_url(url, self.baseui)
                     clone(self.baseui, url, self.path, **opts)
 #                except urllib2.URLError:
 #                    raise Abort("Got HTTP 404 error")
@@ -378,8 +391,8 @@ class MercurialRepository(BaseRepository):
     @LazyProperty
     def description(self):
         undefined_description = u'unknown'
-        return safe_unicode(self._repo.ui.config('web', 'description',
-                                   undefined_description, untrusted=True))
+        _desc = self._repo.ui.config('web', 'description', None, untrusted=True)
+        return safe_unicode(_desc or undefined_description)
 
     @LazyProperty
     def contact(self):
@@ -425,10 +438,13 @@ class MercurialRepository(BaseRepository):
 
         try:
             revision = hex(self._repo.lookup(revision))
+        except (LookupError, ):
+            msg = ("Ambiguous identifier `%s` for %s" % (revision, self))
+            raise ChangesetDoesNotExistError(msg)
         except (IndexError, ValueError, RepoLookupError, TypeError):
-            raise ChangesetDoesNotExistError("Revision %s does not "
-                                    "exist for this repository"
-                                    % (revision))
+            msg = ("Revision %s does not exist for %s" % (revision, self))
+            raise ChangesetDoesNotExistError(msg)
+
         return revision
 
     def _get_archives(self, archive_name='tip'):
@@ -490,8 +506,8 @@ class MercurialRepository(BaseRepository):
                                   "after end revision '%s'" % (start, end))
 
         if branch_name and branch_name not in self.allbranches.keys():
-            raise BranchDoesNotExistError('Branch %s not found in'
-                                  ' this repository' % branch_name)
+            msg = ("Branch %s not found in %s" % (branch_name, self))
+            raise BranchDoesNotExistError(msg)
         if end_pos is not None:
             end_pos += 1
         #filter branches

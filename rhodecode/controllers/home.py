@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.home
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Home controller for Rhodecode
-
-    :created_on: Feb 18, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.home
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Home controller for Rhodecode
+
+:created_on: Feb 18, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+
+"""
 
 import logging
 
@@ -32,10 +33,11 @@ from sqlalchemy.sql.expression import func
 
 import rhodecode
 from rhodecode.lib import helpers as h
+from rhodecode.lib.utils import jsonify, conditional_cache
 from rhodecode.lib.compat import json
-from rhodecode.lib.auth import LoginRequired
+from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
 from rhodecode.lib.base import BaseController, render
-from rhodecode.model.db import Repository
+from rhodecode.model.db import Repository, RepoGroup
 from rhodecode.model.repo import RepoModel
 
 
@@ -49,7 +51,7 @@ class HomeController(BaseController):
 
     @LoginRequired()
     def index(self):
-        c.groups = self.scm_model.get_repos_groups()
+        c.groups = self.scm_model.get_repo_groups()
         c.group = None
 
         c.repos_list = Repository.query()\
@@ -65,21 +67,80 @@ class HomeController(BaseController):
         return render('/index.html')
 
     @LoginRequired()
-    def repo_switcher(self):
-        if request.is_xhr:
+    @jsonify
+    def repo_switcher_data(self):
+        #wrapper for conditional cache
+        def _c():
+            log.debug('generating switcher repo/groups list')
             all_repos = Repository.query().order_by(Repository.repo_name).all()
-            c.repos_list = self.scm_model.get_repos(all_repos,
-                                                    sort_key='name_sort',
-                                                    simple=True)
-            return render('/repo_switcher_list.html')
+            repo_iter = self.scm_model.get_repos(all_repos, simple=True)
+            all_groups = RepoGroup.query().order_by(RepoGroup.group_name).all()
+            repo_groups_iter = self.scm_model.get_repo_groups(all_groups)
+
+            res = [{
+                    'text': _('Groups'),
+                    'children': [
+                       {'id': obj.group_name, 'text': obj.group_name,
+                        'type': 'group', 'obj': {}} for obj in repo_groups_iter]
+                   }, {
+                    'text': _('Repositories'),
+                    'children': [
+                       {'id': obj['name'], 'text': obj['name'],
+                        'type': 'repo', 'obj': obj['dbrepo']} for obj in repo_iter]
+                   }]
+
+            data = {
+                'more': False,
+                'results': res
+            }
+            return data
+
+        if request.is_xhr:
+            condition = False
+            compute = conditional_cache('short_term', 'cache_desc',
+                                        condition=condition, func=_c)
+            return compute()
         else:
             raise HTTPBadRequest()
 
     @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
     def branch_tag_switcher(self, repo_name):
         if request.is_xhr:
-            c.rhodecode_db_repo = Repository.get_by_repo_name(c.repo_name)
+            c.rhodecode_db_repo = Repository.get_by_repo_name(repo_name)
             if c.rhodecode_db_repo:
                 c.rhodecode_repo = c.rhodecode_db_repo.scm_instance
                 return render('/switch_to_list.html')
         raise HTTPBadRequest()
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    @jsonify
+    def repo_refs_data(self, repo_name):
+        repo = Repository.get_by_repo_name(repo_name).scm_instance
+        res = []
+        _branches = repo.branches.items()
+        if _branches:
+            res.append({
+                'text': _('Branch'),
+                'children': [{'id': rev, 'text': name, 'type': 'branch'} for name, rev in _branches]
+            })
+        _tags = repo.tags.items()
+        if _tags:
+            res.append({
+                'text': _('Tag'),
+                'children': [{'id': rev, 'text': name, 'type': 'tag'} for name, rev in _tags]
+            })
+        _bookmarks = repo.bookmarks.items()
+        if _bookmarks:
+            res.append({
+                'text': _('Bookmark'),
+                'children': [{'id': rev, 'text': name, 'type': 'book'} for name, rev in _bookmarks]
+            })
+        data = {
+            'more': False,
+            'results': res
+        }
+        return data

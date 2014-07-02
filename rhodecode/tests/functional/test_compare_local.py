@@ -1,10 +1,5 @@
+# -*- coding: utf-8 -*-
 from rhodecode.tests import *
-from rhodecode.model.repo import RepoModel
-from rhodecode.model.meta import Session
-from rhodecode.model.db import Repository
-from rhodecode.model.scm import ScmModel
-from rhodecode.lib.vcs.backends.base import EmptyChangeset
-
 
 class TestCompareController(TestController):
 
@@ -12,14 +7,15 @@ class TestCompareController(TestController):
         self.log_user()
         tag1 = 'v0.1.2'
         tag2 = 'v0.1.3'
-        response = self.app.get(url(controller='compare', action='index',
+        response = self.app.get(url('compare_url',
                                     repo_name=HG_REPO,
                                     org_ref_type="tag",
                                     org_ref=tag1,
                                     other_ref_type="tag",
                                     other_ref=tag2,
                                     ), status=200)
-        response.mustcontain('%s@%s -&gt; %s@%s' % (HG_REPO, tag1, HG_REPO, tag2))
+        response.mustcontain('%s@%s' % (HG_REPO, tag1))
+        response.mustcontain('%s@%s' % (HG_REPO, tag2))
 
         ## outgoing changesets between tags
         response.mustcontain('''<a href="/%s/changeset/c5ddebc06eaaba3010c2d66ea6ec9d074eb0f678">r112:c5ddebc06eaa</a>''' % HG_REPO)
@@ -49,14 +45,15 @@ class TestCompareController(TestController):
         self.log_user()
         tag1 = 'v0.1.2'
         tag2 = 'v0.1.3'
-        response = self.app.get(url(controller='compare', action='index',
+        response = self.app.get(url('compare_url',
                                     repo_name=GIT_REPO,
                                     org_ref_type="tag",
                                     org_ref=tag1,
                                     other_ref_type="tag",
                                     other_ref=tag2,
                                     ), status=200)
-        response.mustcontain('%s@%s -&gt; %s@%s' % (GIT_REPO, tag1, GIT_REPO, tag2))
+        response.mustcontain('%s@%s' % (GIT_REPO, tag1))
+        response.mustcontain('%s@%s' % (GIT_REPO, tag2))
 
         ## outgoing changesets between tags
         response.mustcontain('''<a href="/%s/changeset/794bbdd31545c199f74912709ea350dedcd189a2">r113:794bbdd31545</a>''' % GIT_REPO)
@@ -84,7 +81,7 @@ class TestCompareController(TestController):
 
     def test_index_branch_hg(self):
         self.log_user()
-        response = self.app.get(url(controller='compare', action='index',
+        response = self.app.get(url('compare_url',
                                     repo_name=HG_REPO,
                                     org_ref_type="branch",
                                     org_ref='default',
@@ -92,14 +89,15 @@ class TestCompareController(TestController):
                                     other_ref='default',
                                     ))
 
-        response.mustcontain('%s@default -&gt; %s@default' % (HG_REPO, HG_REPO))
+        response.mustcontain('%s@default' % (HG_REPO))
+        response.mustcontain('%s@default' % (HG_REPO))
         # branch are equal
         response.mustcontain('<span class="empty_data">No files</span>')
         response.mustcontain('<span class="empty_data">No changesets</span>')
 
     def test_index_branch_git(self):
         self.log_user()
-        response = self.app.get(url(controller='compare', action='index',
+        response = self.app.get(url('compare_url',
                                     repo_name=GIT_REPO,
                                     org_ref_type="branch",
                                     org_ref='master',
@@ -107,7 +105,8 @@ class TestCompareController(TestController):
                                     other_ref='master',
                                     ))
 
-        response.mustcontain('%s@master -&gt; %s@master' % (GIT_REPO, GIT_REPO))
+        response.mustcontain('%s@master' % (GIT_REPO))
+        response.mustcontain('%s@master' % (GIT_REPO))
         # branch are equal
         response.mustcontain('<span class="empty_data">No files</span>')
         response.mustcontain('<span class="empty_data">No changesets</span>')
@@ -117,14 +116,16 @@ class TestCompareController(TestController):
         rev1 = 'b986218ba1c9'
         rev2 = '3d8f361e72ab'
 
-        response = self.app.get(url(controller='compare', action='index',
+        response = self.app.get(url('compare_url',
                                     repo_name=HG_REPO,
                                     org_ref_type="rev",
                                     org_ref=rev1,
                                     other_ref_type="rev",
                                     other_ref=rev2,
                                     ))
-        response.mustcontain('%s@%s -&gt; %s@%s' % (HG_REPO, rev1, HG_REPO, rev2))
+        response.mustcontain('%s@%s' % (HG_REPO, rev1))
+        response.mustcontain('%s@%s' % (HG_REPO, rev2))
+
         ## outgoing changesets between those revisions
         response.mustcontain("""<a href="/%s/changeset/3d8f361e72ab303da48d799ff1ac40d5ac37c67e">r1:%s</a>""" % (HG_REPO, rev2))
 
@@ -137,14 +138,16 @@ class TestCompareController(TestController):
         rev1 = 'c1214f7e79e02fc37156ff215cd71275450cffc3'
         rev2 = '38b5fe81f109cb111f549bfe9bb6b267e10bc557'
 
-        response = self.app.get(url(controller='compare', action='index',
+        response = self.app.get(url('compare_url',
                                     repo_name=GIT_REPO,
                                     org_ref_type="rev",
                                     org_ref=rev1,
                                     other_ref_type="rev",
                                     other_ref=rev2,
                                     ))
-        response.mustcontain('%s@%s -&gt; %s@%s' % (GIT_REPO, rev1, GIT_REPO, rev2))
+        response.mustcontain('%s@%s' % (GIT_REPO, rev1))
+        response.mustcontain('%s@%s' % (GIT_REPO, rev2))
+
         ## outgoing changesets between those revisions
         response.mustcontain("""<a href="/%s/changeset/38b5fe81f109cb111f549bfe9bb6b267e10bc557">r1:%s</a>""" % (GIT_REPO, rev2[:12]))
         response.mustcontain('1 file changed with 7 insertions and 0 deletions')

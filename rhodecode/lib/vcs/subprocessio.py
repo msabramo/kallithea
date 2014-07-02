@@ -4,7 +4,7 @@ input, output, error streams into a meaningfull, non-blocking, concurrent
 stream processor exposing the output data as an iterator fitting to be a
 return value passed by a WSGI applicaiton to a WSGI server per PEP 3333.
 
-Copyright (c) 2011  Daniel Dotsenko <dotsa@hotmail.com>
+Copyright (c) 2011  Daniel Dotsenko <dotsa[at]hotmail.com>
 
 This file is part of git_http_backend.py Project.
 
@@ -34,6 +34,7 @@ class StreamFeeder(Thread):
     without blocking the main thread.
     We close inpipe once the end of the source stream is reached.
     """
+
     def __init__(self, source):
         super(StreamFeeder, self).__init__()
         self.daemon = True
@@ -129,12 +130,13 @@ class InputStreamChunker(Thread):
             if len(t) > ccm:
                 kr.clear()
                 kr.wait(2)
-#                # this only works on 2.7.x and up
-#                if not kr.wait(10):
-#                    raise Exception("Timed out while waiting for input to be read.")
+                # # this only works on 2.7.x and up
+                # if not kr.wait(10):
+                #     raise Exception("Timed out while waiting for input to be read.")
                 # instead we'll use this
                 if len(t) > ccm + 3:
-                    raise IOError("Timed out while waiting for input from subprocess.")
+                    raise IOError(
+                        "Timed out while waiting for input from subprocess.")
             t.append(b)
             da.set()
             b = s.read(cs)
@@ -142,7 +144,7 @@ class InputStreamChunker(Thread):
         da.set()  # for cases when done but there was no input.
 
 
-class BufferedGenerator():
+class BufferedGenerator(object):
     """
     Class behaves as a non-blocking, buffered pipe reader.
     Reads chunks of data (through a thread)
@@ -164,7 +166,6 @@ class BufferedGenerator():
             maxlen = None
 
         self.data = deque(starting_values, maxlen)
-
         self.worker = InputStreamChunker(source, self.data, buffer_size,
                                          chunk_size)
         if starting_values:
@@ -325,6 +326,7 @@ class SubprocessIOChunker(object):
 
 
     """
+
     def __init__(self, cmd, inputstream=None, buffer_size=65536,
                  chunk_size=4096, starting_values=[], **kwargs):
         """
@@ -347,15 +349,14 @@ class SubprocessIOChunker(object):
             cmd = ' '.join(cmd)
 
         kwargs['shell'] = _shell
-        _p = subprocess.Popen(cmd,
-            bufsize=-1,
-            stdin=inputstream,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            **kwargs
-        )
+        _p = subprocess.Popen(cmd, bufsize=-1,
+                              stdin=inputstream,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE,
+                              **kwargs)
 
-        bg_out = BufferedGenerator(_p.stdout, buffer_size, chunk_size, starting_values)
+        bg_out = BufferedGenerator(_p.stdout, buffer_size, chunk_size,
+                                   starting_values)
         bg_err = BufferedGenerator(_p.stderr, 16000, 1, bottomless=True)
 
         while not bg_out.done_reading and not bg_out.reading_paused and not bg_err.length:
@@ -371,14 +372,16 @@ class SubprocessIOChunker(object):
         if _returncode or (_returncode is None and bg_err.length):
             try:
                 _p.terminate()
-            except:
+            except Exception:
                 pass
             bg_out.stop()
             bg_err.stop()
             err = '%s' % ''.join(bg_err)
             if err:
-                raise EnvironmentError("Subprocess exited due to an error:\n" + err)
-            raise EnvironmentError("Subprocess exited with non 0 ret code:%s" % _returncode)
+                raise EnvironmentError(
+                    "Subprocess exited due to an error:\n" + err)
+            raise EnvironmentError(
+                "Subprocess exited with non 0 ret code:%s" % _returncode)
 
         self.process = _p
         self.output = bg_out

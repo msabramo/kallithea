@@ -1,0 +1,13 @@
+${h.form(url('edit_repo_statistics', repo_name=c.repo_info.repo_name), method='put')}
+<div class="form">
+    <div class="fields">
+       <div class="field" style="border:none;color:#888">
+        <ul>
+            <li>${_('Processed commits')}: ${c.stats_revision}/${c.repo_last_rev}</li>
+            <li>${_('Processed progress')}: ${c.stats_percentage}%</li>
+        </ul>
+       </div>
+        ${h.submit('reset_stats_%s' % c.repo_info.repo_name,_('Reset statistics'),class_="btn btn-small",onclick="return confirm('"+_('Confirm to remove current statistics')+"');")}
+   </div>
+</div>
+${h.end_form()}

@@ -2,7 +2,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Tags') % c.repo_name} &middot; ${c.rhodecode_name}
+    ${_('%s Tags') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -23,7 +26,7 @@ ${self.repo_context_bar('switch-to')}
     </div>
     <!-- end box / title -->
     %if c.repo_tags:
-    <div class="info_box" id="compare_tags" style="clear: both;padding: 10px 19px;text-align: right;"><a href="#" class="ui-btn small">${_('Compare tags')}</a></div>
+    <div class="info_box" id="compare_tags" style="clear: both;padding: 10px 19px;text-align: right;"><a href="#" class="btn btn-small">${_('Compare tags')}</a></div>
     %endif
     <div class="table">
         <%include file='tags_data.html'/>
@@ -45,7 +48,8 @@ YUE.on('compare_tags','click',function(e){
 
 // main table sorting
 var myColumnDefs = [
-    {key:"name",label:"${_('Name')}",sortable:true},
+    {key:"name",label:"${_('Name')}",sortable:true,
+        sortOptions: { sortFunction: nameSort }},
     {key:"date",label:"${_('Date')}",sortable:true,
         sortOptions: { sortFunction: dateSort }},
     {key:"author",label:"${_('Author')}",sortable:true},
@@ -60,9 +64,12 @@ myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
 
 myDataSource.responseSchema = {
     fields: [
+        {key:"raw_name"},
         {key:"name"},
+        {key:"raw_date"},
         {key:"date"},
         {key:"author"},
+        {key:"last_rev_raw"},
         {key:"revision"},
         {key:"compare"},
     ]

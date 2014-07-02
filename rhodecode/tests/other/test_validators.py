@@ -4,10 +4,10 @@ import formencode
 from rhodecode.tests import *
 
 from rhodecode.model import validators as v
-from rhodecode.model.users_group import UserGroupModel
+from rhodecode.model.user_group import UserGroupModel
 
 from rhodecode.model.meta import Session
-from rhodecode.model.repos_group import ReposGroupModel
+from rhodecode.model.repo_group import RepoGroupModel
 from rhodecode.model.db import ChangesetStatus, Repository
 from rhodecode.model.changeset_status import ChangesetStatusModel
 from rhodecode.tests.fixture import Fixture
@@ -15,7 +15,7 @@ from rhodecode.tests.fixture import Fixture
 fixture = Fixture()
 
 
-class TestReposGroups(BaseTestCase):
+class TestRepoGroups(BaseTestCase):
 
     def setUp(self):
         pass
@@ -72,9 +72,9 @@ class TestReposGroups(BaseTestCase):
         UserGroupModel().delete(gr2)
         Session().commit()
 
-    def test_ValidReposGroup(self):
-        validator = v.ValidReposGroup()
-        model = ReposGroupModel()
+    def test_ValidRepoGroup(self):
+        validator = v.ValidRepoGroup()
+        model = RepoGroupModel()
         self.assertRaises(formencode.Invalid, validator.to_python,
                           {'group_name': HG_REPO, })
         gr = model.create(group_name='test_gr', group_description='desc',
@@ -84,7 +84,7 @@ class TestReposGroups(BaseTestCase):
         self.assertRaises(formencode.Invalid,
                           validator.to_python, {'group_name': gr.group_name, })
 
-        validator = v.ValidReposGroup(edit=True,
+        validator = v.ValidRepoGroup(edit=True,
                                       old_data={'group_id':  gr.group_id})
         self.assertRaises(formencode.Invalid,
                           validator.to_python, {
@@ -149,7 +149,7 @@ class TestReposGroups(BaseTestCase):
         self.assertRaises(formencode.Invalid,
                           validator.to_python, {'repo_name': HG_REPO})
 
-        gr = ReposGroupModel().create(group_name='group_test',
+        gr = RepoGroupModel().create(group_name='group_test',
                                       group_description='desc',
                                       parent=None,
                                       owner=TEST_USER_ADMIN_LOGIN)

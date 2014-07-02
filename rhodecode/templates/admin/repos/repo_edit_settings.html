@@ -1,0 +1,164 @@
+${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+            <div class="field">
+                <div class="label">
+                    <label for="repo_name">${_('Name')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('repo_name',class_="medium")}
+                    <span class="help-block">${_('Non-changeable id')}: `_${c.repo_info.repo_id}` <span><a id="show_more_clone_id" href="#">${_('what is that ?')}</a></span></span>
+                    <span id="clone_id" class="help-block" style="display: none">
+                        ${_('URL by id')}: `${c.repo_info.clone_url(with_id=True)}` </br>
+                        ${_('''In case this repository is renamed or moved into another group the repository url changes.
+                               Using above url guarantees that this repository will allways be accessible under such url.
+                               Usefull for CI systems, or any other cases that you need to hardcode the url into 3rd party service.''')}</span>
+                </div>
+           </div>
+           <div class="field">
+               <div class="label">
+                   <label for="clone_uri">${_('Clone uri')}:</label>
+               </div>
+               <div class="input">
+                   %if c.repo_info.clone_uri:
+                    <div id="clone_uri_hidden" style="font-size: 14px">
+                        <span id="clone_uri_hidden_value">${c.repo_info.clone_uri_hidden}</span>
+                        <span style="cursor: pointer; padding: 0px 0px 5px 0px" id="edit_clone_uri"><i class="icon-edit"></i>${_('edit')}</span>
+                    </div>
+                    <div id="alter_clone_uri" style="display: none">
+                        ${h.text('clone_uri',class_="medium",  placeholder=_('new value'))}
+                    </div>
+                   %else:
+                    ## not set yet, display form to set it
+                    ${h.text('clone_uri',class_="medium")}
+                    ${h.hidden('clone_uri_change', 'NEW')}
+                   %endif
+                 <span id="alter_clone_uri_help_block" class="help-block">${_('http[s] url used for doing remote pulls.')}</span>
+               </div>
+            </div>
+            <div class="field">
+                <div class="label">
+                    <label for="repo_group">${_('Repository group')}:</label>
+                </div>
+                <div class="input">
+                    ${h.select('repo_group','',c.repo_groups,class_="medium")}
+                    <span class="help-block">${_('Optional select a group to put this repository into.')}</span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">
+                    <label for="repo_landing_rev">${_('Landing revision')}:</label>
+                </div>
+                <div class="input">
+                    ${h.select('repo_landing_rev','',c.landing_revs,class_="medium")}
+                    <span class="help-block">${_('Default revision for files page, downloads, whoosh and readme')}</span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label">
+                    <label for="user">${_('Owner')}:</label>
+                </div>
+                <div class="input input-medium ac">
+                    <div class="perm_ac">
+                       ${h.text('user',class_='yui-ac-input')}
+                       <span class="help-block">${_('Change owner of this repository.')}</span>
+                       <div id="owner_container"></div>
+                    </div>
+                </div>
+             </div>
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="repo_description">${_('Description')}:</label>
+                </div>
+                <div class="textarea text-area editor">
+                    ${h.textarea('repo_description', style="height:165px")}
+                    <span class="help-block">${_('Keep it short and to the point. Use a README file for longer descriptions.')}</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="repo_private">${_('Private repository')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('repo_private',value="True")}
+                    <span class="help-block">${_('Private repositories are only visible to people explicitly added as collaborators.')}</span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="repo_enable_statistics">${_('Enable statistics')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('repo_enable_statistics',value="True")}
+                    <span class="help-block">${_('Enable statistics window on summary page.')}</span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="repo_enable_downloads">${_('Enable downloads')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('repo_enable_downloads',value="True")}
+                    <span class="help-block">${_('Enable download menu on summary page.')}</span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="repo_enable_locking">${_('Enable locking')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('repo_enable_locking',value="True")}
+                    <span class="help-block">${_('Enable lock-by-pulling on repository.')}</span>
+                </div>
+            </div>
+
+            %if c.visual.repository_fields:
+              ## EXTRA FIELDS
+              %for field in c.repo_fields:
+                <div class="field">
+                    <div class="label">
+                        <label for="${field.field_key_prefixed}">${field.field_label} (${field.field_key}):</label>
+                    </div>
+                    <div class="input input-medium">
+                        ${h.text(field.field_key_prefixed, field.field_value, class_='medium')}
+                        %if field.field_desc:
+                          <span class="help-block">${field.field_desc}</span>
+                        %endif
+                    </div>
+                 </div>
+              %endfor
+            %endif
+            <div class="buttons">
+              ${h.submit('save',_('Save'),class_="btn")}
+              ${h.reset('reset',_('Reset'),class_="btn")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+
+<script>
+    $(document).ready(function(){
+        $('#show_more_clone_id').on('click', function(e){
+            $('#clone_id').show();
+            e.preventDefault();
+        })
+        $('#edit_clone_uri').on('click', function(e){
+          $('#alter_clone_uri').show();
+          $('#edit_clone_uri').hide();
+          $('#clone_uri_hidden').hide();
+          ## store hash of old value for change detection
+          var uri_change =  '<input id="clone_uri_change" name="clone_uri_change" type="hidden" value="${h.md5(c.repo_info.clone_uri or "").hexdigest()}" />';
+          $('#alter_clone_uri_help_block').html($('#alter_clone_uri_help_block').html()+" ("+$('#clone_uri_hidden_value').html()+")")
+        })
+
+        $('#repo_landing_rev').select2({
+            'dropdownAutoWidth': true
+        });
+        $('#repo_group').select2({
+            'dropdownAutoWidth': true
+        });
+
+    })
+</script>

@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.admin.notifications
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    notifications controller for RhodeCode
-
-    :created_on: Nov 23, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.admin.notifications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+notifications controller for RhodeCode
+
+:created_on: Nov 23, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import logging
 import traceback
@@ -29,6 +29,7 @@ import traceback
 from pylons import request
 from pylons import tmpl_context as c, url
 from pylons.controllers.util import redirect, abort
+from webob.exc import HTTPBadRequest
 
 from rhodecode.model.db import Notification
 from rhodecode.model.notification import NotificationModel
@@ -111,13 +112,14 @@ class NotificationsController(BaseController):
             owner = all(un.user.user_id == c.rhodecode_user.user_id
                         for un in no.notifications_to_users)
             if h.HasPermissionAny('hg.admin')() or owner:
-                    NotificationModel().mark_read(c.rhodecode_user.user_id, no)
-                    Session().commit()
-                    return 'ok'
+                # deletes only notification2user
+                NotificationModel().mark_read(c.rhodecode_user.user_id, no)
+                Session().commit()
+                return 'ok'
         except Exception:
             Session().rollback()
             log.error(traceback.format_exc())
-        return 'fail'
+        raise HTTPBadRequest()
 
     def delete(self, notification_id):
         """DELETE /_admin/notifications/id: Delete an existing item"""
@@ -127,19 +129,19 @@ class NotificationsController(BaseController):
         #    h.form(url('notification', notification_id=ID),
         #           method='delete')
         # url('notification', notification_id=ID)
-
         try:
             no = Notification.get(notification_id)
-            owner = all(un.user.user_id == c.rhodecode_user.user_id
+            owner = any(un.user.user_id == c.rhodecode_user.user_id
                         for un in no.notifications_to_users)
             if h.HasPermissionAny('hg.admin')() or owner:
-                    NotificationModel().delete(c.rhodecode_user.user_id, no)
-                    Session().commit()
-                    return 'ok'
+                # deletes only notification2user
+                NotificationModel().delete(c.rhodecode_user.user_id, no)
+                Session().commit()
+                return 'ok'
         except Exception:
             Session().rollback()
             log.error(traceback.format_exc())
-        return 'fail'
+        raise HTTPBadRequest()
 
     def show(self, notification_id, format='html'):
         """GET /_admin/notifications/id: Show a specific item"""
@@ -149,8 +151,8 @@ class NotificationsController(BaseController):
 
         owner = any(un.user.user_id == c.rhodecode_user.user_id
                     for un in no.notifications_to_users)
-
-        if no and (h.HasPermissionAny('hg.admin', 'repository.admin')() or owner):
+        repo_admin = h.HasRepoPermissionAny('repository.admin')
+        if no and (h.HasPermissionAny('hg.admin')() or repo_admin or owner):
             unotification = NotificationModel()\
                             .get_user_notification(c.user.user_id, no)
 

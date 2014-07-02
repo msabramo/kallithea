@@ -1,4 +1,18 @@
-"""Helper functions
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Helper functions
 
 Consists of functions to typically be used within templates, but also
 available to Controllers. This module is available to both as 'h'.
@@ -365,8 +379,8 @@ class _Message(object):
     """
 
     def __init__(self, category, message):
-        self.category=category
-        self.message=message
+        self.category = category
+        self.message = message
 
     def __str__(self):
         return self.message
@@ -475,6 +489,10 @@ def person(author, show_attr="username_and_name"):
     # attr to return from fetched user
     person_getter = lambda usr: getattr(usr, show_attr)
 
+    # if author is already an instance use it for extraction
+    if isinstance(author, User):
+        return person_getter(author)
+
     # Valid email in the attribute passed, see if they're in the system
     _email = email(author)
     if _email != '':
@@ -512,6 +530,9 @@ def desc_stylize(value):
 
     :param value:
     """
+    if not value:
+        return ''
+
     value = re.sub(r'\[see\ \=\>\ *([a-zA-Z0-9\/\=\?\&\ \:\/\.\-]*)\]',
                    '<div class="metatag" tag="see">see =&gt; \\1 </div>', value)
     value = re.sub(r'\[license\ \=\>\ *([a-zA-Z0-9\/\=\?\&\ \:\/\.\-]*)\]',
@@ -534,11 +555,9 @@ def boolicon(value):
     """
 
     if value:
-        return HTML.tag('img', src=url("/images/icons/accept.png"),
-                        alt=_('True'))
+        return HTML.tag('i', class_="icon-ok-sign")
     else:
-        return HTML.tag('img', src=url("/images/icons/cancel.png"),
-                        alt=_('False'))
+        return HTML.tag('i', class_="icon-minus-sign")
 
 
 def action_parser(user_log, feed=False, parse_cs=False):
@@ -722,51 +741,51 @@ def action_parser(user_log, feed=False, parse_cs=False):
     # action : translated str, callback(extractor), icon
     action_map = {
     'user_deleted_repo':           (_('[deleted] repository'),
-                                    None, 'database_delete.png'),
+                                    None, 'icon-trash'),
     'user_created_repo':           (_('[created] repository'),
-                                    None, 'database_add.png'),
+                                    None, 'icon-plus icon-plus-colored'),
     'user_created_fork':           (_('[created] repository as fork'),
-                                    None, 'arrow_divide.png'),
+                                    None, 'icon-code-fork'),
     'user_forked_repo':            (_('[forked] repository'),
-                                    get_fork_name, 'arrow_divide.png'),
+                                    get_fork_name, 'icon-code-fork'),
     'user_updated_repo':           (_('[updated] repository'),
-                                    None, 'database_edit.png'),
+                                    None, 'icon-pencil icon-pencil-colored'),
     'user_downloaded_archive':      (_('[downloaded] archive from repository'),
-                                    get_archive_name, 'page_white_compressed.png'),
+                                    get_archive_name, 'icon-download-alt'),
     'admin_deleted_repo':          (_('[delete] repository'),
-                                    None, 'database_delete.png'),
+                                    None, 'icon-trash'),
     'admin_created_repo':          (_('[created] repository'),
-                                    None, 'database_add.png'),
+                                    None, 'icon-plus icon-plus-colored'),
     'admin_forked_repo':           (_('[forked] repository'),
-                                    None, 'arrow_divide.png'),
+                                    None, 'icon-code-fork icon-fork-colored'),
     'admin_updated_repo':          (_('[updated] repository'),
-                                    None, 'database_edit.png'),
+                                    None, 'icon-pencil icon-pencil-colored'),
     'admin_created_user':          (_('[created] user'),
-                                    get_user_name, 'user_add.png'),
+                                    get_user_name, 'icon-user icon-user-colored'),
     'admin_updated_user':          (_('[updated] user'),
-                                    get_user_name, 'user_edit.png'),
+                                    get_user_name, 'icon-user icon-user-colored'),
     'admin_created_users_group':   (_('[created] user group'),
-                                    get_users_group, 'group_add.png'),
+                                    get_users_group, 'icon-pencil icon-pencil-colored'),
     'admin_updated_users_group':   (_('[updated] user group'),
-                                    get_users_group, 'group_edit.png'),
+                                    get_users_group, 'icon-pencil icon-pencil-colored'),
     'user_commented_revision':     (_('[commented] on revision in repository'),
-                                    get_cs_links, 'comment_add.png'),
+                                    get_cs_links, 'icon-comment icon-comment-colored'),
     'user_commented_pull_request': (_('[commented] on pull request for'),
-                                    get_pull_request, 'comment_add.png'),
+                                    get_pull_request, 'icon-comment icon-comment-colored'),
     'user_closed_pull_request':    (_('[closed] pull request for'),
-                                    get_pull_request, 'tick.png'),
+                                    get_pull_request, 'icon-check'),
     'push':                        (_('[pushed] into'),
-                                    get_cs_links, 'script_add.png'),
+                                    get_cs_links, 'icon-arrow-up'),
     'push_local':                  (_('[committed via RhodeCode] into repository'),
-                                    get_cs_links, 'script_edit.png'),
+                                    get_cs_links, 'icon-pencil icon-pencil-colored'),
     'push_remote':                 (_('[pulled from remote] into repository'),
-                                    get_cs_links, 'connect.png'),
+                                    get_cs_links, 'icon-arrow-up'),
     'pull':                        (_('[pulled] from'),
-                                    None, 'down_16.png'),
+                                    None, 'icon-arrow-down'),
     'started_following_repo':      (_('[started following] repository'),
-                                    None, 'heart_add.png'),
+                                    None, 'icon-heart icon-heart-colored'),
     'stopped_following_repo':      (_('[stopped following] repository'),
-                                    None, 'heart_delete.png'),
+                                    None, 'icon-heart-empty icon-heart-colored'),
     }
 
     action_str = action_map.get(action, action)
@@ -790,9 +809,9 @@ def action_parser(user_log, feed=False, parse_cs=False):
         if len(x) > 1:
             action, action_params = x
 
-        tmpl = """<img src="%s%s" alt="%s"/>"""
+        tmpl = """<i class="%s" alt="%s"></i>"""
         ico = action_map.get(action, ['', '', ''])[2]
-        return literal(tmpl % ((url('/images/icons/')), ico, action))
+        return literal(tmpl % (ico, action))
 
     # returned callbacks we need to call to get
     return [lambda: literal(action), action_params_func, action_parser_icon]
@@ -803,8 +822,8 @@ def action_parser(user_log, feed=False, parse_cs=False):
 # PERMS
 #==============================================================================
 from rhodecode.lib.auth import HasPermissionAny, HasPermissionAll, \
-HasRepoPermissionAny, HasRepoPermissionAll, HasReposGroupPermissionAll, \
-HasReposGroupPermissionAny
+HasRepoPermissionAny, HasRepoPermissionAll, HasRepoGroupPermissionAll, \
+HasRepoGroupPermissionAny
 
 
 #==============================================================================
@@ -812,41 +831,35 @@ HasReposGroupPermissionAny
 #==============================================================================
 
 def gravatar_url(email_address, size=30, ssl_enabled=True):
-    from pylons import url  # doh, we need to re-import url to mock it later
-    from rhodecode import CONFIG
+    # doh, we need to re-import those to mock it later
+    from pylons import url
+    from pylons import tmpl_context as c
 
     _def = 'anonymous@rhodecode.org'  # default gravatar
-    use_gravatar = str2bool(CONFIG.get('use_gravatar'))
-    alternative_gravatar_url = CONFIG.get('alternative_gravatar_url', '')
+    _use_gravatar = c.visual.use_gravatar
+    _gravatar_url = c.visual.gravatar_url or User.DEFAULT_GRAVATAR_URL
+
     email_address = email_address or _def
-    if not use_gravatar or not email_address or email_address == _def:
-        f = lambda a, l: min(l, key=lambda x: abs(x - a))
-        return url("/images/user%s.png" % f(size, [14, 16, 20, 24, 30]))
-
-    if use_gravatar and alternative_gravatar_url:
-        tmpl = alternative_gravatar_url
-        parsed_url = urlparse.urlparse(url.current(qualified=True))
-        tmpl = tmpl.replace('{email}', email_address)\
-                   .replace('{md5email}', hashlib.md5(email_address.lower()).hexdigest()) \
-                   .replace('{netloc}', parsed_url.netloc)\
-                   .replace('{scheme}', parsed_url.scheme)\
-                   .replace('{size}', str(size))
-        return tmpl
-
-    default = 'identicon'
-    baseurl_nossl = "http://www.gravatar.com/avatar/"
-    baseurl_ssl = "https://secure.gravatar.com/avatar/"
-    baseurl = baseurl_ssl if ssl_enabled else baseurl_nossl
-
     if isinstance(email_address, unicode):
         #hashlib crashes on unicode items
         email_address = safe_str(email_address)
-    # construct the url
-    gravatar_url = baseurl + hashlib.md5(email_address.lower()).hexdigest() + "?"
-    gravatar_url += urllib.urlencode({'d': default, 's': str(size)})
 
-    return gravatar_url
+    if not _use_gravatar or not email_address or email_address == _def:
+        # pick best matching size to one given in size param
+        f = lambda a, l: min(l, key=lambda x: abs(x - a))
+        return url("/images/user%s.png" % f(size, [14, 16, 20, 24, 30]))
 
+    if _use_gravatar:
+        _md5 = lambda s: hashlib.md5(s).hexdigest()
+
+        tmpl = _gravatar_url
+        parsed_url = urlparse.urlparse(url.current(qualified=True))
+        tmpl = tmpl.replace('{email}', email_address)\
+                   .replace('{md5email}', _md5(email_address.lower())) \
+                   .replace('{netloc}', parsed_url.netloc)\
+                   .replace('{scheme}', parsed_url.scheme)\
+                   .replace('{size}', safe_str(size))
+        return tmpl
 
 class Page(_Page):
     """
@@ -934,7 +947,9 @@ class Page(_Page):
             nav_items.append(self._pagerlink(self.last_page, self.last_page))
 
         ## prerender links
-        nav_items.append(literal('<link rel="prerender" href="/rhodecode/changelog/1?page=%s">' % str(int(self.page)+1)))
+        #_page_link = url.current()
+        #nav_items.append(literal('<link rel="prerender" href="%s?page=%s">' % (_page_link, str(int(self.page)+1))))
+        #nav_items.append(literal('<link rel="prefetch" href="%s?page=%s">' % (_page_link, str(int(self.page)+1))))
         return self.separator.join(nav_items)
 
     def pager(self, format='~2~', page_param='page', partial_param='partial',

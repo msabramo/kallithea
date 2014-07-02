@@ -2,7 +2,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Fork') % c.repo_name} &middot; ${c.rhodecode_name}
+    ${_('Fork repository %s') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -12,17 +15,16 @@
 <%def name="page_nav()">
     ${self.menu('repositories')}
 </%def>
+
 <%def name="main()">
-${self.repo_context_bar('showforks')}
+${self.repo_context_bar('createfork')}
 <div class="box">
     <!-- box / title -->
-    <div class="title">
-        ${self.breadcrumbs()}
-    </div>
     ${h.form(url('repo_fork_create_home',repo_name=c.repo_info.repo_name))}
     <div class="form">
         <!-- fields -->
         <div class="fields">
+
             <div class="field">
               <div class="label">
                   <label for="repo_name">${_('Fork name')}:</label>
@@ -33,15 +35,17 @@ ${self.repo_context_bar('showforks')}
                   ${h.hidden('fork_parent_id',c.repo_info.repo_id)}
               </div>
             </div>
-             <div class="field">
-                <div class="label">
-                    <label for="landing_rev">${_('Landing revision')}:</label>
+
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="description">${_('Description')}:</label>
                 </div>
-                <div class="input">
-                    ${h.select('landing_rev','',c.landing_revs,class_="medium")}
-                    <span class="help-block">${_('Default revision for files page, downloads, whoosh and readme')}</span>
+                <div class="textarea-repo editor">
+                    ${h.textarea('description')}
+                    <span class="help-block">${_('Keep it short and to the point. Use a README file for longer descriptions.')}</span>
                 </div>
             </div>
+
             <div class="field">
                  <div class="label">
                      <label for="repo_group">${_('Repository group')}:</label>
@@ -51,15 +55,17 @@ ${self.repo_context_bar('showforks')}
                      <span class="help-block">${_('Optionaly select a group to put this repository into.')}</span>
                  </div>
             </div>
-            <div class="field">
-                <div class="label label-textarea">
-                    <label for="description">${_('Description')}:</label>
+
+             <div class="field">
+                <div class="label">
+                    <label for="landing_rev">${_('Landing revision')}:</label>
                 </div>
-                <div class="textarea text-area editor">
-                    ${h.textarea('description',cols=23,rows=5)}
-                    <span class="help-block">${_('Keep it short and to the point. Use a README file for longer descriptions.')}</span>
+                <div class="input">
+                    ${h.select('landing_rev','',c.landing_revs,class_="medium")}
+                    <span class="help-block">${_('Default revision for files page, downloads, whoosh and readme')}</span>
                 </div>
-             </div>
+            </div>
+
             <div class="field">
                 <div class="label label-checkbox">
                     <label for="private">${_('Private')}:</label>
@@ -90,10 +96,21 @@ ${self.repo_context_bar('showforks')}
             </div>
             %endif
             <div class="buttons">
-                ${h.submit('',_('Fork this repository'),class_="ui-btn large")}
+                ${h.submit('',_('Fork this Repository'),class_="btn")}
             </div>
         </div>
     </div>
     ${h.end_form()}
 </div>
+<script>
+    $(document).ready(function(){
+        $("#repo_group").select2({
+            'dropdownAutoWidth': true
+        });
+        $("#landing_rev").select2({
+            'minimumResultsForSearch': -1,
+        });
+        $('#repo_name').focus();
+    })
+</script>
 </%def>

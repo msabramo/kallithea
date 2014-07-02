@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.markup_renderer
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-    Renderer for markup languages with ability to parse using rst or markdown
-
-    :created_on: Oct 27, 2011
-    :author: marcink
-    :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.markup_renderer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Renderer for markup languages with ability to parse using rst or markdown
+
+:created_on: Oct 27, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import re
 import logging
@@ -120,9 +120,11 @@ class MarkupRenderer(object):
         return readme_data
 
     @classmethod
-    def plain(cls, source):
+    def plain(cls, source, universal_newline=True):
         source = safe_unicode(source)
-
+        if universal_newline:
+            newline = '\n'
+            source = newline.join(source.splitlines())
         def urlify_text(text):
             url_pat = re.compile(r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'
                                  '|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)')
@@ -150,7 +152,8 @@ class MarkupRenderer(object):
         except Exception:
             log.error(traceback.format_exc())
             if safe:
-                return source
+                log.debug('Fallbacking to render in plain mode')
+                return cls.plain(source)
             else:
                 raise
 
@@ -180,7 +183,8 @@ class MarkupRenderer(object):
         except Exception:
             log.error(traceback.format_exc())
             if safe:
-                return source
+                log.debug('Fallbacking to render in plain mode')
+                return cls.plain(source)
             else:
                 raise
 

@@ -1,0 +1,55 @@
+<div class="ips_wrap">
+  <table class="noborder">
+    %if c.default_user_ip_map and c.inherit_default_ips:
+        %for ip in c.default_user_ip_map:
+          <tr>
+            <td><div class="ip">${ip.ip_addr}</div></td>
+            <td><div class="ip">${h.ip_range(ip.ip_addr)}</div></td>
+            <td>${h.literal(_('Inherited from %s') % h.link_to('*default*',h.url('admin_permissions_ips')))}</td>
+          </tr>
+        %endfor
+    %endif
+
+    %if c.user_ip_map:
+        %for ip in c.user_ip_map:
+          <tr>
+            <td><div class="ip">${ip.ip_addr}</div></td>
+            <td><div class="ip">${h.ip_range(ip.ip_addr)}</div></td>
+            <td>
+                ${h.form(url('edit_user_ips', id=c.user.user_id),method='delete')}
+                    ${h.hidden('del_ip_id',ip.ip_id)}
+                    <i class="icon-remove-sign" style="color:#FF4444"></i>
+                    ${h.submit('remove_',_('delete'),id="remove_ip_%s" % ip.ip_id,
+                    class_="action_button", onclick="return  confirm('"+_('Confirm to delete this ip: %s') % ip.ip_addr+"');")}
+                ${h.end_form()}
+            </td>
+          </tr>
+        %endfor
+    %endif
+    %if not c.default_user_ip_map and not c.user_ip_map:
+        <tr><td><div class="ip">${_('All IP addresses are allowed')}</div></td></tr>
+    %endif
+  </table>
+</div>
+
+<div>
+    ${h.form(url('edit_user_ips', id=c.user.user_id),method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="new_ip">${_('New ip address')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('new_ip', class_='medium')}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Add'),class_="btn")}
+              ${h.reset('reset',_('Reset'),class_="btn")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>

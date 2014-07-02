@@ -1,0 +1,54 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('My account')} ${c.rhodecode_user.username}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('My Account')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+
+    ##main
+    <div style="width: 150px; float:left">
+        <ul class="nav nav-pills nav-stacked">
+          <li>
+           <div class="gravatar_box" style="height: 26px">
+               <div class="gravatar" style="float: left">
+                   <img alt="gravatar" src="${h.gravatar_url(c.user.email)}"/>
+               </div>
+               <div class="truncate" style="margin:10px 0px 10px 0px; color:#5f5f5f; float:left; width: 100px">
+                <strong>${c.user.username}</strong>
+               </div>
+           </div>
+          </li>
+          <li class="${'active' if c.active=='profile' else ''}"><a href="${h.url('my_account')}">${_('Profile')}</a></li>
+          <li class="${'active' if c.active=='password' else ''}"><a href="${h.url('my_account_password')}">${_('Password')}</a></li>
+          <li class="${'active' if c.active=='api_keys' else ''}"><a href="${h.url('my_account_api_keys')}">${_('API keys')}</a></li>
+          <li class="${'active' if c.active=='emails' else ''}"><a href="${h.url('my_account_emails')}">${_('My Emails')}</a></li>
+          <li class="${'active' if c.active=='repos' else ''}"><a href="${h.url('my_account_repos')}">${_('My Repositories')}</a></li>
+          <li class="${'active' if c.active=='watched' else ''}"><a href="${h.url('my_account_watched')}">${_('Watched')}</a></li>
+          <li class="${'active' if c.active=='pullrequests' else ''}"><a href="${h.url('my_account_pullrequests')}">${_('Pull requests')}</a></li>
+          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('my_account_perms')}">${_('My permissions')}</a></li>
+        </ul>
+    </div>
+
+    <div style="min-width:750px; float:left; padding: 10px 0px 0px 20px;margin: 0px 0px 0px 10px; border-left: 1px solid #DDDDDD">
+        <%include file="/admin/my_account/my_account_${c.active}.html"/>
+    </div>
+</div>
+
+</%def>

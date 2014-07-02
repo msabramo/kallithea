@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.db_1_5_0
-    ~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Database Models for RhodeCode <=1.5.2
-
-    :created_on: Apr 08, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.db_1_5_0
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Database Models for RhodeCode <=1.5.2
+
+:created_on: Apr 08, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import os
 import logging
@@ -1220,6 +1220,14 @@ class Permission(Base, BaseModel):
         'hg.create.none': 0,
         'hg.create.repository':1
     }
+
+    DEFAULT_USER_PERMISSIONS = [
+        'repository.read',
+        'group.read',
+        'hg.create.repository',
+        'hg.fork.repository',
+        'hg.register.manual_activate',
+    ]
 
     permission_id = Column("permission_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
     permission_name = Column("permission_name", String(255, convert_unicode=False, assert_unicode=None), nullable=True, unique=None, default=None)

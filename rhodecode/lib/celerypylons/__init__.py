@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Automatically sets the environment variable `CELERY_LOADER` to
 `celerypylons.loader:PylonsLoader`.  This ensures the loader is
@@ -7,6 +9,7 @@ to be installed in a webapp just by importing celerypylons::
     import celerypylons
 
 """
+
 import os
 import warnings
 

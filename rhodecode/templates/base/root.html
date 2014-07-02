@@ -10,9 +10,12 @@
 
         ## CSS ###
         <%def name="css()">
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.rhodecode_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/fontawesome_extension.css')}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/fontawesome.css')}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.rhodecode_version)}"/>
             <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.rhodecode_version)}"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.rhodecode_version)}"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/newstyle.css', ver=c.rhodecode_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/bootstrap.css', ver=c.rhodecode_version)}" media="screen"/>
             ## EXTRA FOR CSS
             ${self.css_extra()}
         </%def>
@@ -59,6 +62,17 @@
                 'Expand diff': "${_('Expand diff')}",
                 'Failed to revoke permission': "${_('Failed to revoke permission')}",
                 'Confirm to revoke permission for {0}: {1} ?': "${_('confirm to revoke permission for {0}: {1} ?')}",
+                'enabled': "${_('enabled')}",
+                'disabled': "${_('disabled')}",
+                'Select changeset': "${_('Select changeset')}",
+                'specify changeset': "${_('specify changeset')}",
+                'MSG_SORTASC': "${_('Click to sort ascending')}",
+                'MSG_SORTDESC': "${_('Click to sort descending')}",
+                'MSG_EMPTY': "${_('No records found.')}",
+                'MSG_ERROR': "${_('Data error.')}",
+                'MSG_LOADING': "${_('Loading...')}",
+
+
             };
             var _TM = TRANSLATION_MAP;
 
@@ -70,6 +84,10 @@
             %endif
             </script>
             <script type="text/javascript" src="${h.url('/js/yui.2.9.js', ver=c.rhodecode_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/jquery-1.10.2.min.js', ver=c.rhodecode_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/bootstrap.js', ver=c.rhodecode_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/select2/select2.js', ver=c.rhodecode_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/mousetrap.js', ver=c.rhodecode_version)}"></script>
             <!--[if lt IE 9]>
                <script language="javascript" type="text/javascript" src="${h.url('/js/excanvas.min.js')}"></script>
             <![endif]-->
@@ -95,10 +113,23 @@
               show_more_event();
               show_changeset_tooltip();
               // routes registration
+              pyroutes.register('home', "${h.url('home')}", []);
+              pyroutes.register('new_gist', "${h.url('new_gist')}", []);
+              pyroutes.register('gists', "${h.url('gists')}", []);
+              pyroutes.register('new_repo', "${h.url('new_repo')}", []);
+
+              pyroutes.register('summary_home', "${h.url('summary_home', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('changelog_home', "${h.url('changelog_home', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('files_home', "${h.url('files_home', repo_name='%(repo_name)s',revision='%(revision)s',f_path='%(f_path)s')}", ['repo_name', 'revision', 'f_path']);
+              pyroutes.register('edit_repo', "${h.url('edit_repo', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('edit_repo_perms', "${h.url('edit_repo_perms', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('pullrequest_home', "${h.url('pullrequest_home', repo_name='%(repo_name)s')}", ['repo_name']);
+
               pyroutes.register('toggle_following', "${h.url('toggle_following')}");
               pyroutes.register('changeset_info', "${h.url('changeset_info', repo_name='%(repo_name)s', revision='%(revision)s')}", ['repo_name', 'revision']);
               pyroutes.register('repo_size', "${h.url('repo_size', repo_name='%(repo_name)s')}", ['repo_name']);
               pyroutes.register('changeset_comment_preview', "${h.url('changeset_comment_preview', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('repo_refs_data', "${h.url('repo_refs_data', repo_name='%(repo_name)s')}", ['repo_name']);
            })
             </script>
         </%def>

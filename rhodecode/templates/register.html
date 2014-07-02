@@ -2,22 +2,33 @@
 <%inherit file="base/root.html"/>
 
 <%def name="title()">
-    ${_('Sign Up')} &middot; ${c.rhodecode_name}
+    ${_('Sign Up')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
+<div id="header">
+    <div id="header-inner" class="title">
+        <div id="logo">
+            <div class="header">
+                <a href="${h.url('home')}"><img src="/images/rhodecode-logo-white-216x60.png" alt="RhodeCode"/></a>
+            </div>
+            %if c.rhodecode_name:
+             <div class="branding">- ${c.rhodecode_name}</div>
+            %endif
+        </div>
+    </div>
+</div>
+
 
 <div id="register">
-<div class="flash_msg">
-    <% messages = h.flash.pop_messages() %>
-    % if messages:
-    <ul id="flash-messages">
-        % for message in messages:
-        <li class="${message.category}_msg">${message}</li>
-        % endfor
-    </ul>
-    % endif
-</div>
-    <div class="title top-left-rounded-corner top-right-rounded-corner">
-        <h5>${_('Sign Up to')} ${c.rhodecode_name}</h5>
+    <%include file="/base/flash_msg.html"/>
+    <div class="title withlogo">
+        %if c.rhodecode_name:
+            <h5>${_('Sign Up to %s') % c.rhodecode_name}</h5>
+        %else:
+            <h5>${_('Sign Up')}</h5>
+        %endif
     </div>
     <div class="inner">
         ${h.form(url('register'))}
@@ -78,9 +89,21 @@
                     </div>
                 </div>
 
+                %if c.captcha_active:
+                <div class="field">
+                    <div class="label">
+                        <label for="email">${_('Captcha')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.hidden('recaptcha_field')}
+                        <div id="recaptcha"></div>
+                    </div>
+                </div>
+                %endif
+
                 <div class="buttons">
                     <div class="nohighlight">
-                      ${h.submit('sign_up',_('Sign Up'),class_="ui-btn large")}
+                      ${h.submit('sign_up',_('Sign Up'),class_="btn")}
                       %if c.auto_active:
                           <div class="activation_msg">${_('Your account will be activated right after registration')}</div>
                       %else:
@@ -91,10 +114,21 @@
             </div>
         </div>
         ${h.end_form()}
+        %if c.captcha_active:
+        <script type="text/javascript" src="https://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+        %endif
         <script type="text/javascript">
-        YUE.onDOMReady(function(){
-            YUD.get('username').focus();
-        })
+        $(document).ready(function(){
+            $('#username').focus();
+
+            %if c.captcha_active:
+            Recaptcha.create("${c.captcha_public_key}", "recaptcha",
+                {
+                  theme: "white",
+                }
+            );
+            %endif
+        });
         </script>
     </div>
  </div>

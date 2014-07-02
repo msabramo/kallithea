@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.tests.test_libs
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-    Package for testing various lib/helper functions in rhodecode
-
-    :created_on: Jun 9, 2011
-    :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,11 +11,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.tests.test_libs
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Package for testing various lib/helper functions in rhodecode
+
+:created_on: Jun 9, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 from __future__ import with_statement
 import datetime
 import hashlib
 import mock
 from rhodecode.tests import *
+from rhodecode.lib.utils2 import AttributeDict
+from rhodecode.model.db import Repository
 
 proto = 'http'
 TEST_URLS = [
@@ -170,48 +173,74 @@ class TestLibs(BaseTestCase):
         from rhodecode.lib.helpers import gravatar_url
         _md5 = lambda s: hashlib.md5(s).hexdigest()
 
-        def fake_conf(**kwargs):
-            from pylons import config
-            config = {}
-            config['use_gravatar'] = True
-            config.update(kwargs)
-            return config
-
-        class fake_url():
+        #mock pylons.url
+        class fake_url(object):
             @classmethod
             def current(cls, *args, **kwargs):
                 return 'https://server.com'
 
+        #mock pylons.tmpl_context
+        def fake_tmpl_context(_url):
+            _c = AttributeDict()
+            _c.visual = AttributeDict()
+            _c.visual.use_gravatar = True
+            _c.visual.gravatar_url = _url
+
+            return _c
+
+
         with mock.patch('pylons.url', fake_url):
-            fake = fake_conf(alternative_gravatar_url='http://test.com/{email}')
-            with mock.patch('rhodecode.CONFIG', fake):
+            fake = fake_tmpl_context(_url='http://test.com/{email}')
+            with mock.patch('pylons.tmpl_context', fake):
                     from pylons import url
                     assert url.current() == 'https://server.com'
                     grav = gravatar_url(email_address='test@foo.com', size=24)
                     assert grav == 'http://test.com/test@foo.com'
 
-            fake = fake_conf(alternative_gravatar_url='http://test.com/{email}')
-            with mock.patch('rhodecode.CONFIG', fake):
+            fake = fake_tmpl_context(_url='http://test.com/{email}')
+            with mock.patch('pylons.tmpl_context', fake):
                 grav = gravatar_url(email_address='test@foo.com', size=24)
                 assert grav == 'http://test.com/test@foo.com'
 
-            fake = fake_conf(alternative_gravatar_url='http://test.com/{md5email}')
-            with mock.patch('rhodecode.CONFIG', fake):
+            fake = fake_tmpl_context(_url='http://test.com/{md5email}')
+            with mock.patch('pylons.tmpl_context', fake):
                 em = 'test@foo.com'
                 grav = gravatar_url(email_address=em, size=24)
                 assert grav == 'http://test.com/%s' % (_md5(em))
 
-            fake = fake_conf(alternative_gravatar_url='http://test.com/{md5email}/{size}')
-            with mock.patch('rhodecode.CONFIG', fake):
+            fake = fake_tmpl_context(_url='http://test.com/{md5email}/{size}')
+            with mock.patch('pylons.tmpl_context', fake):
                 em = 'test@foo.com'
                 grav = gravatar_url(email_address=em, size=24)
                 assert grav == 'http://test.com/%s/%s' % (_md5(em), 24)
 
-            fake = fake_conf(alternative_gravatar_url='{scheme}://{netloc}/{md5email}/{size}')
-            with mock.patch('rhodecode.CONFIG', fake):
+            fake = fake_tmpl_context(_url='{scheme}://{netloc}/{md5email}/{size}')
+            with mock.patch('pylons.tmpl_context', fake):
                 em = 'test@foo.com'
                 grav = gravatar_url(email_address=em, size=24)
                 assert grav == 'https://server.com/%s/%s' % (_md5(em), 24)
+
+    @parameterized.expand([
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {}, '', 'http://vps1:8000/group/repo1'),
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {'user': 'marcink'}, '', 'http://marcink@vps1:8000/group/repo1'),
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {}, '/rc', 'http://vps1:8000/rc/group/repo1'),
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {'user': 'user'}, '/rc', 'http://user@vps1:8000/rc/group/repo1'),
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {'user': 'marcink'}, '/rc', 'http://marcink@vps1:8000/rc/group/repo1'),
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {'user': 'user'}, '/rc/', 'http://user@vps1:8000/rc/group/repo1'),
+        (Repository.DEFAULT_CLONE_URI, 'group/repo1', {'user': 'marcink'}, '/rc/', 'http://marcink@vps1:8000/rc/group/repo1'),
+        ('{scheme}://{user}@{netloc}/_{repoid}', 'group/repo1', {}, '', 'http://vps1:8000/_23'),
+        ('{scheme}://{user}@{netloc}/_{repoid}', 'group/repo1', {'user': 'marcink'}, '', 'http://marcink@vps1:8000/_23'),
+        ('http://{user}@{netloc}/_{repoid}', 'group/repo1', {'user': 'marcink'}, '', 'http://marcink@vps1:8000/_23'),
+        ('http://{netloc}/_{repoid}', 'group/repo1', {'user': 'marcink'}, '', 'http://vps1:8000/_23'),
+        ('https://{user}@proxy1.server.com/{repo}', 'group/repo1', {'user': 'marcink'}, '', 'https://marcink@proxy1.server.com/group/repo1'),
+        ('https://{user}@proxy1.server.com/{repo}', 'group/repo1', {}, '', 'https://proxy1.server.com/group/repo1'),
+        ('https://proxy1.server.com/{user}/{repo}', 'group/repo1', {'user': 'marcink'}, '', 'https://proxy1.server.com/marcink/group/repo1'),
+    ])
+    def test_clone_url_generator(self, tmpl, repo_name, overrides, prefix, expected):
+        from rhodecode.lib.utils2 import get_clone_url
+        clone_url = get_clone_url(uri_tmpl=tmpl, qualifed_home_url='http://vps1:8000'+prefix,
+                                  repo_name=repo_name, repo_id=23, **overrides)
+        self.assertEqual(clone_url, expected)
 
     def _quick_url(self, text, tmpl="""<a class="revision-link" href="%s">%s</a>""", url_=None):
         """
@@ -292,3 +321,27 @@ class TestLibs(BaseTestCase):
         expected = self._quick_url(expected,
                                    tmpl="""<a href="%s">%s</a>""", url_=url_)
         self.assertEqual(urlify_text(sample), expected)
+
+    @parameterized.expand([
+      ("", None),
+      ("/_2", '2'),
+      ("_2", '2'),
+      ("/_2/", '2'),
+      ("_2/", '2'),
+
+      ("/_21", '21'),
+      ("_21", '21'),
+      ("/_21/", '21'),
+      ("_21/", '21'),
+
+      ("/_21/foobar", '21'),
+      ("_21/121", '21'),
+      ("/_21/_12", '21'),
+      ("_21/rc/foo", '21'),
+
+    ])
+    def test_get_repo_by_id(self, test, expected):
+        from rhodecode.lib.utils import _extract_id_from_repo_name
+        _test = _extract_id_from_repo_name(test)
+        self.assertEqual(_test, expected, msg='url:%s, got:`%s` expected: `%s`'
+                                              % (test, _test, expected))

@@ -2,7 +2,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Repositories defaults')} &middot; ${c.rhodecode_name}
+    ${_('Repositories defaults')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -81,7 +84,7 @@
             </div>
 
             <div class="buttons">
-            ${h.submit('save',_('Save'),class_="ui-btn large")}
+            ${h.submit('save',_('Save'),class_="btn")}
             </div>
         </div>
     </div>

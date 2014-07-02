@@ -1,0 +1,83 @@
+<div class="apikeys_wrap">
+  <table class="noborder">
+    <tr>
+        <td style="width: 450px"><div class="truncate autoexpand" style="width:120px;font-size:16px;font-family: monospace">${c.user.api_key}</div></td>
+        <td>
+            <span class="btn btn-mini btn-success disabled">${_('Built-in')}</span>
+        </td>
+        <td>${_('expires')}: ${_('never')}</td>
+        <td>
+            ${h.form(url('edit_user_api_keys', id=c.user.user_id),method='delete')}
+                ${h.hidden('del_api_key',c.user.api_key)}
+                ${h.hidden('del_api_key_builtin',1)}
+                <button class="btn btn-mini btn-danger" type="submit"
+                        onclick="return confirm('${_('Confirm to reset this api key: %s') % c.user.api_key}');">
+                    ${_('reset')}
+                </button>
+            ${h.end_form()}
+        </td>
+    </tr>
+    %if c.user_api_keys:
+        %for api_key in c.user_api_keys:
+          <tr class="${'expired' if api_key.expired else ''}">
+            <td style="width: 450px"><div class="truncate autoexpand" style="width:120px;font-size:16px;font-family: monospace">${api_key.api_key}</div></td>
+            <td>${api_key.description}</td>
+            <td style="min-width: 80px">
+                 %if api_key.expires == -1:
+                  ${_('expires')}: ${_('never')}
+                 %else:
+                    %if api_key.expired:
+                        ${_('expired')}: ${h.age(h.time_to_datetime(api_key.expires))}
+                    %else:
+                        ${_('expires')}: ${h.age(h.time_to_datetime(api_key.expires))}
+                    %endif
+                 %endif
+            </td>
+            <td>
+                ${h.form(url('edit_user_api_keys', id=c.user.user_id),method='delete')}
+                    ${h.hidden('del_api_key',api_key.api_key)}
+                    <button class="btn btn-mini btn-danger" type="submit"
+                            onclick="return confirm('${_('Confirm to remove this api key: %s') % api_key.api_key}');">
+                        <i class="icon-remove-sign"></i>
+                        ${_('remove')}
+                    </button>
+                ${h.end_form()}
+            </td>
+          </tr>
+        %endfor
+    %else:
+    <tr><td><div class="ip">${_('No additional api keys specified')}</div></td></tr>
+    %endif
+  </table>
+</div>
+
+<div>
+    ${h.form(url('edit_user_api_keys', id=c.user.user_id), method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="new_email">${_('New api key')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('description', class_='medium', placeholder=_('Description'))}
+                    ${h.select('lifetime', '', c.lifetime_options)}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Add'),class_="btn")}
+              ${h.reset('reset',_('Reset'),class_="btn")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#lifetime").select2({
+            'dropdownAutoWidth': true,
+        });
+    })
+</script>

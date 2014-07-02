@@ -1,0 +1,64 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Files Delete') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
+</%def>
+
+<%def name="js_extra()">
+<script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/mode/meta.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/mode/meta_ext.js')}"></script>
+</%def>
+<%def name="css_extra()">
+<link rel="stylesheet" type="text/css" href="${h.url('/css/codemirror.css')}"/>
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Delete file')} @ ${h.show_id(c.cs)}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('files')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+            <li>
+              <span style="text-transform: uppercase;">
+              <a href="#">${_('Branch')}: ${c.cs.branch}</a></span>
+            </li>
+        </ul>
+    </div>
+    <div class="table" id="edit">
+        <div id="files_data">
+            ${h.form(h.url.current(),method='post',class_="form-horizontal")}
+            <h3 class="files_location">
+                ${_('Delete file')}: ${h.files_breadcrumbs(c.repo_name,c.cs.raw_id,c.f_path)}
+            </h3>
+
+            <div id="body" class="codeblock">
+                <div id="editor_container">
+                    <pre id="editor_pre"></pre>
+                    <textarea id="editor" name="content" style="display:none"></textarea>
+                </div>
+                <div style="padding: 10px;color:#666666">${_('Commit message')}</div>
+                <textarea id="commit" name="message" style="height: 100px;width: 99%;margin-left:4px" placeholder="${c.default_message}"></textarea>
+            </div>
+            <div style="text-align: left;padding-top: 5px">
+                ${h.submit('commit',_('Commit changes'),class_="btn btn-small btn-success")}
+                ${h.reset('reset',_('Reset'),class_="btn btn-small")}
+            </div>
+            ${h.end_form()}
+        </div>
+    </div>
+</div>
+</%def>

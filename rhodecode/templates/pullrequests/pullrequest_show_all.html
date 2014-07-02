@@ -1,7 +1,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Pull Requests') % c.repo_name} &middot; ${c.rhodecode_name}
+    ${_('%s Pull Requests') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -23,28 +26,25 @@ ${self.repo_context_bar('showpullrequest')}
     <!-- box / title -->
     <div class="title">
         ${self.breadcrumbs()}
-        %if c.rhodecode_user.username != 'default':
-            <ul class="links">
-            %if h.HasPermissionAny('hg.admin','hg.create.repository')() or h.HasReposGroupPermissionAny('group.write', 'group.admin')(c.group.group_name if c.group else None):
-              <li>
-                  <span>
-                      <a id="open_new_pr" href="${h.url('pullrequest_home',repo_name=c.repo_name)}">${_('Open new pull request')}</a>
-                  </span>
-              </li>
-            %endif
-            </ul>
-        %endif
+        <ul class="links">
+          <li>
+             %if c.rhodecode_user.username != 'default':
+              <span>
+                  <a id="open_new_pr" class="btn btn-small btn-success" href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-plus"></i> ${_('Open new pull request')}</a>
+              </span>
+             %endif
+              <span>
+                %if c.from_:
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed)}"><i class="icon-loop-2"></i> ${_('Show pull requests to %s') % c.repo_name}</a>
+                %else:
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1)}"><i class="icon-loop-2"></i> ${_('Show pull requests from %s') % c.repo_name}</a>
+                %endif
+              </span>
+          </li>
+        </ul>
     </div>
 
     <div style="margin: 0 20px">
-        <div>
-        %if c.from_:
-            ${h.link_to(_('Instead, show pull requests to %s') % c.repo_name, h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed))}
-        %else:
-            ${h.link_to(_('Instead, show pull requests from %s') % c.repo_name, h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1))}
-        %endif
-        </div>
-
         <div>
         %if c.closed:
             ${h.link_to(_('Hide closed pull requests'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_))}

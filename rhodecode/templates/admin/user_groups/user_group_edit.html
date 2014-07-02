@@ -1,0 +1,54 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s user group settings') % c.user_group.users_group_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))}
+    &raquo;
+    ${h.link_to(_('User Groups'),h.url('users_groups'))}
+    &raquo;
+    ${c.user_group.users_group_name}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+
+    ##main
+    <div style="width: 150px; float:left">
+        <ul class="nav nav-pills nav-stacked">
+          <li>
+           <div class="gravatar_box" style="height: 26px">
+             <div class="gravatar" style="float: left">
+                <i class="icon-group" style="font-size: 26px"></i>
+             </div>
+               <div class="truncate" style="margin:7px 0px 10px 0px; color:#5f5f5f; float:left; width: 100px">
+                <strong>${c.user_group.users_group_name}</strong>
+               </div>
+           </div>
+          </li>
+          <li class="${'active' if c.active=='settings' else ''}"><a href="${h.url('edit_users_group', id=c.user_group.users_group_id)}">${_('Settings')}</a></li>
+          <li class="${'active' if c.active=='advanced' else ''}"><a href="${h.url('edit_user_group_advanced', id=c.user_group.users_group_id)}">${_('Advanced')}</a></li>
+          <li class="${'active' if c.active=='default_perms' else ''}"><a href="${h.url('edit_user_group_default_perms', id=c.user_group.users_group_id)}">${_('Default permissions')}</a></li>
+          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('edit_user_group_perms', id=c.user_group.users_group_id)}">${_('Permissions')}</a></li>
+          <li class="${'active' if c.active=='members' else ''}"><a href="${h.url('edit_user_group_members', id=c.user_group.users_group_id)}">${_('Members')}</a></li>
+        </ul>
+    </div>
+
+    <div style="width:750px; float:left; padding: 10px 0px 0px 20px;margin: 0px 0px 0px 10px; border-left: 1px solid #DDDDDD">
+        <%include file="/admin/user_groups/user_group_edit_${c.active}.html"/>
+    </div>
+</div>
+</%def>

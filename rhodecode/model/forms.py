@@ -1,4 +1,18 @@
-""" this is forms validation classes
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+this is forms validation classes
 http://formencode.org/module-formencode.validators.html
 for list off all availible validators
 
@@ -26,8 +40,8 @@ from formencode import All
 
 from pylons.i18n.translation import _
 
-from rhodecode.model import validators as v
 from rhodecode import BACKENDS
+from rhodecode.model import validators as v
 
 log = logging.getLogger(__name__)
 
@@ -56,6 +70,20 @@ class LoginForm(formencode.Schema):
     remember = v.StringBoolean(if_missing=False)
 
     chained_validators = [v.ValidAuth()]
+
+
+def PasswordChangeForm(username):
+    class _PasswordChangeForm(formencode.Schema):
+        allow_extra_fields = True
+        filter_extra_fields = True
+
+        current_password = v.ValidOldPassword(username)(not_empty=True)
+        new_password = All(v.ValidPassword(), v.UnicodeString(strip=False, min=6))
+        new_password_confirmation = All(v.ValidPassword(), v.UnicodeString(strip=False, min=6))
+
+        chained_validators = [v.ValidPasswordsMatch('new_password',
+                                                    'new_password_confirmation')]
+    return _PasswordChangeForm
 
 
 def UserForm(edit=False, old_data={}):
@@ -88,9 +116,9 @@ def UserForm(edit=False, old_data={}):
         firstname = v.UnicodeString(strip=True, min=1, not_empty=False)
         lastname = v.UnicodeString(strip=True, min=1, not_empty=False)
         email = All(v.Email(not_empty=True), v.UniqSystemEmail(old_data))
-
+        extern_name = v.UnicodeString(strip=True)
+        extern_type = v.UnicodeString(strip=True)
         chained_validators = [v.ValidPasswordsMatch()]
-
     return _UserForm
 
 
@@ -103,6 +131,8 @@ def UserGroupForm(edit=False, old_data={}, available_members=[]):
             v.UnicodeString(strip=True, min=1, not_empty=True),
             v.ValidUserGroup(edit, old_data)
         )
+        user_group_description = v.UnicodeString(strip=True, min=1,
+                                                 not_empty=False)
 
         users_group_active = v.StringBoolean(if_missing=False)
 
@@ -115,16 +145,19 @@ def UserGroupForm(edit=False, old_data={}, available_members=[]):
     return _UserGroupForm
 
 
-def ReposGroupForm(edit=False, old_data={}, available_groups=[],
+def RepoGroupForm(edit=False, old_data={}, available_groups=[],
                    can_create_in_root=False):
-    class _ReposGroupForm(formencode.Schema):
+    class _RepoGroupForm(formencode.Schema):
         allow_extra_fields = True
         filter_extra_fields = False
 
         group_name = All(v.UnicodeString(strip=True, min=1, not_empty=True),
-                               v.SlugifyName())
+                         v.SlugifyName(),
+                         v.ValidRegex(msg=_('Name must not contain only digits'))(r'(?!^\d+$)^.+$'))
         group_description = v.UnicodeString(strip=True, min=1,
-                                                not_empty=False)
+                                            not_empty=False)
+        group_copy_permissions = v.StringBoolean(if_missing=False)
+
         if edit:
             #FIXME: do a special check that we cannot move a group to one of
             #it's children
@@ -134,9 +167,9 @@ def ReposGroupForm(edit=False, old_data={}, available_groups=[],
                                       testValueList=True,
                                       if_missing=None, not_empty=True))
         enable_locking = v.StringBoolean(if_missing=False)
-        chained_validators = [v.ValidReposGroup(edit, old_data)]
+        chained_validators = [v.ValidRepoGroup(edit, old_data)]
 
-    return _ReposGroupForm
+    return _RepoGroupForm
 
 
 def RegisterForm(edit=False, old_data={}):
@@ -187,6 +220,7 @@ def RepoForm(edit=False, old_data={}, supported_backends=BACKENDS.keys(),
         repo_description = v.UnicodeString(strip=True, min=1, not_empty=False)
         repo_private = v.StringBoolean(if_missing=False)
         repo_landing_rev = v.OneOf(landing_revs, hideList=True)
+        repo_copy_permissions = v.StringBoolean(if_missing=False)
         clone_uri = All(v.UnicodeString(strip=True, min=1, not_empty=False))
 
         repo_enable_statistics = v.StringBoolean(if_missing=False)
@@ -196,6 +230,7 @@ def RepoForm(edit=False, old_data={}, supported_backends=BACKENDS.keys(),
         if edit:
             #this is repo owner
             user = All(v.UnicodeString(not_empty=True), v.ValidRepoUser())
+            clone_uri_change = v.UnicodeString(not_empty=False, if_missing=v.Missing)
 
         chained_validators = [v.ValidCloneUri(),
                               v.ValidRepoName(edit, old_data)]
@@ -210,11 +245,11 @@ def RepoPermsForm():
     return _RepoPermsForm
 
 
-def RepoGroupPermsForm():
+def RepoGroupPermsForm(valid_recursive_choices):
     class _RepoGroupPermsForm(formencode.Schema):
         allow_extra_fields = True
         filter_extra_fields = False
-        recursive = v.StringBoolean(if_missing=False)
+        recursive = v.OneOf(valid_recursive_choices)
         chained_validators = [v.ValidPerms(type_='repo_group')]
     return _RepoGroupPermsForm
 
@@ -268,9 +303,11 @@ def ApplicationSettingsForm():
     class _ApplicationSettingsForm(formencode.Schema):
         allow_extra_fields = True
         filter_extra_fields = False
-        rhodecode_title = v.UnicodeString(strip=True, min=1, not_empty=True)
+        rhodecode_title = v.UnicodeString(strip=True, not_empty=False)
         rhodecode_realm = v.UnicodeString(strip=True, min=1, not_empty=True)
         rhodecode_ga_code = v.UnicodeString(strip=True, min=1, not_empty=False)
+        rhodecode_captcha_public_key = v.UnicodeString(strip=True, min=1, not_empty=False)
+        rhodecode_captcha_private_key = v.UnicodeString(strip=True, min=1, not_empty=False)
 
     return _ApplicationSettingsForm
 
@@ -286,7 +323,11 @@ def ApplicationVisualisationForm():
         rhodecode_repository_fields = v.StringBoolean(if_missing=False)
         rhodecode_lightweight_journal = v.StringBoolean(if_missing=False)
         rhodecode_dashboard_items = v.Int(min=5, not_empty=True)
+        rhodecode_admin_grid_items = v.Int(min=5, not_empty=True)
         rhodecode_show_version = v.StringBoolean(if_missing=False)
+        rhodecode_use_gravatar = v.StringBoolean(if_missing=False)
+        rhodecode_gravatar_url = v.UnicodeString(min=3)
+        rhodecode_clone_uri_tmpl = v.UnicodeString(min=3)
 
     return _ApplicationVisualisationForm
 
@@ -314,8 +355,9 @@ def ApplicationUiSettingsForm():
 
 def DefaultPermissionsForm(repo_perms_choices, group_perms_choices,
                            user_group_perms_choices, create_choices,
-                           repo_group_create_choices, user_group_create_choices,
-                           fork_choices, register_choices, extern_activate_choices):
+                           create_on_write_choices, repo_group_create_choices,
+                           user_group_create_choices, fork_choices,
+                           register_choices, extern_activate_choices):
     class _DefaultPermissionsForm(formencode.Schema):
         allow_extra_fields = True
         filter_extra_fields = True
@@ -328,6 +370,7 @@ def DefaultPermissionsForm(repo_perms_choices, group_perms_choices,
         default_user_group_perm = v.OneOf(user_group_perms_choices)
 
         default_repo_create = v.OneOf(create_choices)
+        create_on_write = v.OneOf(create_on_write_choices)
         default_user_group_create = v.OneOf(user_group_create_choices)
         #default_repo_group_create = v.OneOf(repo_group_create_choices) #not impl. yet
         default_fork = v.OneOf(fork_choices)
@@ -363,6 +406,42 @@ def DefaultsForm(edit=False, old_data={}, supported_backends=BACKENDS.keys()):
         default_repo_enable_locking = v.StringBoolean(if_missing=False)
 
     return _DefaultsForm
+
+
+def AuthSettingsForm(current_active_modules):
+    class _AuthSettingsForm(formencode.Schema):
+        allow_extra_fields = True
+        filter_extra_fields = True
+        auth_plugins = All(v.ValidAuthPlugins(),
+                           v.UniqueListFromString()(not_empty=True))
+
+        def __init__(self, *args, **kwargs):
+            # The auth plugins tell us what form validators they use
+            if current_active_modules:
+                import rhodecode.lib.auth_modules
+                from rhodecode.lib.auth_modules import LazyFormencode
+                for module in current_active_modules:
+                    plugin = rhodecode.lib.auth_modules.loadplugin(module)
+                    plugin_name = plugin.name
+                    for sv in plugin.plugin_settings():
+                        newk = "auth_%s_%s" % (plugin_name, sv["name"])
+                        # can be a LazyFormencode object from plugin settings
+                        validator = sv["validator"]
+                        if isinstance(validator, LazyFormencode):
+                            validator = validator()
+                        #init all lazy validators from formencode.All
+                        if isinstance(validator, All):
+                            init_validators = []
+                            for validator in validator.validators:
+                                if isinstance(validator, LazyFormencode):
+                                    validator = validator()
+                                init_validators.append(validator)
+                            validator.validators = init_validators
+
+                        self.add_field(newk, validator)
+            formencode.Schema.__init__(self, *args, **kwargs)
+
+    return _AuthSettingsForm
 
 
 def LdapSettingsForm(tls_reqcert_choices, search_scope_choices,
@@ -412,8 +491,8 @@ def PullRequestForm(repo_id):
         other_repo = v.UnicodeString(strip=True, required=True)
         other_ref = v.UnicodeString(strip=True, required=True)
         revisions = All(#v.NotReviewedRevisions(repo_id)(),
-                        v.UniqueList(not_empty=True))
-        review_members = v.UniqueList(not_empty=True)
+                        v.UniqueList()(not_empty=True))
+        review_members = v.UniqueList()(not_empty=True)
 
         pullrequest_title = v.UnicodeString(strip=True, required=True)
         pullrequest_desc = v.UnicodeString(strip=True, required=False)

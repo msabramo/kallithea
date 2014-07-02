@@ -6,8 +6,11 @@ try:
     import rhodecode
     RC_HOOK_VER = '_TMPL_'
     os.environ['RC_HOOK_VER'] = RC_HOOK_VER
-    from rhodecode.lib.hooks import handle_git_pre_receive
+    from rhodecode.lib.hooks import handle_git_pre_receive as _handler
 except ImportError:
+    if os.environ.get('RC_DEBUG_GIT_HOOK'):
+        import traceback
+        print traceback.format_exc()
     rhodecode = None
 
 
@@ -24,7 +27,7 @@ def main():
     # runs git and later git executes this hook.
     # Environ gets some additional info from rhodecode system
     # like IP or username from basic-auth
-    handle_git_pre_receive(repo_path, push_data, os.environ)
+    _handler(repo_path, push_data, os.environ)
     sys.exit(0)
 
 if __name__ == '__main__':

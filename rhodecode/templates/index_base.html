@@ -7,26 +7,31 @@
             </h5>
             %if c.rhodecode_user.username != 'default':
               <ul class="links">
-                %if h.HasPermissionAny('hg.admin','hg.create.repository')() or h.HasReposGroupPermissionAny('group.write', 'group.admin')(c.group.group_name if c.group else None):
-                  <li>
+                <li>
+                <%
+                    gr_name = c.group.group_name if c.group else None
+                    # create repositories with write permission on group is set to true
+                    create_on_write = h.HasPermissionAny('hg.create.write_on_repogroup.true')()
+                    group_admin = h.HasRepoGroupPermissionAny('group.admin')(gr_name, 'can write into group index page')
+                    group_write = h.HasRepoGroupPermissionAny('group.write')(gr_name, 'can write into group index page')
+                %>
+                %if h.HasPermissionAny('hg.admin','hg.create.repository')() or (group_admin or (group_write and create_on_write)):
                   %if c.group:
-                        <span>${h.link_to(_('Add repository'),h.url('new_repo',parent_group=c.group.group_id))}</span>
-                        %if h.HasPermissionAny('hg.admin')() or h.HasReposGroupPermissionAny('group.admin')(c.group.group_name):
-                         <span>${h.link_to(_(u'Add repository group'),h.url('new_repos_group', parent_group=c.group.group_id))}</span>
+                        <a href="${h.url('new_repo',parent_group=c.group.group_id)}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_('Add Repository')}</a>
+                        %if h.HasPermissionAny('hg.admin')() or h.HasRepoGroupPermissionAny('group.admin')(c.group.group_name):
+                            <a href="${h.url('new_repos_group', parent_group=c.group.group_id)}" class="btn btn-small"><i class="icon-plus"></i> ${_(u'Add Repository Group')}</a>
                         %endif
                   %else:
-                    <span>${h.link_to(_('Add repository'),h.url('new_repo'))}</span>
+                    <a href="${h.url('new_repo')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_('Add Repository')}</a>
                     %if h.HasPermissionAny('hg.admin')():
-                     <span>${h.link_to(_(u'Add repository group'),h.url('new_repos_group'))}</span>
+                        <a href="${h.url('new_repos_group')}" class="btn btn-small"><i class="icon-plus"></i> ${_(u'Add Repository Group')}</a>
                     %endif
                   %endif
-                  </li>
                 %endif
-                %if c.group and h.HasReposGroupPermissionAny('group.admin')(c.group.group_name):
-                <li>
-                    <span>${h.link_to(_('Edit repository group'),h.url('edit_repos_group',group_name=c.group.group_name), title=_('You have admin right to this group, and can edit it'))}</span>
+                %if c.group and h.HasRepoGroupPermissionAny('group.admin')(c.group.group_name):
+                    <a href="${h.url('edit_repo_group',group_name=c.group.group_name)}" title="${_('You have admin right to this group, and can edit it')}" class="btn btn-small"><i class="icon-pencil"></i> ${_('Edit Repository Group')}</a>
+                %endif
                 </li>
-                %endif
               </ul>
             %endif
         </div>
@@ -37,9 +42,9 @@
               <table id="groups_list">
                   <thead>
                       <tr>
-                          <th class="left"><a href="#">${_('Group name')}</a></th>
+                          <th class="left"><a href="#">${_('Group Name')}</a></th>
                           <th class="left"><a href="#">${_('Description')}</a></th>
-                          ##<th class="left"><a href="#">${_('Number of repositories')}</a></th>
+                          ##<th class="left"><a href="#">${_('Number of Repositories')}</a></th>
                       </tr>
                   </thead>
 
@@ -48,8 +53,7 @@
                     <tr>
                         <td>
                             <div style="white-space: nowrap">
-                            <img class="icon" alt="${_('Repository group')}" src="${h.url('/images/icons/database_link.png')}"/>
-                            ${h.link_to(gr.name,url('repos_group_home',group_name=gr.group_name))}
+                                <a href="${url('repos_group_home',group_name=gr.group_name)}"><i class="icon-folder-close"></i> ${gr.name}</a>
                             </div>
                         </td>
                         %if c.visual.stylify_metatags:
@@ -91,6 +95,7 @@
                {key:"desc"},
                {key:"last_change"},
                {key:"last_changeset"},
+               {key:"last_rev_raw"},
                {key:"owner"},
                {key:"atom"},
             ]

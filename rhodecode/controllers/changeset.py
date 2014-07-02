@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.changeset
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    changeset controller for pylons showoing changes beetween
-    revisions
-
-    :created_on: Apr 25, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +11,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.changeset
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+changeset controller for pylons showoing changes beetween
+revisions
+
+:created_on: Apr 25, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import logging
 import traceback
 from collections import defaultdict
@@ -161,7 +162,7 @@ def _context_url(GET, fileid=None):
     if ig_ws:
         params[ig_ws_key] += [ig_ws_val]
 
-    lbl = _('%s line context') % ln_ctx
+    lbl = _('increase diff context to %(num)s lines') % {'num': ln_ctx}
 
     params['anchor'] = fileid
     img = h.image(h.url('/images/icons/table_add.png'), lbl, class_='icon')
@@ -173,9 +174,11 @@ class ChangesetController(BaseRepoController):
     def __before__(self):
         super(ChangesetController, self).__before__()
         c.affected_files_cut_off = 60
+
+    def __load_data(self):
         repo_model = RepoModel()
         c.users_array = repo_model.get_users_js()
-        c.users_groups_array = repo_model.get_users_groups_js()
+        c.user_groups_array = repo_model.get_user_groups_js()
 
     def _index(self, revision, method):
         c.anchor_url = anchor_url
@@ -199,9 +202,13 @@ class ChangesetController(BaseRepoController):
             if not c.cs_ranges:
                 raise RepositoryError('Changeset range returned empty result')
 
-        except (RepositoryError, ChangesetDoesNotExistError, Exception), e:
+        except(ChangesetDoesNotExistError,), e:
             log.error(traceback.format_exc())
-            h.flash(safe_str(e), category='error')
+            msg = _('Such revision does not exist for this repository')
+            h.flash(msg, category='error')
+            raise HTTPNotFound()
+        except (Exception,), e:
+            log.error(traceback.format_exc())
             raise HTTPNotFound()
 
         c.changes = OrderedDict()
@@ -303,6 +310,7 @@ class ChangesetController(BaseRepoController):
             response.content_type = 'text/plain'
             return diff
         elif method == 'show':
+            self.__load_data()
             if len(c.cs_ranges) == 1:
                 return render('changeset/changeset.html')
             else:
@@ -418,7 +426,8 @@ class ChangesetController(BaseRepoController):
     def delete_comment(self, repo_name, comment_id):
         co = ChangesetComment.get(comment_id)
         owner = co.author.user_id == c.rhodecode_user.user_id
-        if h.HasPermissionAny('hg.admin', 'repository.admin')() or owner:
+        repo_admin = h.HasRepoPermissionAny('repository.admin')
+        if h.HasPermissionAny('hg.admin')() or repo_admin or owner:
             ChangesetCommentsModel().delete(comment=co)
             Session().commit()
             return True
@@ -435,5 +444,33 @@ class ChangesetController(BaseRepoController):
                 return c.rhodecode_repo.get_changeset(revision)
             except ChangesetDoesNotExistError, e:
                 return EmptyChangeset(message=str(e))
+        else:
+            raise HTTPBadRequest()
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    @jsonify
+    def changeset_children(self, repo_name, revision):
+        if request.is_xhr:
+            changeset = c.rhodecode_repo.get_changeset(revision)
+            result = {"results": []}
+            if changeset.children:
+                result = {"results": changeset.children}
+            return result
+        else:
+            raise HTTPBadRequest()
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    @jsonify
+    def changeset_parents(self, repo_name, revision):
+        if request.is_xhr:
+            changeset = c.rhodecode_repo.get_changeset(revision)
+            result = {"results": []}
+            if changeset.parents:
+                result = {"results": changeset.parents}
+            return result
         else:
             raise HTTPBadRequest()

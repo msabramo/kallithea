@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.bin.api
-    ~~~~~~~~~~~~~~~~~
-
-    Api CLI client for RhodeCode
-
-    :created_on: Jun 3, 2012
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.bin.api
+~~~~~~~~~~~~~~~~~
+
+Api CLI client for RhodeCode
+
+:created_on: Jun 3, 2012
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 from __future__ import with_statement
 import sys
@@ -35,7 +35,7 @@ def argparser(argv):
       "rhodecode-api [-h] [--format=FORMAT] [--apikey=APIKEY] [--apihost=APIHOST] "
       "[--config=CONFIG] [--save-config] "
       "METHOD <key:val> <key2:val> ...\n"
-      "Create config file: rhodecode-gist --apikey=<key> --apihost=http://rhodecode.server --save-config"
+      "Create config file: rhodecode-api --apikey=<key> --apihost=http://rhodecode.server --save-config"
     )
 
     parser = argparse.ArgumentParser(description='RhodeCode API cli',
@@ -106,15 +106,18 @@ def main(argv=None):
         print 'Calling method %s => %s' % (method, apihost)
 
     json_resp = api_call(apikey, apihost, method, **margs)
+    error_prefix = ''
     if json_resp['error']:
+        error_prefix = 'ERROR:'
         json_data = json_resp['error']
     else:
         json_data = json_resp['result']
     if args.format == FORMAT_JSON:
         print json.dumps(json_data)
     elif args.format == FORMAT_PRETTY:
-        print 'Server response \n%s' % (
-                json.dumps(json_data, indent=4, sort_keys=True))
+        print 'Server response \n%s%s' % (
+            error_prefix, json.dumps(json_data, indent=4, sort_keys=True)
+        )
     return 0
 
 if __name__ == '__main__':

@@ -2,7 +2,10 @@
 <%inherit file="base/base.html"/>
 
 <%def name="title()">
-${_('Dashboard')} &middot; ${c.rhodecode_name}
+    ${_('Dashboard')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs()">

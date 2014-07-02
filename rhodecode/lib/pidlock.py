@@ -1,9 +1,21 @@
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import with_statement
 import os
-import sys
-import time
 import errno
 
-from warnings import warn
 from multiprocessing.util import Finalize
 
 from rhodecode.lib.compat import kill
@@ -27,9 +39,8 @@ class DaemonLock(object):
     def __init__(self, file_=None, callbackfn=None,
                  desc='daemon lock', debug=False):
 
-        self.pidfile = file_ if file_ else os.path.join(
-                                                    os.path.dirname(__file__),
-                                                    'running.lock')
+        lock_name = os.path.join(os.path.dirname(__file__), 'running.lock')
+        self.pidfile = file_ if file_ else lock_name
         self.callbackfn = callbackfn
         self.desc = desc
         self.debug = debug
@@ -37,7 +48,7 @@ class DaemonLock(object):
         #run the lock automatically !
         self.lock()
         self._finalize = Finalize(self, DaemonLock._on_finalize,
-                                    args=(self, debug), exitpriority=10)
+                                  args=(self, debug), exitpriority=10)
 
     @staticmethod
     def _on_finalize(lock, debug):
@@ -63,15 +74,15 @@ class DaemonLock(object):
         if self.debug:
             print 'checking for already running process'
         try:
-            pidfile = open(self.pidfile, "r")
-            pidfile.seek(0)
-            running_pid = int(pidfile.readline())
-
-            pidfile.close()
+            with open(self.pidfile, 'r') as f:
+                try:
+                    running_pid = int(f.readline())
+                except ValueError:
+                    running_pid = -1
 
             if self.debug:
                 print ('lock file present running_pid: %s, '
-                       'checking for execution') % running_pid
+                       'checking for execution' % (running_pid,))
             # Now we check the PID from lock file matches to the current
             # process PID
             if running_pid:
@@ -128,7 +139,6 @@ class DaemonLock(object):
         dir_, file_ = os.path.split(pidfile)
         if not os.path.isdir(dir_):
             os.makedirs(dir_)
-        pidfile = open(self.pidfile, "wb")
-        pidfile.write(lockname)
-        pidfile.close
+        with open(self.pidfile, 'wb') as f:
+            f.write(lockname)
         self.held = True

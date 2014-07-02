@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.pullrequests
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    pull requests controller for rhodecode for initializing pull requests
-
-    :created_on: May 7, 2012
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.pullrequests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+pull requests controller for rhodecode for initializing pull requests
+
+:created_on: May 7, 2012
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import logging
 import traceback
 import formencode
@@ -63,7 +64,7 @@ class PullrequestsController(BaseRepoController):
         super(PullrequestsController, self).__before__()
         repo_model = RepoModel()
         c.users_array = repo_model.get_users_js()
-        c.users_groups_array = repo_model.get_users_groups_js()
+        c.user_groups_array = repo_model.get_user_groups_js()
 
     def _get_repo_refs(self, repo, rev=None, branch=None, branch_rev=None):
         """return a structure with repo's interesting changesets, suitable for
@@ -106,7 +107,8 @@ class PullrequestsController(BaseRepoController):
             if branch == abranch:
                 selected = n
                 branch = None
-        if branch: # branch not in list - it is probably closed
+
+        if branch:  # branch not in list - it is probably closed
             revs = repo._repo.revs('max(branch(%s))', branch)
             if revs:
                 cs = repo.get_changeset(revs[0])
@@ -124,7 +126,7 @@ class PullrequestsController(BaseRepoController):
         for tag, tagrev in repo.tags.iteritems():
             n = 'tag:%s:%s' % (tag, tagrev)
             tags.append((n, tag))
-            if rev == tagrev and tag != 'tip': # tip is not a real tag - and its branch is better
+            if rev == tagrev and tag != 'tip':  # tip is not a real tag - and its branch is better
                 selected = n
 
         # prio 1: rev was selected as existing entry above
@@ -141,7 +143,14 @@ class PullrequestsController(BaseRepoController):
 
         # prio 4: tip revision
         if not selected:
-            selected = 'tag:tip:%s' % repo.tags['tip']
+            if h.is_hg(repo):
+                selected = 'tag:tip:%s' % repo.tags['tip']
+            else:
+                if 'master' in repo.branches:
+                    selected = 'branch:master:%s' % repo.branches['master']
+                else:
+                    k, v = repo.branches.items()[0]
+                    selected = 'branch:%s:%s' % (k, v)
 
         groups = [(specials, _("Special")),
                   (peers, _("Peer branches")),
@@ -155,7 +164,7 @@ class PullrequestsController(BaseRepoController):
         owner = self.rhodecode_user.user_id == pull_request.user_id
         reviewer = self.rhodecode_user.user_id in [x.user_id for x in
                                                    pull_request.reviewers]
-        return (self.rhodecode_user.admin or owner or reviewer)
+        return self.rhodecode_user.admin or owner or reviewer
 
     def _load_compare_data(self, pull_request, enable_comments=True):
         """
@@ -247,10 +256,6 @@ class PullrequestsController(BaseRepoController):
                                    'repository.admin')
     def index(self):
         org_repo = c.rhodecode_db_repo
-
-        if org_repo.scm_instance.alias != 'hg':
-            log.error('Review not available for GIT REPOS')
-            raise HTTPNotFound
 
         try:
             org_repo.scm_instance.get_changeset()
@@ -366,9 +371,10 @@ class PullrequestsController(BaseRepoController):
             raise HTTPForbidden()
         #only owner or admin can update it
         owner = pull_request.author.user_id == c.rhodecode_user.user_id
-        if h.HasPermissionAny('hg.admin', 'repository.admin')() or owner:
+        repo_admin = h.HasRepoPermissionAny('repository.admin')(c.repo_name)
+        if h.HasPermissionAny('hg.admin') or repo_admin or owner:
             reviewers_ids = map(int, filter(lambda v: v not in [None, ''],
-                       request.POST.get('reviewers_ids', '').split(',')))
+                request.POST.get('reviewers_ids', '').split(',')))
 
             PullRequestModel().update_reviewers(pull_request_id, reviewers_ids)
             Session().commit()
@@ -388,7 +394,7 @@ class PullrequestsController(BaseRepoController):
             Session().commit()
             h.flash(_('Successfully deleted pull request'),
                     category='success')
-            return redirect(url('admin_settings_my_account', anchor='pullrequests'))
+            return redirect(url('my_account_pullrequests'))
         raise HTTPForbidden()
 
     @LoginRequired()
@@ -397,7 +403,7 @@ class PullrequestsController(BaseRepoController):
     def show(self, repo_name, pull_request_id):
         repo_model = RepoModel()
         c.users_array = repo_model.get_users_js()
-        c.users_groups_array = repo_model.get_users_groups_js()
+        c.user_groups_array = repo_model.get_user_groups_js()
         c.pull_request = PullRequest.get_or_404(pull_request_id)
         c.allowed_to_change_status = self._get_is_allowed_change_status(c.pull_request)
         cc_model = ChangesetCommentsModel()
@@ -544,7 +550,8 @@ class PullrequestsController(BaseRepoController):
             raise HTTPForbidden()
 
         owner = co.author.user_id == c.rhodecode_user.user_id
-        if h.HasPermissionAny('hg.admin', 'repository.admin')() or owner:
+        repo_admin = h.HasRepoPermissionAny('repository.admin')(c.repo_name)
+        if h.HasPermissionAny('hg.admin') or repo_admin or owner:
             ChangesetCommentsModel().delete(comment=co)
             Session().commit()
             return True

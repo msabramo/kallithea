@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.compare
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    compare controller for pylons showing differences between two
-    repos, branches, bookmarks or tips
-
-    :created_on: May 6, 2012
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +11,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.compare
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+compare controller for pylons showing differences between two
+repos, branches, bookmarks or tips
+
+:created_on: May 6, 2012
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import logging
 import traceback
@@ -35,12 +36,11 @@ from pylons.i18n.translation import _
 
 from rhodecode.lib.vcs.exceptions import EmptyRepositoryError, RepositoryError
 from rhodecode.lib.vcs.utils import safe_str
-from rhodecode.lib.vcs.utils.hgcompat import scmutil, unionrepo
+from rhodecode.lib.vcs.utils.hgcompat import unionrepo
 from rhodecode.lib import helpers as h
 from rhodecode.lib.base import BaseRepoController, render
 from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
 from rhodecode.lib import diffs
-from rhodecode.lib.utils2 import safe_str
 from rhodecode.model.db import Repository
 from rhodecode.lib.diffs import LimitedDiffContainer
 
@@ -54,16 +54,17 @@ class CompareController(BaseRepoController):
         super(CompareController, self).__before__()
 
     def __get_rev_or_redirect(self, ref, repo, redirect_after=True,
-                             partial=False):
+                              partial=False):
         """
         Safe way to get changeset if error occur it redirects to changeset with
         proper message. If partial is set then don't do redirect raise Exception
         instead
 
-        :param rev: revision to fetch
-        :param repo: repo instance
+        :param ref:
+        :param repo:
+        :param redirect_after:
+        :param partial:
         """
-
         rev = ref[1] # default and used for git
         if repo.scm_instance.alias == 'hg':
             # lookup up the exact node id
@@ -97,12 +98,17 @@ class CompareController(BaseRepoController):
 
     def _get_changesets(self, alias, org_repo, org_rev, other_repo, other_rev, merge):
         """
-        Returns a list of changesets that can be merged from org_repo@org_rev
-        to other_repo@other_rev ... and the ancestor that would be used for merge
+        Returns a list of changesets that can be merged from org_repo at org_rev
+        to other_repo at other_rev ... and the ancestor that would be used for merge.
+
+        :param org_repo: repo object, that is most likely the orginal repo we forked from
+        :param org_rev: the revision we want our compare to be made
+        :param other_repo: repo object, mostl likely the fork of org_repo. It hass
+            all changesets that we need to obtain
+        :param other_rev: revision we want out compare to be made on other_repo
+
         """
-
         ancestor = None
-
         if org_rev == other_rev:
             changesets = []
             if merge:
@@ -122,10 +128,12 @@ class CompareController(BaseRepoController):
                 hgrepo = other_repo._repo
 
             if merge:
-                revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
-                                   other_rev, org_rev, org_rev)
+                revs = hgrepo.revs(
+                    "ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
+                    other_rev, org_rev, org_rev)
 
-                ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
+                ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev,
+                                        other_rev)
                 if ancestors:
                     # pick arbitrary ancestor - but there is usually only one
                     ancestor = hgrepo[ancestors[0]].hex()
@@ -138,22 +146,56 @@ class CompareController(BaseRepoController):
 
         elif alias == 'git':
             if org_repo != other_repo:
-                raise Exception('Comparing of different GIT repositories is not'
-                                'allowed. Got %s != %s' % (org_repo, other_repo))
+                from dulwich.repo import Repo
+                from dulwich.client import SubprocessGitClient
 
-            so, se = org_repo.run_git_command(
-                'log --reverse --pretty="format: %%H" -s -p %s..%s'
-                    % (org_rev, other_rev)
-            )
-            changesets = [org_repo.get_changeset(cs)
-                          for cs in re.findall(r'[0-9a-fA-F]{40}', so)]
+                gitrepo = Repo(org_repo.path)
+                SubprocessGitClient(thin_packs=False).fetch(other_repo.path, gitrepo)
+
+                gitrepo_remote = Repo(other_repo.path)
+                SubprocessGitClient(thin_packs=False).fetch(org_repo.path, gitrepo_remote)
+
+                revs = []
+                for x in gitrepo_remote.get_walker(include=[other_rev],
+                                                   exclude=[org_rev]):
+                    revs.append(x.commit.id)
+
+                changesets = [other_repo.get_changeset(rev) for rev in reversed(revs)]
+                if changesets:
+                    ancestor = changesets[0].parents[0].raw_id
+                else:
+                    # no changesets from other repo, ancestor is the other_rev
+                    ancestor = other_rev
+
+            else:
+                so, se = org_repo.run_git_command(
+                    'log --reverse --pretty="format: %%H" -s %s..%s'
+                        % (org_rev, other_rev)
+                )
+                changesets = [org_repo.get_changeset(cs)
+                              for cs in re.findall(r'[0-9a-fA-F]{40}', so)]
+
+        else:
+            raise Exception('Bad alias only git and hg is allowed')
 
         return changesets, ancestor
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
-    def index(self, org_ref_type, org_ref, other_ref_type, other_ref):
+    def index(self, repo_name):
+        c.compare_home = True
+        org_repo = c.rhodecode_db_repo.repo_name
+        other_repo = request.GET.get('other_repo', org_repo)
+        c.org_repo = Repository.get_by_repo_name(org_repo)
+        c.other_repo = Repository.get_by_repo_name(other_repo)
+        c.org_ref = c.other_ref = _('Select changeset')
+        return render('compare/compare_diff.html')
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    def compare(self, repo_name, org_ref_type, org_ref, other_ref_type, other_ref):
         # org_ref will be evaluated in org_repo
         org_repo = c.rhodecode_db_repo.repo_name
         org_ref = (org_ref_type, org_ref)
@@ -187,23 +229,27 @@ class CompareController(BaseRepoController):
         other_repo = Repository.get_by_repo_name(other_repo)
 
         if org_repo is None:
-            log.error('Could not find org repo %s' % org_repo)
-            raise HTTPNotFound
-        if other_repo is None:
-            log.error('Could not find other repo %s' % other_repo)
-            raise HTTPNotFound
+            msg = 'Could not find org repo %s' % org_repo
+            log.error(msg)
+            h.flash(msg, category='error')
+            return redirect(url('compare_home', repo_name=c.repo_name))
 
-        if org_repo != other_repo and h.is_git(org_repo):
-            log.error('compare of two remote repos not available for GIT REPOS')
-            raise HTTPNotFound
+        if other_repo is None:
+            msg = 'Could not find other repo %s' % other_repo
+            log.error(msg)
+            h.flash(msg, category='error')
+            return redirect(url('compare_home', repo_name=c.repo_name))
 
         if org_repo.scm_instance.alias != other_repo.scm_instance.alias:
-            log.error('compare of two different kind of remote repos not available')
-            raise HTTPNotFound
+            msg = 'compare of two different kind of remote repos not available'
+            log.error(msg)
+            h.flash(msg, category='error')
+            return redirect(url('compare_home', repo_name=c.repo_name))
 
         org_rev = self.__get_rev_or_redirect(ref=org_ref, repo=org_repo, partial=partial)
         other_rev = self.__get_rev_or_redirect(ref=other_ref, repo=other_repo, partial=partial)
 
+        c.compare_home = False
         c.org_repo = org_repo
         c.other_repo = other_repo
         c.org_ref = org_ref[1]
@@ -211,19 +257,17 @@ class CompareController(BaseRepoController):
         c.org_ref_type = org_ref[0]
         c.other_ref_type = other_ref[0]
 
-        c.cs_ranges, c.ancestor = self._get_changesets(org_repo.scm_instance.alias,
-                                                       org_repo.scm_instance, org_rev,
-                                                       other_repo.scm_instance, other_rev,
-                                                       merge)
+        c.cs_ranges, c.ancestor = self._get_changesets(
+            org_repo.scm_instance.alias, org_repo.scm_instance, org_rev,
+            other_repo.scm_instance, other_rev, merge)
+        c.statuses = c.rhodecode_db_repo.statuses(
+            [x.raw_id for x in c.cs_ranges])
 
-        c.statuses = c.rhodecode_db_repo.statuses([x.raw_id for x in
-                                                   c.cs_ranges])
         if merge and not c.ancestor:
             log.error('Unable to find ancestor revision')
 
         if partial:
             return render('compare/compare_cs.html')
-
         if c.ancestor:
             assert merge
             # case we want a simple diff without incoming changesets,
@@ -238,8 +282,8 @@ class CompareController(BaseRepoController):
 
         log.debug('running diff between %s and %s in %s'
                   % (org_rev, other_rev, org_repo.scm_instance.path))
-        txtdiff = org_repo.scm_instance.get_diff(rev1=org_rev, rev2=other_rev)
 
+        txtdiff = org_repo.scm_instance.get_diff(rev1=org_rev, rev2=other_rev)
         diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
                                              diff_limit=diff_limit)
         _parsed = diff_processor.prepare()

@@ -3,10 +3,21 @@
 ##    <%namespace name="p" file="/base/perms_summary.html"/>
 ##    ${p.perms_summary(c.perm_user.permissions)}
 
-<%def name="perms_summary(permissions, show_all=False)">
+<%def name="perms_summary(permissions, show_all=False, actions=True)">
 <div id="perms" class="table">
      %for section in sorted(permissions.keys()):
-        <div class="perms_section_head">${section.replace("_"," ").capitalize()}</div>
+        <div class="perms_section_head">
+            ${section.replace("_"," ").capitalize()}
+            %if section != 'global':
+                <div style="float: right">
+                ${_('show')}:
+                ${h.checkbox('perms_filter_none_%s' % section, 'none', 'checked', class_='perm_filter filter_%s' % section, section=section, perm_type='none')}   <label for="${'perms_filter_none_%s' % section}"><span class="perm_tag none">${_('none')}</span></label>
+                ${h.checkbox('perms_filter_read_%s' % section, 'read', 'checked', class_='perm_filter filter_%s' % section, section=section, perm_type='read')}   <label for="${'perms_filter_read_%s' % section}"><span class="perm_tag read">${_('read')}</span></label>
+                ${h.checkbox('perms_filter_write_%s' % section, 'write', 'checked', class_='perm_filter filter_%s' % section, section=section, perm_type='write')} <label for="${'perms_filter_write_%s' % section}"> <span class="perm_tag write">${_('write')}</span></label>
+                ${h.checkbox('perms_filter_admin_%s' % section, 'admin', 'checked', class_='perm_filter filter_%s' % section, section=section, perm_type='admin')} <label for="${'perms_filter_admin_%s' % section}"><span class="perm_tag admin">${_('admin')}</span></label>
+                </div>
+            %endif
+        </div>
         %if not permissions[section]:
             <span class="empty_data">${_('No permissions defined yet')}</span>
         %else:
@@ -17,7 +28,9 @@
               <thead>
                   <tr>
                   <th colspan="2" class="left">${_('Permission')}</th>
+                  %if actions:
                   <th class="left">${_('Edit Permission')}</th>
+                  %endif
               </thead>
               <tbody>
               %for k in permissions[section]:
@@ -25,23 +38,28 @@
                       <td colspan="2">
                           ${h.get_permission_name(k)}
                       </td>
+                      %if actions:
                       <td>
-                           <a href="${h.url('edit_permission', id='default')}">${_('edit')}</a>
+                           <a href="${h.url('admin_permissions')}">${_('edit')}</a>
                       </td>
+                      %endif
                   </tr>
               %endfor
               </tbody>
           %else:
+             ## none/read/write/admin permissions on groups/repos etc
               <thead>
                   <tr>
                   <th class="left">${_('Name')}</th>
                   <th class="left">${_('Permission')}</th>
+                  %if actions:
                   <th class="left">${_('Edit Permission')}</th>
+                  %endif
               </thead>
-              <tbody>
-              %for k, section_perm in sorted(permissions[section].items(), key=lambda s: s[1]+s[0].lower()):
+              <tbody class="section_${section}">
+              %for k, section_perm in sorted(permissions[section].items(), key=lambda s: {'none':0, 'read':1,'write':2,'admin':3}.get(s[1].split('.')[-1])):
                   %if section_perm.split('.')[-1] != 'none' or show_all:
-                  <tr>
+                  <tr class="perm_row ${'%s_%s' % (section, section_perm.split('.')[-1])}">
                       <td>
                           %if section == 'repositories':
                               <a href="${h.url('summary_home',repo_name=k)}">${k}</a>
@@ -55,18 +73,21 @@
                       <td>
                            <span class="perm_tag ${section_perm.split('.')[-1]}">${section_perm}</span>
                       </td>
+                      %if actions:
                       <td>
                           %if section == 'repositories':
-                              <a href="${h.url('edit_repo',repo_name=k,anchor='permissions_manage')}">${_('edit')}</a>
+                              <a href="${h.url('edit_repo_perms',repo_name=k,anchor='permissions_manage')}">${_('edit')}</a>
                           %elif section == 'repositories_groups':
-                              <a href="${h.url('edit_repos_group',group_name=k,anchor='permissions_manage')}">${_('edit')}</a>
+                              <a href="${h.url('edit_repo_group_perms',group_name=k,anchor='permissions_manage')}">${_('edit')}</a>
                           %elif section == 'user_groups':
                               ##<a href="${h.url('edit_users_group',id=k)}">${_('edit')}</a>
                           %endif
                       </td>
+                      %endif
                   </tr>
                   %endif
               %endfor
+              <tr id="empty_${section}" style="display: none"><td colspan="6">${_('No permission defined')}</td></tr>
               </tbody>
           %endif
          </table>
@@ -74,4 +95,38 @@
         %endif
      %endfor
 </div>
+<script>
+    $(document).ready(function(){
+        var show_empty = function(section){
+            var visible = $('.section_{0} tr.perm_row:visible'.format(section)).length;
+            console.log(visible)
+            console.log($('.section_{0} tr.perm_row:visible'.format(section)))
+            if(visible == 0){
+                $('#empty_{0}'.format(section)).show();
+            }
+            else{
+                $('#empty_{0}'.format(section)).hide();
+            }
+        }
+        $('.perm_filter').on('change', function(e){
+            var self = this;
+            var section = $(this).attr('section');
+
+            var opts = {}
+            var elems = $('.filter_' + section).each(function(el){
+                var perm_type = $(this).attr('perm_type');
+                var checked = this.checked;
+                opts[perm_type] = checked;
+                if(checked){
+                    $('.'+section+'_'+perm_type).show();
+                }
+                else{
+                    $('.'+section+'_'+perm_type).hide();
+                }
+            });
+            show_empty(section);
+        })
+
+    })
+</script>
 </%def>

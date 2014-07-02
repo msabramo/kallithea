@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import with_statement
+import mock
 from rhodecode.tests import *
-from rhodecode.model.db import User, Notification
+from rhodecode.tests.fixture import Fixture
 from rhodecode.lib.utils2 import generate_api_key
 from rhodecode.lib.auth import check_password
 from rhodecode.lib import helpers as h
+from rhodecode.model.api_key import ApiKeyModel
 from rhodecode.model import validators
+from rhodecode.model.db import User, Notification
 from rhodecode.model.meta import Session
+
+fixture = Fixture()
 
 
 class TestLoginController(TestController):
@@ -95,7 +101,7 @@ class TestLoginController(TestController):
     #==========================================================================
     def test_register(self):
         response = self.app.get(url(controller='login', action='register'))
-        response.mustcontain('Sign Up to RhodeCode')
+        response.mustcontain('Sign Up')
 
     def test_register_err_same_username(self):
         uname = 'test_admin'
@@ -289,3 +295,81 @@ class TestLoginController(TestController):
                                 'new password has been sent to your email'))
 
         response = response.follow()
+
+    def _get_api_whitelist(self, values=None):
+        config = {'api_access_controllers_whitelist': values or []}
+        return config
+
+    @parameterized.expand([
+        ('none', None),
+        ('empty_string', ''),
+        ('fake_number', '123456'),
+        ('proper_api_key', None)
+    ])
+    def test_access_not_whitelisted_page_via_api_key(self, test_name, api_key):
+        whitelist = self._get_api_whitelist([])
+        with mock.patch('rhodecode.CONFIG', whitelist):
+            self.assertEqual([],
+                             whitelist['api_access_controllers_whitelist'])
+            if test_name == 'proper_api_key':
+                #use builtin if api_key is None
+                api_key = User.get_first_admin().api_key
+
+            with fixture.anon_access(False):
+                self.app.get(url(controller='changeset',
+                                 action='changeset_raw',
+                                 repo_name=HG_REPO, revision='tip', api_key=api_key),
+                             status=302)
+
+    @parameterized.expand([
+        ('none', None, 302),
+        ('empty_string', '', 302),
+        ('fake_number', '123456', 302),
+        ('proper_api_key', None, 200)
+    ])
+    def test_access_whitelisted_page_via_api_key(self, test_name, api_key, code):
+        whitelist = self._get_api_whitelist(['ChangesetController:changeset_raw'])
+        with mock.patch('rhodecode.CONFIG', whitelist):
+            self.assertEqual(['ChangesetController:changeset_raw'],
+                             whitelist['api_access_controllers_whitelist'])
+            if test_name == 'proper_api_key':
+                api_key = User.get_first_admin().api_key
+
+            with fixture.anon_access(False):
+                self.app.get(url(controller='changeset',
+                                 action='changeset_raw',
+                                 repo_name=HG_REPO, revision='tip', api_key=api_key),
+                             status=code)
+
+    def test_access_page_via_extra_api_key(self):
+        whitelist = self._get_api_whitelist(['ChangesetController:changeset_raw'])
+        with mock.patch('rhodecode.CONFIG', whitelist):
+            self.assertEqual(['ChangesetController:changeset_raw'],
+                             whitelist['api_access_controllers_whitelist'])
+
+            new_api_key = ApiKeyModel().create(TEST_USER_ADMIN_LOGIN, 'test')
+            Session().commit()
+            with fixture.anon_access(False):
+                self.app.get(url(controller='changeset',
+                                 action='changeset_raw',
+                                 repo_name=HG_REPO, revision='tip', api_key=new_api_key.api_key),
+                             status=200)
+
+    def test_access_page_via_expired_api_key(self):
+        whitelist = self._get_api_whitelist(['ChangesetController:changeset_raw'])
+        with mock.patch('rhodecode.CONFIG', whitelist):
+            self.assertEqual(['ChangesetController:changeset_raw'],
+                             whitelist['api_access_controllers_whitelist'])
+
+            new_api_key = ApiKeyModel().create(TEST_USER_ADMIN_LOGIN, 'test')
+            Session().commit()
+            #patch the api key and make it expired
+            new_api_key.expires = 0
+            Session().add(new_api_key)
+            Session().commit()
+            with fixture.anon_access(False):
+                self.app.get(url(controller='changeset',
+                                 action='changeset_raw',
+                                 repo_name=HG_REPO, revision='tip',
+                                 api_key=new_api_key.api_key),
+                             status=302)

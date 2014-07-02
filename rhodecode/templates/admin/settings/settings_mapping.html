@@ -1,0 +1,36 @@
+${h.form(url('admin_settings_mapping'), method='post')}
+    <div class="form">
+        <div class="fields">
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label for="destroy">${_('Rescan option')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('destroy',True)}
+                        <label for="destroy">${_('Destroy old data')}</label>
+                    </div>
+                    <span class="help-block">${_('In case a repository was deleted from filesystem and it still exists in the database check this option to scan obsolete data in database and remove it.')}</span>
+
+                    <div class="checkbox">
+                        ${h.checkbox('invalidate',True)}
+                        <label for="invalidate"> ${_('Invalidate cache for all repositories')}</label>
+                    </div>
+                    <span class="help-block">${_('Each cache data for repositories will be cleaned with this option selected. Use this to reload data and clear cache keys.')}</span>
+
+                    <div class="checkbox">
+                        ${h.checkbox('hooks',True)}
+                        <label for="hooks"> ${_('Install GIT hooks')} </label>
+                    </div>
+                    <span class="help-block">${_('Verify if RhodeCodes GIT hooks are installed for each repository. Current hooks will be updated to latest version')}</span>
+                </div>
+
+                </div>
+            </div>
+
+            <div class="buttons">
+            ${h.submit('rescan',_('Rescan Repositories'),class_="btn")}
+            </div>
+        </div>
+    </div>
+${h.end_form()}

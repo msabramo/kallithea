@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.notification
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Model for notifications
-
-
-    :created_on: Nov 20, 2011
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +11,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.notification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Model for notifications
+
+
+:created_on: Nov 20, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import os
 import logging
@@ -255,17 +256,18 @@ class EmailNotificationModel(BaseModel):
     TYPE_DEFAULT = 'default'
 
     def __init__(self):
+        super(EmailNotificationModel, self).__init__()
         self._template_root = rhodecode.CONFIG['pylons.paths']['templates'][0]
         self._tmpl_lookup = rhodecode.CONFIG['pylons.app_globals'].mako_lookup
-
         self.email_types = {
-         self.TYPE_CHANGESET_COMMENT: 'email_templates/changeset_comment.html',
-         self.TYPE_PASSWORD_RESET: 'email_templates/password_reset.html',
-         self.TYPE_REGISTRATION: 'email_templates/registration.html',
-         self.TYPE_DEFAULT: 'email_templates/default.html',
-         self.TYPE_PULL_REQUEST: 'email_templates/pull_request.html',
-         self.TYPE_PULL_REQUEST_COMMENT: 'email_templates/pull_request_comment.html',
+            self.TYPE_CHANGESET_COMMENT: 'email_templates/changeset_comment.html',
+            self.TYPE_PASSWORD_RESET: 'email_templates/password_reset.html',
+            self.TYPE_REGISTRATION: 'email_templates/registration.html',
+            self.TYPE_DEFAULT: 'email_templates/default.html',
+            self.TYPE_PULL_REQUEST: 'email_templates/pull_request.html',
+            self.TYPE_PULL_REQUEST_COMMENT: 'email_templates/pull_request_comment.html',
         }
+
 
     def get_email_tmpl(self, type_, **kwargs):
         """

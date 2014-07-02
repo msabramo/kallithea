@@ -21,9 +21,6 @@ ${self.repo_context_bar('showpullrequest')}
     </div>
 
     ${h.form(url('pullrequest', repo_name=c.repo_name), method='post', id='pull_request_form')}
-
-    <h3>${_('Create new pull request')}</h3>
-
     <div class="form">
         <!-- fields -->
 
@@ -82,8 +79,8 @@ ${self.repo_context_bar('showpullrequest')}
 
             <div class="field">
                 <div class="buttons">
-                    ${h.submit('save',_('Send pull request'),class_="ui-btn large")}
-                    ${h.reset('reset',_('Reset'),class_="ui-btn large")}
+                    ${h.submit('save',_('Send Pull Request'),class_="btn")}
+                    ${h.reset('reset',_('Reset'),class_="btn")}
                </div>
             </div>
 
@@ -91,10 +88,10 @@ ${self.repo_context_bar('showpullrequest')}
 
         ## Reviewers
         <div style="float:left; border-left:1px dashed #eee">
-            <h4>${_('Pull request reviewers')}</h4>
+            <div class="pr-details-title">${_('Pull request reviewers')}</div>
             <div id="reviewers" style="padding:0px 0px 0px 15px">
               ## members goes here !
-              <div class="group_members_wrap">
+              <div>
                 <ul id="review_members" class="group_members">
                 %for member in [c.default_other_repo_info['user']]:
                   <li id="reviewer_${member['user_id']}">
@@ -102,7 +99,9 @@ ${self.repo_context_bar('showpullrequest')}
                       <div class="gravatar"><img alt="gravatar" src="${member['gravatar_link']}"/> </div>
                       <div style="float:left">${member['firstname']} ${member['lastname']} (${_('owner')})</div>
                       <input type="hidden" value="${member['user_id']}" name="review_members" />
-                      <span class="delete_icon action_button" onclick="removeReviewMember(${member['user_id']})"></span>
+                      <span class="action_button" style="padding: 3px" onclick="removeReviewMember(${member['user_id']})">
+                          <i class="icon-remove-sign"  style="color: #FF4444;"></i>
+                      </span>
                     </div>
                   </li>
                 %endfor
@@ -139,7 +138,7 @@ ${self.repo_context_bar('showpullrequest')}
 
 <script type="text/javascript">
   var _USERS_AC_DATA = ${c.users_array|n};
-  var _GROUPS_AC_DATA = ${c.users_groups_array|n};
+  var _GROUPS_AC_DATA = ${c.user_groups_array|n};
   PullRequestAutoComplete('user', 'reviewers_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
   var other_repos_info = ${c.other_repos_info|n};

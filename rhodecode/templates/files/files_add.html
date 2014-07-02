@@ -1,13 +1,17 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Files Add') % c.repo_name} &middot; ${c.rhodecode_name}
+    ${_('%s Files Add') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="js_extra()">
 <script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/mode/meta.js')}"></script>
+<script type="text/javascript" src="${h.url('/js/mode/meta_ext.js')}"></script>
 </%def>
 <%def name="css_extra()">
 <link rel="stylesheet" type="text/css" href="${h.url('/css/codemirror.css')}"/>
@@ -18,7 +22,7 @@
 </%def>
 
 <%def name="breadcrumbs_links()">
-    ${_('Add file')} @ ${h.show_id(c.cs)}
+    ${_('Add new file')} @ ${h.show_id(c.cs)}
 </%def>
 
 <%def name="main()">
@@ -34,43 +38,23 @@ ${self.repo_context_bar('files')}
             </li>
         </ul>
     </div>
-    <div class="table">
+    <div class="table" id="edit">
         <div id="files_data">
-          ${h.form(h.url.current(),method='post',id='eform',enctype="multipart/form-data")}
-            <h3>${_('Add new file')}</h3>
-            <div class="form">
-              <div class="fields">
-                  <div id="filename_container" class="field file">
-                      <div class="label">
-                          <label for="filename">${_('File Name')}:</label>
-                      </div>
-                      <div class="input">
-                          <input type="text" value="" size="30" name="filename" id="filename">
-                          ${_('or')} <span class="ui-btn" id="upload_file_enable">${_('Upload file')}</span>
-                      </div>
-                  </div>
-                  <div id="upload_file_container" class="field" style="display:none">
-                    <div class="label">
-                        <label for="upload_file_container">${_('Upload file')}</label>
-                    </div>
-                    <div class="file">
-                        <input type="file"  size="30" name="upload_file" id="upload_file">
-                        ${_('or')} <span class="ui-btn" id="file_enable">${_('Create new file')}</span>
-                    </div>
-                  </div>
-                   <div class="field">
-                      <div class="label">
-                          <label for="location">${_('Location')}</label>
-                      </div>
-                      <div class="input">
-                          <input type="text" value="${c.f_path}" size="30" name="location" id="location">
-                          ${_('use / to separate directories')}
-                      </div>
-                   </div>
-              </div>
-            </div>
+          ${h.form(h.url.current(),method='post',id='eform',enctype="multipart/form-data", class_="form-horizontal")}
+          <h3 class="files_location">
+            ${_('Location')}: ${h.files_breadcrumbs(c.repo_name,c.cs.raw_id,c.f_path)} /
+              <span id="filename_container" class="file reviewer_ac">
+                  <input class="input-small" type="text" value="" size="30" name="filename" id="filename" placeholder="${_('Enter filename...')}">
+                  <input type="hidden" value="${c.f_path}" size="30" name="location" id="location">
+                  ${_('or')} <div class="btn btn-small" id="upload_file_enable">${_('Upload File')}</div>
+              </span>
+              <span id="upload_file_container" class="reviewer_ac" style="display:none">
+                  <input type="file"  size="20" name="upload_file" id="upload_file">
+                  ${_('or')} <div class="btn btn-small" id="file_enable">${_('Create New File')}</div>
+              </span>
+          </h3>
             <div id="body" class="codeblock">
-            <div class="code-header">
+            <div class="code-header" id="set_mode_header">
                 <label class="commit" for="set_mode">${_('New file mode')}</label>
                 ${h.select('set_mode','plain',[('plain',_('plain'))])}
             </div>
@@ -82,8 +66,8 @@ ${self.repo_context_bar('files')}
                 <textarea id="commit" name="message" style="height: 100px;width: 99%;margin-left:4px" placeholder="${c.default_message}"></textarea>
             </div>
             <div style="text-align: left;padding-top: 5px">
-            ${h.submit('commit',_('Commit changes'),class_="ui-btn")}
-            ${h.reset('reset',_('Reset'),class_="ui-btn")}
+            ${h.submit('commit',_('Commit changes'),class_="btn btn-small btn-success")}
+            ${h.reset('reset',_('Reset'),class_="btn btn-small")}
             </div>
             ${h.end_form()}
             <script type="text/javascript">
@@ -91,7 +75,7 @@ ${self.repo_context_bar('files')}
             var myCodeMirror = initCodeMirror('editor',reset_url);
             CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
 
-            //inject new modes
+            //inject new modes, based on codeMirrors modeInfo object
             var modes_select = YUD.get('set_mode');
             for(var i=0;i<CodeMirror.modeInfo.length;i++){
                 var m = CodeMirror.modeInfo[i];

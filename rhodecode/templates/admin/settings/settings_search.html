@@ -1,0 +1,25 @@
+${h.form(url('admin_settings_search'), method='post')}
+    <div class="form">
+
+        <div class="fields">
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('Index build option')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('full_index',True)}
+                        <label for="full_index">${_('Build from scratch')}</label>
+
+                    </div>
+                    <span class="help-block">${_('This option completely reindex all the files within RhodeCode for proper fulltext search capabilities.')}</span>
+
+                </div>
+            </div>
+
+            <div class="buttons">
+            ${h.submit('reindex',_('Reindex'),class_="btn")}
+            </div>
+        </div>
+    </div>
+${h.end_form()}

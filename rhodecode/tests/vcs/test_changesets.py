@@ -135,6 +135,16 @@ class ChangesetsWithCommitsTestCaseixin(BackendTestMixin):
         for tag, sha in self.repo.tags.iteritems():
             self.assertEqual(sha, self.repo.get_changeset(tag).raw_id)
 
+    def test_get_changeset_parents(self):
+        for test_rev in [1, 2, 3]:
+            sha = self.repo.get_changeset(test_rev-1)
+            self.assertEqual([sha], self.repo.get_changeset(test_rev).parents)
+
+    def test_get_changeset_children(self):
+        for test_rev in [1, 2, 3]:
+            sha = self.repo.get_changeset(test_rev+1)
+            self.assertEqual([sha], self.repo.get_changeset(test_rev).children)
+
 
 class ChangesetsTestCaseMixin(BackendTestMixin):
     recreate_repo_per_test = False

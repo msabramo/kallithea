@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.scm
-    ~~~~~~~~~~~~~~~~~~~
-
-    Scm model for RhodeCode
-
-    :created_on: Apr 9, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.scm
+~~~~~~~~~~~~~~~~~~~
+
+Scm model for RhodeCode
+
+:created_on: Apr 9, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 from __future__ import with_statement
 import os
 import re
@@ -46,7 +47,7 @@ from rhodecode import BACKENDS
 from rhodecode.lib import helpers as h
 from rhodecode.lib.utils2 import safe_str, safe_unicode, get_server_url,\
     _set_extras
-from rhodecode.lib.auth import HasRepoPermissionAny, HasReposGroupPermissionAny,\
+from rhodecode.lib.auth import HasRepoPermissionAny, HasRepoGroupPermissionAny,\
     HasUserGroupPermissionAny
 from rhodecode.lib.utils import get_filesystem_repos, make_ui, \
     action_logger
@@ -154,19 +155,16 @@ class SimpleCachedRepoList(CachedRepoList):
                 *self.perm_set)(dbr.repo_name, 'get repo check'):
                 continue
 
-            tmp_d = {}
-            tmp_d['name'] = dbr.repo_name
-            tmp_d['name_sort'] = tmp_d['name'].lower()
-            tmp_d['raw_name'] = tmp_d['name'].lower()
-            tmp_d['description'] = dbr.description
-            tmp_d['description_sort'] = tmp_d['description'].lower()
-            tmp_d['dbrepo'] = dbr.get_dict()
-            tmp_d['dbrepo_fork'] = dbr.fork.get_dict() if dbr.fork else {}
+            tmp_d = {
+                'name': dbr.repo_name,
+                'dbrepo': dbr.get_dict(),
+                'dbrepo_fork': dbr.fork.get_dict() if dbr.fork else {}
+            }
             yield tmp_d
 
 
 class _PermCheckIterator(object):
-    def __init__(self, obj_list, obj_attr, perm_set, perm_checker):
+    def __init__(self, obj_list, obj_attr, perm_set, perm_checker, extra_kwargs=None):
         """
         Creates iterator from given list of objects, additionally
         checking permission for them from perm_set var
@@ -180,6 +178,7 @@ class _PermCheckIterator(object):
         self.obj_attr = obj_attr
         self.perm_set = perm_set
         self.perm_checker = perm_checker
+        self.extra_kwargs = extra_kwargs or {}
 
     def __len__(self):
         return len(self.obj_list)
@@ -191,7 +190,8 @@ class _PermCheckIterator(object):
         for db_obj in self.obj_list:
             # check permission at this level
             name = getattr(db_obj, self.obj_attr, None)
-            if not self.perm_checker(*self.perm_set)(name, self.__class__.__name__):
+            if not self.perm_checker(*self.perm_set)(
+                    name, self.__class__.__name__, **self.extra_kwargs):
                 continue
 
             yield db_obj
@@ -199,35 +199,38 @@ class _PermCheckIterator(object):
 
 class RepoList(_PermCheckIterator):
 
-    def __init__(self, db_repo_list, perm_set=None):
+    def __init__(self, db_repo_list, perm_set=None, extra_kwargs=None):
         if not perm_set:
             perm_set = ['repository.read', 'repository.write', 'repository.admin']
 
         super(RepoList, self).__init__(obj_list=db_repo_list,
                     obj_attr='repo_name', perm_set=perm_set,
-                    perm_checker=HasRepoPermissionAny)
+                    perm_checker=HasRepoPermissionAny,
+                    extra_kwargs=extra_kwargs)
 
 
 class RepoGroupList(_PermCheckIterator):
 
-    def __init__(self, db_repo_group_list, perm_set=None):
+    def __init__(self, db_repo_group_list, perm_set=None, extra_kwargs=None):
         if not perm_set:
             perm_set = ['group.read', 'group.write', 'group.admin']
 
         super(RepoGroupList, self).__init__(obj_list=db_repo_group_list,
                     obj_attr='group_name', perm_set=perm_set,
-                    perm_checker=HasReposGroupPermissionAny)
+                    perm_checker=HasRepoGroupPermissionAny,
+                    extra_kwargs=extra_kwargs)
 
 
 class UserGroupList(_PermCheckIterator):
 
-    def __init__(self, db_user_group_list, perm_set=None):
+    def __init__(self, db_user_group_list, perm_set=None, extra_kwargs=None):
         if not perm_set:
             perm_set = ['usergroup.read', 'usergroup.write', 'usergroup.admin']
 
         super(UserGroupList, self).__init__(obj_list=db_user_group_list,
                     obj_attr='users_group_name', perm_set=perm_set,
-                    perm_checker=HasUserGroupPermissionAny)
+                    perm_checker=HasUserGroupPermissionAny,
+                    extra_kwargs=extra_kwargs)
 
 
 class ScmModel(BaseModel):
@@ -322,19 +325,19 @@ class ScmModel(BaseModel):
 
         return repo_iter
 
-    def get_repos_groups(self, all_groups=None):
+    def get_repo_groups(self, all_groups=None):
         if all_groups is None:
             all_groups = RepoGroup.query()\
                 .filter(RepoGroup.group_parent_id == None).all()
         return [x for x in RepoGroupList(all_groups)]
 
-    def mark_for_invalidation(self, repo_name):
+    def mark_for_invalidation(self, repo_name, delete=False):
         """
         Mark caches of this repo invalid in the database.
 
         :param repo_name: the repo for which caches should be marked invalid
         """
-        CacheInvalidation.set_invalidate(repo_name)
+        CacheInvalidation.set_invalidate(repo_name, delete=delete)
         repo = Repository.get_by_repo_name(repo_name)
         if repo:
             repo.update_changeset_cache()
@@ -432,6 +435,10 @@ class ScmModel(BaseModel):
         fork = self.__get_repo(fork)
         if fork and repo.repo_id == fork.repo_id:
             raise Exception("Cannot set repository as fork of itself")
+
+        if fork and repo.repo_type != fork.repo_type:
+            raise RepositoryError("Cannot set repository as fork of repository with other type")
+
         repo.fork = fork
         self.sa.add(repo)
         return repo
@@ -562,6 +569,43 @@ class ScmModel(BaseModel):
                           revisions=[tip.raw_id])
         return tip
 
+    def _sanitize_path(self, f_path):
+        if f_path.startswith('/') or f_path.startswith('.') or '../' in f_path:
+            raise NonRelativePathError('%s is not an relative path' % f_path)
+        if f_path:
+            f_path = os.path.normpath(f_path)
+        return f_path
+
+    def get_nodes(self, repo_name, revision, root_path='/', flat=True):
+        """
+        recursive walk in root dir and return a set of all path in that dir
+        based on repository walk function
+
+        :param repo_name: name of repository
+        :param revision: revision for which to list nodes
+        :param root_path: root path to list
+        :param flat: return as a list, if False returns a dict with decription
+
+        """
+        _files = list()
+        _dirs = list()
+        try:
+            _repo = self.__get_repo(repo_name)
+            changeset = _repo.scm_instance.get_changeset(revision)
+            root_path = root_path.lstrip('/')
+            for topnode, dirs, files in changeset.walk(root_path):
+                for f in files:
+                    _files.append(f.path if flat else {"name": f.path,
+                                                       "type": "file"})
+                for d in dirs:
+                    _dirs.append(d.path if flat else {"name": d.path,
+                                                      "type": "dir"})
+        except RepositoryError:
+            log.debug(traceback.format_exc())
+            raise
+
+        return _dirs, _files
+
     def create_nodes(self, user, repo, message, nodes, parent_cs=None,
                      author=None, trigger_push_hook=True):
         """
@@ -583,10 +627,7 @@ class ScmModel(BaseModel):
 
         processed_nodes = []
         for f_path in nodes:
-            if f_path.startswith('/') or f_path.startswith('.') or '../' in f_path:
-                raise NonRelativePathError('%s is not an relative path' % f_path)
-            if f_path:
-                f_path = os.path.normpath(f_path)
+            f_path = self._sanitize_path(f_path)
             content = nodes[f_path]['content']
             f_path = safe_str(f_path)
             # decoding here will force that we have proper encoded values
@@ -634,35 +675,121 @@ class ScmModel(BaseModel):
                               revisions=[tip.raw_id])
         return tip
 
-    def get_nodes(self, repo_name, revision, root_path='/', flat=True):
+    def update_nodes(self, user, repo, message, nodes, parent_cs=None,
+                     author=None, trigger_push_hook=True):
+        user = self._get_user(user)
+        scm_instance = repo.scm_instance_no_cache()
+
+        message = safe_unicode(message)
+        commiter = user.full_contact
+        author = safe_unicode(author) if author else commiter
+
+        imc_class = self._get_IMC_module(scm_instance.alias)
+        imc = imc_class(scm_instance)
+
+        if not parent_cs:
+            parent_cs = EmptyChangeset(alias=scm_instance.alias)
+
+        if isinstance(parent_cs, EmptyChangeset):
+            # EmptyChangeset means we we're editing empty repository
+            parents = None
+        else:
+            parents = [parent_cs]
+
+        # add multiple nodes
+        for _filename, data in nodes.items():
+            # new filename, can be renamed from the old one
+            filename = self._sanitize_path(data['filename'])
+            old_filename = self._sanitize_path(_filename)
+            content = data['content']
+
+            filenode = FileNode(old_filename, content=content)
+            op = data['op']
+            if op == 'add':
+                imc.add(filenode)
+            elif op == 'del':
+                imc.remove(filenode)
+            elif op == 'mod':
+                if filename != old_filename:
+                    #TODO: handle renames, needs vcs lib changes
+                    imc.remove(filenode)
+                    imc.add(FileNode(filename, content=content))
+                else:
+                    imc.change(filenode)
+
+        # commit changes
+        tip = imc.commit(message=message,
+                         author=author,
+                         parents=parents,
+                         branch=parent_cs.branch)
+
+        self.mark_for_invalidation(repo.repo_name)
+        if trigger_push_hook:
+            self._handle_push(scm_instance,
+                              username=user.username,
+                              action='push_local',
+                              repo_name=repo.repo_name,
+                              revisions=[tip.raw_id])
+
+    def delete_nodes(self, user, repo, message, nodes, parent_cs=None,
+                     author=None, trigger_push_hook=True):
         """
-        recursive walk in root dir and return a set of all path in that dir
-        based on repository walk function
+        Deletes given multiple nodes into repo
 
-        :param repo_name: name of repository
-        :param revision: revision for which to list nodes
-        :param root_path: root path to list
-        :param flat: return as a list, if False returns a dict with decription
+        :param user: RhodeCode User object or user_id, the commiter
+        :param repo: RhodeCode Repository object
+        :param message: commit message
+        :param nodes: mapping {filename:{'content':content},...}
+        :param parent_cs: parent changeset, can be empty than it's initial commit
+        :param author: author of commit, cna be different that commiter only for git
+        :param trigger_push_hook: trigger push hooks
 
+        :returns: new commited changeset after deletion
         """
-        _files = list()
-        _dirs = list()
-        try:
-            _repo = self.__get_repo(repo_name)
-            changeset = _repo.scm_instance.get_changeset(revision)
-            root_path = root_path.lstrip('/')
-            for topnode, dirs, files in changeset.walk(root_path):
-                for f in files:
-                    _files.append(f.path if flat else {"name": f.path,
-                                                       "type": "file"})
-                for d in dirs:
-                    _dirs.append(d.path if flat else {"name": d.path,
-                                                      "type": "dir"})
-        except RepositoryError:
-            log.debug(traceback.format_exc())
-            raise
 
-        return _dirs, _files
+        user = self._get_user(user)
+        scm_instance = repo.scm_instance_no_cache()
+
+        processed_nodes = []
+        for f_path in nodes:
+            f_path = self._sanitize_path(f_path)
+            # content can be empty but for compatabilty it allows same dicts
+            # structure as add_nodes
+            content = nodes[f_path].get('content')
+            processed_nodes.append((f_path, content))
+
+        message = safe_unicode(message)
+        commiter = user.full_contact
+        author = safe_unicode(author) if author else commiter
+
+        IMC = self._get_IMC_module(scm_instance.alias)
+        imc = IMC(scm_instance)
+
+        if not parent_cs:
+            parent_cs = EmptyChangeset(alias=scm_instance.alias)
+
+        if isinstance(parent_cs, EmptyChangeset):
+            # EmptyChangeset means we we're editing empty repository
+            parents = None
+        else:
+            parents = [parent_cs]
+        # add multiple nodes
+        for path, content in processed_nodes:
+            imc.remove(FileNode(path, content=content))
+
+        tip = imc.commit(message=message,
+                         author=author,
+                         parents=parents,
+                         branch=parent_cs.branch)
+
+        self.mark_for_invalidation(repo.repo_name)
+        if trigger_push_hook:
+            self._handle_push(scm_instance,
+                              username=user.username,
+                              action='push_local',
+                              repo_name=repo.repo_name,
+                              revisions=[tip.raw_id])
+        return tip
 
     def get_unread_journal(self):
         return self.sa.query(UserLog).count()
@@ -678,25 +805,25 @@ class ScmModel(BaseModel):
         hist_l = []
         choices = []
         repo = self.__get_repo(repo)
-        hist_l.append(['tip', _('latest tip')])
-        choices.append('tip')
+        hist_l.append(['rev:tip', _('latest tip')])
+        choices.append('rev:tip')
         if not repo:
             return choices, hist_l
 
         repo = repo.scm_instance
 
-        branches_group = ([(k, k) for k, v in
+        branches_group = ([(u'branch:%s' % k, k) for k, v in
                            repo.branches.iteritems()], _("Branches"))
         hist_l.append(branches_group)
         choices.extend([x[0] for x in branches_group[0]])
 
         if repo.alias == 'hg':
-            bookmarks_group = ([(k, k) for k, v in
+            bookmarks_group = ([(u'book:%s' % k, k) for k, v in
                                 repo.bookmarks.iteritems()], _("Bookmarks"))
             hist_l.append(bookmarks_group)
             choices.extend([x[0] for x in bookmarks_group[0]])
 
-        tags_group = ([(k, k) for k, v in
+        tags_group = ([(u'tag:%s' % k, k) for k, v in
                        repo.tags.iteritems()], _("Tags"))
         hist_l.append(tags_group)
         choices.extend([x[0] for x in tags_group[0]])

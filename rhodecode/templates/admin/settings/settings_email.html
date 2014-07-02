@@ -1,0 +1,43 @@
+<dl class="dl-horizontal">
+<%
+ elems = [
+    (_('Email prefix'), c.rhodecode_ini.get('email_prefix'), ''),
+    (_('RhodeCode email from'), c.rhodecode_ini.get('app_email_from'), ''),
+    (_('Error email from'), c.rhodecode_ini.get('error_email_from'), ''),
+    (_('Error email recipients'), c.rhodecode_ini.get('email_to'), ''),
+
+    (_('SMTP server'), c.rhodecode_ini.get('smtp_server'), ''),
+    (_('SMTP username'), c.rhodecode_ini.get('smtp_username'), ''),
+    (_('SMTP password'), '%s chars' % len(c.rhodecode_ini.get('smtp_password', '')), ''),
+    (_('SMTP port'), c.rhodecode_ini.get('smtp_port'), ''),
+
+    (_('SMTP use TLS'), c.rhodecode_ini.get('smtp_use_tls'), ''),
+    (_('SMTP use SSL'), c.rhodecode_ini.get('smtp_use_ssl'), ''),
+    (_('SMTP auth'), c.rhodecode_ini.get('smtp_auth'), ''),
+ ]
+%>
+%for dt, dd, tt in elems:
+  <dt style="width:150px; text-align: left">${dt}:</dt>
+  <dd style="margin-left: 160px" title="${tt}">${dd}</dd>
+%endfor
+</dl>
+
+${h.form(url('admin_settings_email'), method='post')}
+    <div class="form">
+
+        <div class="fields">
+            <div class="field">
+                <div class="label">
+                    <label for="test_email">${_('Send test email to')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('test_email',size=30)}
+                </div>
+            </div>
+
+            <div class="buttons">
+            ${h.submit('send',_('Send'),class_="btn")}
+            </div>
+        </div>
+    </div>
+${h.end_form()}

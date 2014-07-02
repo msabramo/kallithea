@@ -1,4 +1,19 @@
-"""Pylons application test package
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+Pylons application test package
 
 This package assumes the Pylons environment is already loaded, such as
 when this script is imported from the `nosetests --with-pylons=test.ini`
@@ -169,6 +184,7 @@ class TestController(BaseTestCase):
     def __init__(self, *args, **kwargs):
         BaseTestCase.__init__(self, *args, **kwargs)
         self.app = TestApp(self.wsgiapp)
+        self.maxDiff = None
         self.index_location = config['app_conf']['index_dir']
 
     def log_user(self, username=TEST_USER_ADMIN_LOGIN,
@@ -194,8 +210,7 @@ class TestController(BaseTestCase):
 
     def checkSessionFlash(self, response, msg):
         self.assertTrue('flash' in response.session,
-                        msg='Response session:%r have no flash'
-                        % response.session)
+                        msg='Response session have no flash key' % response.session)
         if not msg in response.session['flash'][0][1]:
             msg = u'msg `%s` not found in session flash: got `%s` instead' % (
                       msg, response.session['flash'][0][1])

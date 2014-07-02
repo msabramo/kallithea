@@ -1,0 +1,137 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Authentication Settings')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))}
+    &raquo;
+    ${_('Authentication')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    ${h.form(url('auth_settings'))}
+    <div class="form">
+
+    ## enabled auth plugins
+    <h1>${_('Authentication Plugins')}</h1>
+    <div class="fields">
+       <div class="field">
+           <div class="label"><label for="auth_plugins">${_("Enabled Plugins")}</label></div>
+           <div class="input">${h.text("auth_plugins", class_='large')}
+           <span class="help-block">${_('Comma separated list of plugins. Order of plugins is also order in which RhodeCode will try to authenticate user')}</span>
+               <div style="padding:10px 0px 10px 0px;font-weight: bold">${_('Available built-in plugins')}</div>
+               <ul>
+               %for plugin_path in c.available_plugins:
+                    <li>
+                      <div style="padding:3px 0px 3px 0px">
+                          <span style="margin: 0px 10px 0px 0px" plugin_id="${plugin_path}" class="toggle-plugin btn btn-mini ${'btn-success' if plugin_path in c.enabled_plugins else ''}">
+                          ${_('enabled') if plugin_path in c.enabled_plugins else _('disabled')}</span>${plugin_path}
+                      </div>
+                    </li>
+               %endfor
+               </ul>
+           </div>
+       </div>
+       <div class="buttons">
+          ${h.submit('save',_('Save'),class_="btn")}
+       </div>
+    </div>
+
+    %for cnt, module in enumerate(c.auth_plugins):
+        <% pluginName = c.auth_plugins_shortnames[module] %>
+        <h1>${_('Plugin')}: ${pluginName}</h1>
+        <div class="fields">
+        ## autoform generation, based on plugin definition from it's settings
+        %for setting in c.plugin_settings[module]:
+            <% fullsetting = "auth_%s_%s" % (pluginName, setting["name"]) %>
+            <% displayname = (setting["formname"] if ("formname" in setting) else setting["name"]) %>
+            %if setting["type"] == "password":
+            <div class="field">
+                <div class="label"><label for="${fullsetting}">${_(displayname)}</label></div>
+                <div class="input">
+                    ${h.password(fullsetting,class_='small')}
+                    <span class="help-block">${setting["description"]}</span>
+                </div>
+            </div>
+            %elif setting["type"] in ["string", "int"]:
+            <div class="field">
+                <div class="label"><label for="${fullsetting}">${_(displayname)}</label></div>
+                <div class="input">
+                    ${h.text(fullsetting,class_='small')}
+                    <span class="help-block">${setting["description"]}</span>
+                </div>
+            </div>
+            %elif setting["type"] == "bool":
+            <div class="field">
+                <div class="label label-checkbox"><label for="${fullsetting}">${_(displayname)}</label></div>
+                <div class="checkboxes">
+                    <div class="checkbox">${h.checkbox(fullsetting,True,class_='small')}</div>
+                    <span class="help-block">${setting["description"]}</span>
+                </div>
+            </div>
+            %elif setting["type"] == "select":
+            <div class="field">
+                <div class="label"><label for="${fullsetting}">${_(displayname)}</label></div>
+                <div class="select">
+                    ${h.select(fullsetting,setting['values'][0],setting['values'],class_='small')}
+                    <span class="help-block">${setting["description"]}</span>
+                </div>
+            </div>
+            %else:
+            <div class="field">
+                <div class="label"><label for="${fullsetting}">${_(displayname)}</label></div>
+                <div class="input">This field is of type ${setting['type']}, which cannot be displayed. Must be one of [string|int|bool|select].</div>
+                <span class="help-block">${setting["description"]}</span>
+            </div>
+            %endif
+        %endfor
+        </div>
+    %endfor
+    </div>
+    ${h.end_form()}
+</div>
+
+<script>
+    YUE.on(YUQ('.toggle-plugin'),'click', function(e){
+        var auth_plugins_input = YUD.get('auth_plugins');
+
+        var notEmpty = function(element, index, array) {
+            return (element != "");
+        }
+        var elems = auth_plugins_input.value.split(',').filter(notEmpty);
+        var cur_button = e.currentTarget;
+        var plugin_id = YUD.getAttribute(cur_button, 'plugin_id');
+
+        if(YUD.hasClass(cur_button, 'btn-success')){
+            elems.splice(elems.indexOf(plugin_id), 1);
+            auth_plugins_input.value = elems.join(',');
+            YUD.removeClass(cur_button, 'btn-success');
+            cur_button.innerHTML = _TM['disabled'];
+        }
+        else{
+            console.log(elems)
+            if(elems.indexOf(plugin_id) == -1){
+               elems.push(plugin_id);
+            }
+            auth_plugins_input.value = elems.join(',');
+            YUD.addClass(cur_button, 'btn-success');
+            cur_button.innerHTML = _TM['enabled'];
+        }
+    })
+</script>
+</%def>

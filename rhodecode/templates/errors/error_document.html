@@ -13,7 +13,8 @@
         %endif
 
         <!-- stylesheets -->
-        <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css')}" media="screen" />
+        <link rel="stylesheet" type="text/css" href="${h.url('/css/newstyle.css')}" media="screen"/>
+        <link rel="stylesheet" type="text/css" href="${h.url('/css/bootstrap.css')}" media="screen"/>
         <style type="text/css">
          #main_div{
            border: 0px solid #000;
@@ -33,16 +34,7 @@
 
     </head>
     <body>
-        <div class="flash_msg">
-            <% messages = h.flash.pop_messages() %>
-            % if messages:
-            <ul id="flash-messages">
-                % for message in messages:
-                <li class="${message.category}_msg">${message}</li>
-                % endfor
-            </ul>
-            % endif
-        </div>
+        <%include file="/base/flash_msg.html"/>
         <div id="login">
             <div class="table">
                 <div id="main_div">

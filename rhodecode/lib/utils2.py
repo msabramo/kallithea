@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.utils
-    ~~~~~~~~~~~~~~~~~~~
-
-    Some simple helper functions
-
-    :created_on: Jan 5, 2011
-    :author: marcink
-    :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.utils
+~~~~~~~~~~~~~~~~~~~
+
+Some simple helper functions
+
+:created_on: Jan 5, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import os
 import re
@@ -31,6 +32,8 @@ import uuid
 import datetime
 import traceback
 import webob
+import urllib
+import urlobject
 
 from pylons.i18n.translation import _, ungettext
 from rhodecode.lib.vcs.utils.lazy import LazyProperty
@@ -488,6 +491,30 @@ def credentials_filter(uri):
     return ''.join(uri)
 
 
+def get_clone_url(uri_tmpl, qualifed_home_url, repo_name, repo_id, **override):
+    parsed_url = urlobject.URLObject(qualifed_home_url)
+    decoded_path = safe_unicode(urllib.unquote(parsed_url.path.rstrip('/')))
+    args = {
+        'scheme': parsed_url.scheme,
+        'user': '',
+        'netloc': parsed_url.netloc+decoded_path,  # path if we use proxy-prefix
+        'prefix': decoded_path,
+        'repo': repo_name,
+        'repoid': str(repo_id)
+    }
+    args.update(override)
+    args['user'] = urllib.quote(safe_str(args['user']))
+
+    for k, v in args.items():
+        uri_tmpl = uri_tmpl.replace('{%s}' % k, v)
+
+    # remove leading @ sign if it's present. Case of empty user
+    url_obj = urlobject.URLObject(uri_tmpl)
+    url = url_obj.with_netloc(url_obj.netloc.lstrip('@'))
+
+    return safe_unicode(url)
+
+
 def get_changeset_safe(repo, rev):
     """
     Safe version of get_changeset if this changeset doesn't exists for a
@@ -505,7 +532,7 @@ def get_changeset_safe(repo, rev):
 
     try:
         cs = repo.get_changeset(rev)
-    except RepositoryError:
+    except (RepositoryError, LookupError):
         cs = EmptyChangeset(requested_revision=rev)
     return cs
 
@@ -643,6 +670,7 @@ def suuid(url=None, truncate_to=22, alphabet=None):
         unique_id = int(unique_id / alphabet_length)
     return "".join(output)[:truncate_to]
 
+
 def get_current_rhodecode_user():
     """
     Gets rhodecode user from threadlocal tmpl_context variable if it's
@@ -653,3 +681,71 @@ def get_current_rhodecode_user():
         return tmpl_context.rhodecode_user
 
     return None
+
+
+class OptionalAttr(object):
+    """
+    Special Optional Option that defines other attribute. Example::
+
+        def test(apiuser, userid=Optional(OAttr('apiuser')):
+            user = Optional.extract(userid)
+            # calls
+
+    """
+
+    def __init__(self, attr_name):
+        self.attr_name = attr_name
+
+    def __repr__(self):
+        return '<OptionalAttr:%s>' % self.attr_name
+
+    def __call__(self):
+        return self
+
+#alias
+OAttr = OptionalAttr
+
+
+class Optional(object):
+    """
+    Defines an optional parameter::
+
+        param = param.getval() if isinstance(param, Optional) else param
+        param = param() if isinstance(param, Optional) else param
+
+    is equivalent of::
+
+        param = Optional.extract(param)
+
+    """
+
+    def __init__(self, type_):
+        self.type_ = type_
+
+    def __repr__(self):
+        return '<Optional:%s>' % self.type_.__repr__()
+
+    def __call__(self):
+        return self.getval()
+
+    def getval(self):
+        """
+        returns value from this Optional instance
+        """
+        if isinstance(self.type_, OAttr):
+            # use params name
+            return self.type_.attr_name
+        return self.type_
+
+    @classmethod
+    def extract(cls, val):
+        """
+        Extracts value from Optional() instance
+
+        :param val:
+        :return: original value if it's not Optional instance else
+            value of instance
+        """
+        if isinstance(val, cls):
+            return val.getval()
+        return val

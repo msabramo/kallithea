@@ -5,7 +5,10 @@
     %if hasattr(c,'file'):
         &middot; ${h.safe_unicode(c.file.path) or '\\'}
     %endif
-    &middot; ${c.rhodecode_name}
+
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -48,6 +51,11 @@ var node_list_url = '${h.url("files_nodelist_home",repo_name=c.repo_name,revisio
 // send the node history requst to this url
 var node_history_url = '${h.url("files_history_home",repo_name=c.repo_name,revision='__REV__',f_path='__FPATH__')}';
 
+## new pyroutes URLs
+pyroutes.register('files_nodelist_home', "${h.url('files_nodelist_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
+pyroutes.register('files_history_home', "${h.url('files_history_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
+pyroutes.register('files_authors_home', "${h.url('files_authors_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
+
 var ypjax_links = function(){
     YUE.on(YUQ('.ypjax-link'), 'click',function(e){
 
@@ -89,29 +97,104 @@ var ypjax_links = function(){
     });
 }
 
+// callbacks needed to process the pjax filebrowser
 var callbacks = function(State){
     ypjax_links();
     tooltip_activate();
-    fileBrowserListeners(State.url, State.data.node_list_url, State.data.url_base);
 
-    if(YUD.get('hlcode')){
-        YUE.on('hlcode', 'mouseup', getSelectionLink);
+    if(State !== undefined){
+        //inistially loaded stuff
+        var _f_path = State.data.f_path;
+        var _rev = State.data.rev;
+
+        fileBrowserListeners(State.url, State.data.node_list_url, State.data.url_base);
+        // Inform Google Analytics of the change
+        if ( typeof window.pageTracker !== 'undefined' ) {
+            window.pageTracker._trackPageview(State.url);
+        }
     }
-    //console.log(State);
-    if(YUD.get('load_node_history')){
-      //remove all listeners due to problems of history state
-      YUE.removeListener('load_node_history', 'click');
-      YUE.on('load_node_history', 'click', function(e){
-          var _url = node_history_url.replace('__REV__',State.data.rev).replace('__FPATH__', State.data.f_path);
-          ypjax(_url, 'node_history', function(o){
-              tooltip_activate();
-          })
-      });
+
+    function highlight_lines(lines){
+        for(pos in lines){
+          YUD.setStyle('L'+lines[pos],'background-color','#FFFFBE');
+        }
     }
-    // Inform Google Analytics of the change
-    if ( typeof window.pageTracker !== 'undefined' ) {
-        window.pageTracker._trackPageview(State.url);
+    page_highlights = location.href.substring(location.href.indexOf('#')+1).split('L');
+    if (page_highlights.length == 2){
+       highlight_ranges  = page_highlights[1].split(",");
+
+       var h_lines = [];
+       for (pos in highlight_ranges){
+            var _range = highlight_ranges[pos].split('-');
+            if(_range.length == 2){
+                var start = parseInt(_range[0]);
+                var end = parseInt(_range[1]);
+                if (start < end){
+                    for(var i=start;i<=end;i++){
+                        h_lines.push(i);
+                    }
+                }
+            }
+            else{
+                h_lines.push(parseInt(highlight_ranges[pos]));
+            }
+      }
+      highlight_lines(h_lines);
+      var _first_line= YUD.get('L'+h_lines[0]);
+      if(_first_line){
+          _first_line.scrollIntoView()
+      }
     }
+
+    // select code link event
+    YUE.on('hlcode', 'mouseup', getSelectionLink);
+
+    // history select field
+    var cache = {}
+    $("#diff1").select2({
+        placeholder: _TM['Select changeset'],
+        dropdownAutoWidth: true,
+        query: function(query){
+          var key = 'cache';
+          var cached = cache[key] ;
+          if(cached) {
+            var data = {results: []};
+            //filter results
+            $.each(cached.results, function(){
+                var section = this.text;
+                var children = [];
+                $.each(this.children, function(){
+                    if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                        children.push({'id': this.id, 'text': this.text})
+                    }
+                })
+                data.results.push({'text': section, 'children': children})
+            });
+            query.callback(data);
+          }else{
+              $.ajax({
+                url: pyroutes.url('files_history_home', {'revision': _rev, 'f_path': _f_path}),
+                data: {},
+                dataType: 'json',
+                type: 'GET',
+                success: function(data) {
+                  cache[key] = data;
+                  query.callback({results: data.results});
+                }
+              })
+          }
+        },
+    });
+    $('#show_authors').on('click', function(){
+        $.ajax({
+            url: pyroutes.url('files_authors_home', {'revision': _rev, 'f_path': _f_path}),
+            success: function(data) {
+                $('#file_authors').html(data);
+                $('#file_authors').show();
+                tooltip_activate()
+            }
+        })
+    })
 }
 
 YUE.onDOMReady(function(){

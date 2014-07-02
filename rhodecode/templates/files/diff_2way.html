@@ -3,7 +3,6 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="js_extra()">
-<script type="text/javascript" src="${h.url('/js/jquery.1.10.1.min.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/mergerly.js')}"></script>
 </%def>
@@ -13,7 +12,10 @@
 </%def>
 
 <%def name="title()">
-    ${_('%s File side-by-side diff') % c.repo_name} &middot; ${c.rhodecode_name}
+    ${_('%s File side-by-side diff') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -41,10 +43,18 @@ ${self.repo_context_bar('changelog')}
                         revision=c.cs2.raw_id,f_path=h.safe_unicode(c.node1.path)))}
                     </div>
                     <div class="diff-actions">
-                      <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full diff for this file'))}"><img class="icon" src="${h.url('/images/icons/page_white_go.png')}"/></a>
-                      <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}"><img class="icon" src="${h.url('/images/icons/application_double.png')}"/></a>
-                      <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='raw')}" class="tooltip" title="${h.tooltip(_('Raw diff'))}"><img class="icon" src="${h.url('/images/icons/page_white.png')}"/></a>
-                      <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='download')}" class="tooltip" title="${h.tooltip(_('Download diff'))}"><img class="icon" src="${h.url('/images/icons/page_save.png')}"/></a>
+                      <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full diff for this file'))}">
+                          <img class="icon" src="${h.url('/images/icons/page_white_go.png')}"/>
+                      </a>
+                      <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
+                          <img class="icon" src="${h.url('/images/icons/application_double.png')}"/>
+                      </a>
+                      <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='raw')}" class="tooltip" title="${h.tooltip(_('Raw diff'))}">
+                          <img class="icon" src="${h.url('/images/icons/page_white.png')}"/>
+                      </a>
+                      <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='download')}" class="tooltip" title="${h.tooltip(_('Download diff'))}">
+                          <img class="icon" src="${h.url('/images/icons/page_save.png')}"/>
+                      </a>
                       ${h.checkbox('ignorews', label=_('ignore white space'))}
                       ${h.checkbox('edit_mode', label=_('turn on edit mode'))}
                     </div>
@@ -55,8 +65,8 @@ ${self.repo_context_bar('changelog')}
     </div>
 
 <script>
-var orig1 = '${(c.orig1)|n}';
-var orig2 = '${(c.orig2)|n}';
+var orig1_url = '${h.url('files_raw_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),revision=c.cs1.raw_id)}';
+var orig2_url = '${h.url('files_raw_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node2.path),revision=c.cs2.raw_id)}';
 
 $(document).ready(function () {
     $('#compare').mergely({
@@ -67,10 +77,21 @@ $(document).ready(function () {
         viewport: true,
         cmsettings: {mode: 'text/plain', readOnly: true, lineWrapping: false, lineNumbers: true},
         lhs: function(setValue) {
-            setValue(orig1);
+            if("${c.node1.is_binary}" == "True"){
+                setValue('Binary file')
+            }
+            else{
+                $.ajax(orig1_url, {dataType: 'text', success: setValue});
+            }
+
         },
         rhs: function(setValue) {
-            setValue(orig2);
+            if("${c.node2.is_binary}" == "True"){
+                setValue('Binary file')
+            }
+            else{
+                $.ajax(orig2_url, {dataType: 'text', success: setValue});
+            }
         },
     });
     $('#ignorews').change(function(e){

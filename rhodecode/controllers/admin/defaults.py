@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.admin.defaults
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    default settings controller for Rhodecode
-
-    :created_on: Apr 27, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.admin.defaults
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+default settings controller for Rhodecode
+
+:created_on: Apr 27, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import logging
 import traceback
@@ -89,8 +89,7 @@ class DefaultsController(BaseController):
         try:
             form_result = _form.to_python(dict(request.POST))
             for k, v in form_result.iteritems():
-                setting = RhodeCodeSetting.get_by_name_or_create(k)
-                setting.app_settings_value = v
+                setting = RhodeCodeSetting.create_or_update(k, v)
                 Session().add(setting)
             Session().commit()
             h.flash(_('Default settings updated successfully'),

@@ -39,12 +39,12 @@ class TestGistsController(TestController):
         g4 = _create_gist('gist4', gist_type='private').gist_access_id
         response = self.app.get(url('gists'))
         # Test response...
-        response.mustcontain('gist:%s' % g1)
-        response.mustcontain('gist:%s' % g2)
+        response.mustcontain('gist: %s' % g1)
+        response.mustcontain('gist: %s' % g2)
         response.mustcontain('Expires: in 23 hours')  # we don't care about the end
-        response.mustcontain('gist:%s' % g3)
+        response.mustcontain('gist: %s' % g3)
         response.mustcontain('gist3-desc')
-        response.mustcontain(no=['gist:%s' % g4])
+        response.mustcontain(no=['gist: %s' % g4])
 
     def test_index_private_gists(self):
         self.log_user()
@@ -53,7 +53,7 @@ class TestGistsController(TestController):
         # Test response...
 
         #and privates
-        response.mustcontain('gist:%s' % gist.gist_access_id)
+        response.mustcontain('gist: %s' % gist.gist_access_id)
 
     def test_create_missing_description(self):
         self.log_user()
@@ -73,7 +73,7 @@ class TestGistsController(TestController):
         response = response.follow()
         response.mustcontain('added file: foo')
         response.mustcontain('gist test')
-        response.mustcontain('<div class="ui-btn green badge">Public gist</div>')
+        response.mustcontain('<div class="btn btn-mini btn-success disabled">Public Gist</div>')
 
     def test_create_with_path_with_dirs(self):
         self.log_user()
@@ -105,7 +105,7 @@ class TestGistsController(TestController):
         response = response.follow()
         response.mustcontain('added file: private-foo<')
         response.mustcontain('private gist test')
-        response.mustcontain('<div class="ui-btn yellow badge">Private gist</div>')
+        response.mustcontain('<div class="btn btn-mini btn-warning disabled">Private Gist</div>')
 
     def test_create_with_description(self):
         self.log_user()
@@ -120,7 +120,7 @@ class TestGistsController(TestController):
         response.mustcontain('added file: foo-desc')
         response.mustcontain('gist test')
         response.mustcontain('gist-desc')
-        response.mustcontain('<div class="ui-btn green badge">Public gist</div>')
+        response.mustcontain('<div class="btn btn-mini btn-success disabled">Public Gist</div>')
 
     def test_new(self):
         self.log_user()
@@ -153,7 +153,7 @@ class TestGistsController(TestController):
         response.mustcontain('added file: gist-show-me<')
         response.mustcontain('test_admin (RhodeCode Admin) - created')
         response.mustcontain('gist-desc')
-        response.mustcontain('<div class="ui-btn green badge">Public gist</div>')
+        response.mustcontain('<div class="btn btn-mini btn-success disabled">Public Gist</div>')
 
     def test_show_as_raw(self):
         gist = _create_gist('gist-show-me', content='GIST CONTENT')
@@ -169,5 +169,4 @@ class TestGistsController(TestController):
         self.assertEqual(response.body, 'GIST BODY')
 
     def test_edit(self):
-        self.skipTest('not implemented')
         response = self.app.get(url('edit_gist', gist_id=1))

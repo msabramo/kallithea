@@ -1,0 +1,107 @@
+<div style="font-size: 20px; color: #666666; padding: 0px 0px 10px 0px">${_('Repositories you are watching')}</div>
+<input class="q_filter_box" id="q_filter" size="15" type="text" name="filter"
+       placeholder="${_('quick filter...')}" value=""/>
+
+<div class="table-grid table yui-skin-sam" id="repos_list_wrap"></div>
+<div id="user-paginator" style="padding: 0px 0px 0px 20px"></div>
+
+<script>
+function table_renderer(data){
+    var myDataSource = new YAHOO.util.DataSource(data);
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+
+    myDataSource.responseSchema = {
+        resultsList: "records",
+        fields: [
+            {key:"menu"},
+            {key:"raw_name"},
+            {key:"name"},
+            {key:"last_changeset"},
+            {key:"last_rev_raw"},
+            {key:"action"},
+            ]
+        };
+    myDataSource.doBeforeCallback = function(req,raw,res,cb) {
+        // This is the filter function
+        var data     = res.results || [],
+            filtered = [],
+            i,l;
+
+        if (req) {
+            req = req.toLowerCase();
+            for (i = 0; i<data.length; i++) {
+                var pos = data[i].raw_name.toLowerCase().indexOf(req)
+                if (pos != -1) {
+                    filtered.push(data[i]);
+                }
+            }
+            res.results = filtered;
+        }
+        return res;
+    }
+
+      // main table sorting
+      var myColumnDefs = [
+          {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+          {key:"name",label:"${_('Name')}",sortable:true,
+              sortOptions: { sortFunction: nameSort }},
+          {key:"last_changeset",label:"${_('Tip')}",sortable:true,
+              sortOptions: { sortFunction: revisionSort }},
+          {key:"action",label:"${_('Action')}",sortable:false},
+      ];
+
+      var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,{
+        sortedBy:{key:"name",dir:"asc"},
+        paginator: YUI_paginator(50, ['user-paginator']),
+
+        MSG_SORTASC:"${_('Click to sort ascending')}",
+        MSG_SORTDESC:"${_('Click to sort descending')}",
+        MSG_EMPTY:"${_('No records found.')}",
+        MSG_ERROR:"${_('Data error.')}",
+        MSG_LOADING:"${_('Loading...')}",
+      }
+      );
+      myDataTable.subscribe('postRenderEvent',function(oArgs) {
+          tooltip_activate();
+          quick_repo_menu();
+      });
+
+      var filterTimeout = null;
+
+      updateFilter = function() {
+          // Reset timeout
+          filterTimeout = null;
+
+          // Reset sort
+          var state = myDataTable.getState();
+          state.sortedBy = {key:'name', dir:YAHOO.widget.DataTable.CLASS_ASC};
+
+          // Get filtered data
+          myDataSource.sendRequest(YUD.get('q_filter').value,{
+              success : myDataTable.onDataReturnInitializeTable,
+              failure : myDataTable.onDataReturnInitializeTable,
+              scope   : myDataTable,
+              argument: state
+          });
+
+      };
+      YUE.on('q_filter','click',function(){
+          if(!YUD.hasClass('q_filter', 'loaded')){
+              //TODO: load here full list later to do search within groups
+              YUD.addClass('q_filter', 'loaded');
+          }
+       });
+
+      YUE.on('q_filter','keyup',function (e) {
+          clearTimeout(filterTimeout);
+          filterTimeout = setTimeout(updateFilter,600);
+      });
+
+      if(YUD.get('q_filter').value) {
+        updateFilter();
+      }
+
+    }
+
+table_renderer(${c.data |n});
+</script>

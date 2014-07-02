@@ -24,7 +24,7 @@ class TestDefaultsController(TestController):
     def test_new_as_xml(self):
         response = self.app.get(url('formatted_new_default', format='xml'))
 
-    def test_update(self):
+    def test_update_params_true_hg(self):
         self.log_user()
         params = {
             'default_repo_enable_locking': True,
@@ -35,9 +35,12 @@ class TestDefaultsController(TestController):
         }
         response = self.app.put(url('default', id='default'), params=params)
         self.checkSessionFlash(response, 'Default settings updated successfully')
+
         defs = RhodeCodeSetting.get_default_repo_settings()
         self.assertEqual(params, defs)
 
+    def test_update_params_false_git(self):
+        self.log_user()
         params = {
             'default_repo_enable_locking': False,
             'default_repo_enable_downloads': False,

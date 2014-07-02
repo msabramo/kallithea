@@ -2,7 +2,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('New gist')} &middot; ${c.rhodecode_name}
+    ${_('New Gist')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="js_extra()">
@@ -16,7 +19,7 @@
 </%def>
 
 <%def name="breadcrumbs_links()">
-    ${_('New gist')}
+    ${_('New Gist')}
 </%def>
 
 <%def name="page_nav()">
@@ -45,9 +48,7 @@
             </div>
             <div id="body" class="codeblock">
                 <div style="padding: 10px 10px 10px 26px;color:#666666">
-                    ##<input type="text" value="" size="30" name="filename" id="filename" placeholder="gistfile1.txt">
-                    ${h.text('filename', size=30, placeholder='gistfile1.txt')}
-                    ##<input type="text" value="" size="30" name="filename" id="filename" placeholder="gistfile1.txt">
+                    ${h.text('filename', size=30, placeholder=_('name this file...'))}
                     ${h.select('mimetype','plain',[('plain',_('plain'))])}
                 </div>
                 <div id="editor_container">
@@ -56,9 +57,9 @@
                 </div>
             </div>
             <div style="padding-top: 5px">
-            ${h.submit('private',_('Create private gist'),class_="ui-btn yellow")}
-            ${h.submit('public',_('Create public gist'),class_="ui-btn")}
-            ${h.reset('reset',_('Reset'),class_="ui-btn")}
+            ${h.submit('private',_('Create Private Gist'),class_="btn btn-mini btn-success")}
+            ${h.submit('public',_('Create Public Gist'),class_="btn btn-mini")}
+            ${h.reset('reset',_('Reset'),class_="btn btn-mini")}
             </div>
             ${h.end_form()}
             <script type="text/javascript">
@@ -66,30 +67,40 @@
             CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
 
             //inject new modes
-            var modes_select = YUD.get('mimetype');
+            var modes_select = $('#mimetype');
             for(var i=0;i<CodeMirror.modeInfo.length;i++){
                 var m = CodeMirror.modeInfo[i];
                 var opt = new Option(m.name, m.mime);
                 YUD.setAttribute(opt, 'mode', m.mode)
-                modes_select.options[i+1] = opt;
+                modes_select[0].options[i+1] = opt;
             }
-            YUE.on(modes_select, 'change', function(e){
+
+            var filename_selector = '#filename';
+            // on select change set new mode
+            modes_select.on('change', function(e){
                 var selected = e.currentTarget;
                 var node = selected.options[selected.selectedIndex];
                 var mimetype = node.value;
                 var new_mode = YUD.getAttribute(node, 'mode')
                 setCodeMirrorMode(myCodeMirror, new_mode);
 
-                var proposed_mimetypes = MIME_TO_EXT[mimetype] || [];
-                if(proposed_mimetypes.length < 1){
-                    //fallback to text/plain
-                    proposed_mimetypes = ['.txt']
+                var proposed_ext = getExtFromMimeType(mimetype);
+                var file_data = getFilenameAndExt($(filename_selector).val());
+                var filename = file_data['filename'] || 'filename1';
+                $(filename_selector).val(filename + proposed_ext);
+            })
+
+            // on type the new filename set mode
+            $(filename_selector).on('keyup', function(e){
+                var file_data = getFilenameAndExt(this.value);
+                if(file_data['ext'] != null){
+                    var mimetype = getMimeTypeFromExt(file_data['ext']);
+                    var detected_mode = detectCodeMirrorMode(this.value, mimetype);
+                    if (detected_mode){
+                        setCodeMirrorMode(myCodeMirror, detected_mode);
+                        modes_select.val(mimetype)
+                    }
                 }
-                var mt = proposed_mimetypes[0];
-                if(mt[0] == '*'){
-                    mt = mt.substr(1)
-                }
-                YUD.get('filename').value = 'filename1' + mt;
             })
             </script>
         </div>

@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.users_group
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    repository permission model for RhodeCode
-
-    :created_on: Oct 1, 2011
-    :author: nvinot, marcink
-    :copyright: (C) 2011-2011 Nicolas Vinot <aeris@imirhil.fr>
-    :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +11,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.users_group
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+repository permission model for RhodeCode
+
+:created_on: Oct 1, 2011
+:author: nvinot, marcink
+"""
 
 import logging
 from rhodecode.model import BaseModel

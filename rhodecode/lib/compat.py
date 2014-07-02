@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.compat
-    ~~~~~~~~~~~~~~~~~~~~
-
-    Python backward compatibility functions and common libs
-
-
-    :created_on: Oct 7, 2011
-    :author: marcink
-    :copyright: (C) 2010-2010 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,14 +11,32 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.compat
+~~~~~~~~~~~~~~~~~~~~
+
+Python backward compatibility functions and common libs
+
+
+:created_on: Oct 7, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import os
+import functools
+import importlib
 from rhodecode import __py_version__, is_windows
 
 #==============================================================================
 # json
 #==============================================================================
 from rhodecode.lib.ext_json import json
+
+# alias for formatted json
+formatted_json = functools.partial(json.dumps, indent=4, sort_keys=True)
 
 if __py_version__ >= (2, 7):
     import unittest
@@ -364,6 +370,12 @@ class OrderedDict(_odict, dict):
 # OrderedSet
 #==============================================================================
 from sqlalchemy.util import OrderedSet
+
+
+#==============================================================================
+# Hybrid property/method
+#==============================================================================
+from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 
 
 #==============================================================================

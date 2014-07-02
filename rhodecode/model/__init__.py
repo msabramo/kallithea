@@ -1,33 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.__init__
-    ~~~~~~~~~~~~~~~~~~~~~~~~
-
-    The application's model objects
-
-    :created_on: Nov 25, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-
-
-    :example:
-
-        .. code-block:: python
-
-           from paste.deploy import appconfig
-           from pylons import config
-           from sqlalchemy import engine_from_config
-           from rhodecode.config.environment import load_environment
-
-           conf = appconfig('config:development.ini', relative_to = './../../')
-           load_environment(conf.global_conf, conf.local_conf)
-
-           engine = engine_from_config(config, 'sqlalchemy.')
-           init_model(engine)
-           # RUN YOUR CODE HERE
-
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -40,6 +11,36 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.__init__
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The application's model objects
+
+:created_on: Nov 25, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+
+
+:example:
+
+    .. code-block:: python
+
+       from paste.deploy import appconfig
+       from pylons import config
+       from sqlalchemy import engine_from_config
+       from rhodecode.config.environment import load_environment
+
+       conf = appconfig('config:development.ini', relative_to = './../../')
+       load_environment(conf.global_conf, conf.local_conf)
+
+       engine = engine_from_config(config, 'sqlalchemy.')
+       init_model(engine)
+       # RUN YOUR CODE HERE
+
+"""
+
 
 import logging
 from rhodecode.model import meta
@@ -130,8 +131,9 @@ class BaseModel(object):
         return self._get_instance(Permission, permission,
                                   callback=Permission.get_by_key)
 
-    def get_all(self):
+    @classmethod
+    def get_all(cls):
         """
         Returns all instances of what is defined in `cls` class variable
         """
-        return self.cls.getAll()
+        return cls.cls.getAll()

@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.admin.admin
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Controller for Admin panel of Rhodecode
-
-    :created_on: Apr 7, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.admin.admin
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Controller for Admin panel of Rhodecode
+
+:created_on: Apr 7, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import logging
 

@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.repo
-    ~~~~~~~~~~~~~~~~~~~~
-
-    Repository model for rhodecode
-
-    :created_on: Jun 5, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,24 +11,40 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.repo
+~~~~~~~~~~~~~~~~~~~~
+
+Repository model for rhodecode
+
+:created_on: Jun 5, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+
+"""
+
 from __future__ import with_statement
 import os
 import shutil
 import logging
 import traceback
 from datetime import datetime
+from rhodecode.lib.utils import make_ui
 
 from rhodecode.lib.vcs.backends import get_backend
 from rhodecode.lib.compat import json
-from rhodecode.lib.utils2 import LazyProperty, safe_str, safe_unicode,\
+from rhodecode.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
     remove_prefix, obfuscate_url_pw, get_current_rhodecode_user
 from rhodecode.lib.caching_query import FromCache
 from rhodecode.lib.hooks import log_create_repository, log_delete_repository
 
 from rhodecode.model import BaseModel
-from rhodecode.model.db import Repository, UserRepoToPerm, User, Permission, \
-    Statistics, UserGroup, UserGroupRepoToPerm, RhodeCodeUi, RepoGroup,\
+from rhodecode.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \
+    UserRepoGroupToPerm, UserGroupRepoGroupToPerm, User, Permission, \
+    Statistics, UserGroup, RhodeCodeUi, RepoGroup, \
     RhodeCodeSetting, RepositoryField
+
 from rhodecode.lib import helpers as h
 from rhodecode.lib.auth import HasRepoPermissionAny, HasUserGroupPermissionAny
 from rhodecode.lib.exceptions import AttachedForksError
@@ -57,8 +62,8 @@ class RepoModel(BaseModel):
         return self._get_instance(UserGroup, users_group,
                                   callback=UserGroup.get_by_group_name)
 
-    def _get_repo_group(self, repos_group):
-        return self._get_instance(RepoGroup, repos_group,
+    def _get_repo_group(self, repo_group):
+        return self._get_instance(RepoGroup, repo_group,
                                   callback=RepoGroup.get_by_group_name)
 
     def _create_default_perms(self, repository, private):
@@ -90,7 +95,7 @@ class RepoModel(BaseModel):
         return q.ui_value
 
     def get(self, repo_id, cache=False):
-        repo = self.sa.query(Repository)\
+        repo = self.sa.query(Repository) \
             .filter(Repository.repo_id == repo_id)
 
         if cache:
@@ -102,7 +107,7 @@ class RepoModel(BaseModel):
         return self._get_repo(repository)
 
     def get_by_repo_name(self, repo_name, cache=False):
-        repo = self.sa.query(Repository)\
+        repo = self.sa.query(Repository) \
             .filter(Repository.repo_name == repo_name)
 
         if cache:
@@ -129,26 +134,26 @@ class RepoModel(BaseModel):
         users = self.sa.query(User).filter(User.active == True).all()
         return json.dumps([
             {
-             'id': u.user_id,
-             'fname': u.name,
-             'lname': u.lastname,
-             'nname': u.username,
-             'gravatar_lnk': h.gravatar_url(u.email, 14)
+                'id': u.user_id,
+                'fname': u.name,
+                'lname': u.lastname,
+                'nname': u.username,
+                'gravatar_lnk': h.gravatar_url(u.email, 14)
             } for u in users]
         )
 
-    def get_users_groups_js(self):
-        users_groups = self.sa.query(UserGroup)\
+    def get_user_groups_js(self):
+        user_groups = self.sa.query(UserGroup) \
             .filter(UserGroup.users_group_active == True).all()
-        users_groups = UserGroupList(users_groups, perm_set=['usergroup.read',
-                                                             'usergroup.write',
-                                                             'usergroup.admin'])
+        user_groups = UserGroupList(user_groups, perm_set=['usergroup.read',
+                                                           'usergroup.write',
+                                                           'usergroup.admin'])
         return json.dumps([
             {
-             'id': gr.users_group_id,
-             'grname': gr.users_group_name,
-             'grmembers': len(gr.members),
-            } for gr in users_groups]
+                'id': gr.users_group_id,
+                'grname': gr.users_group_name,
+                'grmembers': len(gr.members),
+            } for gr in user_groups]
         )
 
     @classmethod
@@ -179,8 +184,8 @@ class RepoModel(BaseModel):
         def quick_menu(repo_name):
             return _render('quick_menu', repo_name)
 
-        def repo_lnk(name, rtype, private, fork_of):
-            return _render('repo_name', name, rtype, private, fork_of,
+        def repo_lnk(name, rtype, rstate, private, fork_of):
+            return _render('repo_name', name, rtype, rstate, private, fork_of,
                            short_name=not admin, admin=False)
 
         def last_change(last_change):
@@ -203,6 +208,9 @@ class RepoModel(BaseModel):
             else:
                 return h.urlify_text(h.truncate(desc, 60))
 
+        def state(repo_state):
+            return _render("repo_state", repo_state)
+
         def repo_actions(repo_name):
             return _render('repo_actions', repo_name, super_user_actions)
 
@@ -214,7 +222,8 @@ class RepoModel(BaseModel):
             if perm_check:
                 # check permission at this level
                 if not HasRepoPermissionAny(
-                    'repository.read', 'repository.write', 'repository.admin'
+                        'repository.read', 'repository.write',
+                        'repository.admin'
                 )(repo.repo_name, 'get_repos_as_dict check'):
                     continue
             cs_cache = repo.changeset_cache
@@ -222,12 +231,13 @@ class RepoModel(BaseModel):
                 "menu": quick_menu(repo.repo_name),
                 "raw_name": repo.repo_name.lower(),
                 "name": repo_lnk(repo.repo_name, repo.repo_type,
-                                 repo.private, repo.fork),
+                                 repo.repo_state, repo.private, repo.fork),
                 "last_change": last_change(repo.last_db_change),
                 "last_changeset": last_rev(repo.repo_name, cs_cache),
-                "raw_tip": cs_cache.get('revision'),
+                "last_rev_raw": cs_cache.get('revision'),
                 "desc": desc(repo.description),
                 "owner": h.person(repo.user.username),
+                "state": state(repo.repo_state),
                 "rss": rss_lnk(repo.repo_name),
                 "atom": atom_lnk(repo.repo_name),
 
@@ -268,14 +278,19 @@ class RepoModel(BaseModel):
                                          'group_id', None)
 
         for strip, k in [(0, 'repo_type'), (1, 'repo_enable_downloads'),
-                  (1, 'repo_description'), (1, 'repo_enable_locking'),
-                  (1, 'repo_landing_rev'), (0, 'clone_uri'),
-                  (1, 'repo_private'), (1, 'repo_enable_statistics')]:
+                         (1, 'repo_description'), (1, 'repo_enable_locking'),
+                         (1, 'repo_landing_rev'), (0, 'clone_uri'),
+                         (1, 'repo_private'), (1, 'repo_enable_statistics')]:
             attr = k
             if strip:
                 attr = remove_prefix(k, 'repo_')
 
-            defaults[k] = defaults[attr]
+            val = defaults[attr]
+            if k == 'repo_landing_rev':
+                val = ':'.join(defaults[attr])
+            defaults[k] = val
+            if k == 'clone_uri':
+                defaults['clone_uri_hidden'] = repo_info.clone_uri_hidden
 
         # fill owner
         if repo_info.user:
@@ -288,33 +303,43 @@ class RepoModel(BaseModel):
         # fill repository users
         for p in repo_info.repo_to_perm:
             defaults.update({'u_perm_%s' % p.user.username:
-                             p.permission.permission_name})
+                                 p.permission.permission_name})
 
         # fill repository groups
         for p in repo_info.users_group_to_perm:
             defaults.update({'g_perm_%s' % p.users_group.users_group_name:
-                             p.permission.permission_name})
+                                 p.permission.permission_name})
 
         return defaults
 
-    def update(self, org_repo_name, **kwargs):
+    def update(self, repo, **kwargs):
         try:
-            cur_repo = self.get_by_repo_name(org_repo_name, cache=False)
-
+            cur_repo = self._get_repo(repo)
+            org_repo_name = cur_repo.repo_name
             if 'user' in kwargs:
                 cur_repo.user = User.get_by_username(kwargs['user'])
 
             if 'repo_group' in kwargs:
                 cur_repo.group = RepoGroup.get(kwargs['repo_group'])
-
+            log.debug('Updating repo %s with params:%s' % (cur_repo, kwargs))
             for strip, k in [(1, 'repo_enable_downloads'),
-                      (1, 'repo_description'), (1, 'repo_enable_locking'),
-                      (1, 'repo_landing_rev'), (0, 'clone_uri'),
-                      (1, 'repo_private'), (1, 'repo_enable_statistics')]:
+                             (1, 'repo_description'),
+                             (1, 'repo_enable_locking'),
+                             (1, 'repo_landing_rev'),
+                             (1, 'repo_private'),
+                             (1, 'repo_enable_statistics'),
+                             (0, 'clone_uri'),]:
                 if k in kwargs:
                     val = kwargs[k]
                     if strip:
                         k = remove_prefix(k, 'repo_')
+                    if k == 'clone_uri':
+                        from rhodecode.model.validators import Missing
+                        _change = kwargs.get('clone_uri_change')
+                        if _change == Missing:
+                            # we don't change the value, so use original one
+                            val = cur_repo.clone_uri
+
                     setattr(cur_repo, k, val)
 
             new_name = cur_repo.get_new_name(kwargs['repo_name'])
@@ -326,8 +351,9 @@ class RepoModel(BaseModel):
                 RepoModel().grant_user_permission(
                     repo=cur_repo, user='default', perm=EMPTY_PERM
                 )
-            #handle extra fields
-            for field in filter(lambda k: k.startswith(RepositoryField.PREFIX), kwargs):
+                #handle extra fields
+            for field in filter(lambda k: k.startswith(RepositoryField.PREFIX),
+                                kwargs):
                 k = RepositoryField.un_prefix_key(field)
                 ex_field = RepositoryField.get_by_key_name(key=k, repo=cur_repo)
                 if ex_field:
@@ -337,29 +363,32 @@ class RepoModel(BaseModel):
 
             if org_repo_name != new_name:
                 # rename repository
-                self.__rename_repo(old=org_repo_name, new=new_name)
+                self._rename_filesystem_repo(old=org_repo_name, new=new_name)
 
             return cur_repo
         except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def create_repo(self, repo_name, repo_type, description, owner,
-                    private=False, clone_uri=None, repos_group=None,
-                    landing_rev='tip', just_db=False, fork_of=None,
-                    copy_fork_permissions=False, enable_statistics=False,
-                    enable_locking=False, enable_downloads=False):
+    def _create_repo(self, repo_name, repo_type, description, owner,
+                     private=False, clone_uri=None, repo_group=None,
+                     landing_rev='rev:tip', fork_of=None,
+                     copy_fork_permissions=False, enable_statistics=False,
+                     enable_locking=False, enable_downloads=False,
+                     copy_group_permissions=False, state=Repository.STATE_PENDING):
         """
-        Create repository
+        Create repository inside database with PENDING state, this should be
+        only executed by create() repo. With exception of importing existing repos
 
         """
         from rhodecode.model.scm import ScmModel
 
         owner = self._get_user(owner)
         fork_of = self._get_repo(fork_of)
-        repos_group = self._get_repo_group(repos_group)
+        repo_group = self._get_repo_group(repo_group)
         try:
-
+            repo_name = safe_unicode(repo_name)
+            description = safe_unicode(description)
             # repo name is just a name of repository
             # while repo_name_full is a full qualified name that is combined
             # with name and path of group
@@ -367,11 +396,12 @@ class RepoModel(BaseModel):
             repo_name = repo_name.split(self.URL_SEPARATOR)[-1]
 
             new_repo = Repository()
+            new_repo.repo_state = state
             new_repo.enable_statistics = False
             new_repo.repo_name = repo_name_full
             new_repo.repo_type = repo_type
             new_repo.user = owner
-            new_repo.group = repos_group
+            new_repo.group = repo_group
             new_repo.description = description or repo_name
             new_repo.private = private
             new_repo.clone_uri = clone_uri
@@ -381,8 +411,8 @@ class RepoModel(BaseModel):
             new_repo.enable_locking = enable_locking
             new_repo.enable_downloads = enable_downloads
 
-            if repos_group:
-                new_repo.enable_locking = repos_group.enable_locking
+            if repo_group:
+                new_repo.enable_locking = repo_group.enable_locking
 
             if fork_of:
                 parent_repo = fork_of
@@ -390,74 +420,62 @@ class RepoModel(BaseModel):
 
             self.sa.add(new_repo)
 
-            if fork_of:
-                if copy_fork_permissions:
-                    repo = fork_of
-                    user_perms = UserRepoToPerm.query()\
-                        .filter(UserRepoToPerm.repository == repo).all()
-                    group_perms = UserGroupRepoToPerm.query()\
-                        .filter(UserGroupRepoToPerm.repository == repo).all()
+            if fork_of and copy_fork_permissions:
+                repo = fork_of
+                user_perms = UserRepoToPerm.query() \
+                    .filter(UserRepoToPerm.repository == repo).all()
+                group_perms = UserGroupRepoToPerm.query() \
+                    .filter(UserGroupRepoToPerm.repository == repo).all()
 
-                    for perm in user_perms:
-                        UserRepoToPerm.create(perm.user, new_repo,
-                                              perm.permission)
+                for perm in user_perms:
+                    UserRepoToPerm.create(perm.user, new_repo, perm.permission)
 
-                    for perm in group_perms:
-                        UserGroupRepoToPerm.create(perm.users_group, new_repo,
-                                                    perm.permission)
-                else:
-                    perm_obj = self._create_default_perms(new_repo, private)
-                    self.sa.add(perm_obj)
+                for perm in group_perms:
+                    UserGroupRepoToPerm.create(perm.users_group, new_repo,
+                                               perm.permission)
+
+            elif repo_group and copy_group_permissions:
+
+                user_perms = UserRepoGroupToPerm.query() \
+                    .filter(UserRepoGroupToPerm.group == repo_group).all()
+
+                group_perms = UserGroupRepoGroupToPerm.query() \
+                    .filter(UserGroupRepoGroupToPerm.group == repo_group).all()
+
+                for perm in user_perms:
+                    perm_name = perm.permission.permission_name.replace('group.', 'repository.')
+                    perm_obj = Permission.get_by_key(perm_name)
+                    UserRepoToPerm.create(perm.user, new_repo, perm_obj)
+
+                for perm in group_perms:
+                    perm_name = perm.permission.permission_name.replace('group.', 'repository.')
+                    perm_obj = Permission.get_by_key(perm_name)
+                    UserGroupRepoToPerm.create(perm.users_group, new_repo, perm_obj)
+
             else:
                 perm_obj = self._create_default_perms(new_repo, private)
                 self.sa.add(perm_obj)
 
-            if not just_db:
-                self.__create_repo(repo_name, repo_type,
-                                   repos_group,
-                                   clone_uri)
-                log_create_repository(new_repo.get_dict(),
-                                      created_by=owner.username)
-
             # now automatically start following this repository as owner
             ScmModel(self.sa).toggle_following_repo(new_repo.repo_id,
                                                     owner.user_id)
+            # we need to flush here, in order to check if database won't
+            # throw any exceptions, create filesystem dirs at the very end
+            self.sa.flush()
             return new_repo
         except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def create(self, form_data, cur_user, just_db=False, fork=None):
+    def create(self, form_data, cur_user):
         """
-        Backward compatibility function, just a wrapper on top of create_repo
+        Create repository using celery tasks
 
         :param form_data:
         :param cur_user:
-        :param just_db:
-        :param fork:
         """
-        owner = cur_user
-        repo_name = form_data['repo_name_full']
-        repo_type = form_data['repo_type']
-        description = form_data['repo_description']
-        private = form_data['repo_private']
-        clone_uri = form_data.get('clone_uri')
-        repos_group = form_data['repo_group']
-        landing_rev = form_data['repo_landing_rev']
-        copy_fork_permissions = form_data.get('copy_permissions')
-        fork_of = form_data.get('fork_parent_id')
-
-        ## repo creation defaults, private and repo_type are filled in form
-        defs = RhodeCodeSetting.get_default_repo_settings(strip_prefix=True)
-        enable_statistics = defs.get('repo_enable_statistics')
-        enable_locking = defs.get('repo_enable_locking')
-        enable_downloads = defs.get('repo_enable_downloads')
-
-        return self.create_repo(
-            repo_name, repo_type, description, owner, private, clone_uri,
-            repos_group, landing_rev, just_db, fork_of, copy_fork_permissions,
-            enable_statistics, enable_locking, enable_downloads
-        )
+        from rhodecode.lib.celerylib import tasks, run_task
+        return run_task(tasks.create_repo, form_data, cur_user)
 
     def _update_permissions(self, repo, perms_new=None, perms_updates=None,
                             check_perms=True):
@@ -475,12 +493,14 @@ class RepoModel(BaseModel):
                 )
             else:
                 #check if we have permissions to alter this usergroup
-                req_perms = ('usergroup.read', 'usergroup.write', 'usergroup.admin')
-                if not check_perms or HasUserGroupPermissionAny(*req_perms)(member):
-                    self.grant_users_group_permission(
+                req_perms = (
+                    'usergroup.read', 'usergroup.write', 'usergroup.admin')
+                if not check_perms or HasUserGroupPermissionAny(*req_perms)(
+                        member):
+                    self.grant_user_group_permission(
                         repo=repo, group_name=member, perm=perm
                     )
-        # set new permissions
+            # set new permissions
         for member, perm, member_type in perms_new:
             if member_type == 'user':
                 self.grant_user_permission(
@@ -488,9 +508,11 @@ class RepoModel(BaseModel):
                 )
             else:
                 #check if we have permissions to alter this usergroup
-                req_perms = ('usergroup.read', 'usergroup.write', 'usergroup.admin')
-                if not check_perms or HasUserGroupPermissionAny(*req_perms)(member):
-                    self.grant_users_group_permission(
+                req_perms = (
+                    'usergroup.read', 'usergroup.write', 'usergroup.admin')
+                if not check_perms or HasUserGroupPermissionAny(*req_perms)(
+                        member):
+                    self.grant_user_group_permission(
                         repo=repo, group_name=member, perm=perm
                     )
 
@@ -502,7 +524,7 @@ class RepoModel(BaseModel):
         :param cur_user:
         """
         from rhodecode.lib.celerylib import tasks, run_task
-        run_task(tasks.create_repo_fork, form_data, cur_user)
+        return run_task(tasks.create_repo_fork, form_data, cur_user)
 
     def delete(self, repo, forks=None, fs_remove=True, cur_user=None):
         """
@@ -533,7 +555,7 @@ class RepoModel(BaseModel):
             try:
                 self.sa.delete(repo)
                 if fs_remove:
-                    self.__delete_repo(repo)
+                    self._delete_filesystem_repo(repo)
                 else:
                     log.debug('skipping removal from filesystem')
                 log_delete_repository(old_repo_dict,
@@ -556,9 +578,9 @@ class RepoModel(BaseModel):
         permission = self._get_perm(perm)
 
         # check if we have that permission already
-        obj = self.sa.query(UserRepoToPerm)\
-            .filter(UserRepoToPerm.user == user)\
-            .filter(UserRepoToPerm.repository == repo)\
+        obj = self.sa.query(UserRepoToPerm) \
+            .filter(UserRepoToPerm.user == user) \
+            .filter(UserRepoToPerm.repository == repo) \
             .scalar()
         if obj is None:
             # create new !
@@ -568,6 +590,7 @@ class RepoModel(BaseModel):
         obj.permission = permission
         self.sa.add(obj)
         log.debug('Granted perm %s to %s on %s' % (perm, user, repo))
+        return obj
 
     def revoke_user_permission(self, repo, user):
         """
@@ -580,15 +603,15 @@ class RepoModel(BaseModel):
         user = self._get_user(user)
         repo = self._get_repo(repo)
 
-        obj = self.sa.query(UserRepoToPerm)\
-            .filter(UserRepoToPerm.repository == repo)\
-            .filter(UserRepoToPerm.user == user)\
+        obj = self.sa.query(UserRepoToPerm) \
+            .filter(UserRepoToPerm.repository == repo) \
+            .filter(UserRepoToPerm.user == user) \
             .scalar()
         if obj:
             self.sa.delete(obj)
             log.debug('Revoked perm on %s on %s' % (repo, user))
 
-    def grant_users_group_permission(self, repo, group_name, perm):
+    def grant_user_group_permission(self, repo, group_name, perm):
         """
         Grant permission for user group on given repository, or update
         existing one if found
@@ -603,9 +626,9 @@ class RepoModel(BaseModel):
         permission = self._get_perm(perm)
 
         # check if we have that permission already
-        obj = self.sa.query(UserGroupRepoToPerm)\
-            .filter(UserGroupRepoToPerm.users_group == group_name)\
-            .filter(UserGroupRepoToPerm.repository == repo)\
+        obj = self.sa.query(UserGroupRepoToPerm) \
+            .filter(UserGroupRepoToPerm.users_group == group_name) \
+            .filter(UserGroupRepoToPerm.repository == repo) \
             .scalar()
 
         if obj is None:
@@ -617,8 +640,9 @@ class RepoModel(BaseModel):
         obj.permission = permission
         self.sa.add(obj)
         log.debug('Granted perm %s to %s on %s' % (perm, group_name, repo))
+        return obj
 
-    def revoke_users_group_permission(self, repo, group_name):
+    def revoke_user_group_permission(self, repo, group_name):
         """
         Revoke permission for user group on given repository
 
@@ -629,9 +653,9 @@ class RepoModel(BaseModel):
         repo = self._get_repo(repo)
         group_name = self._get_user_group(group_name)
 
-        obj = self.sa.query(UserGroupRepoToPerm)\
-            .filter(UserGroupRepoToPerm.repository == repo)\
-            .filter(UserGroupRepoToPerm.users_group == group_name)\
+        obj = self.sa.query(UserGroupRepoToPerm) \
+            .filter(UserGroupRepoToPerm.repository == repo) \
+            .filter(UserGroupRepoToPerm.users_group == group_name) \
             .scalar()
         if obj:
             self.sa.delete(obj)
@@ -645,21 +669,16 @@ class RepoModel(BaseModel):
         """
         repo = self._get_repo(repo_name)
         try:
-            obj = self.sa.query(Statistics)\
-                    .filter(Statistics.repository == repo).scalar()
+            obj = self.sa.query(Statistics) \
+                .filter(Statistics.repository == repo).scalar()
             if obj:
                 self.sa.delete(obj)
         except Exception:
             log.error(traceback.format_exc())
             raise
 
-    def _create_repo(self, repo_name, alias, parent, clone_uri=False,
-                     repo_store_location=None):
-        return self.__create_repo(repo_name, alias, parent, clone_uri,
-                                  repo_store_location)
-
-    def __create_repo(self, repo_name, alias, parent, clone_uri=False,
-                      repo_store_location=None):
+    def _create_filesystem_repo(self, repo_name, repo_type, repo_group,
+                                clone_uri=None, repo_store_location=None):
         """
         makes repository on filesystem. It's group aware means it'll create
         a repository within a group, and alter the paths accordingly of
@@ -667,22 +686,26 @@ class RepoModel(BaseModel):
 
         :param repo_name:
         :param alias:
-        :param parent_id:
+        :param parent:
         :param clone_uri:
-        :param repo_path:
+        :param repo_store_location:
         """
-        from rhodecode.lib.utils import is_valid_repo, is_valid_repos_group
+        from rhodecode.lib.utils import is_valid_repo, is_valid_repo_group
         from rhodecode.model.scm import ScmModel
 
-        if parent:
-            new_parent_path = os.sep.join(parent.full_path_splitted)
+        if '/' in repo_name:
+            raise ValueError('repo_name must not contain groups got `%s`' % repo_name)
+
+        if isinstance(repo_group, RepoGroup):
+            new_parent_path = os.sep.join(repo_group.full_path_splitted)
         else:
-            new_parent_path = ''
+            new_parent_path = repo_group or ''
+
         if repo_store_location:
             _paths = [repo_store_location]
         else:
             _paths = [self.repos_path, new_parent_path, repo_name]
-        # we need to make it str for mercurial
+            # we need to make it str for mercurial
         repo_path = os.path.join(*map(lambda x: safe_str(x), _paths))
 
         # check if this path is not a repository
@@ -690,26 +713,35 @@ class RepoModel(BaseModel):
             raise Exception('This path %s is a valid repository' % repo_path)
 
         # check if this path is a group
-        if is_valid_repos_group(repo_path, self.repos_path):
+        if is_valid_repo_group(repo_path, self.repos_path):
             raise Exception('This path %s is a valid group' % repo_path)
 
-        log.info('creating repo %s in %s @ %s' % (
-                     repo_name, safe_unicode(repo_path),
-                     obfuscate_url_pw(clone_uri)
-                )
-        )
-        backend = get_backend(alias)
-        if alias == 'hg':
-            repo = backend(repo_path, create=True, src_url=clone_uri)
-        elif alias == 'git':
+        log.info('creating repo %s in %s from url: `%s`' % (
+            repo_name, safe_unicode(repo_path),
+            obfuscate_url_pw(clone_uri)))
+
+        backend = get_backend(repo_type)
+
+        if repo_type == 'hg':
+            baseui = make_ui('db', clear_session=False)
+            # patch and reset hooks section of UI config to not run any
+            # hooks on creating remote repo
+            for k, v in baseui.configitems('hooks'):
+                baseui.setconfig('hooks', k, None)
+
+            repo = backend(repo_path, create=True, src_url=clone_uri, baseui=baseui)
+        elif repo_type == 'git':
             repo = backend(repo_path, create=True, src_url=clone_uri, bare=True)
             # add rhodecode hook into this repo
             ScmModel().install_git_hook(repo=repo)
         else:
-            raise Exception('Undefined alias %s' % alias)
+            raise Exception('Not supported repo_type %s expected hg/git' % repo_type)
+
+        log.debug('Created repo %s with %s backend'
+                  % (safe_unicode(repo_name), safe_unicode(repo_type)))
         return repo
 
-    def __rename_repo(self, old, new):
+    def _rename_filesystem_repo(self, old, new):
         """
         renames repository on filesystem
 
@@ -726,7 +758,7 @@ class RepoModel(BaseModel):
             )
         shutil.move(old_path, new_path)
 
-    def __delete_repo(self, repo):
+    def _delete_filesystem_repo(self, repo):
         """
         removes repo from filesystem, the removal is acctually made by
         added rm__ prefix into dir, and rename internat .hg/.git dirs so this
@@ -736,17 +768,19 @@ class RepoModel(BaseModel):
         :param repo: repo object
         """
         rm_path = os.path.join(self.repos_path, repo.repo_name)
-        log.info("Removing %s" % (rm_path))
+        log.info("Removing repository %s" % (rm_path,))
         # disable hg/git internal that it doesn't get detected as repo
         alias = repo.repo_type
 
         bare = getattr(repo.scm_instance, 'bare', False)
 
+        # skip this for bare git repos
         if not bare:
-            # skip this for bare git repos
-            shutil.move(os.path.join(rm_path, '.%s' % alias),
-                        os.path.join(rm_path, 'rm__.%s' % alias))
-        # disable repo
+            # disable VCS repo
+            vcs_path = os.path.join(rm_path, '.%s' % alias)
+            if os.path.exists(vcs_path):
+                shutil.move(vcs_path, os.path.join(rm_path, 'rm__.%s' % alias))
+
         _now = datetime.now()
         _ms = str(_now.microsecond).rjust(6, '0')
         _d = 'rm__%s__%s' % (_now.strftime('%Y%m%d_%H%M%S_' + _ms),
@@ -754,4 +788,6 @@ class RepoModel(BaseModel):
         if repo.group:
             args = repo.group.full_path_splitted + [_d]
             _d = os.path.join(*args)
-        shutil.move(rm_path, os.path.join(self.repos_path, _d))
+
+        if os.path.isdir(rm_path):
+            shutil.move(rm_path, os.path.join(self.repos_path, _d))

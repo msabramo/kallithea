@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.middleware.simplegit
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    SimpleGit middleware for handling git protocol request (push/clone etc.)
-    It's implemented with basic auth function
-
-    :created_on: Apr 28, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,68 +11,38 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.middleware.simplegit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SimpleGit middleware for handling git protocol request (push/clone etc.)
+It's implemented with basic auth function
+
+:created_on: Apr 28, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+
+"""
+
 
 import os
 import re
 import logging
 import traceback
 
-from dulwich import server as dulserver
-from dulwich.web import LimitedInputFilter, GunzipFilter
-from rhodecode.lib.exceptions import HTTPLockedRC
-from rhodecode.lib.hooks import pre_pull
-
-
-class SimpleGitUploadPackHandler(dulserver.UploadPackHandler):
-
-    def handle(self):
-        write = lambda x: self.proto.write_sideband(1, x)
-
-        graph_walker = dulserver.ProtocolGraphWalker(self,
-                                                     self.repo.object_store,
-                                                     self.repo.get_peeled)
-        objects_iter = self.repo.fetch_objects(
-          graph_walker.determine_wants, graph_walker, self.progress,
-          get_tagged=self.get_tagged)
-
-        # Did the process short-circuit (e.g. in a stateless RPC call)? Note
-        # that the client still expects a 0-object pack in most cases.
-        if objects_iter is None:
-            return
-
-        self.progress("counting objects: %d, done.\n" % len(objects_iter))
-        dulserver.write_pack_objects(dulserver.ProtocolFile(None, write),
-                                     objects_iter)
-        messages = ['thank you for using rhodecode']
-
-        for msg in messages:
-            self.progress(msg + "\n")
-        # we are done
-        self.proto.write("0000")
-
-
-dulserver.DEFAULT_HANDLERS = {
-  #git-ls-remote, git-clone, git-fetch and git-pull
-  'git-upload-pack': SimpleGitUploadPackHandler,
-  #git-push
-  'git-receive-pack': dulserver.ReceivePackHandler,
-}
-
-# not used for now until dulwich gets fixed
-#from dulwich.repo import Repo
-#from dulwich.web import make_wsgi_chain
-
 from paste.httpheaders import REMOTE_USER, AUTH_TYPE
 from webob.exc import HTTPNotFound, HTTPForbidden, HTTPInternalServerError, \
-    HTTPBadRequest, HTTPNotAcceptable
+    HTTPNotAcceptable
+from rhodecode.model.db import User, RhodeCodeUi
 
 from rhodecode.lib.utils2 import safe_str, fix_PATH, get_server_url,\
     _set_extras
 from rhodecode.lib.base import BaseVCSController
-from rhodecode.lib.auth import get_container_username
-from rhodecode.lib.utils import is_valid_repo, make_ui
-from rhodecode.lib.compat import json
-from rhodecode.model.db import User, RhodeCodeUi
+from rhodecode.lib.utils import make_ui, is_valid_repo
+from rhodecode.lib.exceptions import HTTPLockedRC
+from rhodecode.lib.hooks import pre_pull
+from rhodecode.lib import auth_modules
 
 log = logging.getLogger(__name__)
 
@@ -139,23 +97,34 @@ class SimpleGit(BaseVCSController):
         if action in ['pull', 'push']:
             anonymous_user = self.__get_user('default')
             username = anonymous_user.username
-            anonymous_perm = self._check_permission(action, anonymous_user,
-                                                    repo_name, ip_addr)
+            if anonymous_user.active:
+                # ONLY check permissions if the user is activated
+                anonymous_perm = self._check_permission(action, anonymous_user,
+                                                        repo_name, ip_addr)
+            else:
+                anonymous_perm = False
 
-            if not anonymous_perm or not anonymous_user.active:
-                if not anonymous_perm:
-                    log.debug('Not enough credentials to access this '
-                              'repository as anonymous user')
+            if not anonymous_user.active or not anonymous_perm:
                 if not anonymous_user.active:
                     log.debug('Anonymous access is disabled, running '
                               'authentication')
+
+                if not anonymous_perm:
+                    log.debug('Not enough credentials to access this '
+                              'repository as anonymous user')
+
+                username = None
                 #==============================================================
                 # DEFAULT PERM FAILED OR ANONYMOUS ACCESS IS DISABLED SO WE
                 # NEED TO AUTHENTICATE AND ASK FOR AUTH USER PERMISSIONS
                 #==============================================================
 
-                # Attempting to retrieve username from the container
-                username = get_container_username(environ, self.config)
+                # try to auth based on environ, container auth methods
+                log.debug('Running PRE-AUTH for container based authentication')
+                pre_auth = auth_modules.authenticate('', '', environ)
+                if pre_auth and pre_auth.get('username'):
+                    username = pre_auth['username']
+                log.debug('PRE-AUTH got %s as username' % username)
 
                 # If not authenticated by the container, running basic auth
                 if not username:
@@ -259,7 +228,6 @@ class SimpleGit(BaseVCSController):
             repo_name=repo_name,
             extras=extras,
         )
-        app = GunzipFilter(LimitedInputFilter(app))
         return app
 
     def __get_repository(self, environ):

@@ -2,14 +2,17 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Add user')} &middot; ${c.rhodecode_name}
+    ${_('Add user')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 <%def name="breadcrumbs_links()">
     ${h.link_to(_('Admin'),h.url('admin_home'))}
     &raquo;
     ${h.link_to(_('Users'),h.url('users'))}
     &raquo;
-    ${_('Add new user')}
+    ${_('Add User')}
 </%def>
 
 <%def name="page_nav()">
@@ -78,6 +81,8 @@
                 </div>
                 <div class="input">
                     ${h.text('email',class_='small')}
+                    ${h.hidden('extern_name', c.default_extern_type)}
+                    ${h.hidden('extern_type', c.default_extern_type)}
                 </div>
              </div>
 
@@ -91,10 +96,15 @@
              </div>
 
             <div class="buttons">
-              ${h.submit('save',_('Save'),class_="ui-btn large")}
+              ${h.submit('save',_('Save'),class_="btn")}
             </div>
         </div>
     </div>
     ${h.end_form()}
 </div>
 </%def>
+<script>
+    $(document).ready(function(){
+        $('#username').focus();
+    })
+</script>

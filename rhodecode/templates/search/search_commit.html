@@ -16,7 +16,7 @@
                         <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(sr['author']),20)}"/>
                     </div>
                     <span>${h.person(sr['author'])}</span><br/>
-                    <span><a href="mailto:${h.email_or_none(sr['author'])}">${h.email_or_none(sr['author'])}</a></span><br/>
+                    <span>${h.email_or_none(sr['author'])}</a></span><br/>
                 </div>
                 %if sr['message_hl']:
                 <div class="search-code-body">

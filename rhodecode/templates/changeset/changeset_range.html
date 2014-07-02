@@ -2,11 +2,17 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Changesets') % c.repo_name} - r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)} -&gt; r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)} &middot; ${c.rhodecode_name}
+    ${_('%s Changesets') % c.repo_name} - r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)} &gt; r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
-    ${_('Changesets')} - r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)} -&gt; r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
+    ${_('Changesets')} -
+    r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)}
+    <i class="icon-arrow-right"></i>
+    r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
 </%def>
 
 <%def name="page_nav()">
@@ -22,11 +28,12 @@ ${self.repo_context_bar('changelog')}
     </div>
     <div class="table">
         <div id="body" class="diffblock">
-            <div class="code-header">
+            <div class="code-header" style="height: 26px">
                 <div>
-                ${h.link_to('r%s:%s -> r%s:%s' % (c.cs_ranges[0].revision, h.short_id(c.cs_ranges[0].raw_id), c.cs_ranges[-1].revision, h.short_id(c.cs_ranges[-1].raw_id)),
-                    h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref=c.cs_ranges[-1].raw_id)
-                    )}
+                    r${c.cs_ranges[0].revision}:${h.short_id(c.cs_ranges[0].raw_id)}
+                    <i class="icon-arrow-right"></i>
+                    r${c.cs_ranges[-1].revision}:${h.short_id(c.cs_ranges[-1].raw_id)}
+                    <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-loop"></i> Compare Revisions</a>
                 </div>
             </div>
         </div>

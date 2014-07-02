@@ -3,7 +3,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Changeset') % c.repo_name} - ${h.show_id(c.changeset)} &middot; ${c.rhodecode_name}
+    ${_('%s Changeset') % c.repo_name} - ${h.show_id(c.changeset)}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -23,50 +26,41 @@ ${self.repo_context_bar('changelog')}
     </div>
     <script>
     var _USERS_AC_DATA = ${c.users_array|n};
-    var _GROUPS_AC_DATA = ${c.users_groups_array|n};
+    var _GROUPS_AC_DATA = ${c.user_groups_array|n};
     AJAX_COMMENT_URL = "${url('changeset_comment',repo_name=c.repo_name,revision=c.changeset.raw_id)}";
     AJAX_COMMENT_DELETE_URL = "${url('changeset_comment_delete',repo_name=c.repo_name,comment_id='__COMMENT_ID__')}";
     </script>
     <div class="table">
         <div class="diffblock">
             <div class="parents">
-                %if c.changeset.parents:
-                 %for n, p_cs in enumerate(reversed(c.changeset.parents)):
-                    <span class="changeset_hash">&laquo; ${h.link_to('%s:%s' % (p_cs.revision,p_cs.raw_id[:6]),h.url('changeset_home',repo_name=c.repo_name,revision=p_cs.raw_id),title=p_cs.message)}</span>
-                    <br>
-                 %endfor
-                 %else:
-                    <span>${_('No parents')}</span>
-                 %endif
+                <div id="parent_link" class="changeset_hash">
+                    <i style="color:#036185" class="icon-chevron-left"></i> <a href="#">${_('parent rev.')}</a>
+                </div>
             </div>
-            <div class="children">
-                %if c.changeset.children:
-                 %for n, p_cs in enumerate(reversed(c.changeset.children)):
-                    <span class="changeset_hash">${h.link_to('%s:%s' % (p_cs.revision,p_cs.raw_id[:6]),h.url('changeset_home',repo_name=c.repo_name,revision=p_cs.raw_id),title=p_cs.message)} &raquo;</span>
-                    <br>
-                 %endfor
-                 %else:
-                    <span>${_('No children')}</span>
-                 %endif
-            </div>
-            <div class="code-header banner">
 
-                <div class="hash">
-                 r${c.changeset.revision}:${h.short_id(c.changeset.raw_id)}
+            <div class="children">
+                <div id="child_link" class="changeset_hash">
+                    <a href="#">${_('child rev.')}</a> <i style="color:#036185" class="icon-chevron-right"></i>
                 </div>
-                <div class="date">
-                  ${h.fmt_date(c.changeset.date)}
-                </div>
+            </div>
+
+            <div class="code-header banner">
                 <div class="changeset-status-container">
                     %if c.statuses:
-                      <div title="${_('Changeset status')}" class="changeset-status-lbl">[${h.changeset_status_lbl(c.statuses[0])}]</div>
-                      <div class="changeset-status-ico"><img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[0])}" /></div>
+                        <div class="changeset-status-ico"><img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[0])}" /></div>
+                        <div title="${_('Changeset status')}" class="changeset-status-lbl">[${h.changeset_status_lbl(c.statuses[0])}]</div>
                     %endif
                 </div>
                 <div class="diff-actions">
-                  <a href="${h.url('changeset_raw_home',repo_name=c.repo_name,revision=c.changeset.raw_id)}"  class="tooltip" title="${h.tooltip(_('Raw diff'))}"><img class="icon" src="${h.url('/images/icons/page_white.png')}"/></a>
-                  <a href="${h.url('changeset_patch_home',repo_name=c.repo_name,revision=c.changeset.raw_id)}"  class="tooltip" title="${h.tooltip(_('Patch diff'))}"><img class="icon" src="${h.url('/images/icons/page_add.png')}"/></a>
-                  <a href="${h.url('changeset_download_home',repo_name=c.repo_name,revision=c.changeset.raw_id,diff='download')}"  class="tooltip" title="${h.tooltip(_('Download diff'))}"><img class="icon" src="${h.url('/images/icons/page_save.png')}"/></a>
+                  <a href="${h.url('changeset_raw_home',repo_name=c.repo_name,revision=c.changeset.raw_id)}"  class="tooltip" title="${h.tooltip(_('Raw diff'))}">
+                      <img class="icon" src="${h.url('/images/icons/page_white.png')}"/>
+                  </a>
+                  <a href="${h.url('changeset_patch_home',repo_name=c.repo_name,revision=c.changeset.raw_id)}"  class="tooltip" title="${h.tooltip(_('Patch diff'))}">
+                      <img class="icon" src="${h.url('/images/icons/page_add.png')}"/>
+                  </a>
+                  <a href="${h.url('changeset_download_home',repo_name=c.repo_name,revision=c.changeset.raw_id,diff='download')}" class="tooltip" title="${h.tooltip(_('Download diff'))}">
+                      <img class="icon" src="${h.url('/images/icons/page_save.png')}"/>
+                  </a>
                   ${c.ignorews_url(request.GET)}
                   ${c.context_url(request.GET)}
                 </div>
@@ -75,18 +69,9 @@ ${self.repo_context_bar('changelog')}
         </div>
         <div id="changeset_content">
             <div class="container">
-                 <div class="left">
-                     <div class="author">
-                         <div class="gravatar">
-                             <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.changeset.author),20)}"/>
-                         </div>
-                         <span>${h.person(c.changeset.author)}</span><br/>
-                         <span><a href="mailto:${h.email_or_none(c.changeset.author)}">${h.email_or_none(c.changeset.author)}</a></span><br/>
-                     </div>
-                     <div class="message">${h.urlify_commit(c.changeset.message, c.repo_name)}</div>
-                 </div>
-                 <div class="right">
-                     <div class="changes">
+
+                <div class="right">
+                    <div class="changes">
                         % if (len(c.changeset.affected_files) <= c.affected_files_cut_off) or c.fulldiff:
                          <span class="removed" title="${_('Removed')}">${len(c.changeset.removed)}</span>
                          <span class="changed" title="${_('Changed')}">${len(c.changeset.changed)}</span>
@@ -96,38 +81,51 @@ ${self.repo_context_bar('changelog')}
                          <span class="changed" title="${_('Affected %s files') % len(c.changeset.affected_files)}">!</span>
                          <span class="added"   title="${_('Affected %s files') % len(c.changeset.affected_files)}">!</span>
                         % endif
-                     </div>
+                    </div>
 
-                 <span class="logtags">
-                 %if len(c.changeset.parents)>1:
-                 <span class="merge">${_('merge')}</span>
-                 %endif
-                    %if h.is_hg(c.rhodecode_repo):
-                      %for book in c.changeset.bookmarks:
-                      <span class="booktag" title="${_('Bookmark %s') % book}">
-                         ${h.link_to(h.shorter(book),h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}
-                      </span>
-                      %endfor
-                    %endif
-                     %for tag in c.changeset.tags:
+                    <span class="logtags">
+                        %if len(c.changeset.parents)>1:
+                        <span class="merge">${_('merge')}</span>
+                        %endif
+
+                        %if h.is_hg(c.rhodecode_repo):
+                          %for book in c.changeset.bookmarks:
+                          <span class="booktag" title="${_('Bookmark %s') % book}">
+                             ${h.link_to(h.shorter(book),h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}
+                          </span>
+                          %endfor
+                        %endif
+
+                        %for tag in c.changeset.tags:
                          <span class="tagtag"  title="${_('Tag %s') % tag}">
                          ${h.link_to(tag,h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}</span>
-                     %endfor
-                     %if c.changeset.branch:
+                        %endfor
+
+                        %if c.changeset.branch:
                          <span class="branchtag" title="${_('Branch %s') % c.changeset.branch}">
                          ${h.link_to(c.changeset.branch,h.url('files_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}
                          </span>
-                     %endif
-                 </span>
-                    </div>
+                        %endif
+                    </span>
+                </div>
+                <div class="left">
+                     <div class="author">
+                         <div class="gravatar">
+                             <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.changeset.author),20)}"/>
+                         </div>
+                         <span><b>${h.person(c.changeset.author)}</b> - ${h.age(c.changeset.date,True)} ${h.fmt_date(c.changeset.date)}</span><br/>
+                         <span>${h.email_or_none(c.changeset.author)}</span><br/>
+                     </div>
+                     <div class="message">${h.urlify_commit(c.changeset.message, c.repo_name)}</div>
+                </div>
             </div>
-            <span>
+            <div class="changes_txt">
             % if c.limited_diff:
             ${ungettext('%s file changed','%s files changed',len(c.changeset.affected_files)) % (len(c.changeset.affected_files))}:
             % else:
             ${ungettext('%s file changed with %s insertions and %s deletions','%s files changed with %s insertions and %s deletions', len(c.changeset.affected_files)) % (len(c.changeset.affected_files),c.lines_added,c.lines_deleted)}:
             %endif
-            </span>
+            </div>
             <div class="cs_files">
               %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[c.changeset.raw_id].iteritems():
                   <div class="cs_${change}">
@@ -198,6 +196,85 @@ ${self.repo_context_bar('changelog')}
           // inject comments into they proper positions
           var file_comments = YUQ('.inline-comment-placeholder');
           renderInlineComments(file_comments);
+
+          pyroutes.register('changeset_home',
+                            "${h.url('changeset_home', repo_name='%(repo_name)s', revision='%(revision)s')}",
+                            ['repo_name', 'revision']);
+
+          //next links
+          $('#child_link').on('click', function(e){
+              //fetch via ajax what is going to be the next link, if we have
+              //>1 links show them to user to choose
+              if(!$('#child_link').hasClass('disabled')){
+                  $.ajax({
+                    url: '${h.url('changeset_children',repo_name=c.repo_name, revision=c.changeset.raw_id)}',
+                    success: function(data) {
+                      if(data.results.length === 0){
+                          $('#child_link').addClass('disabled');
+                          $('#child_link').html('${_('no revisions')}');
+                      }
+                      if(data.results.length === 1){
+                          var commit = data.results[0];
+                          window.location = pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': commit.raw_id});
+                      }
+                      else if(data.results.length === 2){
+                          $('#child_link').addClass('disabled');
+                          $('#child_link').addClass('double');
+                          var _html = '';
+                          _html +='<a title="__title__" href="__url__">__rev__</a> <i style="color:#036185" class="icon-chevron-right"></i>'
+                                  .replace('__rev__','r{0}:{1}'.format(data.results[0].revision, data.results[0].raw_id.substr(0,6)))
+                                  .replace('__title__', data.results[0].message)
+                                  .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[0].raw_id}));
+                          _html +='<br/>'
+                          _html +='<a title="__title__" href="__url__">__rev__</a> <i style="color:#036185" class="icon-chevron-right"></i>'
+                                  .replace('__rev__','r{0}:{1}'.format(data.results[1].revision, data.results[1].raw_id.substr(0,6)))
+                                  .replace('__title__', data.results[1].message)
+                                  .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[1].raw_id}));
+                          $('#child_link').html(_html);
+                      }
+                    },
+                  });
+              e.preventDefault();
+              }
+          })
+
+          //prev links
+          $('#parent_link').on('click', function(e){
+              //fetch via ajax what is going to be the next link, if we have
+              //>1 links show them to user to choose
+              if(!$('#parent_link').hasClass('disabled')){
+                  $.ajax({
+                    url: '${h.url('changeset_parents',repo_name=c.repo_name, revision=c.changeset.raw_id)}',
+                    success: function(data) {
+                      if(data.results.length === 0){
+                          $('#parent_link').addClass('disabled');
+                          $('#parent_link').html('${_('no revisions')}');
+                      }
+                      if(data.results.length === 1){
+                          var commit = data.results[0];
+                          window.location = pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': commit.raw_id});
+                      }
+                      else if(data.results.length === 2){
+                          $('#parent_link').addClass('disabled');
+                          $('#parent_link').addClass('double');
+                          var _html = '';
+                          _html +='<i style="color:#036185" class="icon-chevron-left"></i> <a title="__title__" href="__url__">__rev__</a>'
+                                  .replace('__rev__','r{0}:{1}'.format(data.results[0].revision, data.results[0].raw_id.substr(0,6)))
+                                  .replace('__title__', data.results[0].message)
+                                  .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[0].raw_id}));
+                          _html +='<br/>'
+                          _html +='<i style="color:#036185" class="icon-chevron-left"></i> <a title="__title__" href="__url__">__rev__</a>'
+                                  .replace('__rev__','r{0}:{1}'.format(data.results[1].revision, data.results[1].raw_id.substr(0,6)))
+                                  .replace('__title__', data.results[1].message)
+                                  .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[1].raw_id}));
+                          $('#parent_link').html(_html);
+                      }
+                    },
+                  });
+              e.preventDefault();
+              }
+          })
+
       })
 
     </script>

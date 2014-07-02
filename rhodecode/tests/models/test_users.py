@@ -5,7 +5,7 @@ from rhodecode.model.db import User, UserGroup, UserGroupMember, UserEmailMap,\
 from rhodecode.model.user import UserModel
 
 from rhodecode.model.meta import Session
-from rhodecode.model.users_group import UserGroupModel
+from rhodecode.model.user_group import UserGroupModel
 from rhodecode.tests.fixture import Fixture
 
 fixture = Fixture()
@@ -22,19 +22,19 @@ class TestUser(BaseTestCase):
     def test_create_and_remove(self):
         usr = UserModel().create_or_update(username=u'test_user',
                                            password=u'qweqwe',
-                                     email=u'u232@rhodecode.org',
-                                     firstname=u'u1', lastname=u'u1')
+                                           email=u'u232@rhodecode.org',
+                                           firstname=u'u1', lastname=u'u1')
         Session().commit()
         self.assertEqual(User.get_by_username(u'test_user'), usr)
 
         # make user group
-        users_group = fixture.create_user_group('some_example_group')
+        user_group = fixture.create_user_group('some_example_group')
         Session().commit()
 
-        UserGroupModel().add_user_to_group(users_group, usr)
+        UserGroupModel().add_user_to_group(user_group, usr)
         Session().commit()
 
-        self.assertEqual(UserGroup.get(users_group.users_group_id), users_group)
+        self.assertEqual(UserGroup.get(user_group.users_group_id), user_group)
         self.assertEqual(UserGroupMember.query().count(), 1)
         UserModel().delete(usr.user_id)
         Session().commit()

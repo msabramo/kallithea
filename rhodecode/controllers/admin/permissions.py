@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.admin.permissions
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    permissions controller for Rhodecode
-
-    :created_on: Apr 27, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.admin.permissions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+permissions controller for Rhodecode
+
+:created_on: Apr 27, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import logging
 import traceback
@@ -55,6 +56,7 @@ class PermissionsController(BaseController):
     def __before__(self):
         super(PermissionsController, self).__before__()
 
+    def __load_data(self):
         c.repo_perms_choices = [('repository.none', _('None'),),
                                    ('repository.read', _('Read'),),
                                    ('repository.write', _('Write'),),
@@ -83,6 +85,11 @@ class PermissionsController(BaseController):
         c.repo_create_choices = [('hg.create.none', _('Disabled')),
                                  ('hg.create.repository', _('Enabled'))]
 
+        c.repo_create_on_write_choices = [
+            ('hg.create.write_on_repogroup.true', _('Enabled')),
+            ('hg.create.write_on_repogroup.false', _('Disabled')),
+        ]
+
         c.user_group_create_choices = [('hg.usergroup.create.false', _('Disabled')),
                                        ('hg.usergroup.create.true', _('Enabled'))]
 
@@ -92,50 +99,28 @@ class PermissionsController(BaseController):
         c.fork_choices = [('hg.fork.none', _('Disabled')),
                           ('hg.fork.repository', _('Enabled'))]
 
-    def index(self, format='html'):
-        """GET /permissions: All items in the collection"""
-        # url('permissions')
-
-    def create(self):
-        """POST /permissions: Create a new item"""
-        # url('permissions')
-
-    def new(self, format='html'):
-        """GET /permissions/new: Form to create a new item"""
-        # url('new_permission')
-
-    def update(self, id):
-        """PUT /permissions/id: Update an existing item"""
-        # Forms posted to this method should contain a hidden field:
-        #    <input type="hidden" name="_method" value="PUT" />
-        # Or using helpers:
-        #    h.form(url('permission', id=ID),
-        #           method='put')
-        # url('permission', id=ID)
-        if id == 'default':
-            c.user = default_user = User.get_default_user()
-            c.perm_user = AuthUser(user_id=default_user.user_id)
-            c.user_ip_map = UserIpMap.query()\
-                            .filter(UserIpMap.user == default_user).all()
-
+    def permission_globals(self):
+        c.active = 'globals'
+        self.__load_data()
+        if request.POST:
             _form = DefaultPermissionsForm(
-                    [x[0] for x in c.repo_perms_choices],
-                    [x[0] for x in c.group_perms_choices],
-                    [x[0] for x in c.user_group_perms_choices],
-                    [x[0] for x in c.repo_create_choices],
-                    [x[0] for x in c.repo_group_create_choices],
-                    [x[0] for x in c.user_group_create_choices],
-                    [x[0] for x in c.fork_choices],
-                    [x[0] for x in c.register_choices],
-                    [x[0] for x in c.extern_activate_choices],
-            )()
+                [x[0] for x in c.repo_perms_choices],
+                [x[0] for x in c.group_perms_choices],
+                [x[0] for x in c.user_group_perms_choices],
+                [x[0] for x in c.repo_create_choices],
+                [x[0] for x in c.repo_create_on_write_choices],
+                [x[0] for x in c.repo_group_create_choices],
+                [x[0] for x in c.user_group_create_choices],
+                [x[0] for x in c.fork_choices],
+                [x[0] for x in c.register_choices],
+                [x[0] for x in c.extern_activate_choices])()
 
             try:
                 form_result = _form.to_python(dict(request.POST))
-                form_result.update({'perm_user_name': id})
+                form_result.update({'perm_user_name': 'default'})
                 PermissionModel().update(form_result)
                 Session().commit()
-                h.flash(_('Default permissions updated successfully'),
+                h.flash(_('Global permissions updated successfully'),
                         category='success')
 
             except formencode.Invalid, errors:
@@ -152,66 +137,58 @@ class PermissionsController(BaseController):
                 h.flash(_('Error occurred during update of permissions'),
                         category='error')
 
-        return redirect(url('edit_permission', id=id))
+            return redirect(url('admin_permissions'))
 
-    def delete(self, id):
-        """DELETE /permissions/id: Delete an existing item"""
-        # Forms posted to this method should contain a hidden field:
-        #    <input type="hidden" name="_method" value="DELETE" />
-        # Or using helpers:
-        #    h.form(url('permission', id=ID),
-        #           method='delete')
-        # url('permission', id=ID)
+        c.user = User.get_default_user()
+        defaults = {'anonymous': c.user.active}
 
-    def show(self, id, format='html'):
-        """GET /permissions/id: Show a specific item"""
-        # url('permission', id=ID)
-        Permission.get_or_404(-1)
+        for p in c.user.user_perms:
+            if p.permission.permission_name.startswith('repository.'):
+                defaults['default_repo_perm'] = p.permission.permission_name
 
-    def edit(self, id, format='html'):
-        """GET /permissions/id/edit: Form to edit an existing item"""
-        #url('edit_permission', id=ID)
+            if p.permission.permission_name.startswith('group.'):
+                defaults['default_group_perm'] = p.permission.permission_name
 
-        #this form can only edit default user permissions
-        if id == 'default':
-            c.user = User.get_default_user()
-            defaults = {'anonymous': c.user.active}
-            c.perm_user = c.user.AuthUser
-            c.user_ip_map = UserIpMap.query()\
-                            .filter(UserIpMap.user == c.user).all()
-            for p in c.user.user_perms:
-                if p.permission.permission_name.startswith('repository.'):
-                    defaults['default_repo_perm'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('usergroup.'):
+                defaults['default_user_group_perm'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('group.'):
-                    defaults['default_group_perm'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('hg.create.write_on_repogroup'):
+                defaults['create_on_write'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('usergroup.'):
-                    defaults['default_user_group_perm'] = p.permission.permission_name
+            elif p.permission.permission_name.startswith('hg.create.'):
+                defaults['default_repo_create'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.create.'):
-                    defaults['default_repo_create'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('hg.repogroup.'):
+                defaults['default_repo_group_create'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.repogroup.'):
-                    defaults['default_repo_group_create'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('hg.usergroup.'):
+                defaults['default_user_group_create'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.usergroup.'):
-                    defaults['default_user_group_create'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('hg.register.'):
+                defaults['default_register'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.register.'):
-                    defaults['default_register'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('hg.extern_activate.'):
+                defaults['default_extern_activate'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.extern_activate.'):
-                    defaults['default_extern_activate'] = p.permission.permission_name
+            if p.permission.permission_name.startswith('hg.fork.'):
+                defaults['default_fork'] = p.permission.permission_name
 
-                if p.permission.permission_name.startswith('hg.fork.'):
-                    defaults['default_fork'] = p.permission.permission_name
+        return htmlfill.render(
+            render('admin/permissions/permissions.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
 
-            return htmlfill.render(
-                render('admin/permissions/permissions.html'),
-                defaults=defaults,
-                encoding="UTF-8",
-                force_defaults=False
-            )
-        else:
-            return redirect(url('admin_home'))
+    def permission_ips(self):
+        c.active = 'ips'
+        c.user = User.get_default_user()
+        c.user_ip_map = UserIpMap.query()\
+                        .filter(UserIpMap.user == c.user).all()
+
+        return render('admin/permissions/permissions.html')
+
+    def permission_perms(self):
+        c.active = 'perms'
+        c.user = User.get_default_user()
+        c.perm_user = c.user.AuthUser
+        return render('admin/permissions/permissions.html')

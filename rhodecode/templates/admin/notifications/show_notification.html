@@ -2,7 +2,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Show notification')} ${c.rhodecode_user.username} &middot; ${c.rhodecode_name}
+    ${_('Show notification')} ${c.rhodecode_user.username}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -36,7 +39,7 @@
               ${c.notification.description}
           </div>
           <div class="delete-notifications">
-            <span id="${c.notification.notification_id}" class="delete-notification delete_icon action"></span>
+            <span id="${c.notification.notification_id}" class="delete-notification action"><i class="icon-minus-sign" id="yui-gen24"></i></span>
           </div>
         </div>
         <div class="notification-body">

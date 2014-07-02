@@ -2,11 +2,15 @@
 <%inherit file="root.html"/>
 
 <!-- HEADER -->
-<div id="header-dd"></div>
 <div id="header">
     <div id="header-inner" class="title">
         <div id="logo">
-            <h1><a href="${h.url('home')}">${c.rhodecode_name}</a></h1>
+            <div class="header">
+                <a href="${h.url('home')}"><img src="${h.url('/images/rhodecode-logo-white-216x60.png')}" alt="RhodeCode"/></a>
+            </div>
+            %if c.rhodecode_name:
+             <div class="branding">- ${c.rhodecode_name}</div>
+            %endif
         </div>
         <!-- MENU -->
         ${self.page_nav()}
@@ -18,16 +22,7 @@
 
 <!-- CONTENT -->
 <div id="content">
-    <div class="flash_msg">
-        <% messages = h.flash.pop_messages() %>
-        % if messages:
-        <ul id="flash-messages">
-            % for message in messages:
-            <li class="${message.category}_msg">${message}</li>
-            % endfor
-        </ul>
-        % endif
-    </div>
+    ${self.flash_msg()}
     <div id="main">
         ${next.main()}
     </div>
@@ -42,15 +37,13 @@
                ${_('Server instance: %s') % c.rhodecode_instanceid if c.rhodecode_instanceid else ''}
            </p>
            <p class="footer-link-right">
-               <a href="${h.url('rhodecode_official')}">
                RhodeCode
                %if c.visual.show_version:
                    ${c.rhodecode_version}
                %endif
-               </a>
-               &copy; 2010-${h.datetime.today().year} by Marcin Kuzminski and others
+               &copy; 2010-${h.datetime.today().year}, <a href="${h.url('rhodecode_official')}" target="_blank">RhodeCode GmbH</a>. All rights reserved.
                %if c.rhodecode_bugtracker:
-                   &ndash; <a href="${c.rhodecode_bugtracker}">${_('Report a bug')}</a>
+                   &ndash; <a href="${c.rhodecode_bugtracker}" target="_blank">${_('Support')}</a>
                %endif
            </p>
        </div>
@@ -60,6 +53,11 @@
 <!-- END FOOTER -->
 
 ### MAKO DEFS ###
+
+<%def name="flash_msg()">
+    <%include file="/base/flash_msg.html"/>
+</%def>
+
 <%def name="breadcrumbs()">
     <div class="breadcrumbs">
     ${self.breadcrumbs_links()}
@@ -68,28 +66,31 @@
 
 <%def name="admin_menu()">
   <ul class="admin_menu">
-      <li>${h.link_to(_('Admin journal'),h.url('admin_home'),class_='journal ')}</li>
-      <li>${h.link_to(_('Repositories'),h.url('repos'),class_='repos')}</li>
-      <li>${h.link_to(_('Repository groups'),h.url('repos_groups'),class_='repos_groups')}</li>
-      <li>${h.link_to(_('Users'),h.url('users'),class_='users')}</li>
-      <li>${h.link_to(_('User groups'),h.url('users_groups'),class_='groups')}</li>
-      <li>${h.link_to(_('Permissions'),h.url('edit_permission',id='default'),class_='permissions')}</li>
-      <li>${h.link_to(_('LDAP'),h.url('ldap_home'),class_='ldap')}</li>
-      <li>${h.link_to(_('Defaults'),h.url('defaults'),class_='defaults')}</li>
-      <li class="last">${h.link_to(_('Settings'),h.url('admin_settings'),class_='settings')}</li>
+      <li><a href="${h.url('admin_home')}"><i class="icon-book"></i> ${_('Admin journal')}</a></li>
+      <li><a href="${h.url('repos')}"><i class="icon-archive"></i> ${_('Repositories')}</a></li>
+      <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository groups')}</a></li>
+      <li><a href="${h.url('users')}"><i class="icon-user"></i> ${_('Users')}</a></li>
+      <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User groups')}</a></li>
+      <li><a href="${h.url('admin_permissions')}"><i class="icon-ban-circle"></i> ${_('Permissions')}</a></li>
+      <li><a href="${h.url('auth_home')}"><i class="icon-key"></i> ${_('Authentication')}</a></li>
+      <li><a href="${h.url('defaults')}"><i class="icon-wrench"></i> ${_('Defaults')}</a></li>
+      <li class="last"><a href="${h.url('admin_settings')}"><i class="icon-cog"></i> ${_('Settings')}</a></li>
   </ul>
+
 </%def>
 
+
+## admin menu used for people that have some admin resources
 <%def name="admin_menu_simple(repositories=None, repository_groups=None, user_groups=None)">
   <ul>
    %if repositories:
-      <li>${h.link_to(_('Repositories'),h.url('repos'),class_='repos')}</li>
+      <li><a href="${h.url('repos')}"><i class="icon-archive"></i> ${_('Repositories')}</a></li>
    %endif
    %if repository_groups:
-      <li>${h.link_to(_('Repository groups'),h.url('repos_groups'),class_='repos_groups')}</li>
+      <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository groups')}</a></li>
    %endif
    %if user_groups:
-      <li>${h.link_to(_('User groups'),h.url('users_groups'),class_='groups')}</li>
+      <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User groups')}</a></li>
    %endif
   </ul>
 </%def>
@@ -110,31 +111,60 @@
 
   <!--- CONTEXT BAR -->
   <div id="context-bar" class="box">
+      <h2>
+        %if h.is_hg(c.rhodecode_db_repo):
+          <i class="icon-hg" style="color: #316293; font-size: 24px"></i>
+        %endif
+        %if h.is_git(c.rhodecode_db_repo):
+          <i class="icon-git" style="color: #e85634; font-size: 24px"></i>
+        %endif
+
+        ## public/private
+        %if c.rhodecode_db_repo.private:
+          <i class="icon-lock"></i>
+        %else:
+          <i class="icon-unlock-alt"></i>
+        %endif
+        ${h.repo_link(c.rhodecode_db_repo.groups_and_repo)}
+
+        %if current == 'createfork':
+         - ${_('Create fork')}
+        %endif
+      </h2>
+      <!--
       <div id="breadcrumbs">
         ${h.link_to(_(u'Repositories'),h.url('home'))}
         &raquo;
         ${h.repo_link(c.rhodecode_db_repo.groups_and_repo)}
       </div>
+      -->
       <ul id="context-pages" class="horizontal-list">
-        <li ${is_current('summary')}><a href="${h.url('summary_home', repo_name=c.repo_name)}" class="summary">${_('Summary')}</a></li>
-        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}" class="changelogs">${_('Changelog')}</a></li>
-        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name)}" class="files"></span>${_('Files')}</a></li>
+        <li ${is_current('summary')}><a href="${h.url('summary_home', repo_name=c.repo_name)}"><i class="icon-file-text"></i> ${_('Summary')}</a></li>
+        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
+        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name)}"><i class="icon-file"></i> ${_('Files')}</a></li>
         <li ${is_current('switch-to')}>
-          <a href="#" id="branch_tag_switcher_2" class="dropdown switch-to"></span>${_('Switch To')}</a>
+          <a href="#" id="branch_tag_switcher_2" class="dropdown"><i class="icon-random"></i> ${_('Switch To')}</a>
           <ul id="switch_to_list_2" class="switch_to submenu">
             <li><a href="#">${_('Loading...')}</a></li>
           </ul>
         </li>
         <li ${is_current('options')}>
-          <a href="#" class="dropdown options"></span>${_('Options')}</a>
+             %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
+               <a href="${h.url('edit_repo',repo_name=c.repo_name)}" class="dropdown"><i class="icon-cogs"></i> ${_('Options')}</a>
+             %else:
+               <a href="#" class="dropdown"><i class="icon-cogs"></i> ${_('Options')}</a>
+             %endif
           <ul>
              %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
-                   <li>${h.link_to(_('Settings'),h.url('edit_repo',repo_name=c.repo_name),class_='settings')}</li>
+                   <li><a href="${h.url('edit_repo',repo_name=c.repo_name)}"><i class="icon-cog"></i> ${_('Settings')}</a></li>
              %endif
               %if c.rhodecode_db_repo.fork:
-               <li>${h.link_to(_('Compare fork'),h.url('compare_url',repo_name=c.rhodecode_db_repo.fork.repo_name,org_ref_type='branch',org_ref='default',other_repo=c.repo_name,other_ref_type='branch',other_ref=request.GET.get('branch') or 'default', merge=1),class_='compare_request')}</li>
+               <li><a href="${h.url('compare_url',repo_name=c.rhodecode_db_repo.fork.repo_name,org_ref_type=c.rhodecode_db_repo.landing_rev[0],org_ref=c.rhodecode_db_repo.landing_rev[1], other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.rhodecode_db_repo.landing_rev[0],other_ref=request.GET.get('branch') or c.rhodecode_db_repo.landing_rev[1], merge=1)}">
+                   <i class="icon-loop"></i> ${_('Compare fork')}</a></li>
               %endif
-              <li>${h.link_to(_('Search'),h.url('search_repo',repo_name=c.repo_name),class_='search')}</li>
+              <li><a href="${h.url('compare_home',repo_name=c.repo_name)}"><i class="icon-loop"></i> ${_('Compare')}</a></li>
+
+              <li><a href="${h.url('search_repo',repo_name=c.repo_name)}"><i class="icon-search"></i> ${_('Search')}</a></li>
 
               %if h.HasRepoPermissionAny('repository.write','repository.admin')(c.repo_name) and c.rhodecode_db_repo.enable_locking:
                 %if c.rhodecode_db_repo.locked[0]:
@@ -148,19 +178,19 @@
               %if c.rhodecode_user.username != 'default':
                   <li>
                    <a class="${follow_class()}" onclick="javascript:toggleFollowingRepo(this,${c.rhodecode_db_repo.repo_id},'${str(h.get_token())}');">
-                    <span class="show-follow">${_('Follow')}</span>
-                    <span class="show-following">${_('Unfollow')}</span>
+                    <span class="show-follow"><i class="icon-heart-empty"></i> ${_('Follow')}</span>
+                    <span class="show-following"><i class="icon-heart"></i> ${_('Unfollow')}</span>
                   </a>
                   </li>
-                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}" class="fork">${_('Fork')}</a></li>
+                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Fork')}</a></li>
                   %if h.is_hg(c.rhodecode_repo):
-                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}" class="pull-request">${_('Create Pull Request')}</a></li>
+                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Create Pull Request')}</a></li>
                   %endif
               %endif
              </ul>
         </li>
         <li ${is_current('showpullrequest')}>
-          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests for %s') % c.repo_name}" class="pull-request">${_('Pull Requests')}
+          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests for %s') % c.repo_name}"> <i class="icon-code-fork"></i> ${_('Pull Requests')}
             %if c.repository_pull_requests:
               <span>${c.repository_pull_requests}</span>
             %endif
@@ -234,7 +264,7 @@
                         %endif
                         </div>
                         <div class="submit">
-                            ${h.submit('sign_in',_('Log In'),class_="ui-btn xsmall")}
+                            ${h.submit('sign_in',_('Log In'),class_="btn btn-mini")}
                         </div>
                     </div>
                 </div>
@@ -249,7 +279,7 @@
             <div class="links_right">
             <ol class="links">
               <li><a href="${h.url('notifications')}">${_('Notifications')}: ${c.unread_notifications}</a></li>
-              <li>${h.link_to(_(u'My account'),h.url('admin_settings_my_account'))}</li>
+              <li>${h.link_to(_(u'My account'),h.url('my_account'))}</li>
               <li class="logout">${h.link_to(_(u'Log Out'),h.url('logout_home'))}</li>
             </ol>
             </div>
@@ -269,58 +299,52 @@
         <ul id="quick" class="horizontal-list">
           <!-- repo switcher -->
           <li ${is_current('repositories')}>
-              <a class="menu_link repo_switcher childs" id="repo_switcher" title="${_('Switch repository')}" href="${h.url('home')}">
-              ${_('Repositories')}
-              </a>
-              <ul id="repo_switcher_list" class="repo_switcher">
-                  <li>
-                      <a href="#">${_('Loading...')}</a>
-                  </li>
-              </ul>
+            <input id="repo_switcher" name="repo_switcher" type="hidden">
           </li>
+
           ##ROOT MENU
           %if c.rhodecode_user.username != 'default':
             <li ${is_current('journal')}>
-              <a class="menu_link journal" title="${_('Show recent activity')}"  href="${h.url('journal')}">
-              ${_('Journal')}
+              <a class="menu_link" title="${_('Show recent activity')}"  href="${h.url('journal')}">
+                <i class="icon-book"></i> ${_('Journal')}
               </a>
             </li>
           %else:
             <li ${is_current('journal')}>
-              <a class="menu_link journal" title="${_('Public journal')}"  href="${h.url('public_journal')}">
-              ${_('Public journal')}
+              <a class="menu_link" title="${_('Public journal')}"  href="${h.url('public_journal')}">
+                <i class="icon-book"></i> ${_('Public journal')}
               </a>
             </li>
           %endif
             <li ${is_current('gists')}>
-              <a class="menu_link gists childs" title="${_('Show public gists')}"  href="${h.url('gists')}">
-              ${_('Gists')}
+              <a class="menu_link childs" title="${_('Show public gists')}"  href="${h.url('gists')}">
+                <i class="icon-file-2"></i> ${_('Gists')}
               </a>
                 <ul class="admin_menu">
-                  <li>${h.link_to(_('Create new gist'),h.url('new_gist'),class_='gists-new ')}</li>
-                  <li>${h.link_to(_('All public gists'),h.url('gists'),class_='gists ')}</li>
+                  <li><a href="${h.url('new_gist', public=1)}"><i class="icon-file-alt"></i> ${_('Create new gist')}</a></li>
+                  <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All public gists')}</a></li>
                   %if c.rhodecode_user.username != 'default':
-                    <li>${h.link_to(_('My public gists'),h.url('gists', public=1),class_='gists')}</li>
-                    <li>${h.link_to(_('My private gists'),h.url('gists', private=1),class_='gists-private ')}</li>
+                    <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My public gists')}</a></li>
+                    <li><a href="${h.url('gists', private=1)}"><i class="icon-file-text"></i> ${_('My private gists')}</a></li>
                   %endif
                 </ul>
             </li>
           <li ${is_current('search')}>
-              <a class="menu_link search" title="${_('Search in repositories')}"  href="${h.url('search')}">
-              ${_('Search')}
+              <a class="menu_link" title="${_('Search in repositories')}"  href="${h.url('search')}">
+                <i class="icon-search"></i> ${_('Search')}
               </a>
           </li>
           % if h.HasPermissionAll('hg.admin')('access admin main page'):
             <li ${is_current('admin')}>
-              <a class="menu_link admin childs" title="${_('Admin')}" href="${h.url('admin_home')}">
-                ${_('Admin')}
+              <a class="menu_link childs" title="${_('Admin')}" href="${h.url('admin_home')}">
+                <i class="icon-cog"></i> ${_('Admin')}
               </a>
               ${admin_menu()}
             </li>
           % elif c.rhodecode_user.repositories_admin or c.rhodecode_user.repository_groups_admin or c.rhodecode_user.user_groups_admin:
           <li ${is_current('admin')}>
-              <a class="menu_link admin childs" title="${_('Admin')}">
-                ${_('Admin')}
+              <a class="menu_link childs" title="${_('Admin')}">
+                <i class="icon-cog"></i> ${_('Admin')}
               </a>
               ${admin_menu_simple(c.rhodecode_user.repositories_admin,
                                   c.rhodecode_user.repository_groups_admin,
@@ -328,34 +352,238 @@
           </li>
           % endif
           ${usermenu()}
-<script type="text/javascript">
-    YUE.on('repo_switcher','mouseover',function(){
-      var target = 'q_filter_rs';
-      var qfilter_activate = function(){
-          var nodes = YUQ('ul#repo_switcher_list li a.repo_name');
-          var func = function(node){
-              return node.parentNode;
-          }
-          q_filter(target,nodes,func);
-      }
 
-      var loaded = YUD.hasClass('repo_switcher','loaded');
-      if(!loaded){
-         YUD.addClass('repo_switcher','loaded');
-         ypjax("${h.url('repo_switcher')}",'repo_switcher_list',
-             function(o){qfilter_activate();YUD.get(target).focus()},
-             function(o){YUD.removeClass('repo_switcher','loaded');}
-             ,null);
-      }else{
-         YUD.get(target).focus();
-      }
-      return false;
-     });
+    <script type="text/javascript">
+        var visual_show_public_icon = "${c.visual.show_public_icon}" == "True";
+        var cache = {}
+        /*format the look of items in the list*/
+        var format = function(state){
+            if (!state.id){
+              return state.text; // optgroup
+            }
+            var obj_dict = state.obj;
+            var tmpl = '';
 
-     YUE.on('header-dd', 'click',function(e){
-         YUD.addClass('header-inner', 'hover');
-         YUD.addClass('content', 'hover');
-     });
+            if(obj_dict && state.type == 'repo'){
+                if(obj_dict['repo_type'] === 'hg'){
+                    tmpl += '<i class="icon-hg"></i> ';
+                }
+                else if(obj_dict['repo_type'] === 'git'){
+                    tmpl += '<i class="icon-git"></i> ';
+                }
+                if(obj_dict['private']){
+                    tmpl += '<i class="icon-lock" style="color: #e85634;"></i> ';
+                }
+                else if(visual_show_public_icon){
+                    tmpl += '<i class="icon-unlock-alt"></i> ';
+                }
+            }
+            if(obj_dict && state.type == 'group'){
+                    tmpl += '<i class="icon-folder-close"></i> ';
+            }
+            tmpl += state.text;
+            return tmpl;
+        }
 
-</script>
+        $("#repo_switcher").select2({
+            placeholder: '<i class="icon-archive"></i> ${_('Repositories')} <i class="icon-caret-down"></i>',
+            dropdownAutoWidth: true,
+            formatResult: format,
+            formatSelection: format,
+            formatNoMatches: function(term){
+                return "${_('No matches found')}";
+            },
+            containerCssClass: "repo-switcher",
+            dropdownCssClass: "repo-switcher-dropdown",
+            escapeMarkup: function(m){
+                // don't escape our custom placeholder
+                if(m.substr(0,28) == '<i class="icon-archive"></i>'){
+                    return m;
+                }
+
+                return Select2.util.escapeMarkup(m);
+            },
+            query: function(query){
+              var key = 'cache';
+              var cached = cache[key] ;
+              if(cached) {
+                var data = {results: []};
+                //filter results
+                $.each(cached.results, function(){
+                    var section = this.text;
+                    var children = [];
+                    $.each(this.children, function(){
+                        if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                            children.push({'id': this.id, 'text': this.text, 'type': this.type, 'obj': this.obj})
+                        }
+                    })
+                    if(children.length !== 0){
+                        data.results.push({'text': section, 'children': children})
+                    }
+
+                });
+                query.callback(data);
+              }else{
+                  $.ajax({
+                    url: "${h.url('repo_switcher_data')}",
+                    data: {},
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function(data) {
+                      cache[key] = data;
+                      query.callback({results: data.results});
+                    }
+                  })
+              }
+            },
+        });
+
+        $("#repo_switcher").on('select2-selecting', function(e){
+            e.preventDefault();
+            window.location = pyroutes.url('summary_home', {'repo_name': e.val})
+        })
+
+        ## Global mouse bindings ##
+
+        // general help "?"
+        Mousetrap.bind(['?'], function(e) {
+            $('#help_kb').modal({})
+        });
+
+        // / open the quick filter
+        Mousetrap.bind(['/'], function(e) {
+            $("#repo_switcher").select2("open");
+
+            // return false to prevent default browser behavior
+            // and stop event from bubbling
+            return false;
+        });
+
+        // ctrl/command+b, show the the main bar
+        Mousetrap.bind(['command+b', 'ctrl+b'], function(e) {
+            if($('#header-inner').hasClass('hover') && $('#content').hasClass('hover')){
+                $('#header-inner').removeClass('hover');
+                $('#content').removeClass('hover');
+            }
+            else{
+                $('#header-inner').addClass('hover');
+                $('#content').addClass('hover');
+            }
+            return false;
+        });
+
+        // general nav g + action
+        Mousetrap.bind(['g h'], function(e) {
+            window.location = pyroutes.url('home');
+        });
+        Mousetrap.bind(['g g'], function(e) {
+            window.location = pyroutes.url('gists', {'private':1});
+        });
+        Mousetrap.bind(['g G'], function(e) {
+            window.location = pyroutes.url('gists', {'public':1});
+        });
+        Mousetrap.bind(['n g'], function(e) {
+            window.location = pyroutes.url('new_gist');
+        });
+        Mousetrap.bind(['n r'], function(e) {
+            window.location = pyroutes.url('new_repo');
+        });
+
+        % if hasattr(c, 'repo_name') and hasattr(c, 'rhodecode_db_repo'):
+            // nav in repo context
+            Mousetrap.bind(['g s'], function(e) {
+                window.location = pyroutes.url('summary_home', {'repo_name': REPO_NAME});
+            });
+            Mousetrap.bind(['g c'], function(e) {
+                window.location = pyroutes.url('changelog_home', {'repo_name': REPO_NAME});
+            });
+            Mousetrap.bind(['g F'], function(e) {
+                window.location = pyroutes.url('files_home', {'repo_name': REPO_NAME, 'revision': '${c.rhodecode_db_repo.landing_rev[1]}', 'f_path': '', 'search': '1'});
+            });
+            Mousetrap.bind(['g f'], function(e) {
+                window.location = pyroutes.url('files_home', {'repo_name': REPO_NAME, 'revision': '${c.rhodecode_db_repo.landing_rev[1]}', 'f_path': ''});
+            });
+            Mousetrap.bind(['g o'], function(e) {
+                window.location = pyroutes.url('edit_repo', {'repo_name': REPO_NAME});
+            });
+            Mousetrap.bind(['g O'], function(e) {
+                window.location = pyroutes.url('edit_repo_perms', {'repo_name': REPO_NAME});
+            });
+        % endif
+
+    </script>
 </%def>
+
+<div class="modal" id="help_kb" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">${_('Keyboard shortcuts')}</h4>
+        </div>
+        <div class="modal-body">
+           <div class="row">
+              <div class="col-md-5">
+                <table class="keyboard-mappings">
+                    <tbody>
+                  <tr>
+                    <th></th>
+                    <th>${_('Site-wide shortcuts')}</th>
+                  </tr>
+                  <%
+                     elems = [
+                         ('/', 'Open quick search box'),
+                         ('ctrl/cmd+b', 'Show main settings bar'),
+                         ('g h', 'Goto home page'),
+                         ('g g', 'Goto my private gists page'),
+                         ('g G', 'Goto my public gists page'),
+                         ('n r', 'New repository page'),
+                         ('n g', 'New gist page'),
+                     ]
+                  %>
+                  %for key, desc in elems:
+                  <tr>
+                    <td class="keys">
+                      <span class="key">${key}</span>
+                    </td>
+                    <td>${desc}</td>
+                  </tr>
+                %endfor
+                </tbody>
+                  </table>
+              </div>
+              <div class="col-md-offset-5">
+                <table class="keyboard-mappings">
+                <tbody>
+                  <tr>
+                    <th></th>
+                    <th>${_('Repositories')}</th>
+                  </tr>
+                  <%
+                     elems = [
+                         ('g s', 'Goto summary page'),
+                         ('g c', 'Goto changelog page'),
+                         ('g f', 'Goto files page'),
+                         ('g F', 'Goto files page with file search activated'),
+                         ('g o', 'Goto repository settings'),
+                         ('g O', 'Goto repository permissions settings'),
+                     ]
+                  %>
+                  %for key, desc in elems:
+                  <tr>
+                    <td class="keys">
+                      <span class="key">${key}</span>
+                    </td>
+                    <td>${desc}</td>
+                  </tr>
+                %endfor
+                </tbody>
+            </table>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

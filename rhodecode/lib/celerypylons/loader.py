@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from celery.loaders.base import BaseLoader
 from pylons import config
 

@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.admin.repos
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Repositories controller for RhodeCode
-
-    :created_on: Apr 7, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,26 +11,36 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.admin.repos
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Repositories controller for RhodeCode
+
+:created_on: Apr 7, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import logging
 import traceback
 import formencode
 from formencode import htmlfill
-
-from webob.exc import HTTPInternalServerError, HTTPForbidden
-from pylons import request, session, tmpl_context as c, url
+from webob.exc import HTTPInternalServerError, HTTPForbidden, HTTPNotFound
+from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql.expression import func
 
-import rhodecode
 from rhodecode.lib import helpers as h
 from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
-    HasPermissionAnyDecorator, HasRepoPermissionAllDecorator, NotAnonymous,\
-    HasPermissionAny, HasReposGroupPermissionAny, HasRepoPermissionAnyDecorator
+    HasRepoPermissionAllDecorator, NotAnonymous,HasPermissionAny, \
+    HasRepoGroupPermissionAny, HasRepoPermissionAnyDecorator
 from rhodecode.lib.base import BaseRepoController, render
-from rhodecode.lib.utils import action_logger, repo_name_slug
+from rhodecode.lib.utils import action_logger, repo_name_slug, jsonify
 from rhodecode.lib.helpers import get_token
+from rhodecode.lib.vcs import RepositoryError
 from rhodecode.model.meta import Session
 from rhodecode.model.db import User, Repository, UserFollowing, RepoGroup,\
     RhodeCodeSetting, RepositoryField
@@ -49,7 +48,6 @@ from rhodecode.model.forms import RepoForm, RepoFieldForm, RepoPermsForm
 from rhodecode.model.scm import ScmModel, RepoGroupList, RepoList
 from rhodecode.model.repo import RepoModel
 from rhodecode.lib.compat import json
-from sqlalchemy.sql.expression import func
 from rhodecode.lib.exceptions import AttachedForksError
 from rhodecode.lib.utils2 import safe_int
 
@@ -67,15 +65,32 @@ class ReposController(BaseRepoController):
     def __before__(self):
         super(ReposController, self).__before__()
 
-    def __load_defaults(self):
+    def _load_repo(self, repo_name):
+        repo_obj = Repository.get_by_repo_name(repo_name)
+
+        if repo_obj is None:
+            h.not_mapped_error(repo_name)
+            return redirect(url('repos'))
+
+        return repo_obj
+
+    def __load_defaults(self, repo=None):
         acl_groups = RepoGroupList(RepoGroup.query().all(),
                                perm_set=['group.write', 'group.admin'])
         c.repo_groups = RepoGroup.groups_choices(groups=acl_groups)
         c.repo_groups_choices = map(lambda k: unicode(k[0]), c.repo_groups)
 
-        repo_model = RepoModel()
-        c.users_array = repo_model.get_users_js()
-        c.users_groups_array = repo_model.get_users_groups_js()
+        # in case someone no longer have a group.write access to a repository
+        # pre fill the list with this entry, we don't care if this is the same
+        # but it will allow saving repo data properly.
+
+        repo_group = None
+        if repo:
+            repo_group = repo.group
+        if repo_group and unicode(repo_group.group_id) not in c.repo_groups_choices:
+            c.repo_groups_choices.append(unicode(repo_group.group_id))
+            c.repo_groups.append(RepoGroup._generate_choice(repo_group))
+
         choices, c.landing_revs = ScmModel().get_repo_landing_revs()
         c.landing_revs_choices = choices
 
@@ -85,62 +100,24 @@ class ReposController(BaseRepoController):
 
         :param repo_name:
         """
-        self.__load_defaults()
-
-        c.repo_info = db_repo = Repository.get_by_repo_name(repo_name)
-        repo = db_repo.scm_instance
-
-        if c.repo_info is None:
-            h.not_mapped_error(repo_name)
-            return redirect(url('repos'))
+        c.repo_info = self._load_repo(repo_name)
+        self.__load_defaults(c.repo_info)
 
         ##override defaults for exact repo info here git/hg etc
         choices, c.landing_revs = ScmModel().get_repo_landing_revs(c.repo_info)
         c.landing_revs_choices = choices
-
-        c.default_user_id = User.get_default_user().user_id
-        c.in_public_journal = UserFollowing.query()\
-            .filter(UserFollowing.user_id == c.default_user_id)\
-            .filter(UserFollowing.follows_repository == c.repo_info).scalar()
-
-        if c.repo_info.stats:
-            # this is on what revision we ended up so we add +1 for count
-            last_rev = c.repo_info.stats.stat_on_revision + 1
-        else:
-            last_rev = 0
-        c.stats_revision = last_rev
-
-        c.repo_last_rev = repo.count() if repo.revisions else 0
-
-        if last_rev == 0 or c.repo_last_rev == 0:
-            c.stats_percentage = 0
-        else:
-            c.stats_percentage = '%.2f' % ((float((last_rev)) /
-                                            c.repo_last_rev) * 100)
-
-        c.repo_fields = RepositoryField.query()\
-            .filter(RepositoryField.repository == db_repo).all()
-
         defaults = RepoModel()._get_defaults(repo_name)
 
-        _repos = Repository.query().order_by(Repository.repo_name).all()
-        read_access_repos = RepoList(_repos)
-        c.repos_list = [('', _('--REMOVE FORK--'))]
-        c.repos_list += [(x.repo_id, x.repo_name)
-                         for x in read_access_repos
-                         if x.repo_id != c.repo_info.repo_id]
-
-        defaults['id_fork_of'] = db_repo.fork.repo_id if db_repo.fork else ''
         return defaults
 
     def index(self, format='html'):
         """GET /repos: All items in the collection"""
         # url('repos')
-        repo_list = Repository.query()\
-                                .order_by(func.lower(Repository.repo_name))\
-                                .all()
+        _list = Repository.query()\
+                        .order_by(func.lower(Repository.repo_name))\
+                        .all()
 
-        c.repos_list = RepoList(repo_list, perm_set=['repository.admin'])
+        c.repos_list = RepoList(_list, perm_set=['repository.admin'])
         repos_data = RepoModel().get_repos_as_dict(repos_list=c.repos_list,
                                                    admin=True,
                                                    super_user_actions=True)
@@ -157,33 +134,19 @@ class ReposController(BaseRepoController):
 
         self.__load_defaults()
         form_result = {}
+        task_id = None
         try:
+            # CanWriteToGroup validators checks permissions of this POST
             form_result = RepoForm(repo_groups=c.repo_groups_choices,
                                    landing_revs=c.landing_revs_choices)()\
                             .to_python(dict(request.POST))
 
-            new_repo = RepoModel().create(form_result,
-                                          self.rhodecode_user.user_id)
-            if form_result['clone_uri']:
-                h.flash(_('Created repository %s from %s') \
-                    % (form_result['repo_name'], form_result['clone_uri']),
-                    category='success')
-            else:
-                repo_url = h.link_to(form_result['repo_name'],
-                    h.url('summary_home', repo_name=form_result['repo_name_full']))
-                h.flash(h.literal(_('Created repository %s') % repo_url),
-                        category='success')
-
-            if request.POST.get('user_created'):
-                # created by regular non admin user
-                action_logger(self.rhodecode_user, 'user_created_repo',
-                              form_result['repo_name_full'], self.ip_addr,
-                              self.sa)
-            else:
-                action_logger(self.rhodecode_user, 'admin_created_repo',
-                              form_result['repo_name_full'], self.ip_addr,
-                              self.sa)
-            Session().commit()
+            # create is done sometimes async on celery, db transaction
+            # management is handled there.
+            task = RepoModel().create(form_result, self.rhodecode_user.user_id)
+            from celery.result import BaseAsyncResult
+            if isinstance(task, BaseAsyncResult):
+                task_id = task.task_id
         except formencode.Invalid, errors:
             return htmlfill.render(
                 render('admin/repos/repo_add.html'),
@@ -194,14 +157,14 @@ class ReposController(BaseRepoController):
 
         except Exception:
             log.error(traceback.format_exc())
-            msg = _('Error creating repository %s') \
-                    % form_result.get('repo_name')
+            msg = (_('Error creating repository %s')
+                   % form_result.get('repo_name'))
             h.flash(msg, category='error')
-            if c.rhodecode_user.is_admin:
-                return redirect(url('repos'))
             return redirect(url('home'))
-        #redirect to our new repo !
-        return redirect(url('summary_home', repo_name=new_repo.repo_name))
+
+        return redirect(h.url('repo_creating_home',
+                              repo_name=form_result['repo_name_full'],
+                              task_id=task_id))
 
     @NotAnonymous()
     def create_repository(self):
@@ -213,7 +176,11 @@ class ReposController(BaseRepoController):
             #but maybe you have at least write permission to a parent group ?
             _gr = RepoGroup.get(parent_group)
             gr_name = _gr.group_name if _gr else None
-            if not HasReposGroupPermissionAny('group.admin', 'group.write')(group_name=gr_name):
+            # create repositories with write permission on group is set to true
+            create_on_write = HasPermissionAny('hg.create.write_on_repogroup.true')()
+            group_admin = HasRepoGroupPermissionAny('group.admin')(group_name=gr_name)
+            group_write = HasRepoGroupPermissionAny('group.write')(group_name=gr_name)
+            if not (group_admin or (group_write and create_on_write)):
                 raise HTTPForbidden
 
         acl_groups = RepoGroupList(RepoGroup.query().all(),
@@ -237,6 +204,51 @@ class ReposController(BaseRepoController):
             encoding="UTF-8"
         )
 
+    @LoginRequired()
+    @NotAnonymous()
+    def repo_creating(self, repo_name):
+        c.repo = repo_name
+        c.task_id = request.GET.get('task_id')
+        if not c.repo:
+            raise HTTPNotFound()
+        return render('admin/repos/repo_creating.html')
+
+    @LoginRequired()
+    @NotAnonymous()
+    @jsonify
+    def repo_check(self, repo_name):
+        c.repo = repo_name
+        task_id = request.GET.get('task_id')
+
+        if task_id and task_id not in ['None']:
+            from rhodecode import CELERY_ON
+            from celery.result import AsyncResult
+            if CELERY_ON:
+                task = AsyncResult(task_id)
+                if task.failed():
+                    raise HTTPInternalServerError(task.traceback)
+
+        repo = Repository.get_by_repo_name(repo_name)
+        if repo and repo.repo_state == Repository.STATE_CREATED:
+            if repo.clone_uri:
+                clone_uri = repo.clone_uri_hidden
+                h.flash(_('Created repository %s from %s')
+                        % (repo.repo_name, clone_uri), category='success')
+            else:
+                repo_url = h.link_to(repo.repo_name,
+                                     h.url('summary_home',
+                                           repo_name=repo.repo_name))
+                fork = repo.fork
+                if fork:
+                    fork_name = fork.repo_name
+                    h.flash(h.literal(_('Forked repository %s as %s')
+                            % (fork_name, repo_url)), category='success')
+                else:
+                    h.flash(h.literal(_('Created repository %s') % repo_url),
+                            category='success')
+            return {'result': True}
+        return {'result': False}
+
     @HasRepoPermissionAllDecorator('repository.admin')
     def update(self, repo_name):
         """
@@ -247,7 +259,12 @@ class ReposController(BaseRepoController):
         #    h.form(url('repo', repo_name=ID),
         #           method='put')
         # url('repo', repo_name=ID)
-        self.__load_defaults()
+        c.repo_info = self._load_repo(repo_name)
+        c.active = 'settings'
+        c.repo_fields = RepositoryField.query()\
+            .filter(RepositoryField.repository == c.repo_info).all()
+        self.__load_defaults(c.repo_info)
+
         repo_model = RepoModel()
         changed_name = repo_name
         #override the choices with extracted revisions !
@@ -333,8 +350,46 @@ class ReposController(BaseRepoController):
 
         return redirect(url('repos'))
 
+    @HasPermissionAllDecorator('hg.admin')
+    def show(self, repo_name, format='html'):
+        """GET /repos/repo_name: Show a specific item"""
+        # url('repo', repo_name=ID)
+
     @HasRepoPermissionAllDecorator('repository.admin')
-    def set_repo_perm_member(self, repo_name):
+    def edit(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
+        # url('edit_repo', repo_name=ID)
+        defaults = self.__load_data(repo_name)
+        if 'clone_uri' in defaults:
+            del defaults['clone_uri']
+
+        c.repo_fields = RepositoryField.query()\
+            .filter(RepositoryField.repository == c.repo_info).all()
+        c.active = 'settings'
+        return htmlfill.render(
+            render('admin/repos/repo_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
+
+    @HasRepoPermissionAllDecorator('repository.admin')
+    def edit_permissions(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
+        # url('edit_repo', repo_name=ID)
+        c.repo_info = self._load_repo(repo_name)
+        repo_model = RepoModel()
+        c.users_array = repo_model.get_users_js()
+        c.user_groups_array = repo_model.get_user_groups_js()
+        c.active = 'permissions'
+        defaults = RepoModel()._get_defaults(repo_name)
+
+        return htmlfill.render(
+            render('admin/repos/repo_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
+
+    def edit_permissions_update(self, repo_name):
         form = RepoPermsForm()().to_python(request.POST)
         RepoModel()._update_permissions(repo_name, form['perms_new'],
                                         form['perms_updates'])
@@ -343,15 +398,9 @@ class ReposController(BaseRepoController):
         #              repo_name, self.ip_addr, self.sa)
         Session().commit()
         h.flash(_('Repository permissions updated'), category='success')
-        return redirect(url('edit_repo', repo_name=repo_name))
+        return redirect(url('edit_repo_perms', repo_name=repo_name))
 
-    @HasRepoPermissionAllDecorator('repository.admin')
-    def delete_repo_perm_member(self, repo_name):
-        """
-        DELETE an existing repository permission user
-
-        :param repo_name:
-        """
+    def edit_permissions_revoke(self, repo_name):
         try:
             obj_type = request.POST.get('obj_type')
             obj_id = None
@@ -363,7 +412,7 @@ class ReposController(BaseRepoController):
             if obj_type == 'user':
                 RepoModel().revoke_user_permission(repo=repo_name, user=obj_id)
             elif obj_type == 'user_group':
-                RepoModel().revoke_users_group_permission(
+                RepoModel().revoke_user_group_permission(
                     repo=repo_name, group_name=obj_id
                 )
             #TODO: implement this
@@ -377,58 +426,155 @@ class ReposController(BaseRepoController):
             raise HTTPInternalServerError()
 
     @HasRepoPermissionAllDecorator('repository.admin')
-    def repo_stats(self, repo_name):
+    def edit_fields(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
+        # url('edit_repo', repo_name=ID)
+        c.repo_info = self._load_repo(repo_name)
+        c.repo_fields = RepositoryField.query()\
+            .filter(RepositoryField.repository == c.repo_info).all()
+        c.active = 'fields'
+        if request.POST:
+
+            return redirect(url('repo_edit_fields'))
+        return render('admin/repos/repo_edit.html')
+
+    @HasRepoPermissionAllDecorator('repository.admin')
+    def create_repo_field(self, repo_name):
+        try:
+            form_result = RepoFieldForm()().to_python(dict(request.POST))
+            new_field = RepositoryField()
+            new_field.repository = Repository.get_by_repo_name(repo_name)
+            new_field.field_key = form_result['new_field_key']
+            new_field.field_type = form_result['new_field_type']  # python type
+            new_field.field_value = form_result['new_field_value']  # set initial blank value
+            new_field.field_desc = form_result['new_field_desc']
+            new_field.field_label = form_result['new_field_label']
+            Session().add(new_field)
+            Session().commit()
+        except Exception, e:
+            log.error(traceback.format_exc())
+            msg = _('An error occurred during creation of field')
+            if isinstance(e, formencode.Invalid):
+                msg += ". " + e.msg
+            h.flash(msg, category='error')
+        return redirect(url('edit_repo_fields', repo_name=repo_name))
+
+    @HasRepoPermissionAllDecorator('repository.admin')
+    def delete_repo_field(self, repo_name, field_id):
+        field = RepositoryField.get_or_404(field_id)
+        try:
+            Session().delete(field)
+            Session().commit()
+        except Exception, e:
+            log.error(traceback.format_exc())
+            msg = _('An error occurred during removal of field')
+            h.flash(msg, category='error')
+        return redirect(url('edit_repo_fields', repo_name=repo_name))
+
+    @HasRepoPermissionAllDecorator('repository.admin')
+    def edit_advanced(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
+        # url('edit_repo', repo_name=ID)
+        c.repo_info = self._load_repo(repo_name)
+        c.default_user_id = User.get_default_user().user_id
+        c.in_public_journal = UserFollowing.query()\
+            .filter(UserFollowing.user_id == c.default_user_id)\
+            .filter(UserFollowing.follows_repository == c.repo_info).scalar()
+
+        _repos = Repository.query().order_by(Repository.repo_name).all()
+        read_access_repos = RepoList(_repos)
+        c.repos_list = [(None, _('-- Not a fork --'))]
+        c.repos_list += [(x.repo_id, x.repo_name)
+                         for x in read_access_repos
+                         if x.repo_id != c.repo_info.repo_id]
+
+        defaults = {
+            'id_fork_of': c.repo_info.fork.repo_id if c.repo_info.fork else ''
+        }
+
+        c.active = 'advanced'
+        if request.POST:
+            return redirect(url('repo_edit_advanced'))
+        return htmlfill.render(
+            render('admin/repos/repo_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
+
+    @HasRepoPermissionAllDecorator('repository.admin')
+    def edit_advanced_journal(self, repo_name):
         """
-        DELETE an existing repository statistics
+        Set's this repository to be visible in public journal,
+        in other words assing default user to follow this repo
 
         :param repo_name:
         """
 
-        try:
-            RepoModel().delete_stats(repo_name)
-            Session().commit()
-        except Exception, e:
-            log.error(traceback.format_exc())
-            h.flash(_('An error occurred during deletion of repository stats'),
-                    category='error')
-        return redirect(url('edit_repo', repo_name=repo_name))
+        cur_token = request.POST.get('auth_token')
+        token = get_token()
+        if cur_token == token:
+            try:
+                repo_id = Repository.get_by_repo_name(repo_name).repo_id
+                user_id = User.get_default_user().user_id
+                self.scm_model.toggle_following_repo(repo_id, user_id)
+                h.flash(_('Updated repository visibility in public journal'),
+                        category='success')
+                Session().commit()
+            except Exception:
+                h.flash(_('An error occurred during setting this'
+                          ' repository in public journal'),
+                        category='error')
+
+        else:
+            h.flash(_('Token mismatch'), category='error')
+        return redirect(url('edit_repo_advanced', repo_name=repo_name))
+
 
     @HasRepoPermissionAllDecorator('repository.admin')
-    def repo_cache(self, repo_name):
+    def edit_advanced_fork(self, repo_name):
         """
-        INVALIDATE existing repository cache
+        Mark given repository as a fork of another
 
         :param repo_name:
         """
-
         try:
-            ScmModel().mark_for_invalidation(repo_name)
+            fork_id = request.POST.get('id_fork_of')
+            repo = ScmModel().mark_as_fork(repo_name, fork_id,
+                                           self.rhodecode_user.username)
+            fork = repo.fork.repo_name if repo.fork else _('Nothing')
             Session().commit()
+            h.flash(_('Marked repo %s as fork of %s') % (repo_name, fork),
+                    category='success')
+        except RepositoryError, e:
+            log.error(traceback.format_exc())
+            h.flash(str(e), category='error')
         except Exception, e:
             log.error(traceback.format_exc())
-            h.flash(_('An error occurred during cache invalidation'),
+            h.flash(_('An error occurred during this operation'),
                     category='error')
-        return redirect(url('edit_repo', repo_name=repo_name))
+
+        return redirect(url('edit_repo_advanced', repo_name=repo_name))
 
     @HasRepoPermissionAllDecorator('repository.admin')
-    def repo_locking(self, repo_name):
+    def edit_advanced_locking(self, repo_name):
         """
         Unlock repository when it is locked !
 
         :param repo_name:
         """
-
         try:
             repo = Repository.get_by_repo_name(repo_name)
             if request.POST.get('set_lock'):
                 Repository.lock(repo, c.rhodecode_user.user_id)
+                h.flash(_('Locked repository'), category='success')
             elif request.POST.get('set_unlock'):
                 Repository.unlock(repo)
+                h.flash(_('Unlocked repository'), category='success')
         except Exception, e:
             log.error(traceback.format_exc())
             h.flash(_('An error occurred during unlocking'),
                     category='error')
-        return redirect(url('edit_repo', repo_name=repo_name))
+        return redirect(url('edit_repo_advanced', repo_name=repo_name))
 
     @HasRepoPermissionAnyDecorator('repository.write', 'repository.admin')
     def toggle_locking(self, repo_name):
@@ -458,121 +604,72 @@ class ReposController(BaseRepoController):
         return redirect(url('summary_home', repo_name=repo_name))
 
     @HasRepoPermissionAllDecorator('repository.admin')
-    def repo_public_journal(self, repo_name):
-        """
-        Set's this repository to be visible in public journal,
-        in other words assing default user to follow this repo
-
-        :param repo_name:
-        """
-
-        cur_token = request.POST.get('auth_token')
-        token = get_token()
-        if cur_token == token:
+    def edit_caches(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
+        # url('edit_repo', repo_name=ID)
+        c.repo_info = self._load_repo(repo_name)
+        c.active = 'caches'
+        if request.POST:
             try:
-                repo_id = Repository.get_by_repo_name(repo_name).repo_id
-                user_id = User.get_default_user().user_id
-                self.scm_model.toggle_following_repo(repo_id, user_id)
-                h.flash(_('Updated repository visibility in public journal'),
-                        category='success')
+                ScmModel().mark_for_invalidation(repo_name, delete=True)
                 Session().commit()
-            except Exception:
-                h.flash(_('An error occurred during setting this'
-                          ' repository in public journal'),
+                h.flash(_('Cache invalidation successful'),
+                        category='success')
+            except Exception, e:
+                log.error(traceback.format_exc())
+                h.flash(_('An error occurred during cache invalidation'),
                         category='error')
 
-        else:
-            h.flash(_('Token mismatch'), category='error')
-        return redirect(url('edit_repo', repo_name=repo_name))
+            return redirect(url('edit_repo_caches', repo_name=c.repo_name))
+        return render('admin/repos/repo_edit.html')
 
     @HasRepoPermissionAllDecorator('repository.admin')
-    def repo_pull(self, repo_name):
-        """
-        Runs task to update given repository with remote changes,
-        ie. make pull on remote location
-
-        :param repo_name:
-        """
-        try:
-            ScmModel().pull_changes(repo_name, self.rhodecode_user.username)
-            h.flash(_('Pulled from remote location'), category='success')
-        except Exception, e:
-            log.error(traceback.format_exc())
-            h.flash(_('An error occurred during pull from remote location'),
-                    category='error')
-
-        return redirect(url('edit_repo', repo_name=repo_name))
-
-    @HasRepoPermissionAllDecorator('repository.admin')
-    def repo_as_fork(self, repo_name):
-        """
-        Mark given repository as a fork of another
-
-        :param repo_name:
-        """
-        try:
-            fork_id = request.POST.get('id_fork_of')
-            repo = ScmModel().mark_as_fork(repo_name, fork_id,
-                                    self.rhodecode_user.username)
-            fork = repo.fork.repo_name if repo.fork else _('Nothing')
-            Session().commit()
-            h.flash(_('Marked repo %s as fork of %s') % (repo_name, fork),
-                    category='success')
-        except Exception, e:
-            log.error(traceback.format_exc())
-            h.flash(_('An error occurred during this operation'),
-                    category='error')
-
-        return redirect(url('edit_repo', repo_name=repo_name))
-
-    @HasPermissionAllDecorator('hg.admin')
-    def show(self, repo_name, format='html'):
-        """GET /repos/repo_name: Show a specific item"""
-        # url('repo', repo_name=ID)
-
-    @HasRepoPermissionAllDecorator('repository.admin')
-    def edit(self, repo_name, format='html'):
-        """GET /repos/repo_name/edit: Form to edit an existing item"""
+    def edit_remote(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
         # url('edit_repo', repo_name=ID)
-        defaults = self.__load_data(repo_name)
+        c.repo_info = self._load_repo(repo_name)
+        c.active = 'remote'
+        if request.POST:
+            try:
+                ScmModel().pull_changes(repo_name, self.rhodecode_user.username)
+                h.flash(_('Pulled from remote location'), category='success')
+            except Exception, e:
+                log.error(traceback.format_exc())
+                h.flash(_('An error occurred during pull from remote location'),
+                        category='error')
+            return redirect(url('edit_repo_remote', repo_name=c.repo_name))
+        return render('admin/repos/repo_edit.html')
 
-        return htmlfill.render(
-            render('admin/repos/repo_edit.html'),
-            defaults=defaults,
-            encoding="UTF-8",
-            force_defaults=False
-        )
+    @HasRepoPermissionAllDecorator('repository.admin')
+    def edit_statistics(self, repo_name):
+        """GET /repo_name/settings: Form to edit an existing item"""
+        # url('edit_repo', repo_name=ID)
+        c.repo_info = self._load_repo(repo_name)
+        repo = c.repo_info.scm_instance
 
-    @HasPermissionAllDecorator('hg.admin')
-    def create_repo_field(self, repo_name):
-        try:
-            form_result = RepoFieldForm()().to_python(dict(request.POST))
-            new_field = RepositoryField()
-            new_field.repository = Repository.get_by_repo_name(repo_name)
-            new_field.field_key = form_result['new_field_key']
-            new_field.field_type = form_result['new_field_type']  # python type
-            new_field.field_value = form_result['new_field_value']  # set initial blank value
-            new_field.field_desc = form_result['new_field_desc']
-            new_field.field_label = form_result['new_field_label']
-            Session().add(new_field)
-            Session().commit()
+        if c.repo_info.stats:
+            # this is on what revision we ended up so we add +1 for count
+            last_rev = c.repo_info.stats.stat_on_revision + 1
+        else:
+            last_rev = 0
+        c.stats_revision = last_rev
 
-        except Exception, e:
-            log.error(traceback.format_exc())
-            msg = _('An error occurred during creation of field')
-            if isinstance(e, formencode.Invalid):
-                msg += ". " + e.msg
-            h.flash(msg, category='error')
-        return redirect(url('edit_repo', repo_name=repo_name))
+        c.repo_last_rev = repo.count() if repo.revisions else 0
 
-    @HasPermissionAllDecorator('hg.admin')
-    def delete_repo_field(self, repo_name, field_id):
-        field = RepositoryField.get_or_404(field_id)
-        try:
-            Session().delete(field)
-            Session().commit()
-        except Exception, e:
-            log.error(traceback.format_exc())
-            msg = _('An error occurred during removal of field')
-            h.flash(msg, category='error')
-        return redirect(url('edit_repo', repo_name=repo_name))
+        if last_rev == 0 or c.repo_last_rev == 0:
+            c.stats_percentage = 0
+        else:
+            c.stats_percentage = '%.2f' % ((float((last_rev)) / c.repo_last_rev) * 100)
+
+        c.active = 'statistics'
+        if request.POST:
+            try:
+                RepoModel().delete_stats(repo_name)
+                Session().commit()
+            except Exception, e:
+                log.error(traceback.format_exc())
+                h.flash(_('An error occurred during deletion of repository stats'),
+                        category='error')
+            return redirect(url('edit_repo_statistics', repo_name=c.repo_name))
+
+        return render('admin/repos/repo_edit.html')

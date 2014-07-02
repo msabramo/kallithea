@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.admin.users
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Users crud controller for pylons
-
-    :created_on: Apr 4, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.admin.users
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Users crud controller for pylons
+
+:created_on: Apr 4, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import logging
 import traceback
@@ -32,14 +32,18 @@ from formencode import htmlfill
 from pylons import request, session, tmpl_context as c, url, config
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
+from sqlalchemy.sql.expression import func
 
 import rhodecode
 from rhodecode.lib.exceptions import DefaultUserException, \
     UserOwnsReposException, UserCreationError
 from rhodecode.lib import helpers as h
 from rhodecode.lib.auth import LoginRequired, HasPermissionAllDecorator, \
-    AuthUser
+    AuthUser, generate_api_key
+import rhodecode.lib.auth_modules.auth_rhodecode
+from rhodecode.lib import auth_modules
 from rhodecode.lib.base import BaseController, render
+from rhodecode.model.api_key import ApiKeyModel
 
 from rhodecode.model.db import User, UserEmailMap, UserIpMap, UserToPerm
 from rhodecode.model.forms import UserForm, CustomDefaultPermissionsForm
@@ -47,16 +51,13 @@ from rhodecode.model.user import UserModel
 from rhodecode.model.meta import Session
 from rhodecode.lib.utils import action_logger
 from rhodecode.lib.compat import json
-from rhodecode.lib.utils2 import datetime_to_time, str2bool
+from rhodecode.lib.utils2 import datetime_to_time, str2bool, safe_int
 
 log = logging.getLogger(__name__)
 
 
 class UsersController(BaseController):
     """REST Controller styled on the Atom Publishing Protocol"""
-    # To properly map this controller, ensure your config/routing.py
-    # file has a resource setup:
-    #     map.resource('user', 'users')
 
     @LoginRequired()
     @HasPermissionAllDecorator('hg.admin')
@@ -70,6 +71,7 @@ class UsersController(BaseController):
 
         c.users_list = User.query().order_by(User.username)\
                         .filter(User.username != User.DEFAULT_USER)\
+                        .order_by(func.lower(User.username))\
                         .all()
 
         users_data = []
@@ -81,7 +83,7 @@ class UsersController(BaseController):
                 template.get_def("user_gravatar")
                 .render(user_email, size, _=_, h=h, c=c))
 
-        user_lnk = lambda user_id, username: (
+        username = lambda user_id, username: (
                 template.get_def("user_name")
                 .render(user_id, username, _=_, h=h, c=c))
 
@@ -92,16 +94,17 @@ class UsersController(BaseController):
         for user in c.users_list:
 
             users_data.append({
-                "gravatar": grav_tmpl(user. email, 24),
-                "raw_username": user.username,
-                "username": user_lnk(user.user_id, user.username),
+                "gravatar": grav_tmpl(user. email, 20),
+                "raw_name": user.username,
+                "username": username(user.user_id, user.username),
                 "firstname": user.name,
                 "lastname": user.lastname,
                 "last_login": h.fmt_date(user.last_login),
                 "last_login_raw": datetime_to_time(user.last_login),
                 "active": h.boolicon(user.active),
                 "admin": h.boolicon(user.admin),
-                "ldap": h.boolicon(bool(user.ldap_dn)),
+                "extern_type": user.extern_type,
+                "extern_name": user.extern_name,
                 "action": user_actions(user.user_id, user.username),
             })
 
@@ -118,7 +121,7 @@ class UsersController(BaseController):
     def create(self):
         """POST /users: Create a new item"""
         # url('users')
-
+        c.default_extern_type = auth_modules.auth_rhodecode.RhodeCodeAuthPlugin.name
         user_model = UserModel()
         user_form = UserForm()()
         try:
@@ -148,6 +151,7 @@ class UsersController(BaseController):
     def new(self, format='html'):
         """GET /users/new: Form to create a new item"""
         # url('new_user')
+        c.default_extern_type = auth_modules.auth_rhodecode.RhodeCodeAuthPlugin.name
         return render('admin/users/user_add.html')
 
     def update(self, id):
@@ -158,19 +162,23 @@ class UsersController(BaseController):
         #    h.form(url('update_user', id=ID),
         #           method='put')
         # url('user', id=ID)
+        c.active = 'profile'
         user_model = UserModel()
         c.user = user_model.get(id)
-        c.ldap_dn = c.user.ldap_dn
+        c.extern_type = c.user.extern_type
+        c.extern_name = c.user.extern_name
         c.perm_user = AuthUser(user_id=id, ip_addr=self.ip_addr)
         _form = UserForm(edit=True, old_data={'user_id': id,
                                               'email': c.user.email})()
         form_result = {}
         try:
             form_result = _form.to_python(dict(request.POST))
-            skip_attrs = []
-            if c.ldap_dn:
-                #forbid updating username for ldap accounts
-                skip_attrs = ['username']
+            skip_attrs = ['extern_type', 'extern_name']
+            #TODO: plugin should define if username can be updated
+            if c.extern_type != "rhodecode":
+                # forbid updating username for external accounts
+                skip_attrs.append('username')
+
             user_model.update(id, form_result, skip_attrs=skip_attrs)
             usr = form_result['username']
             action_logger(self.rhodecode_user, 'admin_updated_user:%s' % usr,
@@ -178,14 +186,11 @@ class UsersController(BaseController):
             h.flash(_('User updated successfully'), category='success')
             Session().commit()
         except formencode.Invalid, errors:
-            c.user_email_map = UserEmailMap.query()\
-                            .filter(UserEmailMap.user == c.user).all()
-            c.user_ip_map = UserIpMap.query()\
-                            .filter(UserIpMap.user == c.user).all()
             defaults = errors.value
             e = errors.error_dict or {}
             defaults.update({
-                'create_repo_perm': user_model.has_perm(id, 'hg.create.repository'),
+                'create_repo_perm': user_model.has_perm(id,
+                                                        'hg.create.repository'),
                 'fork_repo_perm': user_model.has_perm(id, 'hg.fork.repository'),
                 '_method': 'put'
             })
@@ -231,36 +236,131 @@ class UsersController(BaseController):
         """GET /users/id/edit: Form to edit an existing item"""
         # url('edit_user', id=ID)
         c.user = User.get_or_404(id)
-
-        if c.user.username == 'default':
+        if c.user.username == User.DEFAULT_USER:
             h.flash(_("You can't edit this user"), category='warning')
             return redirect(url('users'))
 
+        c.active = 'profile'
+        c.extern_type = c.user.extern_type
+        c.extern_name = c.user.extern_name
         c.perm_user = AuthUser(user_id=id, ip_addr=self.ip_addr)
-        c.user.permissions = {}
-        c.granted_permissions = UserModel().fill_perms(c.user)\
-            .permissions['global']
-        c.user_email_map = UserEmailMap.query()\
-                        .filter(UserEmailMap.user == c.user).all()
-        c.user_ip_map = UserIpMap.query()\
-                        .filter(UserIpMap.user == c.user).all()
-        umodel = UserModel()
-        c.ldap_dn = c.user.ldap_dn
-        defaults = c.user.get_dict()
-        defaults.update({
-         'create_repo_perm': umodel.has_perm(c.user, 'hg.create.repository'),
-         'create_user_group_perm': umodel.has_perm(c.user, 'hg.usergroup.create.true'),
-         'fork_repo_perm': umodel.has_perm(c.user, 'hg.fork.repository'),
-        })
 
+        defaults = c.user.get_dict()
         return htmlfill.render(
             render('admin/users/user_edit.html'),
             defaults=defaults,
             encoding="UTF-8",
-            force_defaults=False
-        )
+            force_defaults=False)
 
-    def update_perm(self, id):
+    def edit_advanced(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        c.active = 'advanced'
+        c.perm_user = AuthUser(user_id=id, ip_addr=self.ip_addr)
+
+        umodel = UserModel()
+        defaults = c.user.get_dict()
+        defaults.update({
+            'create_repo_perm': umodel.has_perm(c.user, 'hg.create.repository'),
+            'create_user_group_perm': umodel.has_perm(c.user,
+                                                      'hg.usergroup.create.true'),
+            'fork_repo_perm': umodel.has_perm(c.user, 'hg.fork.repository'),
+        })
+        return htmlfill.render(
+            render('admin/users/user_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
+
+    def edit_api_keys(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        c.active = 'api_keys'
+        show_expired = True
+        c.lifetime_values = [
+            (str(-1), _('forever')),
+            (str(5), _('5 minutes')),
+            (str(60), _('1 hour')),
+            (str(60 * 24), _('1 day')),
+            (str(60 * 24 * 30), _('1 month')),
+        ]
+        c.lifetime_options = [(c.lifetime_values, _("Lifetime"))]
+        c.user_api_keys = ApiKeyModel().get_api_keys(c.user.user_id,
+                                                     show_expired=show_expired)
+        defaults = c.user.get_dict()
+        return htmlfill.render(
+            render('admin/users/user_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
+
+    def add_api_key(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        lifetime = safe_int(request.POST.get('lifetime'), -1)
+        description = request.POST.get('description')
+        new_api_key = ApiKeyModel().create(c.user.user_id, description, lifetime)
+        Session().commit()
+        h.flash(_("Api key successfully created"), category='success')
+        return redirect(url('edit_user_api_keys', id=c.user.user_id))
+
+    def delete_api_key(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        api_key = request.POST.get('del_api_key')
+        if request.POST.get('del_api_key_builtin'):
+            user = User.get(c.user.user_id)
+            if user:
+                user.api_key = generate_api_key(user.username)
+                Session().add(user)
+                Session().commit()
+                h.flash(_("Api key successfully reset"), category='success')
+        elif api_key:
+            ApiKeyModel().delete(api_key, c.user.user_id)
+            Session().commit()
+            h.flash(_("Api key successfully deleted"), category='success')
+
+        return redirect(url('edit_user_api_keys', id=c.user.user_id))
+
+    def update_account(self, id):
+        pass
+
+    def edit_perms(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        c.active = 'perms'
+        c.perm_user = AuthUser(user_id=id, ip_addr=self.ip_addr)
+
+        umodel = UserModel()
+        defaults = c.user.get_dict()
+        defaults.update({
+            'create_repo_perm': umodel.has_perm(c.user, 'hg.create.repository'),
+            'create_user_group_perm': umodel.has_perm(c.user,
+                                                      'hg.usergroup.create.true'),
+            'fork_repo_perm': umodel.has_perm(c.user, 'hg.fork.repository'),
+        })
+        return htmlfill.render(
+            render('admin/users/user_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
+
+    def update_perms(self, id):
         """PUT /users_perm/id: Update an existing item"""
         # url('user_perm', id=ID, method='put')
         user = User.get_or_404(id)
@@ -298,7 +398,24 @@ class UsersController(BaseController):
             log.error(traceback.format_exc())
             h.flash(_('An error occurred during permissions saving'),
                     category='error')
-        return redirect(url('edit_user', id=id))
+        return redirect(url('edit_user_perms', id=id))
+
+    def edit_emails(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        c.active = 'emails'
+        c.user_email_map = UserEmailMap.query()\
+            .filter(UserEmailMap.user == c.user).all()
+
+        defaults = c.user.get_dict()
+        return htmlfill.render(
+            render('admin/users/user_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
 
     def add_email(self, id):
         """POST /user_emails:Add an existing item"""
@@ -318,16 +435,38 @@ class UsersController(BaseController):
             log.error(traceback.format_exc())
             h.flash(_('An error occurred during email saving'),
                     category='error')
-        return redirect(url('edit_user', id=id))
+        return redirect(url('edit_user_emails', id=id))
 
     def delete_email(self, id):
         """DELETE /user_emails_delete/id: Delete an existing item"""
         # url('user_emails_delete', id=ID, method='delete')
+        email_id = request.POST.get('del_email_id')
         user_model = UserModel()
-        user_model.delete_extra_email(id, request.POST.get('del_email'))
+        user_model.delete_extra_email(id, email_id)
         Session().commit()
         h.flash(_("Removed email from user"), category='success')
-        return redirect(url('edit_user', id=id))
+        return redirect(url('edit_user_emails', id=id))
+
+    def edit_ips(self, id):
+        c.user = User.get_or_404(id)
+        if c.user.username == User.DEFAULT_USER:
+            h.flash(_("You can't edit this user"), category='warning')
+            return redirect(url('users'))
+
+        c.active = 'ips'
+        c.user_ip_map = UserIpMap.query()\
+            .filter(UserIpMap.user == c.user).all()
+
+        c.inherit_default_ips = c.user.inherit_default_permissions
+        c.default_user_ip_map = UserIpMap.query()\
+            .filter(UserIpMap.user == User.get_default_user()).all()
+
+        defaults = c.user.get_dict()
+        return htmlfill.render(
+            render('admin/users/user_edit.html'),
+            defaults=defaults,
+            encoding="UTF-8",
+            force_defaults=False)
 
     def add_ip(self, id):
         """POST /user_ips:Add an existing item"""
@@ -339,7 +478,7 @@ class UsersController(BaseController):
         try:
             user_model.add_extra_ip(id, ip)
             Session().commit()
-            h.flash(_("Added ip %s to user") % ip, category='success')
+            h.flash(_("Added ip %s to user whitelist") % ip, category='success')
         except formencode.Invalid, error:
             msg = error.error_dict['ip']
             h.flash(msg, category='error')
@@ -347,17 +486,20 @@ class UsersController(BaseController):
             log.error(traceback.format_exc())
             h.flash(_('An error occurred during ip saving'),
                     category='error')
+
         if 'default_user' in request.POST:
-            return redirect(url('edit_permission', id='default'))
-        return redirect(url('edit_user', id=id))
+            return redirect(url('admin_permissions_ips'))
+        return redirect(url('edit_user_ips', id=id))
 
     def delete_ip(self, id):
         """DELETE /user_ips_delete/id: Delete an existing item"""
         # url('user_ips_delete', id=ID, method='delete')
+        ip_id = request.POST.get('del_ip_id')
         user_model = UserModel()
-        user_model.delete_extra_ip(id, request.POST.get('del_ip'))
+        user_model.delete_extra_ip(id, ip_id)
         Session().commit()
-        h.flash(_("Removed ip from user"), category='success')
+        h.flash(_("Removed ip address from user whitelist"), category='success')
+
         if 'default_user' in request.POST:
-            return redirect(url('edit_permission', id='default'))
-        return redirect(url('edit_user', id=id))
+            return redirect(url('admin_permissions_ips'))
+        return redirect(url('edit_user_ips', id=id))

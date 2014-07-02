@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-    rhodecode.model.changeset_status
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rhodecode.model.changeset_status
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Changeset status conttroller
 
-    :created_on: Apr 30, 2012
-    :author: marcink
-    :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
+:created_on: Apr 30, 2012
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
 """
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

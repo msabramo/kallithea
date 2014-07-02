@@ -1,7 +1,29 @@
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-config generator
+rhodecode.bin.rhodecode_config
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+configuration generator for RhodeCode
+
+:created_on: Jun 18, 2013
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
 """
+
+
 from __future__ import with_statement
 import os
 import sys
@@ -71,13 +93,16 @@ def _run(argv):
         print parser.print_help()
         sys.exit(0)
     # defaults that can be overwritten by arguments
+    from rhodecode.model.license import LicenseModel
+    license_token = LicenseModel.generate_license_token()
     tmpl_stored_args = {
         'http_server': 'waitress',
         'lang': 'en',
         'database_engine': 'sqlite',
         'host': '127.0.0.1',
         'port': 5000,
-        'error_aggregation_service': None
+        'error_aggregation_service': None,
+        'license_token': license_token
     }
     if other:
         # parse arguments, we assume only first is correct

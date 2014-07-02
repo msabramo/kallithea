@@ -2,14 +2,17 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Admin journal')} &middot; ${c.rhodecode_name}
+    ${_('Admin journal')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
     <form id="filter_form">
     <input class="q_filter_box ${'' if c.search_term else 'initial'}" id="j_filter" size="15" type="text" name="filter" value="${c.search_term or _('journal filter...')}"/>
     <span class="tooltip" title="${h.tooltip(h.journal_filter_help())}">?</span>
-    <input type='submit' value="${_('filter')}" class="ui-btn" style="padding:0px 2px 0px 2px;margin:0px"/>
+    <input type='submit' value="${_('filter')}" class="btn btn-mini" style="padding:0px 2px 0px 2px;margin:0px"/>
     ${_('Admin journal')} - ${ungettext('%s entry', '%s entries', c.users_log.item_count) % (c.users_log.item_count)}
     </form>
     ${h.end_form()}

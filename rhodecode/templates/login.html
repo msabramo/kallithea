@@ -2,23 +2,35 @@
 <%inherit file="base/root.html"/>
 
 <%def name="title()">
-    ${_('Log In')} &middot; ${c.rhodecode_name}
+    ${_('Log In')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
-<div id="login">
-<div class="flash_msg">
-    <% messages = h.flash.pop_messages() %>
-    % if messages:
-    <ul id="flash-messages">
-        % for message in messages:
-        <li class="${message.category}_msg">${message}</li>
-        % endfor
-    </ul>
-    % endif
+
+<div id="header">
+    <div id="header-inner" class="title">
+        <div id="logo">
+            <div class="header">
+                <a href="${h.url('home')}"><img src="/images/rhodecode-logo-white-216x60.png" alt="RhodeCode"/></a>
+            </div>
+            %if c.rhodecode_name:
+             <div class="branding">- ${c.rhodecode_name}</div>
+            %endif
+        </div>
+    </div>
 </div>
+
+<div id="login">
+    <%include file="/base/flash_msg.html"/>
     <!-- login -->
-    <div class="title top-left-rounded-corner top-right-rounded-corner">
-        <h5>${_('Log In to %s') % c.rhodecode_name}</h5>
+    <div class="title withlogo">
+        %if c.rhodecode_name:
+            <h5>${_('Log In to %s') % c.rhodecode_name}</h5>
+        %else:
+            <h5>${_('Log In')}</h5>
+        %endif
     </div>
     <div class="inner">
         ${h.form(h.url.current(came_from=c.came_from))}
@@ -51,7 +63,7 @@
                     </div>
                 </div>
                 <div class="buttons">
-                    ${h.submit('sign_in',_('Sign In'),class_="ui-btn large")}
+                    ${h.submit('sign_in',_('Sign In'),class_="btn")}
                 </div>
             </div>
             <!-- end fields -->

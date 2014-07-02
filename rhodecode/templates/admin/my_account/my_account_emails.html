@@ -1,0 +1,51 @@
+<div class="emails_wrap">
+  <table class="noborder">
+    <tr>
+    <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(c.user.email,16)}"/> </div></td>
+    <td><div class="email">${c.user.email}</div></td>
+    <td>
+        <span class="btn btn-mini btn-success disabled">${_('Primary')}</span>
+    </td>
+    </tr>
+    %if c.user_email_map:
+        %for em in c.user_email_map:
+          <tr>
+            <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(em.email,16)}"/> </div></td>
+            <td><div class="email">${em.email}</div></td>
+            <td>
+                ${h.form(url('my_account_emails'),method='delete')}
+                    ${h.hidden('del_email_id',em.email_id)}
+                    <i class="icon-remove-sign" style="color:#FF4444"></i>
+                    ${h.submit('remove_',_('delete'),id="remove_email_%s" % em.email_id,
+                    class_="action_button", onclick="return  confirm('"+_('Confirm to delete this email: %s') % em.email+"');")}
+                ${h.end_form()}
+            </td>
+          </tr>
+        %endfor
+    %else:
+    <tr><td><div class="ip">${_('No additional emails specified')}</div></td></tr>
+    %endif
+  </table>
+</div>
+
+<div>
+    ${h.form(url('my_account_emails'), method='post')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label">
+                    <label for="new_email">${_('New email address')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('new_email', class_='medium')}
+                </div>
+             </div>
+            <div class="buttons">
+              ${h.submit('save',_('Add'),class_="btn")}
+              ${h.reset('reset',_('Reset'),class_="btn")}
+            </div>
+        </div>
+    </div>
+    ${h.end_form()}
+</div>

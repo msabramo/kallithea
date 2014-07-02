@@ -1,7 +1,10 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="/base/base.html"/>
 <%def name="title()">
-    ${_('Public Journal')} &middot; ${c.rhodecode_name}
+    ${_('Public Journal')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 <%def name="breadcrumbs()">
     ${c.rhodecode_name}
@@ -21,7 +24,9 @@
     <h5>${_('Public Journal')}</h5>
       <ul class="links">
      <li>
-       <span><a href="${h.url('public_journal_atom')}"><img class="icon" title="${_('ATOM feed')}" alt="${_('ATOM feed')}" src="${h.url('/images/icons/rss_16.png')}"/></a></span>
+       <span>
+         <a href="${h.url('public_journal_atom')}"> <i class="icon-rss-sign" style="color: #fa9b39"></i></a>
+       </span>
      </li>
      </ul>
   </div>

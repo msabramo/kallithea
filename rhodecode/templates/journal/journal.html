@@ -1,14 +1,17 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="/base/base.html"/>
 <%def name="title()">
-    ${_('Journal')} &middot; ${c.rhodecode_name}
+    ${_('Journal')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 <%def name="breadcrumbs()">
     <h5>
     <form id="filter_form">
     <input class="q_filter_box ${'' if c.search_term else 'initial'}" id="j_filter" size="15" type="text" name="filter" value="${c.search_term or _('quick filter...')}"/>
     <span class="tooltip" title="${h.tooltip(h.journal_filter_help())}">?</span>
-    <input type='submit' value="${_('filter')}" class="ui-btn" style="padding:0px 2px 0px 2px;margin:0px"/>
+    <input type='submit' value="${_('filter')}" class="btn btn-small" style="padding:0px 2px 0px 2px;margin:0px"/>
     ${_('journal')} - ${ungettext('%s entry', '%s entries', c.journal_pager.item_count) % (c.journal_pager.item_count)}
     </form>
     ${h.end_form()}
@@ -27,12 +30,12 @@
         <!-- box / title -->
         <div class="title">
          ${self.breadcrumbs()}
-         <ul class="links">
+         <ul class="links icon-only-links">
            <li>
-             <span><a id="refresh" href="${h.url('journal')}"><img class="icon" title="${_('Refresh')}" alt="${_('Refresh')}" src="${h.url('/images/icons/arrow_refresh.png')}"/></a></span>
+             <span><a id="refresh" href="${h.url('journal')}"><i class="icon-refresh"></i></a></span>
            </li>
            <li>
-             <span><a href="${h.url('journal_atom', api_key=c.rhodecode_user.api_key)}"><img class="icon" title="${_('ATOM feed')}" alt="${_('ATOM feed')}" src="${h.url('/images/icons/rss_16.png')}"/></a></span>
+             <span><a href="${h.url('journal_atom', api_key=c.rhodecode_user.api_key)}"><i class="icon-rss-sign"></i></a></span>
            </li>
          </ul>
         </div>
@@ -46,24 +49,24 @@
             <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value="" style="display: none"/>
             <input class="q_filter_box" id="q_filter_watched" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value="" style="display: none"/>
             </h5>
-             <ul class="links" style="color:#DADADA">
-               <li>
-                 <span><a id="show_watched" class="link-white current" href="#watched">${_('Watched')}</a> </span>
+            <ul class="links nav nav-tabs">
+                <li class="active" id="show_watched_li">
+                    <a id="show_watched" href="#watched"><i class="icon-eye-open"></i> ${_('Watched')}</a>
+                </li>
+                <li id="show_my_li">
+                    <a id="show_my" href="#my"><i class="icon-archive"></i> ${_('My repos')}</a>
                </li>
-               <li>
-                 <span><a id="show_my" class="link-white" href="#my">${_('My repos')}</a> </span>
-               </li>
-             </ul>
+            </ul>
         </div>
 
         <!-- end box / title -->
         <div id="my_container" style="display:none">
-            <div class="table yui-skin-sam" id="repos_list_wrap"></div>
+            <div class="table-grid table yui-skin-sam" id="repos_list_wrap"></div>
             <div id="user-paginator" style="padding: 0px 0px 0px 20px"></div>
         </div>
 
         <div id="watched_container">
-            <div class="table yui-skin-sam" id="watched_repos_list_wrap"></div>
+            <div class="table-grid table yui-skin-sam" id="watched_repos_list_wrap"></div>
             <div id="watched-user-paginator" style="padding: 0px 0px 0px 20px"></div>
         </div>
     </div>
@@ -104,8 +107,8 @@
         YUD.setStyle('q_filter','display','');
         YUD.setStyle('q_filter_watched','display','none');
 
-        YUD.addClass('show_my', 'current');
-        YUD.removeClass('show_watched','current');
+        YUD.addClass('show_my_li', 'active');
+        YUD.removeClass('show_watched_li','active');
 
         if(!YUD.hasClass('show_my', 'loaded')){
             table_renderer(${c.data |n});
@@ -121,8 +124,8 @@
         YUD.setStyle('q_filter_watched','display','');
         YUD.setStyle('q_filter','display','none');
 
-        YUD.addClass('show_watched', 'current');
-        YUD.removeClass('show_my','current');
+        YUD.addClass('show_watched_li', 'active');
+        YUD.removeClass('show_my_li','active');
         if(!YUD.hasClass('show_watched', 'loaded')){
             watched_renderer(${c.watched_data |n});
             YUD.addClass('show_watched', 'loaded');
@@ -166,6 +169,7 @@
                {key:"raw_name"},
                {key:"name"},
                {key:"last_changeset"},
+               {key:"last_rev_raw"},
                {key:"action"},
             ]
          };
@@ -256,6 +260,7 @@
                {key:"raw_name"},
                {key:"name"},
                {key:"last_changeset"},
+               {key:"last_rev_raw"},
                {key:"action"},
             ]
          };

@@ -1,17 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.diffs
-    ~~~~~~~~~~~~~~~~~~~
-
-    Set of diffing helpers, previously part of vcs
-
-
-    :created_on: Dec 4, 2011
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :original copyright: 2007-2008 by Armin Ronacher
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.diffs
+~~~~~~~~~~~~~~~~~~~
 
+Set of diffing helpers, previously part of vcs
+
+
+:created_on: Dec 4, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 import re
 import difflib
 import logging
@@ -438,7 +436,9 @@ class DiffProcessor(object):
                 chunks = []
 
             if op == 'D' and chunks:
-                chunks = []
+                # if not full diff mode show deleted file contents
+                if self.diff_limit is not None:
+                    chunks = []
 
             chunks.insert(0, [{
                 'old_lineno': '',

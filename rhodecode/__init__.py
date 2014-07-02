@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.__init__
-    ~~~~~~~~~~~~~~~~~~
-
-    RhodeCode, a web based repository management based on pylons
-    versioning implementation: http://www.python.org/dev/peps/pep-0386/
-
-    :created_on: Apr 9, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,10 +11,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.__init__
+~~~~~~~~~~~~~~~~~~
+
+RhodeCode, a web based repository management based on pylons
+versioning implementation: http://www.python.org/dev/peps/pep-0386/
+
+:created_on: Apr 9, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import sys
 import platform
 
-VERSION = (1, 7, 1)
+VERSION = (2, 2, 5)
 BACKENDS = {
     'hg': 'Mercurial repository',
     'git': 'Git repository',
@@ -49,14 +50,21 @@ try:
 except ImportError:
     pass
 
-__version__ = ('.'.join((str(each) for each in VERSION[:3])) +
-               '.'.join(VERSION[3:]))
-__dbversion__ = 14  # defines current db version for migrations
+__version__ = ('.'.join((str(each) for each in VERSION[:3])))
+__dbversion__ = 31  # defines current db version for migrations
 __platform__ = platform.system()
 __license__ = 'GPLv3'
 __py_version__ = sys.version_info
-__author__ = 'Marcin Kuzminski'
-__url__ = 'http://rhodecode.org'
+__author__ = 'RhodeCode GmbH'
+__url__ = 'http://rhodecode.com'
 
 is_windows = __platform__ in ['Windows']
 is_unix = not is_windows
+
+if len(VERSION) > 3:
+    __version__ += '.'+VERSION[3]
+
+    if len(VERSION) > 4:
+        __version__ += VERSION[4]
+    else:
+        __version__ += '0'

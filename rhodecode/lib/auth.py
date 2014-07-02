@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.auth
-    ~~~~~~~~~~~~~~~~~~
-
-    authentication and permission libraries
-
-    :created_on: Apr 4, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,34 +11,52 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.auth
+~~~~~~~~~~~~~~~~~~
 
+authentication and permission libraries
+
+:created_on: Apr 4, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+from __future__ import with_statement
+import time
 import random
 import logging
 import traceback
 import hashlib
+import itertools
+import collections
 
 from tempfile import _RandomNameSequence
 from decorator import decorator
 
-from pylons import config, url, request
+from pylons import url, request
 from pylons.controllers.util import abort, redirect
 from pylons.i18n.translation import _
+from sqlalchemy import or_
 from sqlalchemy.orm.exc import ObjectDeletedError
+from sqlalchemy.orm import joinedload
 
 from rhodecode import __platform__, is_windows, is_unix
-from rhodecode.model.meta import Session
-
-from rhodecode.lib.utils2 import str2bool, safe_unicode, aslist
-from rhodecode.lib.exceptions import LdapPasswordError, LdapUsernameError,\
-    LdapImportError
-from rhodecode.lib.utils import get_repo_slug, get_repos_group_slug,\
-    get_user_group_slug
-from rhodecode.lib.auth_ldap import AuthLdap
-
+from rhodecode.lib.vcs.utils.lazy import LazyProperty
 from rhodecode.model import meta
+from rhodecode.model.meta import Session
 from rhodecode.model.user import UserModel
-from rhodecode.model.db import Permission, RhodeCodeSetting, User, UserIpMap
+from rhodecode.model.db import User, Repository, Permission, \
+    UserToPerm, UserGroupRepoToPerm, UserGroupToPerm, UserGroupMember, \
+    RepoGroup, UserGroupRepoGroupToPerm, UserIpMap, UserGroupUserGroupToPerm, \
+    UserGroup, UserApiKeys
+
+from rhodecode.lib.utils2 import safe_unicode, aslist
+from rhodecode.lib.utils import get_repo_slug, get_repo_group_slug, \
+    get_user_group_slug, conditional_cache
 from rhodecode.lib.caching_query import FromCache
+
+from beaker.cache import cache_region
 
 log = logging.getLogger(__name__)
 
@@ -149,166 +156,6 @@ def generate_api_key(str_, salt=None):
     return hashlib.sha1(str_ + salt).hexdigest()
 
 
-def authfunc(environ, username, password):
-    """
-    Dummy authentication wrapper function used in Mercurial and Git for
-    access control.
-
-    :param environ: needed only for using in Basic auth
-    """
-    return authenticate(username, password)
-
-
-def authenticate(username, password):
-    """
-    Authentication function used for access control,
-    firstly checks for db authentication then if ldap is enabled for ldap
-    authentication, also creates ldap user if not in database
-
-    :param username: username
-    :param password: password
-    """
-
-    user_model = UserModel()
-    user = User.get_by_username(username)
-
-    log.debug('Authenticating user using RhodeCode account')
-    if user is not None and not user.ldap_dn:
-        if user.active:
-            if user.username == 'default' and user.active:
-                log.info('user %s authenticated correctly as anonymous user' %
-                         username)
-                return True
-
-            elif user.username == username and check_password(password,
-                                                              user.password):
-                log.info('user %s authenticated correctly' % username)
-                return True
-        else:
-            log.warning('user %s tried auth but is disabled' % username)
-
-    else:
-        log.debug('Regular authentication failed')
-        user_obj = User.get_by_username(username, case_insensitive=True)
-
-        if user_obj is not None and not user_obj.ldap_dn:
-            log.debug('this user already exists as non ldap')
-            return False
-
-        ldap_settings = RhodeCodeSetting.get_ldap_settings()
-        #======================================================================
-        # FALLBACK TO LDAP AUTH IF ENABLE
-        #======================================================================
-        if str2bool(ldap_settings.get('ldap_active')):
-            log.debug("Authenticating user using ldap")
-            kwargs = {
-                  'server': ldap_settings.get('ldap_host', ''),
-                  'base_dn': ldap_settings.get('ldap_base_dn', ''),
-                  'port': ldap_settings.get('ldap_port'),
-                  'bind_dn': ldap_settings.get('ldap_dn_user'),
-                  'bind_pass': ldap_settings.get('ldap_dn_pass'),
-                  'tls_kind': ldap_settings.get('ldap_tls_kind'),
-                  'tls_reqcert': ldap_settings.get('ldap_tls_reqcert'),
-                  'ldap_filter': ldap_settings.get('ldap_filter'),
-                  'search_scope': ldap_settings.get('ldap_search_scope'),
-                  'attr_login': ldap_settings.get('ldap_attr_login'),
-                  'ldap_version': 3,
-                  }
-            log.debug('Checking for ldap authentication')
-            try:
-                aldap = AuthLdap(**kwargs)
-                (user_dn, ldap_attrs) = aldap.authenticate_ldap(username,
-                                                                password)
-                log.debug('Got ldap DN response %s' % user_dn)
-
-                get_ldap_attr = lambda k: ldap_attrs.get(ldap_settings\
-                                                           .get(k), [''])[0]
-
-                user_attrs = {
-                 'name': safe_unicode(get_ldap_attr('ldap_attr_firstname')),
-                 'lastname': safe_unicode(get_ldap_attr('ldap_attr_lastname')),
-                 'email': get_ldap_attr('ldap_attr_email'),
-                 'active': 'hg.extern_activate.auto' in User.get_default_user()\
-                                                .AuthUser.permissions['global']
-                }
-
-                # don't store LDAP password since we don't need it. Override
-                # with some random generated password
-                _password = PasswordGenerator().gen_password(length=8)
-                # create this user on the fly if it doesn't exist in rhodecode
-                # database
-                if user_model.create_ldap(username, _password, user_dn,
-                                          user_attrs):
-                    log.info('created new ldap user %s' % username)
-
-                Session().commit()
-                return True
-            except (LdapUsernameError, LdapPasswordError, LdapImportError):
-                pass
-            except (Exception,):
-                log.error(traceback.format_exc())
-                pass
-    return False
-
-
-def login_container_auth(username):
-    user = User.get_by_username(username)
-    if user is None:
-        user_attrs = {
-            'name': username,
-            'lastname': None,
-            'email': None,
-            'active': 'hg.extern_activate.auto' in User.get_default_user()\
-                                            .AuthUser.permissions['global']
-        }
-        user = UserModel().create_for_container_auth(username, user_attrs)
-        if not user:
-            return None
-        log.info('User %s was created by container authentication' % username)
-
-    if not user.active:
-        return None
-
-    user.update_lastlogin()
-    Session().commit()
-
-    log.debug('User %s is now logged in by container authentication',
-              user.username)
-    return user
-
-
-def get_container_username(environ, config, clean_username=False):
-    """
-    Gets the container_auth username (or email). It tries to get username
-    from REMOTE_USER if container_auth_enabled is enabled, if that fails
-    it tries to get username from HTTP_X_FORWARDED_USER if proxypass_auth_enabled
-    is enabled. clean_username extracts the username from this data if it's
-    having @ in it.
-
-    :param environ:
-    :param config:
-    :param clean_username:
-    """
-    username = None
-
-    if str2bool(config.get('container_auth_enabled', False)):
-        from paste.httpheaders import REMOTE_USER
-        username = REMOTE_USER(environ)
-        log.debug('extracted REMOTE_USER:%s' % (username))
-
-    if not username and str2bool(config.get('proxypass_auth_enabled', False)):
-        username = environ.get('HTTP_X_FORWARDED_USER')
-        log.debug('extracted HTTP_X_FORWARDED_USER:%s' % (username))
-
-    if username and clean_username:
-        # Removing realm and domain from username
-        username = username.partition('@')[0]
-        username = username.rpartition('\\')[2]
-    log.debug('Received username %s from container' % username)
-
-    return username
-
-
 class CookieStoreWrapper(object):
 
     def __init__(self, cookie_store):
@@ -324,60 +171,361 @@ class CookieStoreWrapper(object):
             return self.cookie_store.__dict__.get(key, other)
 
 
-class  AuthUser(object):
+
+def _cached_perms_data(user_id, user_is_admin, user_inherit_default_permissions,
+                       explicit, algo):
+    RK = 'repositories'
+    GK = 'repositories_groups'
+    UK = 'user_groups'
+    GLOBAL = 'global'
+    PERM_WEIGHTS = Permission.PERM_WEIGHTS
+    permissions = {RK: {}, GK: {}, UK: {}, GLOBAL: set()}
+
+    def _choose_perm(new_perm, cur_perm):
+        new_perm_val = PERM_WEIGHTS[new_perm]
+        cur_perm_val = PERM_WEIGHTS[cur_perm]
+        if algo == 'higherwin':
+            if new_perm_val > cur_perm_val:
+                return new_perm
+            return cur_perm
+        elif algo == 'lowerwin':
+            if new_perm_val < cur_perm_val:
+                return new_perm
+            return cur_perm
+
+    #======================================================================
+    # fetch default permissions
+    #======================================================================
+    default_user = User.get_by_username('default', cache=True)
+    default_user_id = default_user.user_id
+
+    default_repo_perms = Permission.get_default_perms(default_user_id)
+    default_repo_groups_perms = Permission.get_default_group_perms(default_user_id)
+    default_user_group_perms = Permission.get_default_user_group_perms(default_user_id)
+
+    if user_is_admin:
+        #==================================================================
+        # admin user have all default rights for repositories
+        # and groups set to admin
+        #==================================================================
+        permissions[GLOBAL].add('hg.admin')
+        permissions[GLOBAL].add('hg.create.write_on_repogroup.true')
+
+        # repositories
+        for perm in default_repo_perms:
+            r_k = perm.UserRepoToPerm.repository.repo_name
+            p = 'repository.admin'
+            permissions[RK][r_k] = p
+
+        # repository groups
+        for perm in default_repo_groups_perms:
+            rg_k = perm.UserRepoGroupToPerm.group.group_name
+            p = 'group.admin'
+            permissions[GK][rg_k] = p
+
+        # user groups
+        for perm in default_user_group_perms:
+            u_k = perm.UserUserGroupToPerm.user_group.users_group_name
+            p = 'usergroup.admin'
+            permissions[UK][u_k] = p
+        return permissions
+
+    #==================================================================
+    # SET DEFAULTS GLOBAL, REPOS, REPOSITORY GROUPS
+    #==================================================================
+    uid = user_id
+
+    # default global permissions taken fron the default user
+    default_global_perms = UserToPerm.query()\
+        .filter(UserToPerm.user_id == default_user_id)\
+        .options(joinedload(UserToPerm.permission))
+
+    for perm in default_global_perms:
+        permissions[GLOBAL].add(perm.permission.permission_name)
+
+    # defaults for repositories, taken from default user
+    for perm in default_repo_perms:
+        r_k = perm.UserRepoToPerm.repository.repo_name
+        if perm.Repository.private and not (perm.Repository.user_id == uid):
+            # disable defaults for private repos,
+            p = 'repository.none'
+        elif perm.Repository.user_id == uid:
+            # set admin if owner
+            p = 'repository.admin'
+        else:
+            p = perm.Permission.permission_name
+
+        permissions[RK][r_k] = p
+
+    # defaults for repository groups taken from default user permission
+    # on given group
+    for perm in default_repo_groups_perms:
+        rg_k = perm.UserRepoGroupToPerm.group.group_name
+        p = perm.Permission.permission_name
+        permissions[GK][rg_k] = p
+
+    # defaults for user groups taken from default user permission
+    # on given user group
+    for perm in default_user_group_perms:
+        u_k = perm.UserUserGroupToPerm.user_group.users_group_name
+        p = perm.Permission.permission_name
+        permissions[UK][u_k] = p
+
+    #======================================================================
+    # !! OVERRIDE GLOBALS !! with user permissions if any found
+    #======================================================================
+    # those can be configured from groups or users explicitly
+    _configurable = set([
+        'hg.fork.none', 'hg.fork.repository',
+        'hg.create.none', 'hg.create.repository',
+        'hg.usergroup.create.false', 'hg.usergroup.create.true'
+    ])
+
+    # USER GROUPS comes first
+    # user group global permissions
+    user_perms_from_users_groups = Session().query(UserGroupToPerm)\
+        .options(joinedload(UserGroupToPerm.permission))\
+        .join((UserGroupMember, UserGroupToPerm.users_group_id ==
+               UserGroupMember.users_group_id))\
+        .filter(UserGroupMember.user_id == uid)\
+        .order_by(UserGroupToPerm.users_group_id)\
+        .all()
+    # need to group here by groups since user can be in more than
+    # one group
+    _grouped = [[x, list(y)] for x, y in
+                itertools.groupby(user_perms_from_users_groups,
+                                  lambda x:x.users_group)]
+    for gr, perms in _grouped:
+        # since user can be in multiple groups iterate over them and
+        # select the lowest permissions first (more explicit)
+        ##TODO: do this^^
+        if not gr.inherit_default_permissions:
+            # NEED TO IGNORE all configurable permissions and
+            # replace them with explicitly set
+            permissions[GLOBAL] = permissions[GLOBAL]\
+                                            .difference(_configurable)
+        for perm in perms:
+            permissions[GLOBAL].add(perm.permission.permission_name)
+
+    # user specific global permissions
+    user_perms = Session().query(UserToPerm)\
+            .options(joinedload(UserToPerm.permission))\
+            .filter(UserToPerm.user_id == uid).all()
+
+    if not user_inherit_default_permissions:
+        # NEED TO IGNORE all configurable permissions and
+        # replace them with explicitly set
+        permissions[GLOBAL] = permissions[GLOBAL]\
+                                        .difference(_configurable)
+
+        for perm in user_perms:
+            permissions[GLOBAL].add(perm.permission.permission_name)
+    ## END GLOBAL PERMISSIONS
+
+    #======================================================================
+    # !! PERMISSIONS FOR REPOSITORIES !!
+    #======================================================================
+    #======================================================================
+    # check if user is part of user groups for this repository and
+    # fill in his permission from it. _choose_perm decides of which
+    # permission should be selected based on selected method
+    #======================================================================
+
+    # user group for repositories permissions
+    user_repo_perms_from_users_groups = \
+     Session().query(UserGroupRepoToPerm, Permission, Repository,)\
+        .join((Repository, UserGroupRepoToPerm.repository_id ==
+               Repository.repo_id))\
+        .join((Permission, UserGroupRepoToPerm.permission_id ==
+               Permission.permission_id))\
+        .join((UserGroupMember, UserGroupRepoToPerm.users_group_id ==
+               UserGroupMember.users_group_id))\
+        .filter(UserGroupMember.user_id == uid)\
+        .all()
+
+    multiple_counter = collections.defaultdict(int)
+    for perm in user_repo_perms_from_users_groups:
+        r_k = perm.UserGroupRepoToPerm.repository.repo_name
+        multiple_counter[r_k] += 1
+        p = perm.Permission.permission_name
+        cur_perm = permissions[RK][r_k]
+
+        if perm.Repository.user_id == uid:
+            # set admin if owner
+            p = 'repository.admin'
+        else:
+            if multiple_counter[r_k] > 1:
+                p = _choose_perm(p, cur_perm)
+        permissions[RK][r_k] = p
+
+    # user explicit permissions for repositories, overrides any specified
+    # by the group permission
+    user_repo_perms = Permission.get_default_perms(uid)
+    for perm in user_repo_perms:
+        r_k = perm.UserRepoToPerm.repository.repo_name
+        cur_perm = permissions[RK][r_k]
+        # set admin if owner
+        if perm.Repository.user_id == uid:
+            p = 'repository.admin'
+        else:
+            p = perm.Permission.permission_name
+            if not explicit:
+                p = _choose_perm(p, cur_perm)
+        permissions[RK][r_k] = p
+
+    #======================================================================
+    # !! PERMISSIONS FOR REPOSITORY GROUPS !!
+    #======================================================================
+    #======================================================================
+    # check if user is part of user groups for this repository groups and
+    # fill in his permission from it. _choose_perm decides of which
+    # permission should be selected based on selected method
+    #======================================================================
+    # user group for repo groups permissions
+    user_repo_group_perms_from_users_groups = \
+     Session().query(UserGroupRepoGroupToPerm, Permission, RepoGroup)\
+     .join((RepoGroup, UserGroupRepoGroupToPerm.group_id == RepoGroup.group_id))\
+     .join((Permission, UserGroupRepoGroupToPerm.permission_id
+            == Permission.permission_id))\
+     .join((UserGroupMember, UserGroupRepoGroupToPerm.users_group_id
+            == UserGroupMember.users_group_id))\
+     .filter(UserGroupMember.user_id == uid)\
+     .all()
+
+    multiple_counter = collections.defaultdict(int)
+    for perm in user_repo_group_perms_from_users_groups:
+        g_k = perm.UserGroupRepoGroupToPerm.group.group_name
+        multiple_counter[g_k] += 1
+        p = perm.Permission.permission_name
+        cur_perm = permissions[GK][g_k]
+        if multiple_counter[g_k] > 1:
+            p = _choose_perm(p, cur_perm)
+        permissions[GK][g_k] = p
+
+    # user explicit permissions for repository groups
+    user_repo_groups_perms = Permission.get_default_group_perms(uid)
+    for perm in user_repo_groups_perms:
+        rg_k = perm.UserRepoGroupToPerm.group.group_name
+        p = perm.Permission.permission_name
+        cur_perm = permissions[GK][rg_k]
+        if not explicit:
+            p = _choose_perm(p, cur_perm)
+        permissions[GK][rg_k] = p
+
+    #======================================================================
+    # !! PERMISSIONS FOR USER GROUPS !!
+    #======================================================================
+    # user group for user group permissions
+    user_group_user_groups_perms = \
+     Session().query(UserGroupUserGroupToPerm, Permission, UserGroup)\
+     .join((UserGroup, UserGroupUserGroupToPerm.target_user_group_id
+            == UserGroup.users_group_id))\
+     .join((Permission, UserGroupUserGroupToPerm.permission_id
+            == Permission.permission_id))\
+     .join((UserGroupMember, UserGroupUserGroupToPerm.user_group_id
+            == UserGroupMember.users_group_id))\
+     .filter(UserGroupMember.user_id == uid)\
+     .all()
+
+    multiple_counter = collections.defaultdict(int)
+    for perm in user_group_user_groups_perms:
+        g_k = perm.UserGroupUserGroupToPerm.target_user_group.users_group_name
+        multiple_counter[g_k] += 1
+        p = perm.Permission.permission_name
+        cur_perm = permissions[UK][g_k]
+        if multiple_counter[g_k] > 1:
+            p = _choose_perm(p, cur_perm)
+        permissions[UK][g_k] = p
+
+    #user explicit permission for user groups
+    user_user_groups_perms = Permission.get_default_user_group_perms(uid)
+    for perm in user_user_groups_perms:
+        u_k = perm.UserUserGroupToPerm.user_group.users_group_name
+        p = perm.Permission.permission_name
+        cur_perm = permissions[UK][u_k]
+        if not explicit:
+            p = _choose_perm(p, cur_perm)
+        permissions[UK][u_k] = p
+
+    return permissions
+
+
+def allowed_api_access(controller_name, whitelist=None, api_key=None):
+    """
+    Check if given controller_name is in whitelist API access
+    """
+    if not whitelist:
+        from rhodecode import CONFIG
+        whitelist = aslist(CONFIG.get('api_access_controllers_whitelist'),
+                           sep=',')
+        log.debug('whitelist of API access is: %s' % (whitelist))
+    api_access_valid = controller_name in whitelist
+    if api_access_valid:
+        log.debug('controller:%s is in API whitelist' % (controller_name))
+    else:
+        msg = 'controller: %s is *NOT* in API whitelist' % (controller_name)
+        if api_key:
+            #if we use API key and don't have access it's a warning
+            log.warning(msg)
+        else:
+            log.debug(msg)
+    return api_access_valid
+
+
+class AuthUser(object):
     """
     A simple object that handles all attributes of user in RhodeCode
 
     It does lookup based on API key,given user, or user present in session
     Then it fills all required information for such user. It also checks if
-    anonymous access is enabled and if so, it returns default user as logged
-    in
+    anonymous access is enabled and if so, it returns default user as logged in
     """
 
     def __init__(self, user_id=None, api_key=None, username=None, ip_addr=None):
 
         self.user_id = user_id
+        self._api_key = api_key
+
         self.api_key = None
         self.username = username
         self.ip_addr = ip_addr
-
         self.name = ''
         self.lastname = ''
         self.email = ''
         self.is_authenticated = False
         self.admin = False
         self.inherit_default_permissions = False
-        self.permissions = {}
-        self._api_key = api_key
+
         self.propagate_data()
         self._instance = None
 
+    @LazyProperty
+    def permissions(self):
+        return self.get_perms(user=self, cache=False)
+
+    @property
+    def api_keys(self):
+        return self.get_api_keys()
+
     def propagate_data(self):
         user_model = UserModel()
-        self.anonymous_user = User.get_by_username('default', cache=True)
+        self.anonymous_user = User.get_default_user(cache=True)
         is_user_loaded = False
 
-        # try go get user by api key
-        if self._api_key and self._api_key != self.anonymous_user.api_key:
-            log.debug('Auth User lookup by API KEY %s' % self._api_key)
-            is_user_loaded = user_model.fill_data(self, api_key=self._api_key)
         # lookup by userid
-        elif (self.user_id is not None and
-              self.user_id != self.anonymous_user.user_id):
+        if self.user_id is not None and self.user_id != self.anonymous_user.user_id:
             log.debug('Auth User lookup by USER ID %s' % self.user_id)
             is_user_loaded = user_model.fill_data(self, user_id=self.user_id)
-        # lookup by username
-        elif self.username and \
-            str2bool(config.get('container_auth_enabled', False)):
 
+        # try go get user by api key
+        elif self._api_key and self._api_key != self.anonymous_user.api_key:
+            log.debug('Auth User lookup by API KEY %s' % self._api_key)
+            is_user_loaded = user_model.fill_data(self, api_key=self._api_key)
+
+        # lookup by username
+        elif self.username:
             log.debug('Auth User lookup by USER NAME %s' % self.username)
-            dbuser = login_container_auth(self.username)
-            if dbuser is not None:
-                log.debug('filling all attributes to object')
-                for k, v in dbuser.get_dict().items():
-                    setattr(self, k, v)
-                self.set_authenticated()
-                is_user_loaded = True
+            is_user_loaded = user_model.fill_data(self, username=self.username)
         else:
             log.debug('No data in %s that could been used to log in' % self)
 
@@ -396,7 +544,42 @@ class  AuthUser(object):
             self.username = 'None'
 
         log.debug('Auth User is now %s' % self)
-        user_model.fill_perms(self)
+
+    def get_perms(self, user, explicit=True, algo='higherwin', cache=False):
+        """
+        Fills user permission attribute with permissions taken from database
+        works for permissions given for repositories, and for permissions that
+        are granted to groups
+
+        :param user: instance of User object from database
+        :param explicit: In case there are permissions both for user and a group
+            that user is part of, explicit flag will defiine if user will
+            explicitly override permissions from group, if it's False it will
+            make decision based on the algo
+        :param algo: algorithm to decide what permission should be choose if
+            it's multiple defined, eg user in two different groups. It also
+            decides if explicit flag is turned off how to specify the permission
+            for case when user is in a group + have defined separate permission
+        """
+        user_id = user.user_id
+        user_is_admin = user.is_admin
+        user_inherit_default_permissions = user.inherit_default_permissions
+
+        log.debug('Getting PERMISSION tree')
+        compute = conditional_cache('short_term', 'cache_desc',
+                                    condition=cache, func=_cached_perms_data)
+        return compute(user_id, user_is_admin,
+                       user_inherit_default_permissions, explicit, algo)
+
+    def get_api_keys(self):
+        api_keys = [self.api_key]
+        for api_key in UserApiKeys.query()\
+                .filter(UserApiKeys.user_id == self.user_id)\
+                .filter(or_(UserApiKeys.expires == -1,
+                            UserApiKeys.expires >= time.time())).all():
+            api_keys.append(api_key.api_key)
+
+        return api_keys
 
     @property
     def is_admin(self):
@@ -434,14 +617,21 @@ class  AuthUser(object):
 
         :returns: boolean, True if ip is in allowed ip range
         """
-        #check IP
-        allowed_ips = AuthUser.get_allowed_ips(self.user_id, cache=True)
-        if check_ip_access(source_ip=self.ip_addr, allowed_ips=allowed_ips):
-            log.debug('IP:%s is in range of %s' % (self.ip_addr, allowed_ips))
+        # check IP
+        inherit = self.inherit_default_permissions
+        return AuthUser.check_ip_allowed(self.user_id, self.ip_addr,
+                                         inherit_from_default=inherit)
+
+    @classmethod
+    def check_ip_allowed(cls, user_id, ip_addr, inherit_from_default):
+        allowed_ips = AuthUser.get_allowed_ips(user_id, cache=True,
+                        inherit_from_default=inherit_from_default)
+        if check_ip_access(source_ip=ip_addr, allowed_ips=allowed_ips):
+            log.debug('IP:%s is in range of %s' % (ip_addr, allowed_ips))
             return True
         else:
             log.info('Access for IP:%s forbidden, '
-                     'not in %s' % (self.ip_addr, allowed_ips))
+                     'not in %s' % (ip_addr, allowed_ips))
             return False
 
     def __repr__(self):
@@ -471,12 +661,30 @@ class  AuthUser(object):
         return AuthUser(user_id, api_key, username)
 
     @classmethod
-    def get_allowed_ips(cls, user_id, cache=False):
+    def get_allowed_ips(cls, user_id, cache=False, inherit_from_default=False):
         _set = set()
+
+        if inherit_from_default:
+            default_ips = UserIpMap.query().filter(UserIpMap.user ==
+                                            User.get_default_user(cache=True))
+            if cache:
+                default_ips = default_ips.options(FromCache("sql_cache_short",
+                                                  "get_user_ips_default"))
+
+            # populate from default user
+            for ip in default_ips:
+                try:
+                    _set.add(ip.ip_addr)
+                except ObjectDeletedError:
+                    # since we use heavy caching sometimes it happens that we get
+                    # deleted objects here, we just skip them
+                    pass
+
         user_ips = UserIpMap.query().filter(UserIpMap.user_id == user_id)
         if cache:
             user_ips = user_ips.options(FromCache("sql_cache_short",
                                                   "get_user_ips_%s" % user_id))
+
         for ip in user_ips:
             try:
                 _set.add(ip.ip_addr)
@@ -530,38 +738,45 @@ class LoginRequired(object):
         cls = fargs[0]
         user = cls.rhodecode_user
         loc = "%s:%s" % (cls.__class__.__name__, func.__name__)
-        # defined whitelist of controllers which API access will be enabled
-        whitelist = aslist(config.get('api_access_controllers_whitelist'),
-                           sep=',')
-        api_access_whitelist = loc in whitelist
-        log.debug('loc:%s is in API whitelist:%s:%s' % (loc, whitelist,
-                                                        api_access_whitelist))
-        #check IP
-        ip_access_ok = True
+
+        # check if our IP is allowed
+        ip_access_valid = True
         if not user.ip_allowed:
             from rhodecode.lib import helpers as h
             h.flash(h.literal(_('IP %s not allowed' % (user.ip_addr))),
                     category='warning')
-            ip_access_ok = False
+            ip_access_valid = False
 
-        api_access_ok = False
-        if self.api_access or api_access_whitelist:
+        # check if we used an APIKEY and it's a valid one
+        # defined whitelist of controllers which API access will be enabled
+        _api_key = request.GET.get('api_key', '')
+        api_access_valid = allowed_api_access(loc, api_key=_api_key)
+
+        # explicit controller is enabled or API is in our whitelist
+        if self.api_access or api_access_valid:
             log.debug('Checking API KEY access for %s' % cls)
-            if user.api_key == request.GET.get('api_key'):
-                api_access_ok = True
+            if _api_key and _api_key in user.api_keys:
+                api_access_valid = True
+                log.debug('API KEY ****%s is VALID' % _api_key[-4:])
             else:
-                log.debug("API KEY token not valid")
+                api_access_valid = False
+                if not _api_key:
+                    log.debug("API KEY *NOT* present in request")
+                else:
+                    log.warn("API KEY ****%s *NOT* valid" % _api_key[-4:])
 
         log.debug('Checking if %s is authenticated @ %s' % (user.username, loc))
-        if (user.is_authenticated or api_access_ok) and ip_access_ok:
-            reason = 'RegularAuth' if user.is_authenticated else 'APIAuth'
-            log.info('user %s is authenticated and granted access to %s '
-                     'using %s' % (user.username, loc, reason)
+        reason = 'RegularAuth' if user.is_authenticated else 'APIAuth'
+
+        if ip_access_valid and (user.is_authenticated or api_access_valid):
+            log.info('user %s authenticating with:%s IS authenticated on func %s '
+                     % (user, reason, loc)
             )
             return func(*fargs, **fkwargs)
         else:
-            log.warn('user %s NOT authenticated on func: %s' % (
-                user, loc)
+            log.warn('user %s authenticating with:%s NOT authenticated on func: %s: '
+                     'IP_ACCESS:%s API_ACCESS:%s'
+                     % (user, reason, loc, ip_access_valid, api_access_valid)
             )
             p = url.current()
 
@@ -583,7 +798,7 @@ class NotAnonymous(object):
 
         log.debug('Checking if user is not anonymous @%s' % cls)
 
-        anonymous = self.user.username == 'default'
+        anonymous = self.user.username == User.DEFAULT_USER
 
         if anonymous:
             p = url.current()
@@ -601,10 +816,6 @@ class PermsDecorator(object):
     """Base class for controller decorators"""
 
     def __init__(self, *required_perms):
-        available_perms = config['available_permissions']
-        for perm in required_perms:
-            if perm not in available_perms:
-                raise Exception("'%s' permission is not defined" % perm)
         self.required_perms = set(required_perms)
         self.user_perms = None
 
@@ -624,7 +835,7 @@ class PermsDecorator(object):
 
         else:
             log.debug('Permission denied for %s %s' % (cls, self.user))
-            anonymous = self.user.username == 'default'
+            anonymous = self.user.username == User.DEFAULT_USER
 
             if anonymous:
                 p = url.current()
@@ -703,14 +914,14 @@ class HasRepoPermissionAnyDecorator(PermsDecorator):
         return False
 
 
-class HasReposGroupPermissionAllDecorator(PermsDecorator):
+class HasRepoGroupPermissionAllDecorator(PermsDecorator):
     """
     Checks for access permission for all given predicates for specific
     repository group. All of them have to be meet in order to fulfill the request
     """
 
     def check_permissions(self):
-        group_name = get_repos_group_slug(request)
+        group_name = get_repo_group_slug(request)
         try:
             user_perms = set([self.user_perms['repositories_groups'][group_name]])
         except KeyError:
@@ -721,14 +932,14 @@ class HasReposGroupPermissionAllDecorator(PermsDecorator):
         return False
 
 
-class HasReposGroupPermissionAnyDecorator(PermsDecorator):
+class HasRepoGroupPermissionAnyDecorator(PermsDecorator):
     """
     Checks for access permission for any of given predicates for specific
     repository group. In order to fulfill the request any of predicates must be meet
     """
 
     def check_permissions(self):
-        group_name = get_repos_group_slug(request)
+        group_name = get_repo_group_slug(request)
         try:
             user_perms = set([self.user_perms['repositories_groups'][group_name]])
         except KeyError:
@@ -782,27 +993,28 @@ class PermsFunction(object):
     """Base function for other check functions"""
 
     def __init__(self, *perms):
-        available_perms = config['available_permissions']
-
-        for perm in perms:
-            if perm not in available_perms:
-                raise Exception("'%s' permission is not defined" % perm)
         self.required_perms = set(perms)
         self.user_perms = None
         self.repo_name = None
         self.group_name = None
 
-    def __call__(self, check_location=''):
-        #TODO: put user as attribute here
-        user = request.user
+    def __call__(self, check_location='', user=None):
+        if not user:
+            #TODO: remove this someday,put as user as attribute here
+            user = request.user
+
+        # init auth user if not already given
+        if not isinstance(user, AuthUser):
+            user = AuthUser(user.user_id)
+
         cls_name = self.__class__.__name__
         check_scope = {
             'HasPermissionAll': '',
             'HasPermissionAny': '',
             'HasRepoPermissionAll': 'repo:%s' % self.repo_name,
             'HasRepoPermissionAny': 'repo:%s' % self.repo_name,
-            'HasReposGroupPermissionAll': 'group:%s' % self.group_name,
-            'HasReposGroupPermissionAny': 'group:%s' % self.group_name,
+            'HasRepoGroupPermissionAll': 'group:%s' % self.group_name,
+            'HasRepoGroupPermissionAny': 'group:%s' % self.group_name,
         }.get(cls_name, '?')
         log.debug('checking cls:%s %s usr:%s %s @ %s', cls_name,
                   self.required_perms, user, check_scope,
@@ -812,13 +1024,15 @@ class PermsFunction(object):
             return False
         self.user_perms = user.permissions
         if self.check_permissions():
-            log.debug('Permission to %s granted for user: %s @ %s', self.repo_name, user,
-                      check_location or 'unspecified location')
+            log.debug('Permission to %s granted for user: %s @ %s'
+                      % (check_scope, user,
+                         check_location or 'unspecified location'))
             return True
 
         else:
-            log.debug('Permission to %s denied for user: %s @ %s', self.repo_name, user,
-                        check_location or 'unspecified location')
+            log.debug('Permission to %s denied for user: %s @ %s'
+                      % (check_scope, user,
+                         check_location or 'unspecified location'))
             return False
 
     def check_permissions(self):
@@ -841,9 +1055,9 @@ class HasPermissionAny(PermsFunction):
 
 
 class HasRepoPermissionAll(PermsFunction):
-    def __call__(self, repo_name=None, check_location=''):
+    def __call__(self, repo_name=None, check_location='', user=None):
         self.repo_name = repo_name
-        return super(HasRepoPermissionAll, self).__call__(check_location)
+        return super(HasRepoPermissionAll, self).__call__(check_location, user)
 
     def check_permissions(self):
         if not self.repo_name:
@@ -861,9 +1075,9 @@ class HasRepoPermissionAll(PermsFunction):
 
 
 class HasRepoPermissionAny(PermsFunction):
-    def __call__(self, repo_name=None, check_location=''):
+    def __call__(self, repo_name=None, check_location='', user=None):
         self.repo_name = repo_name
-        return super(HasRepoPermissionAny, self).__call__(check_location)
+        return super(HasRepoPermissionAny, self).__call__(check_location, user)
 
     def check_permissions(self):
         if not self.repo_name:
@@ -880,10 +1094,10 @@ class HasRepoPermissionAny(PermsFunction):
         return False
 
 
-class HasReposGroupPermissionAny(PermsFunction):
-    def __call__(self, group_name=None, check_location=''):
+class HasRepoGroupPermissionAny(PermsFunction):
+    def __call__(self, group_name=None, check_location='', user=None):
         self.group_name = group_name
-        return super(HasReposGroupPermissionAny, self).__call__(check_location)
+        return super(HasRepoGroupPermissionAny, self).__call__(check_location, user)
 
     def check_permissions(self):
         try:
@@ -897,10 +1111,10 @@ class HasReposGroupPermissionAny(PermsFunction):
         return False
 
 
-class HasReposGroupPermissionAll(PermsFunction):
-    def __call__(self, group_name=None, check_location=''):
+class HasRepoGroupPermissionAll(PermsFunction):
+    def __call__(self, group_name=None, check_location='', user=None):
         self.group_name = group_name
-        return super(HasReposGroupPermissionAll, self).__call__(check_location)
+        return super(HasRepoGroupPermissionAll, self).__call__(check_location, user)
 
     def check_permissions(self):
         try:
@@ -915,9 +1129,9 @@ class HasReposGroupPermissionAll(PermsFunction):
 
 
 class HasUserGroupPermissionAny(PermsFunction):
-    def __call__(self, user_group_name=None, check_location=''):
+    def __call__(self, user_group_name=None, check_location='', user=None):
         self.user_group_name = user_group_name
-        return super(HasUserGroupPermissionAny, self).__call__(check_location)
+        return super(HasUserGroupPermissionAny, self).__call__(check_location, user)
 
     def check_permissions(self):
         try:
@@ -932,9 +1146,9 @@ class HasUserGroupPermissionAny(PermsFunction):
 
 
 class HasUserGroupPermissionAll(PermsFunction):
-    def __call__(self, user_group_name=None, check_location=''):
+    def __call__(self, user_group_name=None, check_location='', user=None):
         self.user_group_name = user_group_name
-        return super(HasUserGroupPermissionAll, self).__call__(check_location)
+        return super(HasUserGroupPermissionAll, self).__call__(check_location, user)
 
     def check_permissions(self):
         try:
@@ -946,6 +1160,7 @@ class HasUserGroupPermissionAll(PermsFunction):
         if self.required_perms.issubset(self._user_perms):
             return True
         return False
+
 
 #==============================================================================
 # SPECIAL VERSION TO HANDLE MIDDLEWARE AUTH
@@ -974,15 +1189,11 @@ class HasPermissionAnyMiddleware(object):
                   'permissions %s for user:%s repository:%s', self.user_perms,
                                                 self.username, self.repo_name)
         if self.required_perms.intersection(self.user_perms):
-            log.debug('permission granted for user:%s on repo:%s' % (
-                          self.username, self.repo_name
-                     )
-            )
+            log.debug('Permission to repo: %s granted for user: %s @ %s'
+                      % (self.repo_name, self.username, 'PermissionMiddleware'))
             return True
-        log.debug('permission denied for user:%s on repo:%s' % (
-                      self.username, self.repo_name
-                 )
-        )
+        log.debug('Permission to repo: %s denied for user: %s @ %s'
+                  % (self.repo_name, self.username, 'PermissionMiddleware'))
         return False
 
 
@@ -993,11 +1204,18 @@ class _BaseApiPerm(object):
     def __init__(self, *perms):
         self.required_perms = set(perms)
 
-    def __call__(self, check_location='unspecified', user=None, repo_name=None):
+    def __call__(self, check_location=None, user=None, repo_name=None,
+                 group_name=None):
         cls_name = self.__class__.__name__
-        check_scope = 'user:%s, repo:%s' % (user, repo_name)
-        log.debug('checking cls:%s %s %s @ %s', cls_name,
-                  self.required_perms, check_scope, check_location)
+        check_scope = 'user:%s' % (user)
+        if repo_name:
+            check_scope += ', repo:%s' % (repo_name)
+
+        if group_name:
+            check_scope += ', repo group:%s' % (group_name)
+
+        log.debug('checking cls:%s %s %s @ %s'
+                  % (cls_name, self.required_perms, check_scope, check_location))
         if not user:
             log.debug('Empty User passed into arguments')
             return False
@@ -1005,18 +1223,19 @@ class _BaseApiPerm(object):
         ## process user
         if not isinstance(user, AuthUser):
             user = AuthUser(user.user_id)
-
-        if self.check_permissions(user.permissions, repo_name):
-            log.debug('Permission to %s granted for user: %s @ %s', repo_name,
-                      user, check_location)
+        if not check_location:
+            check_location = 'unspecified'
+        if self.check_permissions(user.permissions, repo_name, group_name):
+            log.debug('Permission to %s granted for user: %s @ %s'
+                      % (check_scope, user, check_location))
             return True
 
         else:
-            log.debug('Permission to %s denied for user: %s @ %s', repo_name,
-                      user, check_location)
+            log.debug('Permission to %s denied for user: %s @ %s'
+                      % (check_scope, user, check_location))
             return False
 
-    def check_permissions(self, perm_defs, repo_name):
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
         """
         implement in child class should return True if permissions are ok,
         False otherwise
@@ -1028,59 +1247,35 @@ class _BaseApiPerm(object):
 
 
 class HasPermissionAllApi(_BaseApiPerm):
-    def __call__(self, user, check_location=''):
-        return super(HasPermissionAllApi, self)\
-            .__call__(check_location=check_location, user=user)
-
-    def check_permissions(self, perm_defs, repo):
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
         if self.required_perms.issubset(perm_defs.get('global')):
             return True
         return False
 
 
 class HasPermissionAnyApi(_BaseApiPerm):
-    def __call__(self, user, check_location=''):
-        return super(HasPermissionAnyApi, self)\
-            .__call__(check_location=check_location, user=user)
-
-    def check_permissions(self, perm_defs, repo):
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
         if self.required_perms.intersection(perm_defs.get('global')):
             return True
         return False
 
 
 class HasRepoPermissionAllApi(_BaseApiPerm):
-    def __call__(self, user, repo_name, check_location=''):
-        return super(HasRepoPermissionAllApi, self)\
-            .__call__(check_location=check_location, user=user,
-                      repo_name=repo_name)
-
-    def check_permissions(self, perm_defs, repo_name):
-
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
         try:
-            self._user_perms = set(
-                [perm_defs['repositories'][repo_name]]
-            )
+            _user_perms = set([perm_defs['repositories'][repo_name]])
         except KeyError:
             log.warning(traceback.format_exc())
             return False
-        if self.required_perms.issubset(self._user_perms):
+        if self.required_perms.issubset(_user_perms):
             return True
         return False
 
 
 class HasRepoPermissionAnyApi(_BaseApiPerm):
-    def __call__(self, user, repo_name, check_location=''):
-        return super(HasRepoPermissionAnyApi, self)\
-            .__call__(check_location=check_location, user=user,
-                      repo_name=repo_name)
-
-    def check_permissions(self, perm_defs, repo_name):
-
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
         try:
-            _user_perms = set(
-                [perm_defs['repositories'][repo_name]]
-            )
+            _user_perms = set([perm_defs['repositories'][repo_name]])
         except KeyError:
             log.warning(traceback.format_exc())
             return False
@@ -1088,6 +1283,28 @@ class HasRepoPermissionAnyApi(_BaseApiPerm):
             return True
         return False
 
+
+class HasRepoGroupPermissionAnyApi(_BaseApiPerm):
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
+        try:
+            _user_perms = set([perm_defs['repositories_groups'][group_name]])
+        except KeyError:
+            log.warning(traceback.format_exc())
+            return False
+        if self.required_perms.intersection(_user_perms):
+            return True
+        return False
+
+class HasRepoGroupPermissionAllApi(_BaseApiPerm):
+    def check_permissions(self, perm_defs, repo_name=None, group_name=None):
+        try:
+            _user_perms = set([perm_defs['repositories_groups'][group_name]])
+        except KeyError:
+            log.warning(traceback.format_exc())
+            return False
+        if self.required_perms.issubset(_user_perms):
+            return True
+        return False
 
 def check_ip_access(source_ip, allowed_ips=None):
     """
@@ -1102,6 +1319,8 @@ def check_ip_access(source_ip, allowed_ips=None):
         for ip in allowed_ips:
             try:
                 if ipaddr.IPAddress(source_ip) in ipaddr.IPNetwork(ip):
+                    log.debug('IP %s is network %s' %
+                              (ipaddr.IPAddress(source_ip), ipaddr.IPNetwork(ip)))
                     return True
                 # for any case we cannot determine the IP, don't crash just
                 # skip it and log as error, we want to say forbidden still when

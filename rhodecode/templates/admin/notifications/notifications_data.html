@@ -14,17 +14,18 @@ unread = lambda n:{False:'unread'}.get(n)
       </div>
       <div class="desc ${unread(notification.read)}">
       <a href="${url('notification', notification_id=notification.notification.notification_id)}">${notification.notification.description}</a>
+
       </div>
       <div class="delete-notifications">
-        <span id="${notification.notification.notification_id}" class="delete-notification delete_icon action"></span>
+        <span id="${notification.notification.notification_id}" class="delete-notification"><i class="icon-minus-sign" id="yui-gen24" style="color: #b94a48"></i></span>
       </div>
       %if not notification.read:
       <div class="read-notifications">
-        <span id="${notification.notification.notification_id}" class="read-notification accept_icon action"></span>
+        <span id="${notification.notification.notification_id}" class="read-notification"><i class="icon-ok-sign" id="yui-gen24" style="color: #4CBB17"></i></span>
       </div>
       %endif
     </div>
-    <div class="notification-subject">${h.literal(notification.notification.subject)}</div>
+        <div class="notification-subject"></div>
   </div>
 %endfor
 </div>

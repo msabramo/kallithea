@@ -1,6 +1,20 @@
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 Set of generic validators
 """
+
 import os
 import re
 import formencode
@@ -16,12 +30,12 @@ from formencode.validators import (
 from rhodecode.lib.compat import OrderedSet
 from rhodecode.lib import ipaddr
 from rhodecode.lib.utils import repo_name_slug
-from rhodecode.lib.utils2 import safe_int, str2bool
+from rhodecode.lib.utils2 import safe_int, str2bool, aslist
 from rhodecode.model.db import RepoGroup, Repository, UserGroup, User,\
     ChangesetStatus
 from rhodecode.lib.exceptions import LdapImportError
 from rhodecode.config.routing import ADMIN_PREFIX
-from rhodecode.lib.auth import HasReposGroupPermissionAny, HasPermissionAny
+from rhodecode.lib.auth import HasRepoGroupPermissionAny, HasPermissionAny
 
 # silence warnings and pylint
 UnicodeString, OneOf, Int, Number, Regex, Email, Bool, StringBoolean, Set, \
@@ -29,30 +43,10 @@ UnicodeString, OneOf, Int, Number, Regex, Email, Bool, StringBoolean, Set, \
 
 log = logging.getLogger(__name__)
 
+class _Missing(object):
+    pass
 
-class UniqueList(formencode.FancyValidator):
-    """
-    Unique List !
-    """
-    messages = dict(
-        empty=_('Value cannot be an empty list'),
-        missing_value=_('Value cannot be an empty list'),
-    )
-
-    def _to_python(self, value, state):
-        if isinstance(value, list):
-            return value
-        elif isinstance(value, set):
-            return list(value)
-        elif isinstance(value, tuple):
-            return list(value)
-        elif value is None:
-            return []
-        else:
-            return [value]
-
-    def empty_value(self, value):
-        return []
+Missing = _Missing()
 
 
 class StateObj(object):
@@ -77,6 +71,47 @@ def M(self, key, state=None, **kwargs):
         state._ = staticmethod(_)
     #inject validator into state object
     return self.message(key, state, **kwargs)
+
+
+def UniqueList():
+    class _UniqueList(formencode.FancyValidator):
+        """
+        Unique List !
+        """
+        messages = dict(
+            empty=_('Value cannot be an empty list'),
+            missing_value=_('Value cannot be an empty list'),
+        )
+
+        def _to_python(self, value, state):
+            def make_unique(value):
+                seen = []
+                return [c for c in value if not (c in seen or seen.append(c))]
+
+            if isinstance(value, list):
+                return make_unique(value)
+            elif isinstance(value, set):
+                return make_unique(list(value))
+            elif isinstance(value, tuple):
+                return make_unique(list(value))
+            elif value is None:
+                return []
+            else:
+                return [value]
+
+        def empty_value(self, value):
+            return []
+
+    return _UniqueList
+
+
+def UniqueListFromString():
+    class _UniqueListFromString(UniqueList()):
+        def _to_python(self, value, state):
+            if isinstance(value, basestring):
+                value = aslist(value, ',')
+            return super(_UniqueListFromString, self)._to_python(value, state)
+    return _UniqueListFromString
 
 
 def ValidUsername(edit=False, old_data={}):
@@ -108,6 +143,12 @@ def ValidUsername(edit=False, old_data={}):
             if re.match(r'^[a-zA-Z0-9\_]{1}[a-zA-Z0-9\-\_\.]*$', value) is None:
                 msg = M(self, 'invalid_username', state)
                 raise formencode.Invalid(msg, value, state)
+    return _validator
+
+
+def ValidRegex(msg=None):
+    class _validator(formencode.validators.Regex):
+        messages = dict(invalid=msg or _('The input is not valid'))
     return _validator
 
 
@@ -171,7 +212,7 @@ def ValidUserGroup(edit=False, old_data={}):
     return _validator
 
 
-def ValidReposGroup(edit=False, old_data={}):
+def ValidRepoGroup(edit=False, old_data={}):
     class _validator(formencode.validators.FancyValidator):
         messages = {
             'group_parent_id': _(u'Cannot assign this group as parent'),
@@ -247,7 +288,23 @@ def ValidPassword():
     return _validator
 
 
-def ValidPasswordsMatch():
+def ValidOldPassword(username):
+    class _validator(formencode.validators.FancyValidator):
+        messages = {
+            'invalid_password': _(u'Invalid old password')
+        }
+
+        def validate_python(self, value, state):
+            from rhodecode.lib import auth_modules
+            if not auth_modules.authenticate(username, value, ''):
+                msg = M(self, 'invalid_password', state)
+                raise formencode.Invalid(msg, value, state,
+                    error_dict=dict(current_password=msg)
+                )
+    return _validator
+
+
+def ValidPasswordsMatch(passwd='new_password', passwd_confirmation='password_confirmation'):
     class _validator(formencode.validators.FancyValidator):
         messages = {
             'password_mismatch': _(u'Passwords do not match'),
@@ -255,11 +312,11 @@ def ValidPasswordsMatch():
 
         def validate_python(self, value, state):
 
-            pass_val = value.get('password') or value.get('new_password')
-            if pass_val != value['password_confirmation']:
+            pass_val = value.get('password') or value.get(passwd)
+            if pass_val != value[passwd_confirmation]:
                 msg = M(self, 'password_mismatch', state)
                 raise formencode.Invalid(msg, value, state,
-                     error_dict=dict(password_confirmation=msg)
+                     error_dict={passwd:msg, passwd_confirmation: msg}
                 )
     return _validator
 
@@ -273,12 +330,12 @@ def ValidAuth():
         }
 
         def validate_python(self, value, state):
-            from rhodecode.lib.auth import authenticate
+            from rhodecode.lib import auth_modules
 
             password = value['password']
             username = value['username']
 
-            if not authenticate(username, password):
+            if not auth_modules.authenticate(username, password):
                 user = User.get_by_username(username)
                 if user and not user.active:
                     log.warning('user %s is disabled' % username)
@@ -403,18 +460,16 @@ def SlugifyName():
 def ValidCloneUri():
     from rhodecode.lib.utils import make_ui
 
-    def url_handler(repo_type, url, ui=None):
+    def url_handler(repo_type, url, ui):
         if repo_type == 'hg':
             from rhodecode.lib.vcs.backends.hg.repository import MercurialRepository
-            from rhodecode.lib.vcs.utils.hgcompat import httppeer
             if url.startswith('http'):
-                ## initially check if it's at least the proper URL
-                ## or does it pass basic auth
-                MercurialRepository._check_url(url)
-                httppeer(ui, url)._capabilities()
+                # initially check if it's at least the proper URL
+                # or does it pass basic auth
+                MercurialRepository._check_url(url, ui)
             elif url.startswith('svn+http'):
                 from hgsubversion.svnrepo import svnremoterepo
-                svnremoterepo(ui, url).capabilities
+                svnremoterepo(ui, url).svn.uuid
             elif url.startswith('git+http'):
                 raise NotImplementedError()
             else:
@@ -423,8 +478,8 @@ def ValidCloneUri():
         elif repo_type == 'git':
             from rhodecode.lib.vcs.backends.git.repository import GitRepository
             if url.startswith('http'):
-                ## initially check if it's at least the proper URL
-                ## or does it pass basic auth
+                # initially check if it's at least the proper URL
+                # or does it pass basic auth
                 GitRepository._check_url(url)
             elif url.startswith('svn+http'):
                 raise NotImplementedError()
@@ -491,11 +546,23 @@ def CanWriteGroup(old_data=None):
         def validate_python(self, value, state):
             gr = RepoGroup.get(value)
             gr_name = gr.group_name if gr else None  # None means ROOT location
-            val = HasReposGroupPermissionAny('group.write', 'group.admin')
+            # create repositories with write permission on group is set to true
+            create_on_write = HasPermissionAny('hg.create.write_on_repogroup.true')()
+            group_admin = HasRepoGroupPermissionAny('group.admin')(gr_name,
+                                            'can write into group validator')
+            group_write = HasRepoGroupPermissionAny('group.write')(gr_name,
+                                            'can write into group validator')
+            forbidden = not (group_admin or (group_write and create_on_write))
             can_create_repos = HasPermissionAny('hg.admin', 'hg.create.repository')
-            forbidden = not val(gr_name, 'can write into group validator')
-            value_changed = True  # old_data['repo_group'].get('group_id') != safe_int(value)
-            if value_changed:  # do check if we changed the value
+            gid = (old_data['repo_group'].get('group_id')
+                   if (old_data and 'repo_group' in old_data) else None)
+            value_changed = gid != safe_int(value)
+            new = not old_data
+            # do check if we changed the value, there's a case that someone got
+            # revoked write permissions to a repository, he still created, we
+            # don't need to check permission if he didn't change the value of
+            # groups in form box
+            if value_changed or new:
                 #parent group need to be existing
                 if gr and forbidden:
                     msg = M(self, 'permission_denied', state)
@@ -534,7 +601,7 @@ def CanCreateGroup(can_create_in_root=False):
                 return
 
             forbidden_in_root = gr is None and not can_create_in_root
-            val = HasReposGroupPermissionAny('group.admin')
+            val = HasRepoGroupPermissionAny('group.admin')
             forbidden = not val(gr_name, 'can create group validator')
             if forbidden_in_root or forbidden:
                 msg = M(self, 'permission_denied', state)
@@ -592,7 +659,7 @@ def ValidPerms(type_='repo'):
                     t = {'u': 'user',
                          'g': 'users_group'
                     }[k[0]]
-                    if member == 'default':
+                    if member == User.DEFAULT_USER:
                         if str2bool(value.get('repo_private')):
                             # set none for default when updating to
                             # private repo protects agains form manipulation
@@ -718,7 +785,7 @@ def LdapLibValidator():
 
 
 def AttrLoginValidator():
-    class _validator(formencode.validators.FancyValidator):
+    class _validator(formencode.validators.UnicodeString):
         messages = {
             'invalid_cn':
                   _(u'The LDAP Login attribute of the CN must be specified - '
@@ -824,4 +891,34 @@ def BasePath():
             if value != os.path.basename(value):
                 raise formencode.Invalid(self.message('badPath', state),
                                          value, state)
+    return _validator
+
+
+def ValidAuthPlugins():
+    class _validator(formencode.validators.FancyValidator):
+        messages = dict(
+            import_duplicate=_('Plugins %(loaded)s and %(next_to_load)s both export the same name')
+        )
+
+        def _to_python(self, value, state):
+            # filter empty values
+            return filter(lambda s: s not in [None, ''], value)
+
+        def validate_python(self, value, state):
+            from rhodecode.lib import auth_modules
+            module_list = value
+            unique_names = {}
+            try:
+                for module in module_list:
+                    plugin = auth_modules.loadplugin(module)
+                    plugin_name = plugin.name
+                    if plugin_name in unique_names:
+                        msg = M(self, 'import_duplicate', state,
+                                loaded=unique_names[plugin_name],
+                                next_to_load=plugin_name)
+                        raise formencode.Invalid(msg, value, state)
+                    unique_names[plugin_name] = plugin
+            except (ImportError, AttributeError, TypeError), e:
+                raise formencode.Invalid(str(e), value, state)
+
     return _validator

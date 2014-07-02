@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.middleware.simplehg
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    SimpleHG middleware for handling mercurial protocol request
-    (push/clone etc.). It's implemented with basic auth function
-
-    :created_on: Apr 28, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -23,26 +11,37 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.middleware.simplehg
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SimpleHG middleware for handling mercurial protocol request
+(push/clone etc.). It's implemented with basic auth function
+
+:created_on: Apr 28, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+
+"""
+
 
 import os
 import logging
 import traceback
 
-
 from paste.httpheaders import REMOTE_USER, AUTH_TYPE
 from webob.exc import HTTPNotFound, HTTPForbidden, HTTPInternalServerError, \
-    HTTPBadRequest, HTTPNotAcceptable
+    HTTPNotAcceptable
+from rhodecode.model.db import User
 
 from rhodecode.lib.utils2 import safe_str, fix_PATH, get_server_url,\
     _set_extras
 from rhodecode.lib.base import BaseVCSController
-from rhodecode.lib.auth import get_container_username
 from rhodecode.lib.utils import make_ui, is_valid_repo, ui_sections
-from rhodecode.lib.compat import json
 from rhodecode.lib.vcs.utils.hgcompat import RepoError, hgweb_mod
-from rhodecode.model.db import User
 from rhodecode.lib.exceptions import HTTPLockedRC
-
+from rhodecode.lib import auth_modules
 
 log = logging.getLogger(__name__)
 
@@ -102,23 +101,34 @@ class SimpleHg(BaseVCSController):
         if action in ['pull', 'push']:
             anonymous_user = self.__get_user('default')
             username = anonymous_user.username
-            anonymous_perm = self._check_permission(action, anonymous_user,
-                                                    repo_name, ip_addr)
+            if anonymous_user.active:
+                # ONLY check permissions if the user is activated
+                anonymous_perm = self._check_permission(action, anonymous_user,
+                                                        repo_name, ip_addr)
+            else:
+                anonymous_perm = False
 
-            if not anonymous_perm or not anonymous_user.active:
-                if not anonymous_perm:
-                    log.debug('Not enough credentials to access this '
-                              'repository as anonymous user')
+            if not anonymous_user.active or not anonymous_perm:
                 if not anonymous_user.active:
                     log.debug('Anonymous access is disabled, running '
                               'authentication')
+
+                if not anonymous_perm:
+                    log.debug('Not enough credentials to access this '
+                              'repository as anonymous user')
+
+                username = None
                 #==============================================================
                 # DEFAULT PERM FAILED OR ANONYMOUS ACCESS IS DISABLED SO WE
                 # NEED TO AUTHENTICATE AND ASK FOR AUTH USER PERMISSIONS
                 #==============================================================
 
-                # Attempting to retrieve username from the container
-                username = get_container_username(environ, self.config)
+                # try to auth based on environ, container auth methods
+                log.debug('Running PRE-AUTH for container based authentication')
+                pre_auth = auth_modules.authenticate('', '', environ)
+                if pre_auth and pre_auth.get('username'):
+                    username = pre_auth['username']
+                log.debug('PRE-AUTH got %s as username' % username)
 
                 # If not authenticated by the container, running basic auth
                 if not username:

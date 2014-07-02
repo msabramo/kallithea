@@ -20,6 +20,7 @@ import string
 
 from dulwich.objects import Tag
 from dulwich.repo import Repo, NotGitRepository
+from dulwich.config import ConfigFile
 
 from rhodecode.lib.vcs import subprocessio
 from rhodecode.lib.vcs.backends.base import BaseRepository, CollectionGenerator
@@ -39,7 +40,6 @@ from rhodecode.lib.vcs.utils.hgcompat import (
 )
 
 from .changeset import GitChangeset
-from .config import ConfigFile
 from .inmemory import GitInMemoryChangeset
 from .workdir import GitWorkdir
 
@@ -165,25 +165,31 @@ class GitRepository(BaseRepository):
     @classmethod
     def _check_url(cls, url):
         """
-        Functon will check given url and try to verify if it's a valid
-        link. Sometimes it may happened that mercurial will issue basic
+        Function will check given url and try to verify if it's a valid
+        link. Sometimes it may happened that git will issue basic
         auth request that can cause whole API to hang when used from python
         or other external calls.
 
-        On failures it'll raise urllib2.HTTPError
+        On failures it'll raise urllib2.HTTPError, exception is also thrown
+        when the return code is non 200
         """
 
         # check first if it's not an local url
         if os.path.isdir(url) or url.startswith('file:'):
             return True
 
-        if('+' in url[:url.find('://')]):
+        if '+' in url[:url.find('://')]:
             url = url[url.find('+') + 1:]
 
         handlers = []
-        test_uri, authinfo = hg_url(url).authinfo()
+        url_obj = hg_url(url)
+        test_uri, authinfo = url_obj.authinfo()
+        url_obj.passwd = '*****'
+        cleaned_uri = str(url_obj)
+
         if not test_uri.endswith('info/refs'):
             test_uri = test_uri.rstrip('/') + '/info/refs'
+
         if authinfo:
             #create a password manager
             passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
@@ -202,10 +208,19 @@ class GitRepository(BaseRepository):
 
         try:
             resp = o.open(req)
-            return resp.code == 200
+            if resp.code != 200:
+                raise Exception('Return Code is not 200')
         except Exception, e:
             # means it cannot be cloned
-            raise urllib2.URLError("[%s] %s" % (url, e))
+            raise urllib2.URLError("[%s] org_exc: %s" % (cleaned_uri, e))
+
+        # now detect if it's proper git repo
+        gitdata = resp.read()
+        if not 'service=git-upload-pack' in gitdata:
+            raise urllib2.URLError(
+                "url [%s] does not look like an git" % (cleaned_uri))
+
+        return True
 
     def _get_repo(self, create, src_url=None, update_after_clone=False,
                   bare=False):
@@ -220,7 +235,7 @@ class GitRepository(BaseRepository):
                 self.clone(src_url, update_after_clone, bare)
                 return Repo(self.path)
             elif create:
-                os.mkdir(self.path)
+                os.makedirs(self.path)
                 if bare:
                     return Repo.init_bare(self.path)
                 else:
@@ -274,8 +289,8 @@ class GitRepository(BaseRepository):
             try:
                 revision = self.revisions[int(revision)]
             except Exception:
-                raise ChangesetDoesNotExistError("Revision %s does not exist "
-                    "for this repository" % (revision))
+                msg = ("Revision %s does not exist for %s" % (revision, self))
+                raise ChangesetDoesNotExistError(msg)
 
         elif is_bstr:
             # get by branch/tag name
@@ -289,8 +304,8 @@ class GitRepository(BaseRepository):
                 return _tags_shas[_tags_shas.index(revision)]
 
             elif not SHA_PATTERN.match(revision) or revision not in self.revisions:
-                raise ChangesetDoesNotExistError("Revision %s does not exist "
-                    "for this repository" % (revision))
+                msg = ("Revision %s does not exist for %s" % (revision, self))
+                raise ChangesetDoesNotExistError(msg)
 
         # Ensure we return full id
         if not SHA_PATTERN.match(str(revision)):
@@ -348,13 +363,9 @@ class GitRepository(BaseRepository):
 
     @LazyProperty
     def description(self):
-        idx_loc = '' if self.bare else '.git'
         undefined_description = u'unknown'
-        description_path = os.path.join(self.path, idx_loc, 'description')
-        if os.path.isfile(description_path):
-            return safe_unicode(open(description_path).read())
-        else:
-            return undefined_description
+        _desc = self._repo.get_description()
+        return safe_unicode(_desc or undefined_description)
 
     @LazyProperty
     def contact(self):
@@ -631,7 +642,7 @@ class GitRepository(BaseRepository):
           *bare* git repository (no working directory at all).
         """
         url = self._get_url(url)
-        cmd = ['clone']
+        cmd = ['clone', '-q']
         if bare:
             cmd.append('--bare')
         elif not update_after_clone:
@@ -664,6 +675,13 @@ class GitRepository(BaseRepository):
         refs = ' '.join(('+%s:%s' % (r, r) for r in refs))
         cmd = '''fetch %s -- %s''' % (url, refs)
         self.run_git_command(cmd)
+
+    def _update_server_info(self):
+        """
+        runs gits update-server-info command in this repo instance
+        """
+        from dulwich.server import update_server_info
+        update_server_info(self._repo)
 
     @LazyProperty
     def workdir(self):

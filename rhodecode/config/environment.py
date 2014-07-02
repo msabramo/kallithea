@@ -1,8 +1,24 @@
-"""Pylons environment configuration"""
+# -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+    Pylons environment configuration
+"""
 
 import os
 import logging
 import rhodecode
+import platform
 
 from mako.lookup import TemplateLookup
 from pylons.configuration import PylonsConfig
@@ -27,7 +43,8 @@ from rhodecode.model.scm import ScmModel
 log = logging.getLogger(__name__)
 
 
-def load_environment(global_conf, app_conf, initial=False):
+def load_environment(global_conf, app_conf, initial=False,
+                     test_env=None, test_index=None):
     """
     Configure the Pylons environment via the ``pylons.config``
     object
@@ -73,18 +90,22 @@ def load_environment(global_conf, app_conf, initial=False):
     config['pylons.strict_tmpl_context'] = True
     test = os.path.split(config['__file__'])[-1] == 'test.ini'
     if test:
+        if test_env is None:
+            test_env = not int(os.environ.get('RC_NO_TMP_PATH', 0))
+        if test_index is None:
+            test_index = not int(os.environ.get('RC_WHOOSH_TEST_DISABLE', 0))
         if os.environ.get('TEST_DB'):
             # swap config if we pass enviroment variable
             config['sqlalchemy.db1.url'] = os.environ.get('TEST_DB')
 
         from rhodecode.lib.utils import create_test_env, create_test_index
-        from rhodecode.tests import  TESTS_TMP_PATH
-        # set RC_NO_TMP_PATH=1 to disable re-creating the database and
-        # test repos
-        if not int(os.environ.get('RC_NO_TMP_PATH', 0)):
+        from rhodecode.tests import TESTS_TMP_PATH
+        #set RC_NO_TMP_PATH=1 to disable re-creating the database and
+        #test repos
+        if test_env:
             create_test_env(TESTS_TMP_PATH, config)
-        # set RC_WHOOSH_TEST_DISABLE=1 to disable whoosh index during tests
-        if not int(os.environ.get('RC_WHOOSH_TEST_DISABLE', 0)):
+        #set RC_WHOOSH_TEST_DISABLE=1 to disable whoosh index during tests
+        if test_index:
             create_test_index(TESTS_TMP_PATH, config, True)
 
     DbManage.check_waitress()
@@ -100,7 +121,7 @@ def load_environment(global_conf, app_conf, initial=False):
 
     instance_id = rhodecode.CONFIG.get('instance_id')
     if instance_id == '*':
-        instance_id = '%s-%s' % (os.uname()[1], os.getpid())
+        instance_id = '%s-%s' % (platform.uname()[1], os.getpid())
         rhodecode.CONFIG['instance_id'] = instance_id
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override

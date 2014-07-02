@@ -1,0 +1,75 @@
+<h4>${_('Built in Mercurial hooks - read only')}</h4>
+<div class="form">
+    <div class="fields">
+      % for hook in c.hooks:
+        <div class="field">
+            <div class="label label">
+                <label for="${hook.ui_key}">${hook.ui_key}</label>
+            </div>
+            <div class="input" style="margin-left:280px">
+              ${h.text(hook.ui_key,hook.ui_value,size=60,readonly="readonly")}
+            </div>
+        </div>
+      % endfor
+    </div>
+    <span class="help-block">${_('Hooks can be used to trigger actions on certain events such as push / pull. They can trigger Python functions or external applications.')}</span>
+</div>
+
+% if c.visual.allow_custom_hooks_settings:
+<h4>${_('Custom hooks')}</h4>
+${h.form(url('admin_settings_hooks'), method='post')}
+<div class="form">
+    <div class="fields">
+
+      % for hook in c.custom_hooks:
+      <div class="field"  id="${'id%s' % hook.ui_id }">
+        <div class="label label">
+            <label for="${hook.ui_key}">${hook.ui_key}</label>
+        </div>
+        <div class="input" style="margin-left:280px">
+            ${h.hidden('hook_ui_key',hook.ui_key)}
+            ${h.hidden('hook_ui_value',hook.ui_value)}
+            ${h.text('hook_ui_value_new',hook.ui_value,size=60)}
+            <span class="action_button"
+            onclick="ajaxActionHook(${hook.ui_id},'${'id%s' % hook.ui_id }')">
+            <i class="icon-remove-sign" style="color:#FF4444"></i>
+            ${_('delete')}
+            </span>
+        </div>
+      </div>
+      % endfor
+
+      <div class="field">
+        <div class="input" style="margin-left:-135px;position: absolute;">
+          <div class="input">
+             ${h.text('new_hook_ui_key',size=30)}
+          </div>
+        </div>
+        <div class="input" style="margin-left:280px">
+            ${h.text('new_hook_ui_value',size=60)}
+        </div>
+      </div>
+      <div class="buttons" style="margin-left:280px">
+         ${h.submit('save',_('Save'),class_="btn")}
+      </div>
+    </div>
+</div>
+${h.end_form()}
+% endif
+
+<script type="text/javascript">
+function ajaxActionHook(hook_id,field_id) {
+    var sUrl = "${h.url('admin_settings_hooks')}";
+    var callback = {
+        success: function (o) {
+            var elem = YUD.get(""+field_id);
+            elem.parentNode.removeChild(elem);
+        },
+        failure: function (o) {
+            alert("${_('Failed to remove hook')}");
+        },
+    };
+    var postData = '_method=delete&hook_id=' + hook_id;
+    var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
+};
+</script>

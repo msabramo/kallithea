@@ -44,8 +44,8 @@
         %endif
 
       <a class="permalink" href="#comment-${co.comment_id}">&para;</a>
-      %if h.HasPermissionAny('hg.admin', 'repository.admin')() or co.author.user_id == c.rhodecode_user.user_id:
-          <div onClick="deleteComment(${co.comment_id})" class="buttons delete-comment ui-btn small">${_('Delete')}</div>
+      %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or co.author.user_id == c.rhodecode_user.user_id:
+          <div onClick="deleteComment(${co.comment_id})" class="buttons delete-comment btn btn-mini">${_('Delete')}</div>
       %endif
       </div>
       <div class="text">
@@ -70,7 +70,7 @@
                )
             )|n
            }
-          <div id="preview-btn_{1}" class="preview-btn ui-btn small">${_('Preview')}</div>
+          <div id="preview-btn_{1}" class="preview-btn btn btn-mini">${_('Preview')}</div>
           </div>
             <div class="mentions-container" id="mentions_container_{1}"></div>
             <textarea id="text_{1}" name="text" class="comment-block-ta yui-ac-input"></textarea>
@@ -78,15 +78,15 @@
       <div id="preview-container_{1}" class="clearfix" style="display:none">
          <div class="comment-help">
               ${_('Comment preview')}
-            <div id="edit-btn_{1}" class="edit-btn ui-btn small">${_('Edit')}</div>
+            <div id="edit-btn_{1}" class="edit-btn btn btn-mini">${_('Edit')}</div>
           </div>
           <div id="preview-box_{1}" class="preview-box"></div>
       </div>
       <div class="comment-button">
       <input type="hidden" name="f_path" value="{0}">
       <input type="hidden" name="line" value="{1}">
-      ${h.submit('save', _('Comment'), class_='ui-btn save-inline-form')}
-      ${h.reset('hide-inline-form', _('Cancel'), class_='ui-btn hide-inline-form')}
+      ${h.submit('save', _('Comment'), class_='btn btn-small save-inline-form')}
+      ${h.reset('hide-inline-form', _('Cancel'), class_='btn btn-small hide-inline-form')}
       </div>
       ${h.end_form()}
   %else:
@@ -97,7 +97,7 @@
           </div>
       </div>
       <div class="comment-button">
-      ${h.reset('hide-inline-form', _('Hide'), class_='ui-btn hide-inline-form')}
+      ${h.reset('hide-inline-form', _('Hide'), class_='btn btn-small hide-inline-form')}
       </div>
       ${h.end_form()}
   %endif
@@ -163,13 +163,14 @@
                   </a>
                   <input id="show_changeset_status_box" type="checkbox" name="change_changeset_status" style="display: none;" />
               %endif
-              <div id="preview-btn" class="preview-btn ui-btn small">${_('Preview')}</div>
+              <div id="preview-btn" class="preview-btn btn btn-mini">${_('Preview')}</div>
             </div>
             %if change_status:
             <div id="status_block_container" class="status-block" style="display:none">
                 %for status,lbl in c.changeset_statuses:
                     <div class="">
-                        <img src="${h.url('/images/icons/flag_status_%s.png' % status)}" /> <input ${'checked="checked"' if status == cur_status else ''}" type="radio" class="status_change_radio" name="changeset_status" id="${status}" value="${status}">
+                        <img src="${h.url('/images/icons/flag_status_%s.png' % status)}" />
+                        <input ${'checked="checked"' if status == cur_status else ''}" type="radio" class="status_change_radio" name="changeset_status" id="${status}" value="${status}">
                         <label for="${status}">${lbl}</label>
                     </div>
                 %endfor
@@ -186,13 +187,13 @@
         <div id="preview-container" class="clearfix" style="display:none">
            <div class="comment-help">
                 ${_('Comment preview')}
-              <div id="edit-btn" class="edit-btn ui-btn small">${_('Edit')}</div>
+              <div id="edit-btn" class="edit-btn btn btn-mini">${_('Edit')}</div>
             </div>
             <div id="preview-box" class="preview-box"></div>
         </div>
 
         <div class="comment-button">
-        ${h.submit('save', _('Comment'), class_="ui-btn large")}
+        ${h.submit('save', _('Comment'), class_="btn")}
         </div>
         ${h.end_form()}
     </div>

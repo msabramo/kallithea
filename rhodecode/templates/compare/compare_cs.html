@@ -3,16 +3,25 @@
   %if not c.cs_ranges:
     <span class="empty_data">${_('No changesets')}</span>
   %else:
+
+    %if c.ancestor:
+    <div class="ancestor">${_('Ancestor')}:
+      ${h.link_to(h.short_id(c.ancestor),h.url('changeset_home',repo_name=c.repo_name,revision=c.ancestor))}
+    </div>
+    %endif
+
     <table class="compare_view_commits noborder">
     %for cs in reversed(c.cs_ranges):
-        <tr>
+        <tr id="row-${cs.raw_id}">
         <td>
           %if cs.raw_id in c.statuses:
-            <div title="${_('Changeset status: %s') % c.statuses[cs.raw_id][1]}" class="changeset-status-ico"><img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cs.raw_id][0])}" /></div>
+            <div title="${_('Changeset status: %s') % c.statuses[cs.raw_id][1]}" class="changeset-status-ico">
+                <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cs.raw_id][0])}" />
+            </div>
           %endif
         </td>
-        <td><span class="tooltip" title="${h.tooltip(h.age(cs.date))}">${cs.date}</span></td>
-        <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
+        <td style="min-width: 120px"><span class="tooltip" title="${h.tooltip(h.age(cs.date))}">${cs.date}</span></td>
+        <td><div class="gravatar" commit_id="${cs.raw_id}"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
         <td><div class="author">${h.person(cs.author)}</div></td>
         <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id))}
         %if c.as_form:
@@ -24,18 +33,28 @@
         <span class="branchtag">${cs.branch}</span>
         %endif
         </td>
-        <td><div class="message tooltip" title="${h.tooltip(cs.message)}" style="white-space:normal">${h.urlify_commit(h.shorter(cs.message, 60),c.repo_name)}</div></td>
+        <td class="expand_commit" commit_id="${cs.raw_id}" title="${_('Expand commit message')}">
+            <i class="icon-resize-vertical" style="color:#DDD"></i>
+        </td>
+        <td><div id="C-${cs.raw_id}" class="message" style="white-space:normal; height: 10px;width: 250px">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
         </tr>
     %endfor
     </table>
-    %if c.ancestor:
-    <span class="ancestor">${_('Ancestor')}:
-      ${h.link_to(h.short_id(c.ancestor),h.url('changeset_home',repo_name=c.repo_name,revision=c.ancestor))}
-    </span>
-    %endif
     %if c.as_form:
       ${h.hidden('ancestor_rev',c.ancestor)}
       ${h.hidden('merge_rev',c.cs_ranges[-1].raw_id)}
     %endif
   %endif
 </div>
+
+<script>
+$('.expand_commit').on('click',function(e){
+    $(this).children('i').hide();
+    var cid = $(this).attr('commit_id');
+    $('#C-'+cid).css({'height': 'auto','width': 'auto', 'white-space': 'pre'})
+});
+$('.gravatar').on('click',function(e){
+    var cid = $(this).attr('commit_id');
+    $('#row-'+cid).toggleClass('hl', !$('#row-'+cid).hasClass('hl'));
+});
+</script>

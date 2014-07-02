@@ -1,20 +1,39 @@
+# -*- coding: utf-8 -*-
 from rhodecode.tests import *
+from rhodecode.tests.fixture import Fixture
 
 from rhodecode.model.db import Repository
 from rhodecode.model.repo import RepoModel
 from rhodecode.model.user import UserModel
 from rhodecode.model.meta import Session
 
+fixture = Fixture()
 
-class TestForksController(TestController):
+from rhodecode.tests import *
+
+
+class _BaseTest(TestController):
+    """
+    Write all tests here
+    """
+    REPO = None
+    REPO_TYPE = None
+    NEW_REPO = None
+    REPO_FORK = None
+
+    @classmethod
+    def setup_class(cls):
+        pass
+
+    @classmethod
+    def teardown_class(cls):
+        pass
 
     def setUp(self):
         self.username = u'forkuser'
         self.password = u'qweqwe'
-        self.u1 = UserModel().create_or_update(
-            username=self.username, password=self.password,
-            email=u'fork_king@rhodecode.org', firstname=u'u1', lastname=u'u1'
-        )
+        self.u1 = fixture.create_user(self.username, password=self.password,
+                                      email=u'fork_king@rhodecode.org')
         Session().commit()
 
     def tearDown(self):
@@ -23,7 +42,7 @@ class TestForksController(TestController):
 
     def test_index(self):
         self.log_user()
-        repo_name = HG_REPO
+        repo_name = self.REPO
         response = self.app.get(url(controller='forks', action='forks',
                                     repo_name=repo_name))
 
@@ -39,28 +58,29 @@ class TestForksController(TestController):
         u.inherit_default_permissions = False
         Session().commit()
         # try create a fork
-        repo_name = HG_REPO
+        repo_name = self.REPO
         self.app.post(url(controller='forks', action='fork_create',
                           repo_name=repo_name), {}, status=403)
 
-    def test_index_with_fork_hg(self):
+    def test_index_with_fork(self):
         self.log_user()
 
         # create a fork
-        fork_name = HG_FORK
+        fork_name = self.REPO_FORK
         description = 'fork of vcs test'
-        repo_name = HG_REPO
+        repo_name = self.REPO
         org_repo = Repository.get_by_repo_name(repo_name)
-        response = self.app.post(url(controller='forks',
-                                     action='fork_create',
-                                    repo_name=repo_name),
-                                    {'repo_name': fork_name,
-                                     'repo_group': '',
-                                     'fork_parent_id': org_repo.repo_id,
-                                     'repo_type': 'hg',
-                                     'description': description,
-                                     'private': 'False',
-                                     'landing_rev': 'tip'})
+        creation_args = {
+            'repo_name': fork_name,
+            'repo_group': '',
+            'fork_parent_id': org_repo.repo_id,
+            'repo_type': self.REPO_TYPE,
+            'description': description,
+            'private': 'False',
+            'landing_rev': 'rev:tip'}
+
+        self.app.post(url(controller='forks', action='fork_create',
+                          repo_name=repo_name), creation_args)
 
         response = self.app.get(url(controller='forks', action='forks',
                                     repo_name=repo_name))
@@ -69,54 +89,75 @@ class TestForksController(TestController):
             """<a href="/%s">%s</a>""" % (fork_name, fork_name)
         )
 
-        #remove this fork
+        # remove this fork
         response = self.app.delete(url('repo', repo_name=fork_name))
 
-    def test_index_with_fork_git(self):
+    def test_fork_create_into_group(self):
         self.log_user()
-
-        # create a fork
-        fork_name = GIT_FORK
+        group = fixture.create_repo_group('vc')
+        group_id = group.group_id
+        fork_name = self.REPO_FORK
+        fork_name_full = 'vc/%s' % fork_name
         description = 'fork of vcs test'
-        repo_name = GIT_REPO
+        repo_name = self.REPO
         org_repo = Repository.get_by_repo_name(repo_name)
-        response = self.app.post(url(controller='forks',
-                                     action='fork_create',
-                                    repo_name=repo_name),
-                                    {'repo_name': fork_name,
-                                     'repo_group': '',
-                                     'fork_parent_id': org_repo.repo_id,
-                                     'repo_type': 'git',
-                                     'description': description,
-                                     'private': 'False',
-                                     'landing_rev': 'tip'})
+        creation_args = {
+            'repo_name': fork_name,
+            'repo_group': group_id,
+            'fork_parent_id': org_repo.repo_id,
+            'repo_type': self.REPO_TYPE,
+            'description': description,
+            'private': 'False',
+            'landing_rev': 'rev:tip'}
+        self.app.post(url(controller='forks', action='fork_create',
+                          repo_name=repo_name), creation_args)
+        repo = Repository.get_by_repo_name(fork_name_full)
+        assert repo.fork.repo_name == self.REPO
 
-        response = self.app.get(url(controller='forks', action='forks',
-                                    repo_name=repo_name))
+        ## run the check page that triggers the flash message
+        response = self.app.get(url('repo_check_home', repo_name=fork_name_full))
+        #test if we have a message that fork is ok
+        self.checkSessionFlash(response,
+                'Forked repository %s as <a href="/%s">%s</a>'
+                % (repo_name, fork_name_full, fork_name_full))
 
-        response.mustcontain(
-            """<a href="/%s">%s</a>""" % (fork_name, fork_name)
-        )
+        #test if the fork was created in the database
+        fork_repo = Session().query(Repository)\
+            .filter(Repository.repo_name == fork_name_full).one()
 
-        #remove this fork
-        response = self.app.delete(url('repo', repo_name=fork_name))
+        self.assertEqual(fork_repo.repo_name, fork_name_full)
+        self.assertEqual(fork_repo.fork.repo_name, repo_name)
+
+        # test if the repository is visible in the list ?
+        response = self.app.get(url('summary_home', repo_name=fork_name_full))
+        response.mustcontain(fork_name_full)
+        response.mustcontain(self.REPO_TYPE)
+        response.mustcontain('Fork of "<a href="/%s">%s</a>"' % (repo_name, repo_name))
+
+        fixture.destroy_repo(fork_name_full)
+        fixture.destroy_repo_group(group_id)
 
     def test_z_fork_create(self):
         self.log_user()
-        fork_name = HG_FORK
+        fork_name = self.REPO_FORK
         description = 'fork of vcs test'
-        repo_name = HG_REPO
+        repo_name = self.REPO
         org_repo = Repository.get_by_repo_name(repo_name)
-        response = self.app.post(url(controller='forks', action='fork_create',
-                                    repo_name=repo_name),
-                                    {'repo_name': fork_name,
-                                     'repo_group':'',
-                                     'fork_parent_id':org_repo.repo_id,
-                                     'repo_type':'hg',
-                                     'description':description,
-                                     'private':'False',
-                                     'landing_rev': 'tip'})
+        creation_args = {
+            'repo_name': fork_name,
+            'repo_group': '',
+            'fork_parent_id': org_repo.repo_id,
+            'repo_type': self.REPO_TYPE,
+            'description': description,
+            'private': 'False',
+            'landing_rev': 'rev:tip'}
+        self.app.post(url(controller='forks', action='fork_create',
+                          repo_name=repo_name), creation_args)
+        repo = Repository.get_by_repo_name(self.REPO_FORK)
+        assert repo.fork.repo_name == self.REPO
 
+        ## run the check page that triggers the flash message
+        response = self.app.get(url('repo_check_home', repo_name=fork_name))
         #test if we have a message that fork is ok
         self.checkSessionFlash(response,
                 'Forked repository %s as <a href="/%s">%s</a>'
@@ -129,21 +170,19 @@ class TestForksController(TestController):
         self.assertEqual(fork_repo.repo_name, fork_name)
         self.assertEqual(fork_repo.fork.repo_name, repo_name)
 
-        #test if fork is visible in the list ?
-        response = response.follow()
-
-        response = self.app.get(url(controller='summary', action='index',
-                                    repo_name=fork_name))
-
-        response.mustcontain('Fork of %s' % repo_name)
+        # test if the repository is visible in the list ?
+        response = self.app.get(url('summary_home', repo_name=fork_name))
+        response.mustcontain(fork_name)
+        response.mustcontain(self.REPO_TYPE)
+        response.mustcontain('Fork of "<a href="/%s">%s</a>"' % (repo_name, repo_name))
 
     def test_zz_fork_permission_page(self):
         usr = self.log_user(self.username, self.password)['user_id']
-        repo_name = HG_REPO
+        repo_name = self.REPO
 
-        forks = Session().query(Repository)\
-            .filter(Repository.fork_id != None)\
-            .all()
+        forks = Repository.query()\
+            .filter(Repository.repo_type == self.REPO_TYPE)\
+            .filter(Repository.fork_id != None).all()
         self.assertEqual(1, len(forks))
 
         # set read permissions for this
@@ -159,11 +198,11 @@ class TestForksController(TestController):
 
     def test_zzz_fork_permission_page(self):
         usr = self.log_user(self.username, self.password)['user_id']
-        repo_name = HG_REPO
+        repo_name = self.REPO
 
-        forks = Session().query(Repository)\
-            .filter(Repository.fork_id != None)\
-            .all()
+        forks = Repository.query()\
+            .filter(Repository.repo_type == self.REPO_TYPE)\
+            .filter(Repository.fork_id != None).all()
         self.assertEqual(1, len(forks))
 
         # set none
@@ -174,3 +213,17 @@ class TestForksController(TestController):
         response = self.app.get(url(controller='forks', action='forks',
                                     repo_name=repo_name))
         response.mustcontain('There are no forks yet')
+
+
+class TestGIT(_BaseTest):
+    REPO = GIT_REPO
+    NEW_REPO = NEW_GIT_REPO
+    REPO_TYPE = 'git'
+    REPO_FORK = GIT_FORK
+
+
+class TestHG(_BaseTest):
+    REPO = HG_REPO
+    NEW_REPO = NEW_HG_REPO
+    REPO_TYPE = 'hg'
+    REPO_FORK = HG_FORK

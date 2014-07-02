@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import rhodecode
 from rhodecode.lib.utils import BasePasterCommand, Command, load_rcextensions
 from celery.app import app_or_default
@@ -36,7 +38,7 @@ class CeleryCommand(BasePasterCommand):
             CELERY_ON = False
 
         if not CELERY_ON:
-            raise Exception('Please enable celery_on in .ini config '
+            raise Exception('Please set use_celery = true in .ini config '
                             'file before running celeryd')
         rhodecode.CELERY_ON = CELERY_ON
         load_rcextensions(config['here'])

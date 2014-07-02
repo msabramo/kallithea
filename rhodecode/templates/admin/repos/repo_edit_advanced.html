@@ -1,0 +1,97 @@
+<h3>${_('Fork of')}</h3>
+${h.form(url('edit_repo_advanced_fork', repo_name=c.repo_info.repo_name), method='put')}
+<div class="form">
+   <div class="fields">
+       ${h.select('id_fork_of','',c.repos_list,class_="medium")}
+       ${h.submit('set_as_fork_%s' % c.repo_info.repo_name,_('Set'),class_="btn btn-small",)}
+   </div>
+       <div class="field" style="border:none;color:#888">
+       <ul>
+            <li>${_('''Manually set this repository as a fork of another from the list''')}</li>
+       </ul>
+       </div>
+</div>
+${h.end_form()}
+
+<script>
+    $(document).ready(function(){
+        $("#id_fork_of").select2({
+            'dropdownAutoWidth': true,
+        });
+    })
+</script>
+
+<h3>${_('Public journal visibility')}</h3>
+${h.form(url('edit_repo_advanced_journal', repo_name=c.repo_info.repo_name), method='put')}
+<div class="form">
+  ${h.hidden('auth_token',str(h.get_token()))}
+  <div class="field">
+  %if c.in_public_journal:
+    <button class="btn btn-small" type="submit">
+        <i class="icon-minus"></i>
+        ${_('Remove from public journal')}
+    </button>
+  %else:
+    <button class="btn btn-small" type="submit">
+        <i class="icon-plus"></i>
+        ${_('Add to public journal')}
+    </button>
+  %endif
+  </div>
+ <div class="field" style="border:none;color:#888">
+ <ul>
+      <li>${_('All actions made on this repository will be accessible to everyone in public journal')}</li>
+ </ul>
+ </div>
+</div>
+${h.end_form()}
+
+<h3>${_('Change locking')}</h3>
+${h.form(url('edit_repo_advanced_locking', repo_name=c.repo_info.repo_name), method='put')}
+<div class="form">
+   <div class="fields">
+      %if c.repo_info.locked[0]:
+        ${h.hidden('set_unlock', '1')}
+        <button class="btn btn-small" type="submit"
+                onclick="return confirm('${_('Confirm to unlock repository')}');">
+            <i class="icon-unlock"></i>
+            ${_('Unlock repository')}
+        </button>
+       ${'Locked by %s on %s' % (h.person_by_id(c.repo_info.locked[0]),h.fmt_date(h.time_to_datetime(c.repo_info.locked[1])))}
+      %else:
+        ${h.hidden('set_lock', '1')}
+        <button class="btn btn-small" type="submit"
+                onclick="return confirm('${_('Confirm to lock repository')}');">
+            <i class="icon-lock"></i>
+            ${_('Lock repository')}
+        </button>
+        ${_('Repository is not locked')}
+      %endif
+   </div>
+   <div class="field" style="border:none;color:#888">
+   <ul>
+        <li>${_('Force locking on repository. Works only when anonymous access is disabled. Trigering a pull locks repository by user who pulled, only the same user can unlock by doing a push')}
+        </li>
+   </ul>
+   </div>
+</div>
+${h.end_form()}
+
+<h3>${_('Delete')}</h3>
+${h.form(url('repo', repo_name=c.repo_name),method='delete')}
+    <button class="btn btn-small btn-danger" type="submit"
+            onclick="return confirm('${_('Confirm to delete this repository: %s') % c.repo_name}');">
+        <i class="icon-remove-sign"></i>
+        ${_('Delete this repository')}
+    </button>
+    %if c.repo_info.forks.count():
+        ${ungettext('this repository has %s fork', 'this repository has %s forks', c.repo_info.forks.count()) % c.repo_info.forks.count()}
+        <input type="radio" name="forks" value="detach_forks" checked="checked"/> <label for="forks">${_('Detach forks')}</label>
+        <input type="radio" name="forks" value="delete_forks" /> <label for="forks">${_('Delete forks')}</label>
+    %endif
+    <div class="field" style="border:none;color:#888">
+        <ul>
+        <li>${_('This repository will be renamed in a special way in order to be unaccesible for RhodeCode and VCS systems. If you need to fully delete it from file system please do it manually')}</li>
+        </ul>
+    </div>
+${h.end_form()}

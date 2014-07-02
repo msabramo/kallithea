@@ -1,43 +1,45 @@
+from rhodecode.model.db import User, UserIpMap
 from rhodecode.tests import *
 
 class TestAdminPermissionsController(TestController):
 
     def test_index(self):
-        response = self.app.get(url('permissions'))
+        self.log_user()
+        response = self.app.get(url('admin_permissions'))
         # Test response...
 
-    def test_index_as_xml(self):
-        response = self.app.get(url('formatted_permissions', format='xml'))
+    def test_index_ips(self):
+        self.log_user()
+        response = self.app.get(url('admin_permissions_ips'))
+        # Test response...
+        response.mustcontain('All IP addresses are allowed')
 
-    def test_create(self):
-        response = self.app.post(url('permissions'))
+    def test_add_ips(self):
+        self.log_user()
+        default_user_id = User.get_default_user().user_id
+        response = self.app.put(url('edit_user_ips', id=default_user_id),
+                                 params=dict(new_ip='127.0.0.0/24'))
 
-    def test_new(self):
-        response = self.app.get(url('new_permission'))
+        response = self.app.get(url('admin_permissions_ips'))
+        response.mustcontain('127.0.0.0/24')
+        response.mustcontain('127.0.0.0 - 127.0.0.255')
 
-    def test_new_as_xml(self):
-        response = self.app.get(url('formatted_new_permission', format='xml'))
+        ## delete
+        default_user_id = User.get_default_user().user_id
+        del_ip_id = UserIpMap.query().filter(UserIpMap.user_id ==
+                                             default_user_id).first().ip_id
 
-    def test_update(self):
-        response = self.app.put(url('permission', id=1))
+        response = self.app.post(url('edit_user_ips', id=default_user_id),
+                                 params=dict(_method='delete',
+                                             del_ip_id=del_ip_id))
 
-    def test_update_browser_fakeout(self):
-        response = self.app.post(url('permission', id=1), params=dict(_method='put'))
+        response = self.app.get(url('admin_permissions_ips'))
+        response.mustcontain('All IP addresses are allowed')
+        response.mustcontain(no=['127.0.0.0/24'])
+        response.mustcontain(no=['127.0.0.0 - 127.0.0.255'])
 
-    def test_delete(self):
-        response = self.app.delete(url('permission', id=1))
 
-    def test_delete_browser_fakeout(self):
-        response = self.app.post(url('permission', id=1), params=dict(_method='delete'))
-
-    def test_show(self):
-        response = self.app.get(url('permission', id=1))
-
-    def test_show_as_xml(self):
-        response = self.app.get(url('formatted_permission', id=1, format='xml'))
-
-    def test_edit(self):
-        response = self.app.get(url('edit_permission', id=1))
-
-    def test_edit_as_xml(self):
-        response = self.app.get(url('formatted_edit_permission', id=1, format='xml'))
+    def test_index_overview(self):
+        self.log_user()
+        response = self.app.get(url('admin_permissions_perms'))
+        # Test response...

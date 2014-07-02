@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.summary
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Summary controller for Rhodecode
-
-    :created_on: Apr 18, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Summary controller for Rhodecode
+
+:created_on: Apr 18, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import traceback
 import calendar
@@ -37,12 +37,11 @@ from webob.exc import HTTPBadRequest
 
 from beaker.cache import cache_region, region_invalidate
 
-from rhodecode.lib import helpers as h
 from rhodecode.lib.compat import product
 from rhodecode.lib.vcs.exceptions import ChangesetError, EmptyRepositoryError, \
     NodeDoesNotExistError
 from rhodecode.config.conf import ALL_READMES, ALL_EXTS, LANGUAGES_EXTENSIONS_MAP
-from rhodecode.model.db import Statistics, CacheInvalidation
+from rhodecode.model.db import Statistics, CacheInvalidation, User
 from rhodecode.lib.utils import jsonify
 from rhodecode.lib.utils2 import safe_unicode, safe_str
 from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
@@ -52,8 +51,7 @@ from rhodecode.lib.vcs.backends.base import EmptyChangeset
 from rhodecode.lib.markup_renderer import MarkupRenderer
 from rhodecode.lib.celerylib import run_task
 from rhodecode.lib.celerylib.tasks import get_commits_stats
-from rhodecode.lib.helpers import RepoPage
-from rhodecode.lib.compat import json, OrderedDict
+from rhodecode.lib.compat import json
 from rhodecode.lib.vcs.nodes import FileNode
 from rhodecode.controllers.changelog import _load_changelog_summary
 
@@ -90,12 +88,12 @@ class SummaryController(BaseRepoController):
 
     def __get_readme_data(self, db_repo):
         repo_name = db_repo.repo_name
+        log.debug('Looking for README file')
 
         @cache_region('long_term')
         def _get_readme_from_cache(key, kind):
             readme_data = None
             readme_file = None
-            log.debug('Looking for README file')
             try:
                 # gets the landing revision! or tip if fails
                 cs = db_repo.get_landing_changeset()
@@ -110,7 +108,8 @@ class SummaryController(BaseRepoController):
                         readme_file = f
                         log.debug('Found README file `%s` rendering...' %
                                   readme_file)
-                        readme_data = renderer.render(readme.content, f)
+                        readme_data = renderer.render(readme.content,
+                                                      filename=f)
                         break
                     except NodeDoesNotExistError:
                         continue
@@ -134,40 +133,75 @@ class SummaryController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def index(self, repo_name):
-        c.dbrepo = dbrepo = c.rhodecode_db_repo
         _load_changelog_summary()
-        if self.rhodecode_user.username == 'default':
-            # for default(anonymous) user we don't need to pass credentials
-            username = ''
-            password = ''
+
+        username = ''
+        if self.rhodecode_user.username != User.DEFAULT_USER:
+            username = safe_str(self.rhodecode_user.username)
+
+        _def_clone_uri = _def_clone_uri_by_id = c.clone_uri_tmpl
+        if '{repo}' in _def_clone_uri:
+            _def_clone_uri_by_id = _def_clone_uri.replace('{repo}', '_{repoid}')
+        elif '{repoid}' in _def_clone_uri:
+            _def_clone_uri_by_id = _def_clone_uri.replace('_{repoid}', '{repo}')
+
+        c.clone_repo_url = c.rhodecode_db_repo.clone_url(user=username,
+                                                uri_tmpl=_def_clone_uri)
+        c.clone_repo_url_id = c.rhodecode_db_repo.clone_url(user=username,
+                                                uri_tmpl=_def_clone_uri_by_id)
+
+        if c.rhodecode_db_repo.enable_statistics:
+            c.show_stats = True
         else:
-            username = str(self.rhodecode_user.username)
-            password = '@'
+            c.show_stats = False
 
-        parsed_url = urlparse(url.current(qualified=True))
+        stats = self.sa.query(Statistics)\
+            .filter(Statistics.repository == c.rhodecode_db_repo)\
+            .scalar()
 
-        default_clone_uri = '{scheme}://{user}{pass}{netloc}{path}'
+        c.stats_percentage = 0
 
-        uri_tmpl = config.get('clone_uri', default_clone_uri)
-        uri_tmpl = uri_tmpl.replace('{', '%(').replace('}', ')s')
-        decoded_path = safe_unicode(urllib.unquote(parsed_url.path))
-        uri_dict = {
-           'user': urllib.quote(username),
-           'pass': password,
-           'scheme': parsed_url.scheme,
-           'netloc': parsed_url.netloc,
-           'path': urllib.quote(safe_str(decoded_path))
-        }
+        if stats and stats.languages:
+            c.no_data = False is c.rhodecode_db_repo.enable_statistics
+            lang_stats_d = json.loads(stats.languages)
 
-        uri = (uri_tmpl % uri_dict)
-        # generate another clone url by id
-        uri_dict.update(
-         {'path': decoded_path.replace(repo_name, '_%s' % c.dbrepo.repo_id)}
-        )
-        uri_id = uri_tmpl % uri_dict
+            lang_stats = ((x, {"count": y,
+                               "desc": LANGUAGES_EXTENSIONS_MAP.get(x)})
+                          for x, y in lang_stats_d.items())
 
-        c.clone_repo_url = uri
-        c.clone_repo_url_id = uri_id
+            c.trending_languages = json.dumps(
+                sorted(lang_stats, reverse=True, key=lambda k: k[1])[:10]
+            )
+        else:
+            c.no_data = True
+            c.trending_languages = json.dumps({})
+
+        c.enable_downloads = c.rhodecode_db_repo.enable_downloads
+        c.readme_data, c.readme_file = \
+            self.__get_readme_data(c.rhodecode_db_repo)
+        return render('summary/summary.html')
+
+    @LoginRequired()
+    @NotAnonymous()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    @jsonify
+    def repo_size(self, repo_name):
+        if request.is_xhr:
+            return c.rhodecode_db_repo._repo_size()
+        else:
+            raise HTTPBadRequest()
+
+    @LoginRequired()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    def statistics(self, repo_name):
+        if c.rhodecode_db_repo.enable_statistics:
+            c.show_stats = True
+            c.no_data_msg = _('No data loaded yet')
+        else:
+            c.show_stats = False
+            c.no_data_msg = _('Statistics are disabled for this repository')
 
         td = date.today() + timedelta(days=1)
         td_1m = td - timedelta(days=calendar.mdays[td.month])
@@ -176,27 +210,14 @@ class SummaryController(BaseRepoController):
         ts_min_m = mktime(td_1m.timetuple())
         ts_min_y = mktime(td_1y.timetuple())
         ts_max_y = mktime(td.timetuple())
-
-        if dbrepo.enable_statistics:
-            c.show_stats = True
-            c.no_data_msg = _('No data loaded yet')
-            recurse_limit = 500  # don't recurse more than 500 times when parsing
-            run_task(get_commits_stats, c.dbrepo.repo_name, ts_min_y,
-                     ts_max_y, recurse_limit)
-        else:
-            c.show_stats = False
-            c.no_data_msg = _('Statistics are disabled for this repository')
         c.ts_min = ts_min_m
         c.ts_max = ts_max_y
 
         stats = self.sa.query(Statistics)\
-            .filter(Statistics.repository == dbrepo)\
+            .filter(Statistics.repository == c.rhodecode_db_repo)\
             .scalar()
-
-        c.stats_percentage = 0
-
         if stats and stats.languages:
-            c.no_data = False is dbrepo.enable_statistics
+            c.no_data = False is c.rhodecode_db_repo.enable_statistics
             lang_stats_d = json.loads(stats.languages)
             c.commit_data = stats.commit_activity
             c.overview_data = stats.commit_activity_combined
@@ -222,21 +243,7 @@ class SummaryController(BaseRepoController):
             c.trending_languages = json.dumps({})
             c.no_data = True
 
-        c.enable_downloads = dbrepo.enable_downloads
-        if c.enable_downloads:
-            c.download_options = self._get_download_links(c.rhodecode_repo)
-
-        c.readme_data, c.readme_file = \
-            self.__get_readme_data(c.rhodecode_db_repo)
-        return render('summary/summary.html')
-
-    @LoginRequired()
-    @NotAnonymous()
-    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
-                                   'repository.admin')
-    @jsonify
-    def repo_size(self, repo_name):
-        if request.is_xhr:
-            return c.rhodecode_db_repo._repo_size()
-        else:
-            raise HTTPBadRequest()
+        recurse_limit = 500  # don't recurse more than 500 times when parsing
+        run_task(get_commits_stats, c.rhodecode_db_repo.repo_name, ts_min_y,
+                 ts_max_y, recurse_limit)
+        return render('summary/statistics.html')

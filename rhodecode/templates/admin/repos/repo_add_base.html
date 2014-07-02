@@ -10,12 +10,15 @@ ${h.form(url('repos'))}
             </div>
             <div class="input">
                 ${h.text('repo_name',class_="small")}
+                <div style="margin: 6px 0px 0px 0px">
+                    <a id="remote_clone_toggle" href="#"><i class="icon-download-alt"></i> ${_('Import existing repository ?')}</a>
+                </div>
                 %if not c.rhodecode_user.is_admin:
                     ${h.hidden('user_created',True)}
                 %endif
             </div>
          </div>
-        <div class="field">
+        <div id="remote_clone" class="field" style="display: none">
             <div class="label">
                 <label for="clone_uri">${_('Clone from')}:</label>
             </div>
@@ -23,8 +26,17 @@ ${h.form(url('repos'))}
                 ${h.text('clone_uri',class_="small")}
                 <span class="help-block">${_('Optional http[s] url from which repository should be cloned.')}</span>
             </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
+            <div class="label label-textarea">
+                <label for="repo_description">${_('Description')}:</label>
+            </div>
+            <div class="textarea-repo editor">
+                ${h.textarea('repo_description')}
+                <span class="help-block">${_('Keep it short and to the point. Use a README file for longer descriptions.')}</span>
+            </div>
+        </div>
+        <div class="field">
              <div class="label">
                  <label for="repo_group">${_('Repository group')}:</label>
              </div>
@@ -32,7 +44,16 @@ ${h.form(url('repos'))}
                  ${h.select('repo_group',request.GET.get('parent_group'),c.repo_groups,class_="medium")}
                  <span class="help-block">${_('Optionaly select a group to put this repository into.')}</span>
              </div>
-         </div>
+        </div>
+        <div id="copy_perms" class="field">
+            <div class="label label-checkbox">
+                <label for="repo_copy_permissions">${_('Copy parent group permissions')}:</label>
+            </div>
+            <div class="checkboxes">
+                ${h.checkbox('repo_copy_permissions',value="True")}
+                <span class="help-block">${_('Copy permission set from parent repository group.')}</span>
+            </div>
+        </div>
         <div class="field">
             <div class="label">
                 <label for="repo_type">${_('Type')}:</label>
@@ -41,25 +62,16 @@ ${h.form(url('repos'))}
                 ${h.select('repo_type','hg',c.backends,class_="small")}
                 <span class="help-block">${_('Type of repository to create.')}</span>
             </div>
-         </div>
-         <div class="field">
+        </div>
+        <div class="field">
             <div class="label">
                 <label for="repo_landing_rev">${_('Landing revision')}:</label>
             </div>
             <div class="input">
                 ${h.select('repo_landing_rev','',c.landing_revs,class_="medium")}
-                <span class="help-block">${_('Default revision for files page, downloads, whoosh and readme')}</span>
+                <span class="help-block">${_('Default revision for files page, downloads, full text search index and readme generation')}</span>
             </div>
         </div>
-        <div class="field">
-            <div class="label label-textarea">
-                <label for="repo_description">${_('Description')}:</label>
-            </div>
-            <div class="textarea text-area editor">
-                ${h.textarea('repo_description')}
-                <span class="help-block">${_('Keep it short and to the point. Use a README file for longer descriptions.')}</span>
-            </div>
-         </div>
         <div class="field">
             <div class="label label-checkbox">
                 <label for="repo_private">${_('Private repository')}:</label>
@@ -68,10 +80,49 @@ ${h.form(url('repos'))}
                 ${h.checkbox('repo_private',value="True")}
                 <span class="help-block">${_('Private repositories are only visible to people explicitly added as collaborators.')}</span>
             </div>
-         </div>
+        </div>
         <div class="buttons">
-          ${h.submit('add',_('Add'),class_="ui-btn large")}
+          ${h.submit('add',_('Add'),class_="btn")}
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        var setCopyPermsOption = function(group_val){
+            if(group_val != "-1"){
+                $('#copy_perms').show()
+            }
+            else{
+                $('#copy_perms').hide();
+            }
+        }
+
+        $('#remote_clone_toggle').on('click', function(e){
+            $('#remote_clone').show();
+            e.preventDefault();
+        })
+        if($('#remote_clone input').hasClass('error')){
+            $('#remote_clone').show();
+        }
+        if($('#remote_clone input').val()){
+            $('#remote_clone').show();
+        }
+        $("#repo_group").select2({
+            'dropdownAutoWidth': true
+        });
+
+        setCopyPermsOption($('#repo_group').val())
+        $("#repo_group").on("change", function(e) {
+            setCopyPermsOption(e.val)
+        })
+
+        $("#repo_type").select2({
+            'minimumResultsForSearch': -1,
+        });
+        $("#repo_landing_rev").select2({
+            'minimumResultsForSearch': -1,
+        });
+        $('#repo_name').focus();
+    })
+</script>
 ${h.end_form()}

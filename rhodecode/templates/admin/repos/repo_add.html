@@ -2,7 +2,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Add repository')} &middot; ${c.rhodecode_name}
+    ${_('Add repository')}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -16,7 +19,7 @@
     ${_('Repositories')}
     %endif
     &raquo;
-    ${_('Add new')}
+    ${_('Add Repository')}
 </%def>
 
 <%def name="page_nav()">

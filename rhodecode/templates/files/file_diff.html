@@ -1,7 +1,10 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s File Diff') % c.repo_name} &middot; ${c.rhodecode_name}
+    ${_('%s File Diff') % c.repo_name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">

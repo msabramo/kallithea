@@ -1,0 +1,27 @@
+<div style="font-size: 24px; color: #666666; padding: 0px 0px 10px 0px">${_('Repository Group: %s') % c.repo_group.group_name}</div>
+
+<dl class="dl-horizontal">
+<%
+ elems = [
+    (_('Top level repositories'), c.repo_group.repositories.count(), ''),
+    (_('Total repositories'), c.repo_group.repositories_recursive_count, ''),
+    (_('Children groups'), c.repo_group.children.count(), ''),
+    (_('Created on'), h.fmt_date(c.repo_group.created_on), ''),
+    (_('Owner'), h.person(c.repo_group.user.username), ''),
+ ]
+%>
+%for dt, dd, tt in elems:
+  <dt style="width:150px; text-align: left">${dt}:</dt>
+  <dd style="margin-left: 160px" title="${tt}">${dd}</dd>
+%endfor
+</dl>
+
+${h.form(h.url('repos_group', group_name=c.repo_group.group_name),method='delete')}
+    <button class="btn btn-small btn-danger" type="submit"
+            onclick="return confirm('${ungettext('Confirm to delete this group: %s with %s repository',
+          'Confirm to delete this group: %s with %s repositories',
+ c.repo_group.repositories_recursive_count) % (c.repo_group.group_name, c.repo_group.repositories_recursive_count)}');">
+        <i class="icon-remove-sign"></i>
+        ${_('Delete this repository group')}
+    </button>
+${h.end_form()}

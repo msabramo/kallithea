@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.forks
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    forks controller for rhodecode
-
-    :created_on: Apr 23, 2011
-    :author: marcink
-    :copyright: (C) 2011-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.forks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+forks controller for rhodecode
+
+:created_on: Apr 23, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import logging
 import formencode
 import traceback
@@ -30,13 +31,13 @@ from formencode import htmlfill
 from pylons import tmpl_context as c, request, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
+from webob.exc import HTTPNotFound, HTTPInternalServerError
 
 import rhodecode.lib.helpers as h
 
 from rhodecode.lib.helpers import Page
 from rhodecode.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator, \
-    NotAnonymous, HasRepoPermissionAny, HasPermissionAllDecorator,\
-    HasPermissionAnyDecorator
+    NotAnonymous, HasRepoPermissionAny, HasPermissionAnyDecorator
 from rhodecode.lib.base import BaseRepoController, render
 from rhodecode.model.db import Repository, RepoGroup, UserFollowing, User,\
     RhodeCodeUi
@@ -44,6 +45,7 @@ from rhodecode.model.repo import RepoModel
 from rhodecode.model.forms import RepoForkForm
 from rhodecode.model.scm import ScmModel, RepoGroupList
 from rhodecode.lib.utils2 import safe_int
+from rhodecode.lib.utils import jsonify
 
 log = logging.getLogger(__name__)
 
@@ -160,6 +162,7 @@ class ForksController(BaseRepoController):
                              repo_groups=c.repo_groups_choices,
                              landing_revs=c.landing_revs_choices)()
         form_result = {}
+        task_id = None
         try:
             form_result = _form.to_python(dict(request.POST))
 
@@ -169,16 +172,12 @@ class ForksController(BaseRepoController):
 
             # create fork is done sometimes async on celery, db transaction
             # management is handled there.
-            RepoModel().create_fork(form_result, self.rhodecode_user.user_id)
-            fork_url = h.link_to(form_result['repo_name_full'],
-                    h.url('summary_home', repo_name=form_result['repo_name_full']))
-
-            h.flash(h.literal(_('Forked repository %s as %s') \
-                      % (repo_name, fork_url)),
-                    category='success')
+            task = RepoModel().create_fork(form_result, self.rhodecode_user.user_id)
+            from celery.result import BaseAsyncResult
+            if isinstance(task, BaseAsyncResult):
+                task_id = task.task_id
         except formencode.Invalid, errors:
             c.new_repo = errors.value['repo_name']
-
             return htmlfill.render(
                 render('forks/fork.html'),
                 defaults=errors.value,
@@ -190,4 +189,6 @@ class ForksController(BaseRepoController):
             h.flash(_('An error occurred during repository forking %s') %
                     repo_name, category='error')
 
-        return redirect(h.url('summary_home', repo_name=repo_name))
+        return redirect(h.url('repo_creating_home',
+                              repo_name=form_result['repo_name_full'],
+                              task_id=task_id))

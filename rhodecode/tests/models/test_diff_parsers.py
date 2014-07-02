@@ -1,11 +1,11 @@
 from __future__ import with_statement
-import os
 from rhodecode.tests import *
 from rhodecode.lib.diffs import DiffProcessor, NEW_FILENODE, DEL_FILENODE, \
     MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE, COPIED_FILENODE
+from rhodecode.tests.fixture import Fixture
 
-dn = os.path.dirname
-FIXTURES = os.path.join(dn(dn(os.path.abspath(__file__))), 'fixtures')
+fixture = Fixture()
+
 
 DIFF_FIXTURES = {
     'hg_diff_add_single_binary_file.diff': [
@@ -272,8 +272,7 @@ class DiffLibTest(BaseTestCase):
     @parameterized.expand([(x,) for x in DIFF_FIXTURES])
     def test_diff(self, diff_fixture):
 
-        with open(os.path.join(FIXTURES, diff_fixture)) as f:
-            diff = f.read()
+        diff = fixture.load_resource(diff_fixture)
 
         diff_proc = DiffProcessor(diff)
         diff_proc_d = diff_proc.prepare()

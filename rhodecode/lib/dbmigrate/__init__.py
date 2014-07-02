@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.dbmigrate.__init__
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Database migration modules
-
-    :created_on: Dec 11, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.dbmigrate.__init__
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Database migration modules
+
+:created_on: Dec 11, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import logging
 from sqlalchemy import engine_from_config
@@ -48,14 +48,12 @@ class UpgradeDb(BasePasterCommand):
 
     def command(self):
         from pylons import config
-
         add_cache(config)
 
         db_uri = config['sqlalchemy.db1.url']
-
         dbmanage = DbManage(log_sql=True, dbconf=db_uri,
-                            root=config['here'], tests=False)
-
+                            root=config['here'], tests=False,
+                            cli_args=self.options.__dict__)
         dbmanage.upgrade()
 
     def update_parser(self):
@@ -64,3 +62,14 @@ class UpgradeDb(BasePasterCommand):
                       dest='just_sql',
                       help="Prints upgrade sql for further investigation",
                       default=False)
+
+        self.parser.add_option('--force-yes',
+                           action='store_true',
+                           dest='force_ask',
+                           default=None,
+                           help='Force yes to every question')
+        self.parser.add_option('--force-no',
+                           action='store_false',
+                           dest='force_ask',
+                           default=None,
+                           help='Force no to every question')

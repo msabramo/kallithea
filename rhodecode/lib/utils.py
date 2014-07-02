@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.utils
-    ~~~~~~~~~~~~~~~~~~~
-
-    Utilities library for RhodeCode
-
-    :created_on: Apr 18, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.utils
+~~~~~~~~~~~~~~~~~~~
+
+Utilities library for RhodeCode
+
+:created_on: Apr 18, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import os
 import re
@@ -40,6 +40,7 @@ from os.path import dirname as dn, join as jn
 from paste.script.command import Command, BadCommand
 
 from webhelpers.text import collapse, remove_formatting, strip_tags
+from beaker.cache import _cache_decorate
 
 from rhodecode.lib.vcs import get_backend
 from rhodecode.lib.vcs.backends.base import BaseChangeset
@@ -54,10 +55,10 @@ from rhodecode.model import meta
 from rhodecode.model.db import Repository, User, RhodeCodeUi, \
     UserLog, RepoGroup, RhodeCodeSetting, CacheInvalidation, UserGroup
 from rhodecode.model.meta import Session
-from rhodecode.model.repos_group import ReposGroupModel
+from rhodecode.model.repo_group import RepoGroupModel
 from rhodecode.lib.utils2 import safe_str, safe_unicode, get_current_rhodecode_user
 from rhodecode.lib.vcs.utils.fakemod import create_module
-from rhodecode.model.users_group import UserGroupModel
+from rhodecode.model.user_group import UserGroupModel
 
 log = logging.getLogger(__name__)
 
@@ -110,7 +111,7 @@ def get_repo_slug(request):
     return _repo
 
 
-def get_repos_group_slug(request):
+def get_repo_group_slug(request):
     _group = request.environ['pylons.routes_dict'].get('group_name')
     if _group:
         _group = _group.rstrip('/')
@@ -129,6 +130,32 @@ def get_user_group_slug(request):
         pass
 
     return _group
+
+
+def _extract_id_from_repo_name(repo_name):
+    if repo_name.startswith('/'):
+        repo_name = repo_name.lstrip('/')
+    by_id_match = re.match(r'^_(\d{1,})', repo_name)
+    if by_id_match:
+        return by_id_match.groups()[0]
+
+
+def get_repo_by_id(repo_name):
+    """
+    Extracts repo_name by id from special urls. Example url is _11/repo_name
+
+    :param repo_name:
+    :return: repo_name if matched else None
+    """
+    try:
+        _repo_id = _extract_id_from_repo_name(repo_name)
+        if _repo_id:
+            from rhodecode.model.db import Repository
+            return Repository.get(_repo_id).repo_name
+    except Exception:
+        log.debug('Failed to extract repo_name from URL %s' % (
+                  traceback.format_exc()))
+        return
 
 
 def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
@@ -154,14 +181,14 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
         ipaddr = getattr(get_current_rhodecode_user(), 'ip_addr', '')
 
     try:
-        if hasattr(user, 'user_id'):
+        if getattr(user, 'user_id', None):
             user_obj = User.get(user.user_id)
         elif isinstance(user, basestring):
             user_obj = User.get_by_username(user)
         else:
             raise Exception('You have to provide a user object or a username')
 
-        if hasattr(repo, 'repo_id'):
+        if getattr(repo, 'repo_id', None):
             repo_obj = Repository.get(repo.repo_id)
             repo_name = repo_obj.repo_name
         elif isinstance(repo, basestring):
@@ -261,17 +288,17 @@ def is_valid_repo(repo_name, base_path, scm=None):
         return False
 
 
-def is_valid_repos_group(repos_group_name, base_path, skip_path_check=False):
+def is_valid_repo_group(repo_group_name, base_path, skip_path_check=False):
     """
     Returns True if given path is a repository group False otherwise
 
     :param repo_name:
     :param base_path:
     """
-    full_path = os.path.join(safe_str(base_path), safe_str(repos_group_name))
+    full_path = os.path.join(safe_str(base_path), safe_str(repo_group_name))
 
     # check if it's not a repo
-    if is_valid_repo(repos_group_name, base_path):
+    if is_valid_repo(repo_group_name, base_path):
         return False
 
     try:
@@ -414,7 +441,7 @@ def map_groups(path):
 
     # last element is repo in nested groups structure
     groups = groups[:-1]
-    rgm = ReposGroupModel(sa)
+    rgm = RepoGroupModel(sa)
     owner = User.get_first_admin()
     for lvl, group_name in enumerate(groups):
         group_name = '/'.join(groups[:lvl] + [group_name])
@@ -455,7 +482,7 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
     from rhodecode.model.repo import RepoModel
     from rhodecode.model.scm import ScmModel
     sa = meta.Session()
-    rm = RepoModel()
+    repo_model = RepoModel()
     user = User.get_first_admin()
     added = []
 
@@ -468,7 +495,8 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
 
     for name, repo in initial_repo_list.items():
         group = map_groups(name)
-        db_repo = rm.get_by_repo_name(name)
+        unicode_name = safe_unicode(name)
+        db_repo = repo_model.get_by_repo_name(unicode_name)
         # found repo that is on filesystem not in RhodeCode database
         if not db_repo:
             log.info('repository %s not found, creating now' % name)
@@ -477,28 +505,32 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
                     if repo.description != 'unknown'
                     else '%s repository' % name)
 
-            new_repo = rm.create_repo(
+            new_repo = repo_model._create_repo(
                 repo_name=name,
                 repo_type=repo.alias,
                 description=desc,
-                repos_group=getattr(group, 'group_id', None),
+                repo_group=getattr(group, 'group_id', None),
                 owner=user,
-                just_db=True,
                 enable_locking=enable_locking,
                 enable_downloads=enable_downloads,
                 enable_statistics=enable_statistics,
-                private=private
+                private=private,
+                state=Repository.STATE_CREATED
             )
+            sa.commit()
             # we added that repo just now, and make sure it has githook
-            # installed
+            # installed, and updated server info
             if new_repo.repo_type == 'git':
-                ScmModel().install_git_hook(new_repo.scm_instance)
+                git_repo = new_repo.scm_instance
+                ScmModel().install_git_hook(git_repo)
+                # update repository server-info
+                log.debug('Running update server info')
+                git_repo._update_server_info()
             new_repo.update_changeset_cache()
         elif install_git_hook:
             if db_repo.repo_type == 'git':
                 ScmModel().install_git_hook(db_repo.scm_instance)
 
-    sa.commit()
     removed = []
     if remove_obsolete:
         # remove from database those repositories that are not in the filesystem
@@ -570,10 +602,10 @@ def load_rcextensions(root_path):
 
         # auto check if the module is not missing any data, set to default if is
         # this will help autoupdate new feature of rcext module
-        from rhodecode.config import rcextensions
-        for k in dir(rcextensions):
-            if not k.startswith('_') and not hasattr(EXT, k):
-                setattr(EXT, k, getattr(rcextensions, k))
+        #from rhodecode.config import rcextensions
+        #for k in dir(rcextensions):
+        #    if not k.startswith('_') and not hasattr(EXT, k):
+        #        setattr(EXT, k, getattr(rcextensions, k))
 
 
 def get_custom_lexer(extension):
@@ -639,6 +671,7 @@ def create_test_env(repos_test_path, config):
     dbmanage = DbManage(log_sql=True, dbconf=dbconf, root=config['here'],
                         tests=True)
     dbmanage.create_tables(override=True)
+    # for tests dynamically set new root paths based on generated content
     dbmanage.create_settings(dbmanage.config_prompt(repos_test_path))
     dbmanage.create_default_user()
     dbmanage.admin_prompt()
@@ -819,3 +852,30 @@ def jsonify(func, *args, **kwargs):
         log.warning(msg)
     log.debug("Returning JSON wrapped action output")
     return json.dumps(data, encoding='utf-8')
+
+
+def conditional_cache(region, prefix, condition, func):
+    """
+
+    Conditional caching function use like::
+        def _c(arg):
+            #heavy computation function
+            return data
+
+        # denpending from condition the compute is wrapped in cache or not
+        compute = conditional_cache('short_term', 'cache_desc', codnition=True, func=func)
+        return compute(arg)
+
+    :param region: name of cache region
+    :param prefix: cache region prefix
+    :param condition: condition for cache to be triggered, and return data cached
+    :param func: wrapped heavy function to compute
+
+    """
+    wrapped = func
+    if condition:
+        log.debug('conditional_cache: True, wrapping call of '
+                  'func: %s into %s region cache' % (region, func))
+        wrapped = _cache_decorate((prefix,), None, None, region)(func)
+
+    return wrapped

@@ -1,0 +1,121 @@
+${h.form(url('admin_settings_visual'), method='post')}
+    <div class="form">
+
+        <div class="fields">
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('General')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('rhodecode_repository_fields','True')}
+                        <label for="rhodecode_repository_fields">${_('Use repository extra fields')}</label>
+                    </div>
+                    <span class="help-block">${_('Allows storing additional customized fields per repository.')}</span>
+                    <div class="checkbox">
+                        ${h.checkbox('rhodecode_show_version','True')}
+                        <label for="rhodecode_show_version">${_('Show RhodeCode version')}</label>
+                    </div>
+                    <span class="help-block">${_('Shows or hides a version number of RhodeCode displayed in the footer.')}</span>
+
+                    <div class="checkbox">
+                        ${h.checkbox('rhodecode_use_gravatar','True')}
+                        <label for="rhodecode_use_gravatar">${_('Use Gravatars in RhodeCode')}</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="input">
+                        ${h.text('rhodecode_gravatar_url', size=80)}
+                        <span class="help-block">${_('''Gravatar url allows you to use other avatar server application.
+                                                        Following variables of the URL will be replaced accordingly.
+                                                        {scheme}    'http' or 'https' sent from running RhodeCode server,
+                                                        {email}     user email,
+                                                        {md5email}  md5 hash of the user email (like at gravatar.com),
+                                                        {size}      size of the image that is expected from the server application,
+                                                        {netloc}    network location/server host of running RhodeCode server''')}</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="input">
+                        ${h.text('rhodecode_clone_uri_tmpl', size=80)}
+                        <span class="help-block">${_('''Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}', available vars:
+                                                        {scheme} 'http' or 'https' sent from running RhodeCode server,
+                                                        {user}   current user username,
+                                                        {netloc} network location/server host of running RhodeCode server,
+                                                        {repo}   full repository name,
+                                                        {repoid} ID of repository, can be used to contruct clone-by-id''')}</span>
+                    </div>
+                </div>
+             </div>
+
+            <div class="field">
+                <div class="label">
+                    <label for="rhodecode_dashboard_items">${_('Dashboard items')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('rhodecode_dashboard_items',size=5)}
+                    <span class="help-block">${_('Number of items displayed in the main page dashboard before pagination is shown.')}</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="label">
+                    <label for="rhodecode_admin_grid_items">${_('Admin pages items')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('rhodecode_admin_grid_items',size=5)}
+                    <span class="help-block">${_('Number of items displayed in the admin pages grids before pagination is shown.')}</span>
+                </div>
+            </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('Icons')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('rhodecode_show_public_icon','True')}
+                        <label for="rhodecode_show_public_icon">${_('Show public repo icon on repositories')}</label>
+                    </div>
+                    <div class="checkbox">
+                        ${h.checkbox('rhodecode_show_private_icon','True')}
+                        <label for="rhodecode_show_private_icon">${_('Show private repo icon on repositories')}</label>
+                    </div>
+                    <span class="help-block">${_('Show public/private icons next to repositories names.')}</span>
+                 </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('Meta-Tagging')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('rhodecode_stylify_metatags','True')}
+                        <label for="rhodecode_stylify_metatags">${_('Stylify recognised meta tags:')}</label>
+                    </div>
+                    <div style="padding-left: 20px;">
+                        <ul> <!-- Fix style here -->
+                            <li>[featured] <span class="metatag" tag="featured">featured</span></li>
+                            <li>[stale] <span class="metatag" tag="stale">stale</span></li>
+                            <li>[dead] <span class="metatag" tag="dead">dead</span></li>
+                            <li>[lang =&gt; lang] <span class="metatag" tag="lang" >lang</span></li>
+                            <li>[license =&gt; License] <span class="metatag" tag="license"><a href="http://www.opensource.org/licenses/License" >License</a></span></li>
+                            <li>[requires =&gt; Repo] <span class="metatag" tag="requires" >requires =&gt; <a href="#" >Repo</a></span></li>
+                            <li>[recommends =&gt; Repo] <span class="metatag" tag="recommends" >recommends =&gt; <a href="#" >Repo</a></span></li>
+                            <li>[see =&gt; URI] <span class="metatag" tag="see">see =&gt; <a href="#">URI</a> </span></li>
+                        </ul>
+                    </div>
+                    <span class="help-block">${_('Parses meta tags from repository description field and turns them into colored tags.')}</span>
+                 </div>
+             </div>
+
+             <div class="buttons">
+                 ${h.submit('save',_('Save settings'),class_="btn")}
+                 ${h.reset('reset',_('Reset'),class_="btn")}
+             </div>
+
+        </div>
+    </div>
+${h.end_form()}

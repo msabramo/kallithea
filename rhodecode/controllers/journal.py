@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.journal
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Journal controller for pylons
-
-    :created_on: Nov 21, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.journal
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Journal controller for pylons
+
+:created_on: Nov 21, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+
+"""
+
 import logging
 from itertools import groupby
 
@@ -230,8 +232,8 @@ class JournalController(BaseController):
         def quick_menu(repo_name):
             return _render('quick_menu', repo_name)
 
-        def repo_lnk(name, rtype, private, fork_of):
-            return _render('repo_name', name, rtype, private, fork_of,
+        def repo_lnk(name, rtype, rstate, private, fork_of):
+            return _render('repo_name', name, rtype, rstate, private, fork_of,
                            short_name=False, admin=False)
 
         def last_rev(repo_name, cs_cache):
@@ -262,9 +264,9 @@ class JournalController(BaseController):
                 "menu": quick_menu(repo.repo_name),
                 "raw_name": repo.repo_name.lower(),
                 "name": repo_lnk(repo.repo_name, repo.repo_type,
-                                 repo.private, repo.fork),
+                                 repo.repo_state, repo.private, repo.fork),
                 "last_changeset": last_rev(repo.repo_name, cs_cache),
-                "raw_tip": cs_cache.get('revision'),
+                "last_rev_raw": cs_cache.get('revision'),
                 "action": toogle_follow(repo.repo_id)
             }
 

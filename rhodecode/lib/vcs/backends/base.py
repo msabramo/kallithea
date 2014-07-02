@@ -12,7 +12,7 @@
 import datetime
 import itertools
 
-from rhodecode.lib.vcs.utils import author_name, author_email
+from rhodecode.lib.vcs.utils import author_name, author_email, safe_unicode
 from rhodecode.lib.vcs.utils.lazy import LazyProperty
 from rhodecode.lib.vcs.utils.helpers import get_dict_for_attrs
 from rhodecode.lib.vcs.conf import settings
@@ -99,6 +99,10 @@ class BaseRepository(object):
     def name(self):
         raise NotImplementedError
 
+    @property
+    def name_unicode(self):
+        return safe_unicode(self.name)
+
     @LazyProperty
     def owner(self):
         raise NotImplementedError
@@ -132,6 +136,9 @@ class BaseRepository(object):
         Validates repository.
         """
         raise NotImplementedError
+
+    def is_empty(self):
+        return self._empty
 
     def get_last_change(self):
         self.get_changesets()
@@ -905,6 +912,7 @@ class BaseInMemoryChangeset(object):
                 try:
                     old = p.get_node(node.path)
                     missing.remove(node)
+                    # if content actually changed, remove node from unchanged
                     if old.content != node.content:
                         not_changed.remove(node)
                 except NodeDoesNotExistError:
@@ -1027,4 +1035,4 @@ class CollectionGenerator(object):
         return CollectionGenerator(self.repo, sliced_revs)
 
     def __repr__(self):
-        return 'CollectionGenerator<%s>' % (len(self))
+        return '<CollectionGenerator[len:%s]>' % (len(self))

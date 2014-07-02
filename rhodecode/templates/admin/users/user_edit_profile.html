@@ -1,0 +1,127 @@
+${h.form(url('update_user', id=c.user.user_id),method='put')}
+<div class="form">
+        <div class="field">
+           <div class="gravatar_box">
+               <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(c.user.email)}"/></div>
+                <p>
+                %if c.visual.use_gravatar:
+                <strong>${_('Change avatar at')} <a href="http://gravatar.com">gravatar.com</a></strong>
+                <br/>${_('Using')} ${c.user.email}
+                %else:
+                <strong>${_('Avatars are disabled')}</strong>
+                <br/>${c.user.email or _('Missing email, please update this user email address.')}
+                        ##show current ip just if we show ourself
+                        %if c.rhodecode_user.username == c.user.username:
+                            [${_('current IP')}: ${c.perm_user.ip_addr or "?"}]
+                        %endif
+                %endif
+           </div>
+        </div>
+        <% readonly = None %>
+        <% disabled = "" %>
+        <div class="fields">
+            %if c.extern_type != 'rhodecode':
+             <div class="field">
+               <% readonly = "readonly" %>
+               <% disabled = " disabled" %>
+               <strong>${_('This user is in an external Source of Record (%s); some details cannot be managed here.' % c.extern_type)}.</strong>
+             </div>
+            %endif
+
+             <div class="field">
+                <div class="label">
+                    <label for="username">${_('Username')}:</label>
+                </div>
+                <div class="input">
+                  ${h.text('username',class_='medium%s' % disabled, readonly=readonly)}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="email">${_('Email')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('email',class_='medium')}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="extern_type">${_('Source of Record')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('extern_type',class_='medium disabled',readonly="readonly")}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="extern_name">${_('Name in Source of Record')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('extern_name',class_='medium disabled',readonly="readonly")}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="new_password">${_('New password')}:</label>
+                </div>
+                <div class="input">
+                    ${h.password('new_password',class_='medium%s' % disabled,autocomplete="off",readonly=readonly)}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="password_confirmation">${_('New password confirmation')}:</label>
+                </div>
+                <div class="input">
+                    ${h.password('password_confirmation',class_="medium%s" % disabled,autocomplete="off",readonly=readonly)}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="firstname">${_('First Name')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('firstname',class_='medium')}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label">
+                    <label for="lastname">${_('Last Name')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('lastname',class_='medium')}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="active">${_('Active')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('active',value=True)}
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="admin">${_('Admin')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('admin',value=True)}
+                </div>
+             </div>
+
+            <div class="buttons">
+              ${h.submit('save',_('Save'),class_="btn")}
+              ${h.reset('reset',_('Reset'),class_="btn")}
+            </div>
+        </div>
+</div>
+${h.end_form()}

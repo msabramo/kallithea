@@ -2,7 +2,14 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.org_repo.repo_name, c.org_ref)} -&gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref)} &middot; ${c.rhodecode_name}
+    %if c.compare_home:
+        ${_('%s Compare') % c.repo_name}
+    %else:
+        ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.org_repo.repo_name, c.org_ref)} &gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref)}
+    %endif
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -22,68 +29,161 @@ ${self.repo_context_bar('changelog')}
     </div>
     <div class="table">
         <div id="body" class="diffblock">
-            <div class="code-header">
+            <div class="code-header" style="height: 26px">
                 <div>
-                ${'%s@%s' % (c.org_repo.repo_name, c.org_ref)} -&gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref)}  <a href="${c.swap_url}">[swap]</a>
+                    ${h.hidden('compare_org')} <i class="icon-ellipsis-horizontal" style="color: #999; vertical-align: -12px; padding: 0px 0px 0px 2px"></i> ${h.hidden('compare_other')}
+                    %if not c.compare_home:
+                        <a class="btn btn-small" href="${c.swap_url}"><i class="icon-refresh"></i> ${_('Swap')}</a>
+                    %endif
+                    <div id="compare_revs" class="btn btn-small"><i class="icon-loop"></i> ${_('Compare Revisions')}</div>
                 </div>
             </div>
         </div>
+
+    %if c.compare_home:
         <div id="changeset_compare_view_content">
-            ##CS
-            <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}</div>
-            <%include file="compare_cs.html" />
-
-            ## FILES
-            <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
-
-            % if c.limited_diff:
-                ${ungettext('%s file changed', '%s files changed', len(c.files)) % len(c.files)}
-            % else:
-                ${ungettext('%s file changed with %s insertions and %s deletions','%s files changed with %s insertions and %s deletions', len(c.files)) % (len(c.files),c.lines_added,c.lines_deleted)}:
-            %endif
-
-            </div>
-            <div class="cs_files">
-              %if not c.files:
-                 <span class="empty_data">${_('No files')}</span>
-              %endif
-              %for fid, change, f, stat in c.files:
-                  <div class="cs_${change}">
-                    <div class="node">${h.link_to(h.safe_unicode(f),h.url.current(anchor=fid, **request.GET.mixed()))}</div>
-                    <div class="changes">${h.fancy_file_stats(stat)}</div>
-                  </div>
-              %endfor
-            </div>
-            % if c.limited_diff:
-              <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff')}</a></h5>
-            % endif
+         <div style="color:#999;font-size: 18px">${_('Compare revisions, branches, bookmarks or tags.')}</div>
         </div>
+    %else:
+        <div id="changeset_compare_view_content">
+                ##CS
+                <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}</div>
+                <%include file="compare_cs.html" />
+
+                ## FILES
+                <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+
+                % if c.limited_diff:
+                    ${ungettext('%s file changed', '%s files changed', len(c.files)) % len(c.files)}
+                % else:
+                    ${ungettext('%s file changed with %s insertions and %s deletions','%s files changed with %s insertions and %s deletions', len(c.files)) % (len(c.files),c.lines_added,c.lines_deleted)}:
+                %endif
+
+                </div>
+                <div class="cs_files">
+                  %if not c.files:
+                     <span class="empty_data">${_('No files')}</span>
+                  %endif
+                  %for fid, change, f, stat in c.files:
+                      <div class="cs_${change}">
+                        <div class="node">${h.link_to(h.safe_unicode(f),h.url.current(anchor=fid, **request.GET.mixed()))}</div>
+                        <div class="changes">${h.fancy_file_stats(stat)}</div>
+                      </div>
+                  %endfor
+                </div>
+                % if c.limited_diff:
+                  <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff')}</a></h5>
+                % endif
+         </div>
+
+        ## diff block
+        <%namespace name="diff_block" file="/changeset/diff_block.html"/>
+        %for fid, change, f, stat in c.files:
+          ${diff_block.diff_block_simple([c.changes[fid]])}
+        %endfor
+        % if c.limited_diff:
+          <h4>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff')}</a></h4>
+        % endif
+    %endif
     </div>
 
-    ## diff block
-    <%namespace name="diff_block" file="/changeset/diff_block.html"/>
-    %for fid, change, f, stat in c.files:
-      ${diff_block.diff_block_simple([c.changes[fid]])}
-    %endfor
-    % if c.limited_diff:
-      <h4>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff')}</a></h4>
-    % endif
-     <script type="text/javascript">
+</div>
+    <script type="text/javascript">
 
-      YUE.onDOMReady(function(){
+   $(document).ready(function(){
+    var cache = {}
+    $("#compare_org").select2({
+        placeholder: "${'%s@%s' % (c.org_repo.repo_name, c.org_ref)}",
+        formatSelection: function(obj){
+            return '{0}@{1}'.format("${c.org_repo.repo_name}", obj.text)
+        },
+        dropdownAutoWidth: true,
+        query: function(query){
+          var key = 'cache';
+          var cached = cache[key] ;
+          if(cached) {
+            var data = {results: []};
+            //filter results
+            $.each(cached.results, function(){
+                var section = this.text;
+                var children = [];
+                $.each(this.children, function(){
+                    if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                        children.push({'id': this.id, 'text': this.text})
+                    }
+                })
+                data.results.push({'text': section, 'children': children})
+            });
+            //push the typed in changeset
+            data.results.push({'text':_TM['specify changeset'],
+                               'children': [{'id': query.term, 'text': query.term, 'type': 'rev'}]})
+            query.callback(data);
+          }else{
+              $.ajax({
+                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.org_repo.repo_name}'}),
+                data: {},
+                dataType: 'json',
+                type: 'GET',
+                success: function(data) {
+                  cache[key] = data;
+                  query.callback({results: data.results});
+                }
+              })
+          }
+        },
+    });
+    $("#compare_other").select2({
+        placeholder: "${'%s@%s' % (c.other_repo.repo_name, c.other_ref)}",
+        dropdownAutoWidth: true,
+        formatSelection: function(obj){
+            return '{0}@{1}'.format("${c.other_repo.repo_name}", obj.text)
+        },
+        query: function(query){
+          var key = 'cache2';
+          var cached = cache[key] ;
+          if(cached) {
+            var data = {results: []};
+            //filter results
+            $.each(cached.results, function(){
+                var section = this.text;
+                var children = [];
+                $.each(this.children, function(){
+                    if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                        children.push({'id': this.id, 'text': this.text})
+                    }
+                })
+                data.results.push({'text': section, 'children': children})
+            });
+            //push the typed in changeset
+            data.results.push({'text':_TM['specify changeset'],
+                               'children': [{'id': query.term, 'text': query.term, 'type': 'rev'}]})
+            query.callback(data);
+          }else{
+              $.ajax({
+                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.other_repo.repo_name}'}),
+                data: {},
+                dataType: 'json',
+                type: 'GET',
+                success: function(data) {
+                  cache[key] = data;
+                  query.callback({results: data.results});
+                }
+              })
+          }
+        },
+    });
 
-          YUE.on(YUQ('.diff-menu-activate'),'click',function(e){
-              var act = e.currentTarget.nextElementSibling;
+    $('#compare_revs').on('click', function(e){
+        var org = $('#compare_org').select2('data');
+        var other = $('#compare_other').select2('data');
 
-              if(YUD.hasClass(act,'active')){
-                  YUD.removeClass(act,'active');
-                  YUD.setStyle(act,'display','none');
-              }else{
-                  YUD.addClass(act,'active');
-                  YUD.setStyle(act,'display','');
-              }
-          });
-      })
+        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='__other_ref_type__',org_ref='__org__',other_ref_type='__org_ref_type__',other_ref='__other__', other_repo=c.other_repo.repo_name)}";
+        var u = compare_url.replace('__other_ref_type__',org.type)
+                           .replace('__org__',org.text)
+                           .replace('__org_ref_type__',other.type)
+                           .replace('__other__',other.text);
+        window.location=u;
+    })
+   });
     </script>
-    </div>
 </%def>

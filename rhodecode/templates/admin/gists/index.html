@@ -2,7 +2,16 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Gists')} &middot; ${c.rhodecode_name}
+    %if c.show_private:
+        ${_('Private Gists for user %s') % c.rhodecode_user.username}
+    %elif c.show_public:
+        ${_('Public Gists for user %s') % c.rhodecode_user.username}
+    %else:
+        ${_('Public Gists')}
+    %endif
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -28,7 +37,7 @@
         %if c.rhodecode_user.username != 'default':
         <ul class="links">
           <li>
-             <span>${h.link_to(_(u'Create new gist'), h.url('new_gist'))}</span>
+             <a href="${h.url('new_gist')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_(u'Create New Gist')}</a>
           </li>
         </ul>
         %endif
@@ -42,7 +51,7 @@
             </div>
             <div title="${gist.owner.full_contact}" class="user" style="font-size: 16px">
                 <b>${h.person(gist.owner.full_contact)}</b> /
-                <b><a href="${h.url('gist',gist_id=gist.gist_access_id)}">gist:${gist.gist_access_id}</a></b>
+                <b><a href="${h.url('gist',gist_id=gist.gist_access_id)}">gist: ${gist.gist_access_id}</a></b>
             </div>
             <div style="padding: 4px 0px 0px 0px">
                 ${_('Created')} ${h.age(gist.created_on)} /
@@ -61,7 +70,7 @@
 
         <div class="notification-paginator">
           <div class="pagination-wh pagination-left">
-          ${c.gists_pager.pager('$link_previous ~2~ $link_next')}
+          ${c.gists_pager.pager('$link_previous ~2~ $link_next', **request.GET.mixed())}
           </div>
         </div>
     %else:

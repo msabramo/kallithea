@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.model.permission
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    permissions model for RhodeCode
-
-    :created_on: Aug 20, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.model.permission
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+permissions model for RhodeCode
+
+:created_on: Aug 20, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import logging
 import traceback
@@ -54,9 +55,10 @@ class PermissionModel(BaseModel):
                 new_perm.permission_longname = p[0]  #translation err with p[1]
                 self.sa.add(new_perm)
 
-    def create_default_permissions(self, user):
+    def create_default_permissions(self, user, force=False):
         """
-        Creates only missing default permissions for user
+        Creates only missing default permissions for user, if force is set it
+        resets the default permissions for that user
 
         :param user:
         """
@@ -77,6 +79,11 @@ class PermissionModel(BaseModel):
         log.debug('GOT ALREADY DEFINED:%s' % perms)
         DEFAULT_PERMS = Permission.DEFAULT_USER_PERMISSIONS
 
+        if force:
+            for perm in perms:
+                self.sa.delete(perm)
+            self.sa.commit()
+            defined_perms_groups = []
         # for every default permission that needs to be created, we check if
         # it's group is already defined, if it's not we create default perm
         for perm_name in DEFAULT_PERMS:
@@ -92,7 +99,7 @@ class PermissionModel(BaseModel):
 
         try:
             # stage 1 set anonymous access
-            if perm_user.username == 'default':
+            if perm_user.username == User.DEFAULT_USER:
                 perm_user.active = str2bool(form_result['anonymous'])
                 self.sa.add(perm_user)
 
@@ -112,12 +119,15 @@ class PermissionModel(BaseModel):
             for p in u2p:
                 self.sa.delete(p)
             #create fresh set of permissions
-            for def_perm_key in ['default_repo_perm', 'default_group_perm',
+            for def_perm_key in ['default_repo_perm',
+                                 'default_group_perm',
                                  'default_user_group_perm',
                                  'default_repo_create',
+                                 'create_on_write', # special case for create repos on write access to group
                                  #'default_repo_group_create', #not implemented yet
                                  'default_user_group_create',
-                                 'default_fork', 'default_register',
+                                 'default_fork',
+                                 'default_register',
                                  'default_extern_activate']:
                 p = _make_new(perm_user, form_result[def_perm_key])
                 self.sa.add(p)

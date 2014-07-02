@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -10,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.bin.__init__
+~~~~~~~~~~~~~~~~~~~~~~
+
+LDAP sync script
+
+:created_on: Mar 06, 2013
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 import ldap
 import urllib2
@@ -45,7 +57,7 @@ class UserNotInGroupError(Exception):
     """ User is not a member of the target group. """
 
 
-class RhodecodeAPI():
+class RhodecodeAPI(object):
 
     def __init__(self, url, key):
         self.url = url
@@ -90,7 +102,7 @@ class RhodecodeAPI():
             "group_name": name,
             "active": str(active)
         }
-        self.rhodecode_api_post("create_users_group", args)
+        self.rhodecode_api_post("create_user_group", args)
 
     def add_membership(self, group, username):
         """Add specific user to a group."""
@@ -98,7 +110,7 @@ class RhodecodeAPI():
             "usersgroupid": group,
             "userid": username
         }
-        result = self.rhodecode_api_post("add_user_to_users_group", args)
+        result = self.rhodecode_api_post("add_user_to_user_group", args)
         if not result["success"]:
             raise UserAlreadyInGroupError("User %s already in group %s." %
                                           (username, group))
@@ -109,7 +121,7 @@ class RhodecodeAPI():
             "usersgroupid": group,
             "userid": username
         }
-        result = self.rhodecode_api_post("remove_user_from_users_group", args)
+        result = self.rhodecode_api_post("remove_user_from_user_group", args)
         if not result["success"]:
             raise UserNotInGroupError("User %s not in group %s." %
                                       (username, group))
@@ -117,7 +129,7 @@ class RhodecodeAPI():
     def get_group_members(self, name):
         """Get the list of member usernames from a user group."""
         args = {"usersgroupid": name}
-        members = self.rhodecode_api_post("get_users_group", args)['members']
+        members = self.rhodecode_api_post("get_user_group", args)['members']
         member_list = []
         for member in members:
             member_list.append(member["username"])
@@ -126,7 +138,7 @@ class RhodecodeAPI():
     def get_group(self, name):
         """Return group info."""
         args = {"usersgroupid": name}
-        return self.rhodecode_api_post("get_users_group", args)
+        return self.rhodecode_api_post("get_user_group", args)
 
     def get_user(self, username):
         """Return user info."""
@@ -134,7 +146,7 @@ class RhodecodeAPI():
         return self.rhodecode_api_post("get_user", args)
 
 
-class LdapClient():
+class LdapClient(object):
 
     def __init__(self, uri, user, key, base_dn):
         self.client = ldap.initialize(uri, trace_level=0)
@@ -199,7 +211,7 @@ class LdapSync(object):
         groups = self.ldap_client.get_groups()
         for group in groups:
             try:
-                self.rhodecode_api.create_group(group)
+                self.rhodecode_api.create_repo_group(group)
                 added += 1
             except Exception:
                 existing += 1

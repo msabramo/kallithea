@@ -1,0 +1,96 @@
+${h.form(url('admin_settings'), method='post')}
+    <div class="form">
+        <div class="fields">
+            <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('Web')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('web_push_ssl', 'True')}
+                        <label for="web_push_ssl">${_('Require SSL for vcs operations')}</label>
+                    </div>
+                    <span class="help-block">${_('Activate to set RhodeCode to require SSL for pushing or pulling. If SSL certificate is missing it will return a HTTP Error 406: Not Acceptable.')}</span>
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('Hooks')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('hooks_changegroup_repo_size','True')}
+                        <label for="hooks_changegroup_repo_size">${_('Show repository size after push')}</label>
+                    </div>
+                    <div class="checkbox">
+                        ${h.checkbox('hooks_changegroup_push_logger','True')}
+                        <label for="hooks_changegroup_push_logger">${_('Log user push commands')}</label>
+                    </div>
+                    <div class="checkbox">
+                        ${h.checkbox('hooks_outgoing_pull_logger','True')}
+                        <label for="hooks_outgoing_pull_logger">${_('Log user pull commands')}</label>
+                    </div>
+                    <div class="checkbox">
+                        ${h.checkbox('hooks_changegroup_update','True')}
+                        <label for="hooks_changegroup_update">${_('Update repository after push (hg update)')}</label>
+                    </div>
+                </div>
+             </div>
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label>${_('Mercurial Extensions')}:</label>
+                </div>
+                <div class="checkboxes">
+                    <div class="checkbox">
+                        ${h.checkbox('extensions_largefiles','True')}
+                        <label for="extensions_largefiles">${_('Enable largefiles extension')}</label>
+                    </div>
+                    <div class="checkbox">
+                        ${h.checkbox('extensions_hgsubversion','True')}
+                        <label for="extensions_hgsubversion">${_('Enable hgsubversion extension')}</label>
+                    </div>
+                    <span class="help-block">${_('Requires hgsubversion library to be installed. Allows cloning remote SVN repositories and migrates them to Mercurial type.')}</span>
+                    ##<div class="checkbox">
+                    ##    ${h.checkbox('extensions_hggit','True')}
+                    ##    <label for="extensions_hggit">${_('Enable hg-git extension')}</label>
+                    ##</div>
+                    ##<span class="help-block">${_('Requires hg-git library to be installed. Allows cloning remote git repositories and migrates them to Mercurial type.')}</span>
+                </div>
+            </div>
+            %if c.visual.allow_repo_location_change:
+            <div class="field">
+                <div class="label">
+                    <label for="paths_root_path">${_('Repositories location')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('paths_root_path',size=60,readonly="readonly", class_="disabled")}
+                    <span id="path_unlock" class="tooltip" style="cursor: pointer"
+                            title="${h.tooltip(_('Click to unlock. You must restart RhodeCode in order to make this setting take effect.'))}">
+                        <div class="btn btn-small"><i id="path_unlock_icon" class="icon-lock"></i></div>
+                    </span>
+                    <span class="help-block">${_('Filesystem location where repositories should be stored. After changing this value a restart and rescan of the repository folder are required.')}</span>
+                </div>
+            </div>
+            %else:
+            ## form still requires this but we cannot internally change it anyway
+            ${h.hidden('paths_root_path',size=30,readonly="readonly", class_="disabled")}
+            %endif
+            <div class="buttons">
+                ${h.submit('save',_('Save settings'),class_="btn")}
+                ${h.reset('reset',_('Reset'),class_="btn")}
+           </div>
+        </div>
+    </div>
+    ${h.end_form()}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#path_unlock').on('click', function(e){
+                $('#path_unlock_icon').removeClass('icon-lock');
+                $('#path_unlock_icon').addClass('icon-unlock');
+                $('#paths_root_path').removeAttr('readonly');
+                $('#paths_root_path').removeClass('disabled');
+            })
+        })
+    </script>

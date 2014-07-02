@@ -34,7 +34,7 @@ __platform__ = platform.system()
 is_windows = __platform__ in ['Windows']
 
 requirements = [
-    "waitress==0.8.4",
+    "waitress==0.8.8",
     "webob==1.0.8",
     "webtest==1.4.3",
     "Pylons==1.0.0",
@@ -42,38 +42,42 @@ requirements = [
     "WebHelpers==1.3",
     "formencode==1.2.4",
     "SQLAlchemy==0.7.10",
-    "Mako==0.7.3",
+    "Mako==0.9.0",
     "pygments>=1.5",
     "whoosh>=2.4.0,<2.5",
     "celery>=2.2.5,<2.3",
-    "babel",
+    "babel==0.9.6",
     "python-dateutil>=1.5.0,<2.0.0",
-    "dulwich>=0.8.7,<0.9.0",
+    "dulwich==0.9.3",
     "markdown==2.2.1",
     "docutils==0.8.1",
     "simplejson==2.5.2",
     "mock",
+    "pycrypto==2.6.0",
+    "URLObject==2.3.4",
+    "Routes==1.13",
 ]
 
 if sys.version_info < (2, 6):
     requirements.append("pysqlite")
 
 if sys.version_info < (2, 7):
+    requirements.append("importlib==1.0.1")
     requirements.append("unittest2")
     requirements.append("argparse")
 
 if is_windows:
-    requirements.append("mercurial==2.6.3")
+    requirements.append("mercurial==2.8.2")
 else:
-    requirements.append("py-bcrypt")
-    requirements.append("mercurial==2.6.3")
+    requirements.append("py-bcrypt==0.3.0")
+    requirements.append("mercurial==2.8.2")
 
 
 dependency_links = [
 ]
 
 classifiers = [
-    'Development Status :: 5 - Production/Stable',
+    'Development Status :: 4 - Beta'
     'Environment :: Web Environment',
     'Framework :: Pylons',
     'Intended Audience :: Developers',
@@ -166,7 +170,6 @@ setup(
 
     [paste.global_paster_command]
     setup-rhodecode=rhodecode.lib.paster_commands.setup_rhodecode:Command
-    cleanup-repos=rhodecode.lib.paster_commands.cleanup:Command
     update-repoinfo=rhodecode.lib.paster_commands.update_repoinfo:Command
     make-rcext=rhodecode.lib.paster_commands.make_rcextensions:Command
     repo-scan=rhodecode.lib.paster_commands.repo_scan:Command

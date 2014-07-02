@@ -1,7 +1,6 @@
 import os
 import socket
 import logging
-import subprocess
 import traceback
 
 from webob import Request, Response, exc
@@ -86,7 +85,7 @@ class GitRepository(object):
         try:
             out = subprocessio.SubprocessIOChunker(
                 r'%s %s --stateless-rpc --advertise-refs "%s"' % (
-                            _git_path, git_command[4:], self.content_path),
+                    _git_path, git_command[4:], self.content_path),
                 starting_values=[
                     packet_len + server_advert + '0000'
                 ]
@@ -107,6 +106,7 @@ class GitRepository(object):
         returns an iterator obj with contents of git command's
         response to stdout
         """
+        _git_path = rhodecode.CONFIG.get('git_path', 'git')
         git_command = self._get_fixedpath(request.path_info)
         if git_command not in self.commands:
             log.debug('command %s not allowed' % git_command)
@@ -124,10 +124,10 @@ class GitRepository(object):
             gitenv['GIT_CONFIG_NOGLOBAL'] = '1'
             opts = dict(
                 env=gitenv,
-                cwd=os.getcwd()
+                cwd=self.content_path,
             )
-            cmd = r'git %s --stateless-rpc "%s"' % (git_command[4:],
-                                                    self.content_path),
+            cmd = r'%s %s --stateless-rpc "%s"' % (_git_path, git_command[4:],
+                                                   self.content_path),
             log.debug('handling cmd %s' % cmd)
             out = subprocessio.SubprocessIOChunker(
                 cmd,
@@ -141,11 +141,11 @@ class GitRepository(object):
         if git_command in [u'git-receive-pack']:
             # updating refs manually after each push.
             # Needed for pre-1.7.0.4 git clients using regular HTTP mode.
-            _git_path = rhodecode.CONFIG.get('git_path', 'git')
-            cmd = (u'%s --git-dir "%s" '
-                    'update-server-info' % (_git_path, self.content_path))
-            log.debug('handling cmd %s' % cmd)
-            subprocess.call(cmd, shell=True)
+            from rhodecode.lib.vcs import get_repo
+            from dulwich.server import update_server_info
+            repo = get_repo(self.content_path)
+            if repo:
+                update_server_info(repo._repo)
 
         resp = Response()
         resp.content_type = 'application/x-%s-result' % git_command.encode('utf8')
@@ -197,4 +197,6 @@ class GitDirectory(object):
 
 
 def make_wsgi_app(repo_name, repo_root, extras):
-    return GitDirectory(repo_root, repo_name, extras)
+    from dulwich.web import LimitedInputFilter, GunzipFilter
+    app = GitDirectory(repo_root, repo_name, extras)
+    return GunzipFilter(LimitedInputFilter(app))

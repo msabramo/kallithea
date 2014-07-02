@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.bin.gist
-    ~~~~~~~~~~~~~~~~~~
-
-    Gist CLI client for RhodeCode
-
-    :created_on: May 9, 2013
-    :author: marcink
-    :copyright: (C) 2010-2013 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.bin.rhodecode_gist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Gist CLI client for RhodeCode
+
+:created_on: May 9, 2013
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
 
 from __future__ import with_statement
 import os

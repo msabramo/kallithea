@@ -18,39 +18,19 @@ class TestNotificationsController(TestController):
         self.log_user()
 
         u1 = UserModel().create_or_update(username='u1', password='qweqwe',
-                                               email='u1@rhodecode.org',
-                                               firstname='u1', lastname='u1')
+                                          email='u1@rhodecode.org',
+                                          firstname='u1', lastname='u1')
         u1 = u1.user_id
 
         response = self.app.get(url('notifications'))
         response.mustcontain('<div class="table">No notifications here yet</div>')
 
         cur_user = self._get_logged_user()
-
-        NotificationModel().create(created_by=u1, subject=u'test_notification_1',
-                                   body=u'notification_1',
-                                   recipients=[cur_user])
+        notif = NotificationModel().create(created_by=u1, subject=u'test_notification_1',
+                                           body=u'notification_1', recipients=[cur_user])
         Session().commit()
         response = self.app.get(url('notifications'))
-        response.mustcontain(u'test_notification_1')
-
-#    def test_index_as_xml(self):
-#        response = self.app.get(url('formatted_notifications', format='xml'))
-#
-#    def test_create(self):
-#        response = self.app.post(url('notifications'))
-#
-#    def test_new(self):
-#        response = self.app.get(url('new_notification'))
-#
-#    def test_new_as_xml(self):
-#        response = self.app.get(url('formatted_new_notification', format='xml'))
-#
-#    def test_update(self):
-#        response = self.app.put(url('notification', notification_id=1))
-#
-#    def test_update_browser_fakeout(self):
-#        response = self.app.post(url('notification', notification_id=1), params=dict(_method='put'))
+        response.mustcontain('id="notification_%s"' % notif.notification_id)
 
     def test_delete(self):
         self.log_user()
@@ -91,16 +71,21 @@ class TestNotificationsController(TestController):
         self.log_user()
         cur_user = self._get_logged_user()
         u1 = UserModel().create_or_update(username='u1', password='qweqwe',
-                                               email='u1@rhodecode.org',
-                                               firstname='u1', lastname='u1')
+                                          email='u1@rhodecode.org',
+                                          firstname='u1', lastname='u1')
         u2 = UserModel().create_or_update(username='u2', password='qweqwe',
-                                               email='u2@rhodecode.org',
-                                               firstname='u2', lastname='u2')
+                                          email='u2@rhodecode.org',
+                                          firstname='u2', lastname='u2')
 
+        subject = u'test'
+        notif_body = u'hi there'
         notification = NotificationModel().create(created_by=cur_user,
-                                                  subject=u'test',
-                                                  body=u'hi there',
+                                                  subject=subject,
+                                                  body=notif_body,
                                                   recipients=[cur_user, u1, u2])
 
         response = self.app.get(url('notification',
                                     notification_id=notification.notification_id))
+
+        response.mustcontain(subject)
+        response.mustcontain(notif_body)

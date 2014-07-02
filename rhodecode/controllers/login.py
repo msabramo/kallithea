@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.controllers.login
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Login controller for rhodeocode
-
-    :created_on: Apr 22, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.controllers.login
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Login controller for rhodeocode
+
+:created_on: Apr 22, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 
 import logging
 import formencode
@@ -31,14 +32,15 @@ import urlparse
 from formencode import htmlfill
 from webob.exc import HTTPFound
 from pylons.i18n.translation import _
-from pylons.controllers.util import abort, redirect
-from pylons import request, response, session, tmpl_context as c, url
+from pylons.controllers.util import redirect
+from pylons import request, session, tmpl_context as c, url
 
 import rhodecode.lib.helpers as h
 from rhodecode.lib.auth import AuthUser, HasPermissionAnyDecorator
+from rhodecode.lib.auth_modules import importplugin
 from rhodecode.lib.base import BaseController, render
 from rhodecode.lib.exceptions import UserCreationError
-from rhodecode.model.db import User
+from rhodecode.model.db import User, RhodeCodeSetting
 from rhodecode.model.forms import LoginForm, RegisterForm, PasswordResetForm
 from rhodecode.model.user import UserModel
 from rhodecode.model.meta import Session
@@ -52,13 +54,63 @@ class LoginController(BaseController):
     def __before__(self):
         super(LoginController, self).__before__()
 
+    def _store_user_in_session(self, username, remember=False):
+        user = User.get_by_username(username, case_insensitive=True)
+        auth_user = AuthUser(user.user_id)
+        auth_user.set_authenticated()
+        cs = auth_user.get_cookie_store()
+        session['rhodecode_user'] = cs
+        user.update_lastlogin()
+        Session().commit()
+
+        # If they want to be remembered, update the cookie
+        if remember:
+            _year = (datetime.datetime.now() +
+                     datetime.timedelta(seconds=60 * 60 * 24 * 365))
+            session._set_cookie_expires(_year)
+
+        session.save()
+
+        log.info('user %s is now authenticated and stored in '
+                 'session, session attrs %s' % (username, cs))
+
+        # dumps session attrs back to cookie
+        session._update_cookie_out()
+        # we set new cookie
+        headers = None
+        if session.request['set_cookie']:
+            # send set-cookie headers back to response to update cookie
+            headers = [('Set-Cookie', session.request['cookie_out'])]
+        return headers
+
+    def _validate_came_from(self, came_from):
+        if not came_from:
+            return came_from
+
+        parsed = urlparse.urlparse(came_from)
+        server_parsed = urlparse.urlparse(url.current())
+        allowed_schemes = ['http', 'https']
+        if parsed.scheme and parsed.scheme not in allowed_schemes:
+            log.error('Suspicious URL scheme detected %s for url %s' %
+                     (parsed.scheme, parsed))
+            came_from = url('home')
+        elif server_parsed.netloc != parsed.netloc:
+            log.error('Suspicious NETLOC detected %s for url %s server url '
+                      'is: %s' % (parsed.netloc, parsed, server_parsed))
+            came_from = url('home')
+        return came_from
+
     def index(self):
-        # redirect if already logged in
-        c.came_from = request.GET.get('came_from')
-        not_default = self.rhodecode_user.username != 'default'
+        _default_came_from = url('home')
+        came_from = self._validate_came_from(request.GET.get('came_from'))
+        c.came_from = came_from or _default_came_from
+
+        not_default = self.rhodecode_user.username != User.DEFAULT_USER
         ip_allowed = self.rhodecode_user.ip_allowed
+
+        # redirect if already logged in
         if self.rhodecode_user.is_authenticated and not_default and ip_allowed:
-            return redirect(url('home'))
+            raise HTTPFound(location=c.came_from)
 
         if request.POST:
             # import Login Form validator class
@@ -67,53 +119,10 @@ class LoginController(BaseController):
                 session.invalidate()
                 c.form_result = login_form.to_python(dict(request.POST))
                 # form checks for username/password, now we're authenticated
-                username = c.form_result['username']
-                user = User.get_by_username(username, case_insensitive=True)
-                auth_user = AuthUser(user.user_id)
-                auth_user.set_authenticated()
-                cs = auth_user.get_cookie_store()
-                session['rhodecode_user'] = cs
-                user.update_lastlogin()
-                Session().commit()
-
-                # If they want to be remembered, update the cookie
-                if c.form_result['remember']:
-                    _year = (datetime.datetime.now() +
-                             datetime.timedelta(seconds=60 * 60 * 24 * 365))
-                    session._set_cookie_expires(_year)
-
-                session.save()
-
-                log.info('user %s is now authenticated and stored in '
-                         'session, session attrs %s' % (username, cs))
-
-                # dumps session attrs back to cookie
-                session._update_cookie_out()
-
-                # we set new cookie
-                headers = None
-                if session.request['set_cookie']:
-                    # send set-cookie headers back to response to update cookie
-                    headers = [('Set-Cookie', session.request['cookie_out'])]
-
-                allowed_schemes = ['http', 'https']
-                if c.came_from:
-                    parsed = urlparse.urlparse(c.came_from)
-                    server_parsed = urlparse.urlparse(url.current())
-                    if parsed.scheme and parsed.scheme not in allowed_schemes:
-                        log.error(
-                            'Suspicious URL scheme detected %s for url %s' %
-                            (parsed.scheme, parsed))
-                        c.came_from = url('home')
-                    elif server_parsed.netloc != parsed.netloc:
-                        log.error('Suspicious NETLOC detected %s for url %s'
-                                  'server url is: %s' %
-                                  (parsed.netloc, parsed, server_parsed))
-                        c.came_from = url('home')
-                    raise HTTPFound(location=c.came_from, headers=headers)
-                else:
-                    raise HTTPFound(location=url('home'), headers=headers)
-
+                headers = self._store_user_in_session(
+                                        username=c.form_result['username'],
+                                        remember=c.form_result['remember'])
+                raise HTTPFound(location=c.came_from, headers=headers)
             except formencode.Invalid, errors:
                 defaults = errors.value
                 # remove password from filling in form again
@@ -131,6 +140,21 @@ class LoginController(BaseController):
                 # Exception itself
                 h.flash(e, 'error')
 
+        # check if we use container plugin, and try to login using it.
+        auth_plugins = RhodeCodeSetting.get_auth_plugins()
+        if any((importplugin(name).is_container_auth for name in auth_plugins)):
+            from rhodecode.lib import auth_modules
+            try:
+                auth_info = auth_modules.authenticate('', '', request.environ)
+            except UserCreationError, e:
+                log.error(e)
+                h.flash(e, 'error')
+                # render login, with flash message about limit
+                return render('/login.html')
+
+            if auth_info:
+                headers = self._store_user_in_session(auth_info.get('username'))
+                raise HTTPFound(location=c.came_from, headers=headers)
         return render('/login.html')
 
     @HasPermissionAnyDecorator('hg.admin', 'hg.register.auto_activate',
@@ -139,14 +163,33 @@ class LoginController(BaseController):
         c.auto_active = 'hg.register.auto_activate' in User.get_default_user()\
             .AuthUser.permissions['global']
 
+        settings = RhodeCodeSetting.get_app_settings()
+        captcha_private_key = settings.get('rhodecode_captcha_private_key')
+        c.captcha_active = bool(captcha_private_key)
+        c.captcha_public_key = settings.get('rhodecode_captcha_public_key')
+
         if request.POST:
             register_form = RegisterForm()()
             try:
                 form_result = register_form.to_python(dict(request.POST))
                 form_result['active'] = c.auto_active
+
+                if c.captcha_active:
+                    from rhodecode.lib.recaptcha import submit
+                    response = submit(request.POST.get('recaptcha_challenge_field'),
+                                      request.POST.get('recaptcha_response_field'),
+                                      private_key=captcha_private_key,
+                                      remoteip=self.ip_addr)
+                    if c.captcha_active and not response.is_valid:
+                        _value = form_result
+                        _msg = _('bad captcha')
+                        error_dict = {'recaptcha_field': _msg}
+                        raise formencode.Invalid(_msg, _value, None,
+                                                 error_dict=error_dict)
+
                 UserModel().create_registration(form_result)
                 h.flash(_('You have successfully registered into RhodeCode'),
-                            category='success')
+                        category='success')
                 Session().commit()
                 return redirect(url('login_home'))
 
@@ -167,10 +210,27 @@ class LoginController(BaseController):
         return render('/register.html')
 
     def password_reset(self):
+        settings = RhodeCodeSetting.get_app_settings()
+        captcha_private_key = settings.get('rhodecode_captcha_private_key')
+        c.captcha_active = bool(captcha_private_key)
+        c.captcha_public_key = settings.get('rhodecode_captcha_public_key')
+
         if request.POST:
             password_reset_form = PasswordResetForm()()
             try:
                 form_result = password_reset_form.to_python(dict(request.POST))
+                if c.captcha_active:
+                    from rhodecode.lib.recaptcha import submit
+                    response = submit(request.POST.get('recaptcha_challenge_field'),
+                                      request.POST.get('recaptcha_response_field'),
+                                      private_key=captcha_private_key,
+                                      remoteip=self.ip_addr)
+                    if c.captcha_active and not response.is_valid:
+                        _value = form_result
+                        _msg = _('bad captcha')
+                        error_dict = {'recaptcha_field': _msg}
+                        raise formencode.Invalid(_msg, _value, None,
+                                                 error_dict=error_dict)
                 UserModel().reset_password_link(form_result)
                 h.flash(_('Your password reset link was sent'),
                             category='success')

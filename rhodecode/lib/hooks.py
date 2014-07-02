@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.hooks
-    ~~~~~~~~~~~~~~~~~~~
-
-    Hooks runned by rhodecode
-
-    :created_on: Aug 6, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,18 +11,27 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.hooks
+~~~~~~~~~~~~~~~~~~~
+
+Hooks runned by rhodecode
+
+:created_on: Aug 6, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 import os
 import sys
 import time
 import binascii
-import traceback
-from inspect import isfunction
 
 from rhodecode.lib.vcs.utils.hgcompat import nullrev, revrange
 from rhodecode.lib import helpers as h
 from rhodecode.lib.utils import action_logger
 from rhodecode.lib.vcs.backends.base import EmptyChangeset
-from rhodecode.lib.compat import json
 from rhodecode.lib.exceptions import HTTPLockedRC, UserCreationError
 from rhodecode.lib.utils2 import safe_str, _extract_extras
 from rhodecode.model.db import Repository, User
@@ -136,7 +134,7 @@ def log_pull_action(ui, repo, **kwargs):
     # extension hook call
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'PULL_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         kw = {}
         kw.update(ex)
         callback(**kw)
@@ -165,8 +163,8 @@ def log_push_action(ui, repo, **kwargs):
 
     ex = _extract_extras()
 
-    action = ex.action + ':%s'
-
+    action_tmpl = ex.action + ':%s'
+    revs = []
     if ex.scm == 'hg':
         node = kwargs['node']
 
@@ -176,26 +174,25 @@ def log_push_action(ui, repo, **kwargs):
 
                 if len(revs) == 0:
                     return (nullrev, nullrev)
-                return (max(revs), min(revs))
+                return max(revs), min(revs)
             else:
-                return (len(repo) - 1, 0)
+                return len(repo) - 1, 0
 
         stop, start = get_revs(repo, [node + ':'])
-        h = binascii.hexlify
-        revs = [h(repo[r].node()) for r in xrange(start, stop + 1)]
+        _h = binascii.hexlify
+        revs = [_h(repo[r].node()) for r in xrange(start, stop + 1)]
     elif ex.scm == 'git':
         revs = kwargs.get('_git_revs', [])
         if '_git_revs' in kwargs:
             kwargs.pop('_git_revs')
 
-    action = action % ','.join(revs)
-
+    action = action_tmpl % ','.join(revs)
     action_logger(ex.username, action, ex.repository, ex.ip, commit=True)
 
     # extension hook call
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'PUSH_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         kw = {'pushed_revs': revs}
         kw.update(ex)
         callback(**kw)
@@ -242,7 +239,7 @@ def log_create_repository(repository_dict, created_by, **kwargs):
     """
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'CREATE_REPO_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         kw = {}
         kw.update(repository_dict)
         kw.update({'created_by': created_by})
@@ -253,12 +250,37 @@ def log_create_repository(repository_dict, created_by, **kwargs):
 
 
 def check_allowed_create_user(user_dict, created_by, **kwargs):
+    # pre create hooks
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'PRE_CREATE_USER_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         allowed, reason = callback(created_by=created_by, **user_dict)
         if not allowed:
             raise UserCreationError(reason)
+
+    # license limit hook
+    import rhodecode
+    from rhodecode.model.license import LicenseModel
+    license_token = rhodecode.CONFIG.get('license_token')
+    license_key = LicenseModel.get_license_key()
+    license_info = LicenseModel.get_license_info(
+        license_token=license_token, enc_license_key=license_key,
+        fill_defaults=True)
+    expiration_check = False
+    if expiration_check:
+        now = time.time()
+        #check expiration
+        if now > license_info['valid_till']:
+            reason = ('Your license has expired, '
+                      'please contact support to extend your license.')
+            raise UserCreationError(reason)
+    # user count check
+    cur_user_count = User.query().count()
+    if cur_user_count > int(license_info['users']) > 0:
+        reason = ('You have reached the maximum number of users (%s), '
+                  'please contact support to extend your license.'
+                  % license_info['users'])
+        raise UserCreationError(reason)
 
 
 def log_create_user(user_dict, created_by, **kwargs):
@@ -294,7 +316,7 @@ def log_create_user(user_dict, created_by, **kwargs):
     """
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'CREATE_USER_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         return callback(created_by=created_by, **user_dict)
 
     return 0
@@ -327,7 +349,7 @@ def log_delete_repository(repository_dict, deleted_by, **kwargs):
     """
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'DELETE_REPO_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         kw = {}
         kw.update(repository_dict)
         kw.update({'deleted_by': deleted_by,
@@ -371,7 +393,7 @@ def log_delete_user(user_dict, deleted_by, **kwargs):
     """
     from rhodecode import EXTENSIONS
     callback = getattr(EXTENSIONS, 'DELETE_USER_HOOK', None)
-    if isfunction(callback):
+    if callable(callback):
         return callback(deleted_by=deleted_by, **user_dict)
 
     return 0
@@ -404,7 +426,8 @@ def handle_git_receive(repo_path, revs, env, hook_type='post'):
 
     path, ini_name = os.path.split(extras['config'])
     conf = appconfig('config:%s' % ini_name, relative_to=path)
-    load_environment(conf.global_conf, conf.local_conf)
+    load_environment(conf.global_conf, conf.local_conf, test_env=False,
+                     test_index=False)
 
     engine = engine_from_config(conf, 'sqlalchemy.db1.')
     init_model(engine)
@@ -432,7 +455,6 @@ def handle_git_receive(repo_path, revs, env, hook_type='post'):
 
     # if push hook is enabled via web interface
     elif hook_type == 'post' and _hooks.get(RhodeCodeUi.HOOK_PUSH):
-
         rev_data = []
         for l in revs:
             old_rev, new_rev, ref = l.split(' ')
@@ -445,10 +467,16 @@ def handle_git_receive(repo_path, revs, env, hook_type='post'):
                                  'name': _ref_data[2].strip()})
 
         git_revs = []
-        for push_ref  in rev_data:
+
+        for push_ref in rev_data:
             _type = push_ref['type']
             if _type == 'heads':
                 if push_ref['old_rev'] == EmptyChangeset().raw_id:
+                    # update the symbolic ref if we push new repo
+                    if repo.is_empty():
+                        repo._repo.refs.set_symbolic_ref('HEAD',
+                                            'refs/heads/%s' % push_ref['name'])
+
                     cmd = "for-each-ref --format='%(refname)' 'refs/heads/*'"
                     heads = repo.run_git_command(cmd)[0]
                     heads = heads.replace(push_ref['ref'], '')

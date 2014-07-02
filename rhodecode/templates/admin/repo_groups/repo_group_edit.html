@@ -1,0 +1,63 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Repository group settings') % c.repo_group.name}
+    %if c.rhodecode_name:
+        &middot; ${c.rhodecode_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${h.link_to(_('Admin'),h.url('admin_home'))}
+    &raquo;
+    ${h.link_to(_('Repository Groups'),h.url('repos_groups'))}
+    %if c.repo_group.parent_group:
+        &raquo; ${h.link_to(c.repo_group.parent_group.name,h.url('repos_group_home',group_name=c.repo_group.parent_group.group_name))}
+    %endif
+    &raquo; ${c.repo_group.name}
+</%def>
+
+<%def name="breadcrumbs_side_links()">
+    <ul class="links">
+      <li>
+          <a href="${h.url('new_repos_group', parent_group=c.repo_group.group_id)}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_(u'Add Child Group')}</a>
+      </li>
+    </ul>
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <div class="title">
+        ${self.breadcrumbs()}
+        ${self.breadcrumbs_side_links()}
+    </div>
+
+    ##main
+    <div style="width: 150px; float:left">
+        <ul class="nav nav-pills nav-stacked">
+          <li>
+           <div class="gravatar_box" style="height: 26px">
+             <div class="gravatar" style="float: left">
+                <i class="icon-folder-close" style="font-size: 26px"></i>
+             </div>
+               <div class="truncate" style="margin:10px 0px 10px 0px; color:#5f5f5f; float:left; width: 100px">
+                <strong>${c.repo_group.name}</strong>
+               </div>
+           </div>
+          </li>
+          <li class="${'active' if c.active=='settings' else ''}"><a href="${h.url('edit_repo_group', group_name=c.repo_group.group_name)}">${_('Settings')}</a></li>
+          <li class="${'active' if c.active=='advanced' else ''}"><a href="${h.url('edit_repo_group_advanced', group_name=c.repo_group.group_name)}">${_('Advanced')}</a></li>
+          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('edit_repo_group_perms', group_name=c.repo_group.group_name)}">${_('Permissions')}</a></li>
+        </ul>
+    </div>
+
+    <div style="width:750px; float:left; padding: 10px 0px 0px 20px;margin: 0px 0px 0px 10px; border-left: 1px solid #DDDDDD">
+        <%include file="/admin/repo_groups/repo_group_edit_${c.active}.html"/>
+    </div>
+</div>
+</%def>

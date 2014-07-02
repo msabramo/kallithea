@@ -13,17 +13,8 @@
         <td>
           <div>
             <div class="changeset-status-container">
-              %if c.comments.get(cs.raw_id,[]):
-               <div class="comments-container">
-                   <div class="comments-cnt" title="${('comments')}">
-                       <a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
-                           ${len(c.comments[cs.raw_id])}
-                       </a>
-                   </div>
-               </div>
-              %endif
               %if c.statuses.get(cs.raw_id):
-                <div class="changeset-status-ico">
+                <div class="changeset-status-ico shortlog">
                 %if c.statuses.get(cs.raw_id)[2]:
                   <a class="tooltip" title="${_('Changeset status: %s\nClick to open associated pull request #%s') % (c.statuses.get(cs.raw_id)[0], c.statuses.get(cs.raw_id)[2])}" href="${h.url('pullrequest_show',repo_name=c.statuses.get(cs.raw_id)[3],pull_request_id=c.statuses.get(cs.raw_id)[2])}">
                     <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
@@ -32,6 +23,15 @@
                   <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
                 %endif
                 </div>
+              %endif
+              %if c.comments.get(cs.raw_id,[]):
+               <div class="comments-container">
+                   <div title="${('comments')}">
+                       <a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
+                          <i class="icon-comment-alt icon-comment-colored"></i> ${len(c.comments[cs.raw_id])}
+                       </a>
+                   </div>
+               </div>
               %endif
             </div>
             <pre><a href="${h.url('files_home',repo_name=c.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a></pre>
@@ -86,7 +86,7 @@ ${c.repo_changesets.pager('$link_previous ~2~ $link_next')}
 <h4>${_('Add or upload files directly via RhodeCode')}</h4>
 <div style="margin: 20px 30px;">
   <div id="add_node_id" class="add_node">
-      <a class="ui-btn" href="${h.url('files_add_home',repo_name=c.repo_name,revision=0,f_path='')}">${_('Add new file')}</a>
+      <a class="btn btn-mini" href="${h.url('files_add_home',repo_name=c.repo_name,revision=0,f_path='', anchor='edit')}">${_('Add New File')}</a>
   </div>
 </div>
 %endif

@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    rhodecode.lib.indexers.daemon
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    A daemon will read from task table and run tasks
-
-    :created_on: Jan 26, 2010
-    :author: marcink
-    :copyright: (C) 2010-2012 Marcin Kuzminski <marcin@python-works.com>
-    :license: GPLv3, see COPYING for more details.
-"""
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +11,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+rhodecode.lib.indexers.daemon
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A daemon will read from task table and run tasks
+
+:created_on: Jan 26, 2010
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
+"""
+
 from __future__ import with_statement
 
 import os
@@ -111,14 +112,16 @@ class WhooshIndexingDaemon(object):
             self.initial = False
 
     def _get_index_revision(self, repo):
-        db_repo = Repository.get_by_repo_name(repo.name)
+        db_repo = Repository.get_by_repo_name(repo.name_unicode)
         landing_rev = 'tip'
         if db_repo:
-            landing_rev = db_repo.landing_rev
+            _rev_type, _rev = db_repo.landing_rev
+            landing_rev = _rev
         return landing_rev
 
-    def _get_index_changeset(self, repo):
-        index_rev = self._get_index_revision(repo)
+    def _get_index_changeset(self, repo, index_rev=None):
+        if not index_rev:
+            index_rev = self._get_index_revision(repo)
         cs = repo.get_changeset(index_rev)
         return cs
 
@@ -139,7 +142,7 @@ class WhooshIndexingDaemon(object):
             pass
         return index_paths_
 
-    def get_node(self, repo, path):
+    def get_node(self, repo, path, index_rev=None):
         """
         gets a filenode based on given full path.It operates on string for
         hg git compatability.
@@ -150,20 +153,20 @@ class WhooshIndexingDaemon(object):
         """
         root_path = safe_str(repo.path)+'/'
         parts = safe_str(path).partition(root_path)
-        cs = self._get_index_changeset(repo)
+        cs = self._get_index_changeset(repo, index_rev=index_rev)
         node = cs.get_node(parts[-1])
         return node
 
     def get_node_mtime(self, node):
         return mktime(node.last_changeset.date.timetuple())
 
-    def add_doc(self, writer, path, repo, repo_name):
+    def add_doc(self, writer, path, repo, repo_name, index_rev=None):
         """
         Adding doc to writer this function itself fetches data from
         the instance of vcs backend
         """
 
-        node = self.get_node(repo, path)
+        node = self.get_node(repo, path, index_rev)
         indexed = indexed_w_content = 0
         # we just index the content of chosen files, and skip binary files
         if node.extension in INDEX_EXTENSIONS and not node.is_binary:
@@ -249,8 +252,9 @@ class WhooshIndexingDaemon(object):
         i_cnt = iwc_cnt = 0
         log.debug('building index for %s @revision:%s' % (repo.path,
                                                 self._get_index_revision(repo)))
+        index_rev = self._get_index_revision(repo)
         for idx_path in self.get_paths(repo):
-            i, iwc = self.add_doc(file_idx_writer, idx_path, repo, repo_name)
+            i, iwc = self.add_doc(file_idx_writer, idx_path, repo, repo_name, index_rev)
             i_cnt += i
             iwc_cnt += iwc
 

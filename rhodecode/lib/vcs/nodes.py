@@ -326,7 +326,7 @@ class FileNode(Node):
                 return self._mimetype
             else:
                 raise NodeError('given _mimetype attribute must be an 2 '
-                               'element list or tuple')
+                                'element list or tuple')
 
         mtype, encoding = mimetypes.guess_type(self.name)
 
@@ -337,6 +337,17 @@ class FileNode(Node):
             else:
                 mtype = 'text/plain'
                 encoding = None
+
+                #try with pygments
+                try:
+                    from pygments.lexers import get_lexer_for_filename
+                    mt = get_lexer_for_filename(self.name).mimetypes
+                except Exception:
+                    mt = None
+
+                if mt:
+                    mtype = mt[0]
+
         return mtype, encoding
 
     @LazyProperty

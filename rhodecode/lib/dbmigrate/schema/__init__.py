@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-    rhodecode.lib.dbmigrate.schema
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rhodecode.lib.dbmigrate.schema
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Schemas for migrations
 
-    Schemas for migrations
-
-
-    :created_on: Nov 1, 2011
-    :author: marcink
-    :copyright: (C) 2009-2010 Marcin Kuzminski <marcin@python-works.com>
-    :license: <name>, see LICENSE_FILE for more details.
+:created_on: Nov 1, 2011
+:author: marcink
+:copyright: (c) 2013 RhodeCode GmbH.
+:license: GPLv3, see LICENSE for more details.
 """
