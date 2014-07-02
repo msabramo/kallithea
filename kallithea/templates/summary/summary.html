@@ -115,7 +115,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
                   <label>${_('Download')}:</label>
               </div>
               <div class="input ${summary(c.show_stats)}">
-                %if len(c.rhodecode_repo.revisions) == 0:
+                %if len(c.db_repo_scm_instance.revisions) == 0:
                   ${_('There are no downloads yet')}
                 %elif not c.enable_downloads:
                   ${_('Downloads are disabled for this repository')}
@@ -311,7 +311,7 @@ $(document).ready(function(){
     });
 
     var tmpl_links = {};
-    %for cnt,archive in enumerate(c.rhodecode_repo._get_archives()):
+    %for cnt,archive in enumerate(c.db_repo_scm_instance._get_archives()):
       tmpl_links["${archive['type']}"] = '${h.link_to('__NAME__', h.url('files_archive_home',repo_name=c.db_repo.repo_name, fname='__CS__'+archive['extension'],subrepos='__SUB__'),class_='btn btn-small')}';
     %endfor
 })

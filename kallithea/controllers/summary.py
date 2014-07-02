@@ -74,12 +74,12 @@ class SummaryController(BaseRepoController):
         branches_group = ([], _("Branches"))
         tags_group = ([], _("Tags"))
 
-        for name, chs in c.rhodecode_repo.branches.items():
+        for name, chs in c.db_repo_scm_instance.branches.items():
             #chs = chs.split(':')[-1]
             branches_group[0].append((chs, name),)
         download_l.append(branches_group)
 
-        for name, chs in c.rhodecode_repo.tags.items():
+        for name, chs in c.db_repo_scm_instance.tags.items():
             #chs = chs.split(':')[-1]
             tags_group[0].append((chs, name),)
         download_l.append(tags_group)
@@ -230,8 +230,8 @@ class SummaryController(BaseRepoController):
                 sorted(lang_stats, reverse=True, key=lambda k: k[1])[:10]
             )
             last_rev = stats.stat_on_revision + 1
-            c.repo_last_rev = c.rhodecode_repo.count()\
-                if c.rhodecode_repo.revisions else 0
+            c.repo_last_rev = c.db_repo_scm_instance.count()\
+                if c.db_repo_scm_instance.revisions else 0
             if last_rev == 0 or c.repo_last_rev == 0:
                 pass
             else:

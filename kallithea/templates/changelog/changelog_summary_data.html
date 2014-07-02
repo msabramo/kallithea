@@ -45,7 +45,7 @@
         </td>
         <td title="${cs.author}">${h.person(cs.author)}</td>
         <td>
-            %if h.is_hg(c.rhodecode_repo):
+            %if h.is_hg(c.db_repo_scm_instance):
                 %for book in cs.bookmarks:
                     <div class="booktag" title="${_('Bookmark %s') % book}">
                         ${h.link_to(h.shorter(book),h.url('files_home',repo_name=c.repo_name,revision=cs.raw_id))}
@@ -94,15 +94,15 @@ ${c.repo_changesets.pager('$link_previous ~2~ $link_next')}
 
 <h4>${_('Push new repo')}</h4>
 <pre>
-    ${c.rhodecode_repo.alias} clone ${c.clone_repo_url}
-    ${c.rhodecode_repo.alias} add README # add first file
-    ${c.rhodecode_repo.alias} commit -m "Initial" # commit with message
-    ${c.rhodecode_repo.alias} push ${'origin master' if h.is_git(c.rhodecode_repo) else ''} # push changes back
+    ${c.db_repo_scm_instance.alias} clone ${c.clone_repo_url}
+    ${c.db_repo_scm_instance.alias} add README # add first file
+    ${c.db_repo_scm_instance.alias} commit -m "Initial" # commit with message
+    ${c.db_repo_scm_instance.alias} push ${'origin master' if h.is_git(c.db_repo_scm_instance) else ''} # push changes back
 </pre>
 
 <h4>${_('Existing repository?')}</h4>
 <pre>
-%if h.is_git(c.rhodecode_repo):
+%if h.is_git(c.db_repo_scm_instance):
     git remote add origin ${c.clone_repo_url}
     git push -u origin master
 %else:

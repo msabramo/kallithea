@@ -1,9 +1,9 @@
 ## -*- coding: utf-8 -*-
 <li>
-    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Branches'),len(c.rhodecode_repo.branches.values()),)}</a>
+    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Branches'),len(c.db_repo_scm_instance.branches.values()),)}</a>
     <ul>
-    %if c.rhodecode_repo.branches.values():
-        %for cnt,branch in enumerate(c.rhodecode_repo.branches.items()):
+    %if c.db_repo_scm_instance.branches.values():
+        %for cnt,branch in enumerate(c.db_repo_scm_instance.branches.items()):
             <li><div><pre>${h.link_to('%s - %s' % (branch[0],h.short_id(branch[1])),h.url('files_home',repo_name=c.repo_name,revision=(branch[0] if '/' not in branch[0] else branch[1]), at=branch[0]))}</pre></div></li>
         %endfor
     %else:
@@ -11,21 +11,21 @@
     %endif
     </ul>
 </li>
-%if c.rhodecode_repo.closed_branches.values():
+%if c.db_repo_scm_instance.closed_branches.values():
 <li>
-    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Closed Branches'),len(c.rhodecode_repo.closed_branches.values()))}</a>
+    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Closed Branches'),len(c.db_repo_scm_instance.closed_branches.values()))}</a>
     <ul>
-        %for cnt,branch in enumerate(c.rhodecode_repo.closed_branches.items()):
+        %for cnt,branch in enumerate(c.db_repo_scm_instance.closed_branches.items()):
             <li><div><pre>${h.link_to('%s - %s' % (branch[0],h.short_id(branch[1])),h.url('files_home',repo_name=c.repo_name,revision=(branch[0] if '/' not in branch[0] else branch[1]), at=branch[0]))}</pre></div></li>
         %endfor
     </ul>
 </li>
 %endif
 <li>
-    <a href="${h.url('tags_home',repo_name=c.repo_name)}" class="childs"><i class="icon-tag"></i> ${'%s (%s)' % (_('Tags'),len(c.rhodecode_repo.tags.values()),)}</a>
+    <a href="${h.url('tags_home',repo_name=c.repo_name)}" class="childs"><i class="icon-tag"></i> ${'%s (%s)' % (_('Tags'),len(c.db_repo_scm_instance.tags.values()),)}</a>
     <ul>
-    %if c.rhodecode_repo.tags.values():
-        %for cnt,tag in enumerate(c.rhodecode_repo.tags.items()):
+    %if c.db_repo_scm_instance.tags.values():
+        %for cnt,tag in enumerate(c.db_repo_scm_instance.tags.items()):
          <li><div><pre>${h.link_to('%s - %s' % (tag[0],h.short_id(tag[1])),h.url('files_home',repo_name=c.repo_name,revision=(tag[0] if '/' not in tag[0] else tag[1]), at=tag[0]))}</pre></div></li>
         %endfor
     %else:
@@ -33,12 +33,12 @@
     %endif
     </ul>
 </li>
-%if c.rhodecode_repo.alias == 'hg':
+%if c.db_repo_scm_instance.alias == 'hg':
 <li>
-    <a href="${h.url('bookmarks_home',repo_name=c.repo_name)}" class="childs"><i class="icon-bookmark"></i> ${'%s (%s)' % (_('Bookmarks'),len(c.rhodecode_repo.bookmarks.values()),)}</a>
+    <a href="${h.url('bookmarks_home',repo_name=c.repo_name)}" class="childs"><i class="icon-bookmark"></i> ${'%s (%s)' % (_('Bookmarks'),len(c.db_repo_scm_instance.bookmarks.values()),)}</a>
     <ul>
-    %if c.rhodecode_repo.bookmarks.values():
-        %for cnt,book in enumerate(c.rhodecode_repo.bookmarks.items()):
+    %if c.db_repo_scm_instance.bookmarks.values():
+        %for cnt,book in enumerate(c.db_repo_scm_instance.bookmarks.items()):
          <li><div><pre>${h.link_to('%s - %s' % (book[0],h.short_id(book[1])),h.url('files_home',repo_name=c.repo_name,revision=(book[0] if '/' not in book[0] else book[1]), at=book[0]))}</pre></div></li>
         %endfor
     %else:

@@ -44,13 +44,13 @@ class BookmarksController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def index(self):
-        if c.rhodecode_repo.alias != 'hg':
+        if c.db_repo_scm_instance.alias != 'hg':
             raise HTTPNotFound()
 
         c.repo_bookmarks = OrderedDict()
 
-        bookmarks = [(name, c.rhodecode_repo.get_changeset(hash_)) for \
-                 name, hash_ in c.rhodecode_repo._repo._bookmarks.items()]
+        bookmarks = [(name, c.db_repo_scm_instance.get_changeset(hash_)) for \
+                 name, hash_ in c.db_repo_scm_instance._repo._bookmarks.items()]
         ordered_tags = sorted(bookmarks, key=lambda x: x[1].date, reverse=True)
         for name, cs_book in ordered_tags:
             c.repo_bookmarks[name] = cs_book

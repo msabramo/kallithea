@@ -113,7 +113,7 @@ class HomeController(BaseController):
         if request.is_xhr:
             c.db_repo = Repository.get_by_repo_name(repo_name)
             if c.db_repo:
-                c.rhodecode_repo = c.db_repo.scm_instance
+                c.db_repo_scm_instance = c.db_repo.scm_instance
                 return render('/switch_to_list.html')
         raise HTTPBadRequest()
 

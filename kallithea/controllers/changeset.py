@@ -193,10 +193,10 @@ class ChangesetController(BaseRepoController):
                 enable_comments = False
                 rev_start = rev_range[0]
                 rev_end = rev_range[1]
-                rev_ranges = c.rhodecode_repo.get_changesets(start=rev_start,
+                rev_ranges = c.db_repo_scm_instance.get_changesets(start=rev_start,
                                                              end=rev_end)
             else:
-                rev_ranges = [c.rhodecode_repo.get_changeset(revision)]
+                rev_ranges = [c.db_repo_scm_instance.get_changeset(revision)]
 
             c.cs_ranges = list(rev_ranges)
             if not c.cs_ranges:
@@ -257,11 +257,11 @@ class ChangesetController(BaseRepoController):
             context_lcl = get_line_ctx('', request.GET)
             ign_whitespace_lcl = ign_whitespace_lcl = get_ignore_ws('', request.GET)
 
-            _diff = c.rhodecode_repo.get_diff(cs1, cs2,
+            _diff = c.db_repo_scm_instance.get_diff(cs1, cs2,
                 ignore_whitespace=ign_whitespace_lcl, context=context_lcl)
             diff_limit = self.cut_off_limit if not fulldiff else None
             diff_processor = diffs.DiffProcessor(_diff,
-                                                 vcs=c.rhodecode_repo.alias,
+                                                 vcs=c.db_repo_scm_instance.alias,
                                                  format='gitdiff',
                                                  diff_limit=diff_limit)
             cs_changes = OrderedDict()
@@ -441,7 +441,7 @@ class ChangesetController(BaseRepoController):
     def changeset_info(self, repo_name, revision):
         if request.is_xhr:
             try:
-                return c.rhodecode_repo.get_changeset(revision)
+                return c.db_repo_scm_instance.get_changeset(revision)
             except ChangesetDoesNotExistError, e:
                 return EmptyChangeset(message=str(e))
         else:
@@ -453,7 +453,7 @@ class ChangesetController(BaseRepoController):
     @jsonify
     def changeset_children(self, repo_name, revision):
         if request.is_xhr:
-            changeset = c.rhodecode_repo.get_changeset(revision)
+            changeset = c.db_repo_scm_instance.get_changeset(revision)
             result = {"results": []}
             if changeset.children:
                 result = {"results": changeset.children}
@@ -467,7 +467,7 @@ class ChangesetController(BaseRepoController):
     @jsonify
     def changeset_parents(self, repo_name, revision):
         if request.is_xhr:
-            changeset = c.rhodecode_repo.get_changeset(revision)
+            changeset = c.db_repo_scm_instance.get_changeset(revision)
             result = {"results": []}
             if changeset.parents:
                 result = {"results": changeset.parents}

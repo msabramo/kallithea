@@ -186,7 +186,7 @@
                   </a>
                   </li>
                   <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Fork')}</a></li>
-                  %if h.is_hg(c.rhodecode_repo):
+                  %if h.is_hg(c.db_repo_scm_instance):
                   <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Create Pull Request')}</a></li>
                   %endif
               %endif

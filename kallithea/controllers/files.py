@@ -80,7 +80,7 @@ class FilesController(BaseRepoController):
         """
 
         try:
-            return c.rhodecode_repo.get_changeset(rev)
+            return c.db_repo_scm_instance.get_changeset(rev)
         except EmptyRepositoryError, e:
             if not redirect_after:
                 return None
@@ -143,7 +143,7 @@ class FilesController(BaseRepoController):
 
         # prev link
         try:
-            prev_rev = c.rhodecode_repo.get_changeset(cur_rev).prev(c.branch)
+            prev_rev = c.db_repo_scm_instance.get_changeset(cur_rev).prev(c.branch)
             c.url_prev = url('files_home', repo_name=c.repo_name,
                          revision=prev_rev.raw_id, f_path=f_path)
             if c.branch:
@@ -153,7 +153,7 @@ class FilesController(BaseRepoController):
 
         # next link
         try:
-            next_rev = c.rhodecode_repo.get_changeset(cur_rev).next(c.branch)
+            next_rev = c.db_repo_scm_instance.get_changeset(cur_rev).next(c.branch)
             c.url_next = url('files_home', repo_name=c.repo_name,
                      revision=next_rev.raw_id, f_path=f_path)
             if c.branch:
@@ -172,7 +172,7 @@ class FilesController(BaseRepoController):
                                     if c.changeset.revision < file_last_cs.revision
                                     else file_last_cs)
                 #determine if we're on branch head
-                _branches = c.rhodecode_repo.branches
+                _branches = c.db_repo_scm_instance.branches
                 c.on_branch_head = revision in _branches.keys() + _branches.values()
                 _hist = []
                 c.file_history = []
@@ -402,7 +402,7 @@ class FilesController(BaseRepoController):
                 return redirect(url('changeset_home', repo_name=c.repo_name,
                                     revision='tip'))
             try:
-                self.scm_model.commit_change(repo=c.rhodecode_repo,
+                self.scm_model.commit_change(repo=c.db_repo_scm_instance,
                                              repo_name=repo_name, cs=c.cs,
                                              user=self.rhodecode_user.user_id,
                                              author=author, message=message,
@@ -434,7 +434,7 @@ class FilesController(BaseRepoController):
         c.cs = self.__get_cs_or_redirect(revision, repo_name,
                                          redirect_after=False)
         if c.cs is None:
-            c.cs = EmptyChangeset(alias=c.rhodecode_repo.alias)
+            c.cs = EmptyChangeset(alias=c.db_repo_scm_instance.alias)
         c.default_message = (_('Added file via RhodeCode'))
         c.f_path = f_path
 
@@ -521,13 +521,13 @@ class FilesController(BaseRepoController):
             if not dbrepo.enable_downloads:
                 return _('Downloads disabled')
 
-            if c.rhodecode_repo.alias == 'hg':
+            if c.db_repo_scm_instance.alias == 'hg':
                 # patch and reset hooks section of UI config to not run any
                 # hooks on fetching archives with subrepos
-                for k, v in c.rhodecode_repo._repo.ui.configitems('hooks'):
-                    c.rhodecode_repo._repo.ui.setconfig('hooks', k, None)
+                for k, v in c.db_repo_scm_instance._repo.ui.configitems('hooks'):
+                    c.db_repo_scm_instance._repo.ui.setconfig('hooks', k, None)
 
-            cs = c.rhodecode_repo.get_changeset(revision)
+            cs = c.db_repo_scm_instance.get_changeset(revision)
             content_type = settings.ARCHIVE_SPECS[fileformat][0]
         except ChangesetDoesNotExistError:
             return _('Unknown revision %s') % revision
@@ -625,7 +625,7 @@ class FilesController(BaseRepoController):
             return redirect(_url)
         try:
             if diff1 not in ['', None, 'None', '0' * 12, '0' * 40]:
-                c.changeset_1 = c.rhodecode_repo.get_changeset(diff1)
+                c.changeset_1 = c.db_repo_scm_instance.get_changeset(diff1)
                 try:
                     node1 = c.changeset_1.get_node(f_path)
                     if node1.is_dir():
@@ -634,14 +634,14 @@ class FilesController(BaseRepoController):
                 except NodeDoesNotExistError:
                     c.changeset_1 = EmptyChangeset(cs=diff1,
                                                    revision=c.changeset_1.revision,
-                                                   repo=c.rhodecode_repo)
+                                                   repo=c.db_repo_scm_instance)
                     node1 = FileNode(f_path, '', changeset=c.changeset_1)
             else:
-                c.changeset_1 = EmptyChangeset(repo=c.rhodecode_repo)
+                c.changeset_1 = EmptyChangeset(repo=c.db_repo_scm_instance)
                 node1 = FileNode(f_path, '', changeset=c.changeset_1)
 
             if diff2 not in ['', None, 'None', '0' * 12, '0' * 40]:
-                c.changeset_2 = c.rhodecode_repo.get_changeset(diff2)
+                c.changeset_2 = c.db_repo_scm_instance.get_changeset(diff2)
                 try:
                     node2 = c.changeset_2.get_node(f_path)
                     if node2.is_dir():
@@ -650,10 +650,10 @@ class FilesController(BaseRepoController):
                 except NodeDoesNotExistError:
                     c.changeset_2 = EmptyChangeset(cs=diff2,
                                                    revision=c.changeset_2.revision,
-                                                   repo=c.rhodecode_repo)
+                                                   repo=c.db_repo_scm_instance)
                     node2 = FileNode(f_path, '', changeset=c.changeset_2)
             else:
-                c.changeset_2 = EmptyChangeset(repo=c.rhodecode_repo)
+                c.changeset_2 = EmptyChangeset(repo=c.db_repo_scm_instance)
                 node2 = FileNode(f_path, '', changeset=c.changeset_2)
         except (RepositoryError, NodeError):
             log.error(traceback.format_exc())
@@ -710,7 +710,7 @@ class FilesController(BaseRepoController):
         diff2 = request.GET.get('diff2', '')
         try:
             if diff1 not in ['', None, 'None', '0' * 12, '0' * 40]:
-                c.changeset_1 = c.rhodecode_repo.get_changeset(diff1)
+                c.changeset_1 = c.db_repo_scm_instance.get_changeset(diff1)
                 try:
                     node1 = c.changeset_1.get_node(f_path)
                     if node1.is_dir():
@@ -719,14 +719,14 @@ class FilesController(BaseRepoController):
                 except NodeDoesNotExistError:
                     c.changeset_1 = EmptyChangeset(cs=diff1,
                                                    revision=c.changeset_1.revision,
-                                                   repo=c.rhodecode_repo)
+                                                   repo=c.db_repo_scm_instance)
                     node1 = FileNode(f_path, '', changeset=c.changeset_1)
             else:
-                c.changeset_1 = EmptyChangeset(repo=c.rhodecode_repo)
+                c.changeset_1 = EmptyChangeset(repo=c.db_repo_scm_instance)
                 node1 = FileNode(f_path, '', changeset=c.changeset_1)
 
             if diff2 not in ['', None, 'None', '0' * 12, '0' * 40]:
-                c.changeset_2 = c.rhodecode_repo.get_changeset(diff2)
+                c.changeset_2 = c.db_repo_scm_instance.get_changeset(diff2)
                 try:
                     node2 = c.changeset_2.get_node(f_path)
                     if node2.is_dir():
@@ -735,10 +735,10 @@ class FilesController(BaseRepoController):
                 except NodeDoesNotExistError:
                     c.changeset_2 = EmptyChangeset(cs=diff2,
                                                    revision=c.changeset_2.revision,
-                                                   repo=c.rhodecode_repo)
+                                                   repo=c.db_repo_scm_instance)
                     node2 = FileNode(f_path, '', changeset=c.changeset_2)
             else:
-                c.changeset_2 = EmptyChangeset(repo=c.rhodecode_repo)
+                c.changeset_2 = EmptyChangeset(repo=c.db_repo_scm_instance)
                 node2 = FileNode(f_path, '', changeset=c.changeset_2)
         except (RepositoryError, NodeError):
             log.error(traceback.format_exc())
@@ -761,7 +761,7 @@ class FilesController(BaseRepoController):
             changesets defined in this list
         """
         # calculate history based on tip
-        tip_cs = c.rhodecode_repo.get_changeset()
+        tip_cs = c.db_repo_scm_instance.get_changeset()
         if changesets is None:
             try:
                 changesets = tip_cs.get_file_history(f_path)
@@ -781,11 +781,11 @@ class FilesController(BaseRepoController):
             changesets_group[0].append((chs.raw_id, n_desc,))
         hist_l.append(changesets_group)
 
-        for name, chs in c.rhodecode_repo.branches.items():
+        for name, chs in c.db_repo_scm_instance.branches.items():
             branches_group[0].append((chs, name),)
         hist_l.append(branches_group)
 
-        for name, chs in c.rhodecode_repo.tags.items():
+        for name, chs in c.db_repo_scm_instance.tags.items():
             tags_group[0].append((chs, name),)
         hist_l.append(tags_group)
 

@@ -53,7 +53,7 @@ def _load_changelog_summary():
         return url('changelog_summary_home',
                    repo_name=c.db_repo.repo_name, size=size, **kw)
 
-    collection = c.rhodecode_repo
+    collection = c.db_repo_scm_instance
 
     c.repo_changesets = RepoPage(collection, page=p,
                                  items_per_page=size,
@@ -81,7 +81,7 @@ class ChangelogController(BaseRepoController):
         """
 
         try:
-            return c.rhodecode_repo.get_changeset(rev)
+            return c.db_repo_scm_instance.get_changeset(rev)
         except EmptyRepositoryError, e:
             if not redirect_after:
                 return None
@@ -137,8 +137,8 @@ class ChangelogController(BaseRepoController):
         p = safe_int(request.GET.get('page', 1), 1)
         branch_name = request.GET.get('branch', None)
         if (branch_name and
-            branch_name not in c.rhodecode_repo.branches and
-            branch_name not in c.rhodecode_repo.closed_branches and
+            branch_name not in c.db_repo_scm_instance.branches and
+            branch_name not in c.db_repo_scm_instance.closed_branches and
             not revision):
             return redirect(url('changelog_file_home', repo_name=c.repo_name,
                                     revision=branch_name, f_path=f_path or ''))
@@ -149,7 +149,7 @@ class ChangelogController(BaseRepoController):
             if f_path:
                 log.debug('generating changelog for path %s' % f_path)
                 # get the history for the file !
-                tip_cs = c.rhodecode_repo.get_changeset()
+                tip_cs = c.db_repo_scm_instance.get_changeset()
                 try:
                     collection = tip_cs.get_file_history(f_path)
                 except (NodeDoesNotExistError, ChangesetError):
@@ -162,7 +162,7 @@ class ChangelogController(BaseRepoController):
                         redirect(h.url('changelog_home', repo_name=repo_name))
                 collection = list(reversed(collection))
             else:
-                collection = c.rhodecode_repo.get_changesets(start=0,
+                collection = c.db_repo_scm_instance.get_changesets(start=0,
                                                         branch_name=branch_name)
             c.total_cs = len(collection)
 
@@ -182,15 +182,15 @@ class ChangelogController(BaseRepoController):
 
         c.branch_name = branch_name
         c.branch_filters = [('', _('All Branches'))] + \
-            [(k, k) for k in c.rhodecode_repo.branches.keys()]
-        if c.rhodecode_repo.closed_branches:
+            [(k, k) for k in c.db_repo_scm_instance.branches.keys()]
+        if c.db_repo_scm_instance.closed_branches:
             prefix = _('(closed)') + ' '
             c.branch_filters += [('-', '-')] + \
-                [(k, prefix + k) for k in c.rhodecode_repo.closed_branches.keys()]
+                [(k, prefix + k) for k in c.db_repo_scm_instance.closed_branches.keys()]
         _revs = []
         if not f_path:
             _revs = [x.revision for x in c.pagination]
-        self._graph(c.rhodecode_repo, _revs, c.total_cs, c.size, p)
+        self._graph(c.db_repo_scm_instance, _revs, c.total_cs, c.size, p)
 
         return render('changelog/changelog.html')
 
@@ -199,7 +199,7 @@ class ChangelogController(BaseRepoController):
                                    'repository.admin')
     def changelog_details(self, cs):
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
-            c.cs = c.rhodecode_repo.get_changeset(cs)
+            c.cs = c.db_repo_scm_instance.get_changeset(cs)
             return render('changelog/changelog_details.html')
         raise HTTPNotFound()
 

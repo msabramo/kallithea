@@ -93,7 +93,7 @@ class FeedController(BaseRepoController):
         #branches, tags, bookmarks
         if cs.branch:
             desc_msg.append('branch: %s<br/>' % cs.branch)
-        if h.is_hg(c.rhodecode_repo):
+        if h.is_hg(c.db_repo_scm_instance):
             for book in cs.bookmarks:
                 desc_msg.append('bookmark: %s<br/>' % book)
         for tag in cs.tags:
@@ -128,7 +128,7 @@ class FeedController(BaseRepoController):
                  ttl=self.ttl
             )
 
-            for cs in reversed(list(c.rhodecode_repo[-self.feed_nr:])):
+            for cs in reversed(list(c.db_repo_scm_instance[-self.feed_nr:])):
                 feed.add_item(title=self._get_title(cs),
                               link=url('changeset_home', repo_name=repo_name,
                                        revision=cs.raw_id, qualified=True),
@@ -160,7 +160,7 @@ class FeedController(BaseRepoController):
                 ttl=self.ttl
             )
 
-            for cs in reversed(list(c.rhodecode_repo[-self.feed_nr:])):
+            for cs in reversed(list(c.db_repo_scm_instance[-self.feed_nr:])):
                 feed.add_item(title=self._get_title(cs),
                               link=url('changeset_home', repo_name=repo_name,
                                        revision=cs.raw_id, qualified=True),

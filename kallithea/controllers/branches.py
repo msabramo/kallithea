@@ -54,11 +54,11 @@ class BranchesController(BaseRepoController):
                     bt_closed[bn] = tip
             return bt_closed
 
-        cs_g = c.rhodecode_repo.get_changeset
+        cs_g = c.db_repo_scm_instance.get_changeset
 
         c.repo_closed_branches = {}
         if c.db_repo.repo_type == 'hg':
-            bt_closed = _branchtags(c.rhodecode_repo._repo)
+            bt_closed = _branchtags(c.db_repo_scm_instance._repo)
             _closed_branches = [(safe_unicode(n), cs_g(binascii.hexlify(h)),)
                                 for n, h in bt_closed.items()]
 
@@ -67,7 +67,7 @@ class BranchesController(BaseRepoController):
                                                     reverse=False))
 
         _branches = [(safe_unicode(n), cs_g(h))
-                     for n, h in c.rhodecode_repo.branches.items()]
+                     for n, h in c.db_repo_scm_instance.branches.items()]
         c.repo_branches = OrderedDict(sorted(_branches,
                                              key=lambda ctx: ctx[0],
                                              reverse=False))

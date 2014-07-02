@@ -119,7 +119,7 @@ ${self.repo_context_bar('changelog')}
                                             </div>
                                         </div>
                                     %endif
-                                    %if h.is_hg(c.rhodecode_repo):
+                                    %if h.is_hg(c.db_repo_scm_instance):
                                         %for book in cs.bookmarks:
                                             <div class="booktag" title="${_('Bookmark %s') % book}">
                                                 ${h.link_to(h.shorter(book),h.url('files_home',repo_name=c.repo_name,revision=cs.raw_id))}

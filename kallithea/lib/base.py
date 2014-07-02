@@ -369,7 +369,7 @@ class BaseRepoController(BaseController):
     Base class for controllers responsible for loading all needed data for
     repository loaded items are
 
-    c.rhodecode_repo: instance of scm repository
+    c.db_repo_scm_instance: instance of scm repository
     c.db_repo: instance of db
     c.repository_followers: number of followers
     c.repository_forks: number of forks
@@ -398,8 +398,8 @@ class BaseRepoController(BaseController):
                 return redirect(check_url)
 
             dbr = c.db_repo = _dbr
-            c.rhodecode_repo = c.db_repo.scm_instance
-            if c.rhodecode_repo is None:
+            c.db_repo_scm_instance = c.db_repo.scm_instance
+            if c.db_repo_scm_instance is None:
                 log.error('%s this repository is present in database but it '
                           'cannot be created as an scm instance', c.repo_name)
 

@@ -46,8 +46,8 @@ class TagsController(BaseRepoController):
     def index(self):
         c.repo_tags = OrderedDict()
 
-        tags = [(name, c.rhodecode_repo.get_changeset(hash_)) for \
-                 name, hash_ in c.rhodecode_repo.tags.items()]
+        tags = [(name, c.db_repo_scm_instance.get_changeset(hash_)) for \
+                 name, hash_ in c.db_repo_scm_instance.tags.items()]
         ordered_tags = sorted(tags, key=lambda x: x[1].date, reverse=True)
         for name, cs_tag in ordered_tags:
             c.repo_tags[name] = cs_tag
