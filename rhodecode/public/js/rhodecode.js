@@ -2080,7 +2080,7 @@ var YUI_paginator = function(links_per_page, containers){
     return pagi
 }
 
-var YUI_datatable = function(data, fields, columns, countnode, sortkey){
+var YUI_datatable = function(data, fields, columns, countnode, sortkey, rows){
     var myDataSource = new YAHOO.util.DataSource(data);
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
@@ -2109,7 +2109,7 @@ var YUI_datatable = function(data, fields, columns, countnode, sortkey){
 
     var myDataTable = new YAHOO.widget.DataTable("datatable_list_wrap", columns, myDataSource, {
         sortedBy: {key:sortkey, dir:"asc"},
-        paginator: YUI_paginator(25, ['user-paginator']),
+        paginator: YUI_paginator(rows !== undefined && rows ? rows : 25, ['user-paginator']),
         MSG_SORTASC: _TM['MSG_SORTASC'],
         MSG_SORTDESC: _TM['MSG_SORTDESC'],
         MSG_EMPTY: _TM['MSG_EMPTY'],
