@@ -15,7 +15,7 @@
 kallithea.lib.auth_pam
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode authentication library for PAM
+Kallithea authentication library for PAM
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -42,7 +42,7 @@ _auth_cache = dict()
 _pam_lock = threading.Lock()
 
 
-class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
+class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
     # PAM authnetication can be slow. Repository operations involve a lot of
     # auth calls. Little caching helps speedup push/pull operations significantly
     AUTH_CACHE_TTL = 4
@@ -52,7 +52,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
         ts = time.time()
         cleared_cache = dict(
             [(k, v) for (k, v) in _auth_cache.items() if
-             (v + RhodeCodeAuthPlugin.AUTH_CACHE_TTL > ts)])
+             (v + KallitheaAuthPlugin.AUTH_CACHE_TTL > ts)])
         _auth_cache = cleared_cache
 
     @hybrid_property
@@ -103,7 +103,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
         else:
             log.debug("Using cached auth for user: %s" % (username,))
 
-        # old attrs fetched from RhodeCode database
+        # old attrs fetched from Kallithea database
         admin = getattr(userobj, 'admin', False)
         active = getattr(userobj, 'active', True)
         email = getattr(userobj, 'email', '') or "%s@%s" % (username, socket.gethostname())

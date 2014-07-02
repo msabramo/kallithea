@@ -1,5 +1,5 @@
 /**
-RhodeCode JS Files
+Kallithea JS Files
 **/
 
 if (typeof console == "undefined" || typeof console.log == "undefined"){

@@ -2,7 +2,7 @@
 <%text>
 ################################################################################
 ################################################################################
-# RhodeCode - Example config                                                   #
+# Kallithea - Example config                                                   #
 # Built-in functions and variables                                             #
 # The ${here} variable will be replaced with the parent directory of this file #
 # ${uuid()} function will generate a unique hash                               #
@@ -15,14 +15,14 @@ pdebug = false
 ################################################################################
 ## Uncomment and replace with the address which should receive                ##
 ## any error reports after application crash                                  ##
-## Additionally those settings will be used by RhodeCode mailing system       ##
+## Additionally those settings will be used by Kallithea mailing system       ##
 ################################################################################
 </%text>
 #email_to = admin@localhost
 #error_email_from = paste_error@localhost
 #app_email_from = kallithea-noreply@localhost
 #error_message =
-#email_prefix = [RhodeCode]
+#email_prefix = [Kallithea]
 
 #smtp_server = mail.server.com
 #smtp_username =
@@ -170,7 +170,7 @@ cut_off_limit = 256000
 <%text>## use cache version of scm repo everywhere</%text>
 vcs_full_cache = true
 
-<%text>## force https in RhodeCode, fixes https redirects, assumes it's always https</%text>
+<%text>## force https in Kallithea, fixes https redirects, assumes it's always https</%text>
 force_https = false
 
 <%text>## use Strict-Transport-Security headers</%text>
@@ -201,7 +201,7 @@ show_revision_number = true
 <%text>## gist URL alias, used to create nicer urls for gist. This should be an</%text>
 <%text>## url that does rewrites to _admin/gists/<gistid>.</%text>
 <%text>## example: http://gist.kallithea.server/{gistid}. Empty means use the internal</%text>
-<%text>## RhodeCode url, ie. http[s]://your.kallithea.server/_admin/gists/<gistid></%text>
+<%text>## Kallithea url, ie. http[s]://your.kallithea.server/_admin/gists/<gistid></%text>
 gist_alias_url =
 
 <%text>## white list of API enabled controllers. This allows to add list of</%text>
@@ -216,8 +216,8 @@ api_access_controllers_whitelist =
 <%text>## {email}        user email</%text>
 <%text>## {md5email}     md5 hash of the user email (like at gravatar.com)</%text>
 <%text>## {size}         size of the image that is expected from the server application</%text>
-<%text>## {scheme}       http/https from RhodeCode server</%text>
-<%text>## {netloc}       network location from RhodeCode server</%text>
+<%text>## {scheme}       http/https from Kallithea server</%text>
+<%text>## {netloc}       network location from Kallithea server</%text>
 #alternative_gravatar_url = http://myavatarserver.com/getbyemail/{email}/{size}
 #alternative_gravatar_url = http://myavatarserver.com/getbymd5/{md5email}?s={size}
 
@@ -240,7 +240,7 @@ default_encoding = utf8
 
 #clone_uri = {scheme}://{user}{pass}{netloc}{path}
 
-<%text>## issue tracker for RhodeCode (leave blank to disable, absent for default)</%text>
+<%text>## issue tracker for Kallithea (leave blank to disable, absent for default)</%text>
 #bugtracker = https://bitbucket.org/conservancy/kallithea/issues
 
 <%text>## issue tracking mapping for commits messages</%text>
@@ -407,7 +407,7 @@ beaker.session.auto = False
 ### [errormator] ###
 ####################
 
-## Errormator is tailored to work with RhodeCode, see
+## Errormator is tailored to work with Kallithea, see
 ## http://errormator.com for details how to obtain an account
 ## you must install python package `errormator_client` to make it work
 </%text>

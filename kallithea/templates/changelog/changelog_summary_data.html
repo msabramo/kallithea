@@ -83,7 +83,7 @@ ${c.repo_changesets.pager('$link_previous ~2~ $link_next')}
 %else:
 
 %if h.HasRepoPermissionAny('repository.write','repository.admin')(c.repo_name):
-<h4>${_('Add or upload files directly via RhodeCode')}</h4>
+<h4>${_('Add or upload files directly via Kallithea')}</h4>
 <div style="margin: 20px 30px;">
   <div id="add_node_id" class="add_node">
       <a class="btn btn-mini" href="${h.url('files_add_home',repo_name=c.repo_name,revision=0,f_path='', anchor='edit')}">${_('Add New File')}</a>

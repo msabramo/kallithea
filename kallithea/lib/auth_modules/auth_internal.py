@@ -15,7 +15,7 @@
 kallithea.lib.auth_modules.auth_internal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode authentication plugin for built in internal auth
+Kallithea authentication plugin for built in internal auth
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -35,7 +35,7 @@ from kallithea.model.db import User
 log = logging.getLogger(__name__)
 
 
-class RhodeCodeAuthPlugin(auth_modules.RhodeCodeAuthPluginBase):
+class KallitheaAuthPlugin(auth_modules.KallitheaAuthPluginBase):
     def __init__(self):
         pass
 
@@ -55,7 +55,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeAuthPluginBase):
         Custom accepts for this auth that doesn't accept empty users. We
         know that user exisits in database.
         """
-        return super(RhodeCodeAuthPlugin, self).accepts(user,
+        return super(KallitheaAuthPlugin, self).accepts(user,
                                                         accepts_empty=False)
 
     def auth(self, userobj, username, password, settings, **kwargs):
@@ -83,7 +83,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeAuthPluginBase):
         log.debug(formatted_json(user_attrs))
         if userobj.active:
             from kallithea.lib import auth
-            password_match = auth.RhodeCodeCrypto.hash_check(password, userobj.password)
+            password_match = auth.KallitheaCrypto.hash_check(password, userobj.password)
             if userobj.username == User.DEFAULT_USER and userobj.active:
                 log.info('user %s authenticated correctly as anonymous user' %
                          username)

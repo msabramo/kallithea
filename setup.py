@@ -4,7 +4,7 @@ import sys
 import platform
 
 if sys.version_info < (2, 5):
-    raise Exception('RhodeCode requires python 2.5 or later')
+    raise Exception('Kallithea requires python 2.5 or later')
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -97,7 +97,7 @@ data_files = []
 # additional files that goes into package itself
 package_data = {'kallithea': ['i18n/*/LC_MESSAGES/*.mo', ], }
 
-description = ('RhodeCode is a fast and powerful management tool '
+description = ('Kallithea is a fast and powerful management tool '
                'for Mercurial and GIT with a built in push/pull server, '
                'full text search and code-review.')
 
@@ -131,7 +131,7 @@ except ImportError:
 packages = find_packages(exclude=['ez_setup'])
 
 setup(
-    name='RhodeCode',
+    name='Kallithea',
     version=__version__,
     description=description,
     long_description=long_description,

@@ -15,7 +15,7 @@
 kallithea.lib.paster_commands.make_rcextensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-repo-scan paster command for RhodeCode
+repo-scan paster command for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -48,7 +48,7 @@ class Command(BasePasterCommand):
     min_args = 1
 
     usage = "CONFIG_FILE"
-    group_name = "RhodeCode"
+    group_name = "Kallithea"
     takes_config_file = -1
     parser = BasePasterCommand.standard_parser(verbose=True)
     summary = "Rescan default location for new repositories"
@@ -69,5 +69,5 @@ class Command(BasePasterCommand):
             '--delete-obsolete',
             action='store_true',
             help="Use this flag do delete repositories that are "
-                 "present in RhodeCode database but not on the filesystem",
+                 "present in Kallithea database but not on the filesystem",
         )

@@ -15,7 +15,7 @@
 kallithea.controllers.admin.repo_groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Repository groups controller for RhodeCode
+Repository groups controller for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

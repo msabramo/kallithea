@@ -15,7 +15,7 @@
 kallithea.websetup
 ~~~~~~~~~~~~~~~~~~
 
-Weboperations and setup for rhodecode
+Weboperations and setup for kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 
 
 def setup_app(command, conf, vars):
-    """Place any commands to setup rhodecode here"""
+    """Place any commands to setup kallithea here"""
     dbconf = conf['sqlalchemy.db1.url']
     dbmanage = DbManage(log_sql=True, dbconf=dbconf, root=conf['here'],
                         tests=False, cli_args=command.options.__dict__)

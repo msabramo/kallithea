@@ -15,7 +15,7 @@
 kallithea.lib.paster_commands.ishell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-interactive shell paster command for RhodeCode
+interactive shell paster command for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -47,7 +47,7 @@ class Command(BasePasterCommand):
     min_args = 1
 
     usage = "CONFIG_FILE"
-    group_name = "RhodeCode"
+    group_name = "Kallithea"
     takes_config_file = -1
     parser = BasePasterCommand.standard_parser(verbose=True)
     summary = "Interactive shell"
@@ -69,7 +69,7 @@ class Command(BasePasterCommand):
             from IPython.config.loader import Config
             cfg = Config()
             cfg.InteractiveShellEmbed.confirm_exit = False
-            embed(config=cfg, banner1="RhodeCode IShell.")
+            embed(config=cfg, banner1="Kallithea IShell.")
         except ImportError:
             print 'ipython installation required for ishell'
             sys.exit(-1)

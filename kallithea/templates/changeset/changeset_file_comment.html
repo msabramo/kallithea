@@ -66,7 +66,7 @@
           <div class="comment-help">${_('Commenting on line {1}.')}
           ${(_('Comments parsed using %s syntax with %s support.') % (
                  ('<a href="%s">RST</a>' % h.url('rst_help')),
-                   ('<span style="color:#003367" class="tooltip" title="%s">@mention</span>' % _('Use @username inside this text to send notification to this RhodeCode user'))
+                   ('<span style="color:#003367" class="tooltip" title="%s">@mention</span>' % _('Use @username inside this text to send notification to this Kallithea user'))
                )
             )|n
            }
@@ -152,7 +152,7 @@
             <div class="comment-help">
                 ${(_('Comments parsed using %s syntax with %s support.') % (('<a href="%s">RST</a>' % h.url('rst_help')),
                   '<span style="color:#003367" class="tooltip" title="%s">@mention</span>' %
-                  _('Use @username inside this text to send notification to this RhodeCode user')))|n}
+                  _('Use @username inside this text to send notification to this Kallithea user')))|n}
               %if change_status:
                 | <a id="show_changeset_link" onClick="change_status_show();">
                   %if is_pr:

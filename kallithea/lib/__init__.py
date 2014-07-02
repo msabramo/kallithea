@@ -15,7 +15,7 @@
 kallithea.lib
 ~~~~~~~~~~~~~
 
-RhodeCode libs
+Kallithea libs
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -47,7 +47,7 @@ def get_current_revision(quiet=False):
         return (cur_rev.revision, cur_rev.short_id)
     except Exception, err:
         if not quiet:
-            print ("WARNING: Cannot retrieve rhodecode's revision. "
+            print ("WARNING: Cannot retrieve kallithea's revision. "
                    "disregard this if you don't know what that means. "
                    "Original error was: %s" % err)
         return None

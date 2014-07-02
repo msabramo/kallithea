@@ -15,7 +15,7 @@
 kallithea.controllers.admin.settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-settings controller for rhodecode admin
+settings controller for Kallithea admin
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -351,9 +351,9 @@ class SettingsController(BaseController):
         c.active = 'email'
         if request.POST:
             test_email = request.POST.get('test_email')
-            test_email_subj = 'RhodeCode test email'
-            test_email_body = ('RhodeCode Email test, '
-                               'RhodeCode version: %s' % c.kallithea_version)
+            test_email_subj = 'Kallithea test email'
+            test_email_body = ('Kallithea Email test, '
+                               'Kallithea version: %s' % c.kallithea_version)
             if not test_email:
                 h.flash(_('Please enter email address'), category='error')
                 return redirect(url('admin_settings_email'))
@@ -494,7 +494,7 @@ class SettingsController(BaseController):
             ver = kallithea.__version__
             log.debug('Checking for upgrade on `%s` server' % _update_url)
             opener = urllib2.build_opener()
-            opener.addheaders = [('User-agent', 'RhodeCode-SCM/%s' % ver)]
+            opener.addheaders = [('User-agent', 'Kallithea-SCM/%s' % ver)]
             response = opener.open(_update_url)
             response_data = response.read()
             data = json.loads(response_data)

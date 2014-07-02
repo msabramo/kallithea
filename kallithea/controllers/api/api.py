@@ -15,7 +15,7 @@
 kallithea.controllers.api
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-API controller for RhodeCode
+API controller for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -473,7 +473,7 @@ class ApiController(JSONRPCController):
     @HasPermissionAllDecorator('hg.admin')
     def get_ip(self, apiuser, userid=Optional(OAttr('apiuser'))):
         """
-        Shows IP address as seen from RhodeCode server, together with all
+        Shows IP address as seen from Kallithea server, together with all
         defined IP addresses for given user. If userid is not passed data is
         returned for user who's calling this function.
         This command can be executed only using api_key belonging to user with
@@ -514,7 +514,7 @@ class ApiController(JSONRPCController):
     @HasPermissionAllDecorator('hg.admin')
     def get_server_info(self, apiuser):
         """
-        return server info, including RhodeCode version and installed packages
+        return server info, including Kallithea version and installed packages
 
         :param apiuser: filled automatically from apikey
         :type apiuser: AuthUser
@@ -526,7 +526,7 @@ class ApiController(JSONRPCController):
             'modules': [<module name>,...]
             'py_version': <python version>,
             'platform': <platform type>,
-            'kallithea_version': <rhodecode version>
+            'kallithea_version': <kallithea version>
           }
           error :  null
         """
@@ -1456,7 +1456,7 @@ class ApiController(JSONRPCController):
             if not isinstance(owner, Optional):
                 #forbid setting owner for non-admins
                 raise JSONRPCError(
-                    'Only RhodeCode admin can specify `owner` param'
+                    'Only Kallithea admin can specify `owner` param'
                 )
         if isinstance(owner, Optional):
             owner = apiuser.user_id
@@ -1650,7 +1650,7 @@ class ApiController(JSONRPCController):
             if not isinstance(owner, Optional):
                 #forbid setting owner for non-admins
                 raise JSONRPCError(
-                    'Only RhodeCode admin can specify `owner` param'
+                    'Only Kallithea admin can specify `owner` param'
                 )
         else:
             raise JSONRPCError('repository `%s` does not exist' % (repoid,))

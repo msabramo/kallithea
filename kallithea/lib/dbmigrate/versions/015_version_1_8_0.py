@@ -72,7 +72,7 @@ def fixups(models, _SESSION):
         # fix certain key to new defaults
         if name in ['title', 'show_public_icon']:
             # change title if it's only the default
-            if name == 'title' and setting.app_settings_value == 'RhodeCode':
+            if name == 'title' and setting.app_settings_value == 'Kallithea':
                 setting.app_settings_value = default
             else:
                 setting.app_settings_value = default

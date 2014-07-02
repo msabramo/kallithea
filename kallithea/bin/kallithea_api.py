@@ -15,7 +15,7 @@
 kallithea.bin.api
 ~~~~~~~~~~~~~~~~~
 
-Api CLI client for RhodeCode
+Api CLI client for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -40,7 +40,7 @@ def argparser(argv):
       "Create config file: kallithea-api --apikey=<key> --apihost=http://your.kallithea.server --save-config"
     )
 
-    parser = argparse.ArgumentParser(description='RhodeCode API cli',
+    parser = argparse.ArgumentParser(description='Kallithea API cli',
                                      usage=usage)
 
     ## config

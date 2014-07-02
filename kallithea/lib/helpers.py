@@ -468,7 +468,7 @@ def email_or_none(author):
     # extract email from the commit string
     _email = email(author)
     if _email != '':
-        # check it against RhodeCode database, and use the MAIN email for this
+        # check it against Kallithea database, and use the MAIN email for this
         # user
         user = User.get_by_email(_email, case_insensitive=True, cache=True)
         if user is not None:
@@ -776,7 +776,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
                                     get_pull_request, 'icon-check'),
     'push':                        (_('[pushed] into'),
                                     get_cs_links, 'icon-arrow-up'),
-    'push_local':                  (_('[committed via RhodeCode] into repository'),
+    'push_local':                  (_('[committed via Kallithea] into repository'),
                                     get_cs_links, 'icon-pencil icon-pencil-colored'),
     'push_remote':                 (_('[pulled from remote] into repository'),
                                     get_cs_links, 'icon-arrow-up'),

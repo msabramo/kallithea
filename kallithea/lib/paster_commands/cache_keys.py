@@ -15,7 +15,7 @@
 kallithea.lib.paster_commands.cache_keys
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-cleanup-keys paster command for RhodeCode
+cleanup-keys paster command for Kallithea
 
 
 This file was forked by the Kallithea project in July 2014.
@@ -50,7 +50,7 @@ class Command(BasePasterCommand):
     min_args = 1
 
     usage = "CONFIG_FILE"
-    group_name = "RhodeCode"
+    group_name = "Kallithea"
     takes_config_file = -1
     parser = BasePasterCommand.standard_parser(verbose=True)
     summary = "Cache keys utils"

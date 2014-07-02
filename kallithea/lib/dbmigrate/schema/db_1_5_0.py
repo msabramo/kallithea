@@ -15,7 +15,7 @@
 kallithea.model.db_1_5_0
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Database Models for RhodeCode <=1.5.2
+Database Models for Kallithea <=1.5.2
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -1192,16 +1192,16 @@ class Permission(Base, BaseModel):
         ('group.write', _('Repositories Group write access')),
         ('group.admin', _('Repositories Group admin access')),
 
-        ('hg.admin', _('RhodeCode Administrator')),
+        ('hg.admin', _('Kallithea Administrator')),
         ('hg.create.none', _('Repository creation disabled')),
         ('hg.create.repository', _('Repository creation enabled')),
         ('hg.fork.none', _('Repository forking disabled')),
         ('hg.fork.repository', _('Repository forking enabled')),
         ('hg.register.none', _('Register disabled')),
-        ('hg.register.manual_activate', _('Register new user with RhodeCode '
+        ('hg.register.manual_activate', _('Register new user with Kallithea '
                                           'with manual activation')),
 
-        ('hg.register.auto_activate', _('Register new user with RhodeCode '
+        ('hg.register.auto_activate', _('Register new user with Kallithea '
                                         'with auto activation')),
     ]
 

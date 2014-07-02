@@ -61,5 +61,5 @@ _dest = jn(TEST_TMP_PATH, 'aconfig')
 shutil.copy(jn(THIS, 'aconfig'), _dest)
 TEST_USER_CONFIG_FILE = _dest
 
-#overide default configurations with rhodecode ones
+#overide default configurations with kallithea ones
 from kallithea.tests import *

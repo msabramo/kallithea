@@ -15,7 +15,7 @@
 kallithea.lib.auth_modules.auth_ldap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode authentication plugin for LDAP
+Kallithea authentication plugin for LDAP
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -170,7 +170,7 @@ class AuthLdap(object):
         return dn, attrs
 
 
-class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
+class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
     def __init__(self):
         self._logger = logging.getLogger(__name__)
         self._tls_kind_values = ["PLAIN", "LDAPS", "START_TLS"]
@@ -297,7 +297,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
 
         Return None on failure. On success, return a dictionary of the form:
 
-            see: RhodeCodeAuthPluginBase.auth_func_attrs
+            see: KallitheaAuthPluginBase.auth_func_attrs
         This is later validated for correctness
         """
 
@@ -332,7 +332,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
 
             get_ldap_attr = lambda k: ldap_attrs.get(settings.get(k), [''])[0]
 
-            # old attrs fetched from RhodeCode database
+            # old attrs fetched from Kallithea database
             admin = getattr(userobj, 'admin', False)
             active = getattr(userobj, 'active', True)
             email = getattr(userobj, 'email', '')

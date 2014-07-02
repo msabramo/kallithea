@@ -15,7 +15,7 @@
 kallithea.lib.auth_modules.auth_container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode container based authentication plugin
+Kallithea container based authentication plugin
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -34,7 +34,7 @@ from kallithea.model.db import User
 log = logging.getLogger(__name__)
 
 
-class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
+class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
     def __init__(self):
         pass
 
@@ -127,7 +127,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
         settings = kwargs.get('settings') or {}
         username = self._get_username(environ, settings)
         # we got the username, so use default method now
-        return super(RhodeCodeAuthPlugin, self).get_user(username)
+        return super(KallitheaAuthPlugin, self).get_user(username)
 
     def auth(self, userobj, username, password, settings, **kwargs):
         """
@@ -138,7 +138,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
         having @ in it.
         Return None on failure. On success, return a dictionary of the form:
 
-            see: RhodeCodeAuthPluginBase.auth_func_attrs
+            see: KallitheaAuthPluginBase.auth_func_attrs
 
         :param userobj:
         :param username:
@@ -169,7 +169,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
         if not username:
             return None
 
-        # old attrs fetched from RhodeCode database
+        # old attrs fetched from Kallithea database
         admin = getattr(userobj, 'admin', False)
         active = getattr(userobj, 'active', True)
         email = getattr(userobj, 'email', '')

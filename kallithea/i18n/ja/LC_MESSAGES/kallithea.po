@@ -1,6 +1,6 @@
-# Translations template for RhodeCode.
+# Translations template for Kallithea.
 # Copyright (C) 2014 RhodeCode GmbH, and others.
-# This file is distributed under the same license as the RhodeCode project.
+# This file is distributed under the same license as the Kallithea project.
 # Translators:
 # しろう, 2013
 # shirou - しろう, 2013
@@ -12,12 +12,12 @@
 # whosaysni <whosaysni@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: RhodeCode\n"
-"Report-Msgid-Bugs-To: marcin@rhodecode.com\n"
+"Project-Id-Version: Kallithea\n"
+"Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-02-13 15:30+0100\n"
 "PO-Revision-Date: 2014-02-13 14:34+0000\n"
 "Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
-"Language-Team: Japanese (http://www.transifex.com/projects/p/RhodeCode/language/ja/)\n"
+"Language-Team: Japanese (http://www.transifex.com/projects/p/Kallithea/language/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -145,8 +145,8 @@ msgstr "有効なブランチ上のリビジョンからしかファイルを削
 
 #: kallithea/controllers/files.py:322
 #, python-format
-msgid "Deleted file %s via RhodeCode"
-msgstr "RhodeCode経由で %s を削除"
+msgid "Deleted file %s via Kallithea"
+msgstr "Kallithea経由で %s を削除"
 
 #: kallithea/controllers/files.py:344
 #, python-format
@@ -164,8 +164,8 @@ msgstr "有効なブランチを示すリビジョンでのみファイルを編
 
 #: kallithea/controllers/files.py:385
 #, python-format
-msgid "Edited file %s via RhodeCode"
-msgstr "RhodeCode経由で %s を変更"
+msgid "Edited file %s via Kallithea"
+msgstr "Kallithea経由で %s を変更"
 
 #: kallithea/controllers/files.py:401
 msgid "No changes"
@@ -177,8 +177,8 @@ msgid "Successfully committed to %s"
 msgstr "%s へのコミットが成功しました"
 
 #: kallithea/controllers/files.py:438
-msgid "Added file via RhodeCode"
-msgstr "RhodeCode経由でファイルを追加"
+msgid "Added file via Kallithea"
+msgstr "Kallithea経由でファイルを追加"
 
 #: kallithea/controllers/files.py:459
 msgid "No content"
@@ -282,8 +282,8 @@ msgid "bad captcha"
 msgstr "キャプチャが一致しません"
 
 #: kallithea/controllers/login.py:191
-msgid "You have successfully registered into RhodeCode"
-msgstr "RhodeCodeへの登録を受け付けました"
+msgid "You have successfully registered into Kallithea"
+msgstr "Kallitheaへの登録を受け付けました"
 
 #: kallithea/controllers/login.py:235
 msgid "Your password reset link was sent"
@@ -1109,8 +1109,8 @@ msgid "[pushed] into"
 msgstr "[プッシュ]"
 
 #: kallithea/lib/helpers.py:779
-msgid "[committed via RhodeCode] into repository"
-msgstr "リポジトリに[RhodeCode経由でコミット]"
+msgid "[committed via Kallithea] into repository"
+msgstr "リポジトリに[Kallithea経由でコミット]"
 
 #: kallithea/lib/helpers.py:781
 msgid "[pulled from remote] into repository"
@@ -1320,8 +1320,8 @@ msgstr "リポジトリグループに管理権限でアクセス"
 #: kallithea/lib/dbmigrate/schema/db_2_1_0.py:1570
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1620
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1647 kallithea/model/db.py:1657
-msgid "RhodeCode Administrator"
-msgstr "RhodeCode 管理者"
+msgid "Kallithea Administrator"
+msgstr "Kallithea 管理者"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1175
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1194
@@ -1394,15 +1394,15 @@ msgstr "新規登録を無効にする"
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1199
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1319
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1404
-msgid "Register new user with RhodeCode with manual activation"
-msgstr "Rhodecodeに登録した新しいユーザーを手動でアクティベートする"
+msgid "Register new user with Kallithea with manual activation"
+msgstr "Kallitheaに登録した新しいユーザーを手動でアクティベートする"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1183
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1202
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1322
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1407
-msgid "Register new user with RhodeCode with auto activation"
-msgstr "Rhodecodeに登録した新しいユーザーを自動でアクティベートする"
+msgid "Register new user with Kallithea with auto activation"
+msgstr "Kallitheaに登録した新しいユーザーを自動でアクティベートする"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1624
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1651
@@ -1705,8 +1705,8 @@ msgstr "%(user)s がにあなたにメンション %(when)s"
 
 #: kallithea/model/notification.py:232
 #, python-format
-msgid "%(user)s registered in RhodeCode at %(when)s"
-msgstr "%(user)s がRhodeCodeに登録 %(when)s"
+msgid "%(user)s registered in Kallithea at %(when)s"
+msgstr "%(user)s がKallitheaに登録 %(when)s"
 
 #: kallithea/model/notification.py:233
 #, python-format
@@ -1756,8 +1756,8 @@ msgstr "新しいパスワード"
 
 #: kallithea/model/user.py:332
 #, python-format
-msgid "Your new RhodeCode password:%s"
-msgstr "新しいRhodeCodeパスワード:%s"
+msgid "Your new Kallithea password:%s"
+msgstr "新しいKallitheaパスワード:%s"
 
 #: kallithea/model/validators.py:82 kallithea/model/validators.py:83
 msgid "Value cannot be an empty list"
@@ -2321,8 +2321,8 @@ msgstr "有効なプラグイン"
 #: kallithea/templates/admin/auth/auth_settings.html:36
 msgid ""
 "Comma separated list of plugins. Order of plugins is also order in which "
-"RhodeCode will try to authenticate user"
-msgstr "カンマ区切りのプラグインの一覧です。プラグインの並び順はRhodeCodeがユーザー認証を試す順番でもあります。"
+"Kallithea will try to authenticate user"
+msgstr "カンマ区切りのプラグインの一覧です。プラグインの並び順はKallitheaがユーザー認証を試す順番でもあります。"
 
 #: kallithea/templates/admin/auth/auth_settings.html:37
 msgid "Available built-in plugins"
@@ -2929,9 +2929,9 @@ msgstr "匿名アクセス"
 #: kallithea/templates/admin/permissions/permissions_globals.html:13
 #, python-format
 msgid ""
-"Allow access to RhodeCode without need to log in. Anonymous users use %s "
+"Allow access to Kallithea without need to log in. Anonymous users use %s "
 "user permissions"
-msgstr "ログインしなくても RhodeCode にアクセスできるようにします。匿名ユーザーは %s ユーザーパーミッションを使います"
+msgstr "ログインしなくても Kallithea にアクセスできるようにします。匿名ユーザーは %s ユーザーパーミッションを使います"
 
 #: kallithea/templates/admin/permissions/permissions_globals.html:26
 msgid ""
@@ -3297,8 +3297,8 @@ msgstr "リポジトリ \"%(repo_name)s\" を作成中です。処理を完了�
 #: kallithea/templates/admin/repos/repo_creating.html:42
 msgid ""
 "We're sorry but error occured during this operation. Please check your "
-"RhodeCode server logs, or contact administrator."
-msgstr "恐れいります。操作中にエラーが発生しました。 RhodeCode サーバのログをチェックするか、管理者に問い合わせてください。"
+"Kallithea server logs, or contact administrator."
+msgstr "恐れいります。操作中にエラーが発生しました。 Kallithea サーバのログをチェックするか、管理者に問い合わせてください。"
 
 #: kallithea/templates/admin/repos/repo_edit.html:8
 #, python-format
@@ -3415,9 +3415,9 @@ msgstr "フォークも削除"
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:94
 msgid ""
 "This repository will be renamed in a special way in order to be unaccesible "
-"for RhodeCode and VCS systems. If you need to fully delete it from file "
+"for Kallithea and VCS systems. If you need to fully delete it from file "
 "system please do it manually"
-msgstr "このリポジトリはRhodeCodeとVCSシステムからアクセス出来ないようにするために特別な方法でリネームされます。\n完全な削除が必要な場合はファイルシステムから手動で削除してください"
+msgstr "このリポジトリはKallitheaとVCSシステムからアクセス出来ないようにするために特別な方法でリネームされます。\n完全な削除が必要な場合はファイルシステムから手動で削除してください"
 
 #: kallithea/templates/admin/repos/repo_edit_caches.html:4
 msgid "Invalidate repository cache"
@@ -3628,8 +3628,8 @@ msgid "Email prefix"
 msgstr "メールアドレスプレフィックス"
 
 #: kallithea/templates/admin/settings/settings_email.html:5
-msgid "RhodeCode email from"
-msgstr "RhodeCode メールのFrom"
+msgid "Kallithea email from"
+msgstr "Kallithea メールのFrom"
 
 #: kallithea/templates/admin/settings/settings_email.html:6
 msgid "Error email from"
@@ -3680,8 +3680,8 @@ msgid "Site branding"
 msgstr "サイト名"
 
 #: kallithea/templates/admin/settings/settings_global.html:12
-msgid "Set a custom title for your RhodeCode Service."
-msgstr "このRhodeCodeサービスのカスタムタイトルを設定します。"
+msgid "Set a custom title for your Kallithea Service."
+msgstr "このKallitheaサービスのカスタムタイトルを設定します。"
 
 #: kallithea/templates/admin/settings/settings_global.html:18
 msgid "HTTP authentication realm"
@@ -3740,8 +3740,8 @@ msgstr "20ユーザーまで利用可能な無料ライセンスを使用して�
 
 #: kallithea/templates/admin/settings/settings_license.html:9
 #: kallithea/templates/admin/settings/settings_system.html:4
-msgid "RhodeCode version"
-msgstr "RhodeCode バージョン"
+msgid "Kallithea version"
+msgstr "Kallithea バージョン"
 
 #: kallithea/templates/admin/settings/settings_license.html:10
 msgid "License token"
@@ -3776,8 +3776,8 @@ msgid "License key"
 msgstr "ライセンスキー"
 
 #: kallithea/templates/admin/settings/settings_license.html:37
-msgid "Paste your RhodeCode license key into that textarea."
-msgstr "RhodeCode ライセンスキーをテキストエリアにペーストしてください。"
+msgid "Paste your Kallithea license key into that textarea."
+msgstr "Kallithea ライセンスキーをテキストエリアにペーストしてください。"
 
 #: kallithea/templates/admin/settings/settings_license.html:52
 msgid ""
@@ -3815,9 +3815,9 @@ msgstr "GITフックをインストール"
 
 #: kallithea/templates/admin/settings/settings_mapping.html:25
 msgid ""
-"Verify if RhodeCodes GIT hooks are installed for each repository. Current "
+"Verify if Kallitheas GIT hooks are installed for each repository. Current "
 "hooks will be updated to latest version"
-msgstr "各リポジトリに RhodeCodes の GIT フックがインストールされているか確認してください。現在のフックは最新版に更新されます"
+msgstr "各リポジトリに Kallitheas の GIT フックがインストールされているか確認してください。現在のフックは最新版に更新されます"
 
 #: kallithea/templates/admin/settings/settings_mapping.html:32
 msgid "Rescan Repositories"
@@ -3833,9 +3833,9 @@ msgstr "一度削除してから再度インデックスを作成"
 
 #: kallithea/templates/admin/settings/settings_search.html:15
 msgid ""
-"This option completely reindex all the files within RhodeCode for proper "
+"This option completely reindex all the files within Kallithea for proper "
 "fulltext search capabilities."
-msgstr "このオプションを使うと、全文検索の機能が正しく発揮されるよう、 RhodeCode 中の全てのファイルのインデックスを再生成します。"
+msgstr "このオプションを使うと、全文検索の機能が正しく発揮されるよう、 Kallithea 中の全てのファイルのインデックスを再生成します。"
 
 #: kallithea/templates/admin/settings/settings_search.html:21
 msgid "Reindex"
@@ -3887,7 +3887,7 @@ msgstr "VCSの操作にSSLを必須とする"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:13
 msgid ""
-"Activate to set RhodeCode to require SSL for pushing or pulling. If SSL "
+"Activate to set Kallithea to require SSL for pushing or pulling. If SSL "
 "certificate is missing it will return a HTTP Error 406: Not Acceptable."
 msgstr "プッシュ、プル時にSSLを要求します。SSLでない場合はHTTP Error 406: Not Acceptableを返します。"
 
@@ -3931,9 +3931,9 @@ msgstr "リポジトリロケーション"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:69
 msgid ""
-"Click to unlock. You must restart RhodeCode in order to make this setting "
+"Click to unlock. You must restart Kallithea in order to make this setting "
 "take effect."
-msgstr "アンロックする。この設定を有効にするためにはRhodeCodeの再起動が必要です。"
+msgstr "アンロックする。この設定を有効にするためにはKallitheaの再起動が必要です。"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:72
 msgid ""
@@ -3954,37 +3954,37 @@ msgid "Allows storing additional customized fields per repository."
 msgstr "追加のカスタムフィールドをリポジトリ毎に保存することを許可します。"
 
 #: kallithea/templates/admin/settings/settings_visual.html:18
-msgid "Show RhodeCode version"
-msgstr "Rhodecodeのバージョンを表示する"
+msgid "Show Kallithea version"
+msgstr "Kallitheaのバージョンを表示する"
 
 #: kallithea/templates/admin/settings/settings_visual.html:20
-msgid "Shows or hides a version number of RhodeCode displayed in the footer."
-msgstr "フッターに表示されるRhodeCodeのバージョン番号の表示、非表示を設定します。"
+msgid "Shows or hides a version number of Kallithea displayed in the footer."
+msgstr "フッターに表示されるKallitheaのバージョン番号の表示、非表示を設定します。"
 
 #: kallithea/templates/admin/settings/settings_visual.html:24
-msgid "Use Gravatars in RhodeCode"
+msgid "Use Gravatars in Kallithea"
 msgstr "Gravatorsを利用する"
 
 #: kallithea/templates/admin/settings/settings_visual.html:30
 msgid ""
 "Gravatar url allows you to use other avatar server application.\n"
 "                                                        Following variables of the URL will be replaced accordingly.\n"
-"                                                        {scheme}    'http' or 'https' sent from running RhodeCode server,\n"
+"                                                        {scheme}    'http' or 'https' sent from running Kallithea server,\n"
 "                                                        {email}     user email,\n"
 "                                                        {md5email}  md5 hash of the user email (like at gravatar.com),\n"
 "                                                        {size}      size of the image that is expected from the server application,\n"
-"                                                        {netloc}    network location/server host of running RhodeCode server"
-msgstr "Gravatar URL を設定すると、外部のアバターサーバーアプリケーションを使用します。\n必要に応じて、 URL に以下の変数を使ってください。\n{scheme} RhodeCode サーバからリクエストを送信するときに使うスキーム。 'http' または 'https'\n{email} ユーザーのメールアドレス\n{md5email} ユーザーのメールアドレスの md5 ハッシュ値 (gravatar.com で使っています)\n{size} サーバーアプリケーションに要求する画像のサイズ\n{netloc} RhodeCode サーバーのアドレスまたはホスト名"
+"                                                        {netloc}    network location/server host of running Kallithea server"
+msgstr "Gravatar URL を設定すると、外部のアバターサーバーアプリケーションを使用します。\n必要に応じて、 URL に以下の変数を使ってください。\n{scheme} Kallithea サーバからリクエストを送信するときに使うスキーム。 'http' または 'https'\n{email} ユーザーのメールアドレス\n{md5email} ユーザーのメールアドレスの md5 ハッシュ値 (gravatar.com で使っています)\n{size} サーバーアプリケーションに要求する画像のサイズ\n{netloc} Kallithea サーバーのアドレスまたはホスト名"
 
 #: kallithea/templates/admin/settings/settings_visual.html:42
 msgid ""
 "Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}', available vars:\n"
-"                                                        {scheme} 'http' or 'https' sent from running RhodeCode server,\n"
+"                                                        {scheme} 'http' or 'https' sent from running Kallithea server,\n"
 "                                                        {user}   current user username,\n"
-"                                                        {netloc} network location/server host of running RhodeCode server,\n"
+"                                                        {netloc} network location/server host of running Kallithea server,\n"
 "                                                        {repo}   full repository name,\n"
 "                                                        {repoid} ID of repository, can be used to contruct clone-by-id"
-msgstr "クローン URL のスキーマは、 '{scheme}://{user}@{netloc}/{repo}' のような形式にします。使える変数は下記の通りです:\n                                                        {scheme} RhodeCode サーバからリクエストを送信するときに使うスキーム。 'http' または 'https'\n                                                        {user}   ユーザーのユーザー名\n                                                        {netloc} RhodeCode サーバーのアドレスまたはホスト名\n                                                        {repo}   リポジトリの完全な名前\n                                                        {repoid} リポジトリの ID。 clone-by-id に使います。"
+msgstr "クローン URL のスキーマは、 '{scheme}://{user}@{netloc}/{repo}' のような形式にします。使える変数は下記の通りです:\n                                                        {scheme} Kallithea サーバからリクエストを送信するときに使うスキーム。 'http' または 'https'\n                                                        {user}   ユーザーのユーザー名\n                                                        {netloc} Kallithea サーバーのアドレスまたはホスト名\n                                                        {repo}   リポジトリの完全な名前\n                                                        {repoid} リポジトリの ID。 clone-by-id に使います。"
 
 #: kallithea/templates/admin/settings/settings_visual.html:54
 msgid "Dashboard items"
@@ -4695,8 +4695,8 @@ msgid "Refs"
 msgstr "Refs"
 
 #: kallithea/templates/changelog/changelog_summary_data.html:86
-msgid "Add or upload files directly via RhodeCode"
-msgstr "RhodeCode経由で直接ファイルを追加またはアップロード"
+msgid "Add or upload files directly via Kallithea"
+msgstr "Kallithea経由で直接ファイルを追加またはアップロード"
 
 #: kallithea/templates/changelog/changelog_summary_data.html:89
 #: kallithea/templates/files/files_ypjax.html:9
@@ -4837,8 +4837,8 @@ msgstr "コメントには %s 構文 ( %s サポートつき ) が利用出来�
 #: kallithea/templates/changeset/changeset_file_comment.html:69
 #: kallithea/templates/changeset/changeset_file_comment.html:155
 msgid ""
-"Use @username inside this text to send notification to this RhodeCode user"
-msgstr "テキスト内で @username を使うと、その RhodeCode のユーザーに通知を送信します"
+"Use @username inside this text to send notification to this Kallithea user"
+msgstr "テキスト内で @username を使うと、その Kallithea のユーザーに通知を送信します"
 
 #: kallithea/templates/changeset/changeset_file_comment.html:73
 #: kallithea/templates/changeset/changeset_file_comment.html:166
@@ -5001,8 +5001,8 @@ msgid "The changeset status was changed to"
 msgstr "チェンジセットを次に変更"
 
 #: kallithea/templates/email_templates/main.html:8
-msgid "This is a notification from RhodeCode."
-msgstr "RhodeCodeからの通知です"
+msgid "This is a notification from Kallithea."
+msgstr "Kallitheaからの通知です"
 
 #: kallithea/templates/email_templates/password_reset.html:4
 #, python-format

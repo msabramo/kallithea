@@ -162,7 +162,7 @@ class SimpleHg(BaseVCSController):
                     return HTTPForbidden()(environ, start_response)
 
         # extras are injected into mercurial UI object and later available
-        # in hg hooks executed by rhodecode
+        # in hg hooks executed by kallithea
         from kallithea import CONFIG
         server_url = get_server_url(environ)
         extras = {

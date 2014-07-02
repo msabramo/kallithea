@@ -20,7 +20,7 @@ syntax: regexp
 ^\.coverage$
 ^kallithea\.db$
 ^test\.db$
-^RhodeCode\.egg-info$
+^Kallithea\.egg-info$
 ^rc.*\.ini$
 ^fabfile.py
 ^\.idea$

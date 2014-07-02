@@ -44,7 +44,7 @@ class UpgradeDb(BasePasterCommand):
 
     usage = "CONFIG_FILE"
     summary = "Upgrades current db to newer version"
-    group_name = "RhodeCode"
+    group_name = "Kallithea"
 
     parser = Command.standard_parser(verbose=True)
 

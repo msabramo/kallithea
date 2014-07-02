@@ -16,16 +16,16 @@ except ImportError:
 
 def main():
     if kallithea is None:
-        # exit with success if we cannot import rhodecode !!
+        # exit with success if we cannot import kallithea !!
         # this allows simply push to this repo even without
-        # rhodecode
+        # kallithea
         sys.exit(0)
 
     repo_path = os.path.abspath('.')
     push_data = sys.stdin.readlines()
     # os.environ is modified here by a subprocess call that
     # runs git and later git executes this hook.
-    # Environ gets some additional info from rhodecode system
+    # Environ gets some additional info from kallithea system
     # like IP or username from basic-auth
     _handler(repo_path, push_data, os.environ)
     sys.exit(0)

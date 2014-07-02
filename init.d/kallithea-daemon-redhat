@@ -5,7 +5,7 @@
 
 ##################################################
 #
-# RhodeCode server startup script
+# Kallithea server startup script
 # Recommended default-startup: 2 3 4 5
 # Recommended default-stop: 0 1 6
 #
@@ -26,7 +26,7 @@ PID_PATH="/var/run/kallithea/pid"
 LOG_PATH="/var/log/kallithea/kallithea.log"
 
 # replace this with the path to the virtual environment you
-# made for RhodeCode
+# made for Kallithea
 PYTHON_PATH="/opt/python_virtualenvironments/kallithea-venv"
 
 RUN_AS="kallithea"
@@ -113,9 +113,9 @@ case "$1" in
     status_kallithea
     RETVAL=$?
     if [ ! $RETVAL -eq 0 ]; then
-      echo "RhodeCode server is running..."
+      echo "Kallithea server is running..."
     else
-      echo "RhodeCode server is stopped."
+      echo "Kallithea server is stopped."
     fi
     ;;
   restart)

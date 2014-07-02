@@ -15,7 +15,7 @@
 kallithea.bin.kallithea_gist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Gist CLI client for RhodeCode
+Gist CLI client for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -43,7 +43,7 @@ def argparser(argv):
       "Create config file: kallithea-gist --apikey=<key> --apihost=http://your.kallithea.server --save-config"
     )
 
-    parser = argparse.ArgumentParser(description='RhodeCode Gist cli',
+    parser = argparse.ArgumentParser(description='Kallithea Gist cli',
                                      usage=usage)
 
     ## config

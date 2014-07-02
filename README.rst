@@ -1,29 +1,29 @@
 =========
-RhodeCode
+Kallithea
 =========
 
 About
 -----
 
-``RhodeCode`` is a fast and powerful management tool for Mercurial_ and GIT_
+``Kallithea`` is a fast and powerful management tool for Mercurial_ and GIT_
 with a built in push/pull server, full text search and code-review.
 It works on http/https and has a built in permission/authentication system with
-the ability to authenticate via LDAP or ActiveDirectory. RhodeCode also provides
+the ability to authenticate via LDAP or ActiveDirectory. Kallithea also provides
 simple API so it's easy integrable with existing external systems.
 
-RhodeCode is similar in some respects to github_ or bitbucket_,
-however RhodeCode can be run as standalone hosted application on your own server.
+Kallithea is similar in some respects to github_ or bitbucket_,
+however Kallithea can be run as standalone hosted application on your own server.
 It is open source and donation ware and focuses more on providing a customized,
 self administered interface for Mercurial_ and GIT_  repositories.
-RhodeCode works on \*nix systems and Windows it is powered by a vcs_ library
+Kallithea works on \*nix systems and Windows it is powered by a vcs_ library
 that Lukasz Balcerzak and Marcin Kuzminski created to handle multiple
 different version control systems.
 
-RhodeCode uses `PEP386 versioning <http://www.python.org/dev/peps/pep-0386/>`_
+Kallithea uses `PEP386 versioning <http://www.python.org/dev/peps/pep-0386/>`_
 
 Installation
 ------------
-Stable releases of RhodeCode are best installed via::
+Stable releases of Kallithea are best installed via::
 
     easy_install kallithea
 
@@ -51,7 +51,7 @@ https://bitbucket.org/conservancy/kallithea
 
 
 
-RhodeCode Features
+Kallithea Features
 ------------------
 
 - Has its own middleware to handle mercurial_ and git_ protocol requests.
@@ -68,7 +68,7 @@ RhodeCode Features
 - Built in Gist functionality for sharing code snippets.
 - Integrates easily with other systems, with custom created mappers you can connect it to almost
   any issue tracker, and with an JSON-RPC API you can make much more
-- Build in commit-api let's you add, edit and commit files right from RhodeCode
+- Build in commit-api let's you add, edit and commit files right from Kallithea
   web interface using simple editor or upload binary files using simple form.
 - Powerfull pull-request driven review system with inline commenting,
   changeset statuses, and notification system.
@@ -113,7 +113,7 @@ Incoming / Plans
 License
 -------
 
-``RhodeCode`` is released under the GPLv3 license.
+``Kallithea`` is released under the GPLv3 license.
 
 
 Getting help
@@ -137,7 +137,7 @@ You can follow this project on Twitter, **@KallitheaSCM**.
 Online documentation
 --------------------
 
-Online documentation for the current version of RhodeCode is available at
+Online documentation for the current version of Kallithea is available at
  - http://packages.python.org/Kallithea/
  - http://kallithea.readthedocs.org/
 

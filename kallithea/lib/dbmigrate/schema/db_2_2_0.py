@@ -15,7 +15,7 @@
 kallithea.model.db
 ~~~~~~~~~~~~~~~~~~
 
-Database Models for RhodeCode
+Database Models for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -237,7 +237,7 @@ class Setting(Base, BaseModel):
     @classmethod
     def create_or_update(cls, key, val=Optional(''), type=Optional('unicode')):
         """
-        Creates or updates RhodeCode setting. If updates is triggered it will only
+        Creates or updates Kallithea setting. If updates is triggered it will only
         update parameters that are explicityl set Optional instance will be skipped
 
         :param key:
@@ -1619,7 +1619,7 @@ class Permission(Base, BaseModel):
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True},
     )
     PERMS = [
-        ('hg.admin', _('RhodeCode Administrator')),
+        ('hg.admin', _('Kallithea Administrator')),
 
         ('repository.none', _('Repository no access')),
         ('repository.read', _('Repository read access')),

@@ -15,7 +15,7 @@
 kallithea.model.repo
 ~~~~~~~~~~~~~~~~~~~~
 
-Repository model for rhodecode
+Repository model for kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -734,7 +734,7 @@ class RepoModel(BaseModel):
             repo = backend(repo_path, create=True, src_url=clone_uri, baseui=baseui)
         elif repo_type == 'git':
             repo = backend(repo_path, create=True, src_url=clone_uri, bare=True)
-            # add rhodecode hook into this repo
+            # add kallithea hook into this repo
             ScmModel().install_git_hook(repo=repo)
         else:
             raise Exception('Not supported repo_type %s expected hg/git' % repo_type)
@@ -764,7 +764,7 @@ class RepoModel(BaseModel):
         """
         removes repo from filesystem, the removal is acctually made by
         added rm__ prefix into dir, and rename internat .hg/.git dirs so this
-        repository is no longer valid for rhodecode, can be undeleted later on
+        repository is no longer valid for kallithea, can be undeleted later on
         by reverting the renames on this repository
 
         :param repo: repo object

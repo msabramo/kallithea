@@ -476,7 +476,7 @@ def allowed_api_access(controller_name, whitelist=None, api_key=None):
 
 class AuthUser(object):
     """
-    A simple object that handles all attributes of user in RhodeCode
+    A simple object that handles all attributes of user in Kallithea
 
     It does lookup based on API key,given user, or user present in session
     Then it fills all required information for such user. It also checks if

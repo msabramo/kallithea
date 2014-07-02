@@ -15,7 +15,7 @@
 kallithea.__init__
 ~~~~~~~~~~~~~~~~~~
 
-RhodeCode, a web based repository management based on pylons
+Kallithea, a web based repository management based on pylons
 versioning implementation: http://www.python.org/dev/peps/pep-0386/
 
 This file was forked by the Kallithea project in July 2014.

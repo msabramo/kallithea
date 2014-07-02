@@ -15,7 +15,7 @@
 kallithea.model.gist
 ~~~~~~~~~~~~~~~~~~~~
 
-gist model for RhodeCode
+gist model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -158,7 +158,7 @@ class GistModel(BaseModel):
         message += 's: ' if len(processed_mapping) > 1 else ': '
         message += ', '.join([x for x in processed_mapping])
 
-        #fake RhodeCode Repository object
+        #fake Kallithea Repository object
         fake_repo = AttributeDict(dict(
             repo_name=gist_repo_path,
             scm_instance_no_cache=lambda: repo,
@@ -222,7 +222,7 @@ class GistModel(BaseModel):
         message += 's: ' if len(gist_mapping) > 1 else ': '
         message += ', '.join([x for x in gist_mapping])
 
-        #fake RhodeCode Repository object
+        #fake Kallithea Repository object
         fake_repo = AttributeDict(dict(
             repo_name=gist_repo.path,
             scm_instance_no_cache=lambda: gist_repo,

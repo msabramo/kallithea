@@ -17,11 +17,11 @@ class Command(AbstractInstallCommand):
     min_args = 1
     summary = "Setup an application, given a config file"
     usage = "CONFIG_FILE"
-    group_name = "RhodeCode"
+    group_name = "Kallithea"
 
     description = """\
 
-    Setup RhodeCode according to its configuration file.  This is
+    Setup Kallithea according to its configuration file.  This is
     the second part of a two-phase web application installation
     process (the first phase is prepare-app).  The setup process
     consist of things like setting up databases, creating super user

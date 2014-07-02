@@ -15,7 +15,7 @@
 kallithea.model.scm
 ~~~~~~~~~~~~~~~~~~~
 
-Scm model for RhodeCode
+Scm model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -280,7 +280,7 @@ class ScmModel(BaseModel):
 
         for name, path in get_filesystem_repos(repos_path, recursive=True):
             # name need to be decomposed and put back together using the /
-            # since this is internal storage separator for rhodecode
+            # since this is internal storage separator for kallithea
             name = Repository.normalize_repo_name(name)
 
             try:
@@ -613,8 +613,8 @@ class ScmModel(BaseModel):
         """
         Commits given multiple nodes into repo
 
-        :param user: RhodeCode User object or user_id, the commiter
-        :param repo: RhodeCode Repository object
+        :param user: Kallithea User object or user_id, the commiter
+        :param repo: Kallithea Repository object
         :param message: commit message
         :param nodes: mapping {filename:{'content':content},...}
         :param parent_cs: parent changeset, can be empty than it's initial commit
@@ -738,8 +738,8 @@ class ScmModel(BaseModel):
         """
         Deletes given multiple nodes into repo
 
-        :param user: RhodeCode User object or user_id, the commiter
-        :param repo: RhodeCode Repository object
+        :param user: Kallithea User object or user_id, the commiter
+        :param repo: Kallithea Repository object
         :param message: commit message
         :param nodes: mapping {filename:{'content':content},...}
         :param parent_cs: parent changeset, can be empty than it's initial commit
@@ -834,7 +834,7 @@ class ScmModel(BaseModel):
 
     def install_git_hook(self, repo, force_create=False):
         """
-        Creates a rhodecode hook inside a git repository
+        Creates a kallithea hook inside a git repository
 
         :param repo: Instance of VCS repo
         :param force_create: Create even if same name hook exists
@@ -858,8 +858,8 @@ class ScmModel(BaseModel):
             has_hook = False
             log.debug('Installing git hook in repo %s' % repo)
             if os.path.exists(_hook_file):
-                # let's take a look at this hook, maybe it's rhodecode ?
-                log.debug('hook exists, checking if it is from rhodecode')
+                # let's take a look at this hook, maybe it's kallithea ?
+                log.debug('hook exists, checking if it is from kallithea')
                 with open(_hook_file, 'rb') as f:
                     data = f.read()
                     matches = re.compile(r'(?:%s)\s*=\s*(.*)'
@@ -867,7 +867,7 @@ class ScmModel(BaseModel):
                     if matches:
                         try:
                             ver = matches.groups()[0]
-                            log.debug('got %s it is rhodecode' % (ver))
+                            log.debug('got %s it is kallithea' % (ver))
                             has_hook = True
                         except Exception:
                             log.error(traceback.format_exc())

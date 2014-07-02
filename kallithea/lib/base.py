@@ -111,7 +111,7 @@ class BasicAuth(AuthBasicAuthenticator):
         head = WWW_AUTHENTICATE.tuples('Basic realm="%s"' % self.realm)
         if self._rc_auth_http_code and self._rc_auth_http_code == '403':
             # return 403 if alternative http return code is specified in
-            # RhodeCode config
+            # Kallithea config
             return HTTPForbidden(headers=head)
         return HTTPUnauthorized(headers=head)
 

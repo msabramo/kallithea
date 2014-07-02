@@ -10,7 +10,7 @@ ${h.form(url('admin_settings'), method='post')}
                         ${h.checkbox('web_push_ssl', 'True')}
                         <label for="web_push_ssl">${_('Require SSL for vcs operations')}</label>
                     </div>
-                    <span class="help-block">${_('Activate to set RhodeCode to require SSL for pushing or pulling. If SSL certificate is missing it will return a HTTP Error 406: Not Acceptable.')}</span>
+                    <span class="help-block">${_('Activate to set Kallithea to require SSL for pushing or pulling. If SSL certificate is missing it will return a HTTP Error 406: Not Acceptable.')}</span>
                 </div>
              </div>
 
@@ -66,7 +66,7 @@ ${h.form(url('admin_settings'), method='post')}
                 <div class="input">
                     ${h.text('paths_root_path',size=60,readonly="readonly", class_="disabled")}
                     <span id="path_unlock" class="tooltip" style="cursor: pointer"
-                            title="${h.tooltip(_('Click to unlock. You must restart RhodeCode in order to make this setting take effect.'))}">
+                            title="${h.tooltip(_('Click to unlock. You must restart Kallithea in order to make this setting take effect.'))}">
                         <div class="btn btn-small"><i id="path_unlock_icon" class="icon-lock"></i></div>
                     </span>
                     <span class="help-block">${_('Filesystem location where repositories should be stored. After changing this value a restart and rescan of the repository folder are required.')}</span>

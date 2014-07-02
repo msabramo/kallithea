@@ -231,7 +231,7 @@ class NotificationModel(BaseModel):
             _n.TYPE_CHANGESET_COMMENT: _('%(user)s commented on changeset at %(when)s'),
             _n.TYPE_MESSAGE: _('%(user)s sent message at %(when)s'),
             _n.TYPE_MENTION: _('%(user)s mentioned you at %(when)s'),
-            _n.TYPE_REGISTRATION: _('%(user)s registered in RhodeCode at %(when)s'),
+            _n.TYPE_REGISTRATION: _('%(user)s registered in Kallithea at %(when)s'),
             _n.TYPE_PULL_REQUEST: _('%(user)s opened new pull request at %(when)s'),
             _n.TYPE_PULL_REQUEST_COMMENT: _('%(user)s commented on pull request at %(when)s')
         }

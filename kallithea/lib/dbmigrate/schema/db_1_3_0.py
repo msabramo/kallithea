@@ -15,7 +15,7 @@
 kallithea.model.db_1_3_0
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Database Models for RhodeCode <=1.3.X
+Database Models for Kallithea <=1.3.X
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

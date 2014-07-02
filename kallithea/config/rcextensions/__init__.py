@@ -173,7 +173,7 @@ DELETE_USER_HOOK = _dluserhook
 #==============================================================================
 
 # this function will be executed after each push it's executed after the
-# build-in hook that RhodeCode uses for logging pushes
+# build-in hook that Kallithea uses for logging pushes
 def _pushhook(*args, **kwargs):
     """
     Post push hook
@@ -197,7 +197,7 @@ PUSH_HOOK = _pushhook
 #==============================================================================
 
 # this function will be executed after each push it's executed after the
-# build-in hook that RhodeCode uses for logging pulls
+# build-in hook that Kallithea uses for logging pulls
 def _pullhook(*args, **kwargs):
     """
     Post pull hook

@@ -151,7 +151,7 @@ class TestGistsController(TestController):
         gist = _create_gist('gist-show-me')
         response = self.app.get(url('gist', gist_id=gist.gist_access_id))
         response.mustcontain('added file: gist-show-me<')
-        response.mustcontain('test_admin (RhodeCode Admin) - created')
+        response.mustcontain('test_admin (Kallithea Admin) - created')
         response.mustcontain('gist-desc')
         response.mustcontain('<div class="btn btn-mini btn-success disabled">Public Gist</div>')
 

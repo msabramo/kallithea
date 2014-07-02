@@ -15,7 +15,7 @@
 kallithea.tests.test_libs
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Package for testing various lib/helper functions in rhodecode
+Package for testing various lib/helper functions in kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

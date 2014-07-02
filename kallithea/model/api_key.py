@@ -15,7 +15,7 @@
 kallithea.model.api_key
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-api key model for RhodeCode
+api key model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

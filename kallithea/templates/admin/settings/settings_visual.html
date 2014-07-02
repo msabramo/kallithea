@@ -15,13 +15,13 @@ ${h.form(url('admin_settings_visual'), method='post')}
                     <span class="help-block">${_('Allows storing additional customized fields per repository.')}</span>
                     <div class="checkbox">
                         ${h.checkbox('rhodecode_show_version','True')}
-                        <label for="rhodecode_show_version">${_('Show RhodeCode version')}</label>
+                        <label for="rhodecode_show_version">${_('Show Kallithea version')}</label>
                     </div>
-                    <span class="help-block">${_('Shows or hides a version number of RhodeCode displayed in the footer.')}</span>
+                    <span class="help-block">${_('Shows or hides a version number of Kallithea displayed in the footer.')}</span>
 
                     <div class="checkbox">
                         ${h.checkbox('rhodecode_use_gravatar','True')}
-                        <label for="rhodecode_use_gravatar">${_('Use Gravatars in RhodeCode')}</label>
+                        <label for="rhodecode_use_gravatar">${_('Use Gravatars in Kallithea')}</label>
                     </div>
                 </div>
                 <div class="field">
@@ -29,20 +29,20 @@ ${h.form(url('admin_settings_visual'), method='post')}
                         ${h.text('rhodecode_gravatar_url', size=80)}
                         <span class="help-block">${_('''Gravatar url allows you to use other avatar server application.
                                                         Following variables of the URL will be replaced accordingly.
-                                                        {scheme}    'http' or 'https' sent from running RhodeCode server,
+                                                        {scheme}    'http' or 'https' sent from running Kallithea server,
                                                         {email}     user email,
                                                         {md5email}  md5 hash of the user email (like at gravatar.com),
                                                         {size}      size of the image that is expected from the server application,
-                                                        {netloc}    network location/server host of running RhodeCode server''')}</span>
+                                                        {netloc}    network location/server host of running Kallithea server''')}</span>
                     </div>
                 </div>
                 <div class="field">
                     <div class="input">
                         ${h.text('rhodecode_clone_uri_tmpl', size=80)}
                         <span class="help-block">${_('''Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}', available vars:
-                                                        {scheme} 'http' or 'https' sent from running RhodeCode server,
+                                                        {scheme} 'http' or 'https' sent from running Kallithea server,
                                                         {user}   current user username,
-                                                        {netloc} network location/server host of running RhodeCode server,
+                                                        {netloc} network location/server host of running Kallithea server,
                                                         {repo}   full repository name,
                                                         {repoid} ID of repository, can be used to contruct clone-by-id''')}</span>
                     </div>

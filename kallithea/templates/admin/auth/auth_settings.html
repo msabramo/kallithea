@@ -33,7 +33,7 @@
        <div class="field">
            <div class="label"><label for="auth_plugins">${_("Enabled Plugins")}</label></div>
            <div class="input">${h.text("auth_plugins", class_='large')}
-           <span class="help-block">${_('Comma separated list of plugins. Order of plugins is also order in which RhodeCode will try to authenticate user')}</span>
+           <span class="help-block">${_('Comma separated list of plugins. Order of plugins is also order in which Kallithea will try to authenticate user')}</span>
                <div style="padding:10px 0px 10px 0px;font-weight: bold">${_('Available built-in plugins')}</div>
                <ul>
                %for plugin_path in c.available_plugins:

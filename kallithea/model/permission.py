@@ -15,7 +15,7 @@
 kallithea.model.permission
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-permissions model for RhodeCode
+permissions model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -41,7 +41,7 @@ log = logging.getLogger(__name__)
 
 class PermissionModel(BaseModel):
     """
-    Permissions model for RhodeCode
+    Permissions model for Kallithea
     """
 
     cls = Permission

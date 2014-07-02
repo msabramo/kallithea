@@ -15,7 +15,7 @@
 kallithea.controllers.login
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Login controller for rhodeocode
+Login controller for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -190,7 +190,7 @@ class LoginController(BaseController):
                                                  error_dict=error_dict)
 
                 UserModel().create_registration(form_result)
-                h.flash(_('You have successfully registered into RhodeCode'),
+                h.flash(_('You have successfully registered into Kallithea'),
                         category='success')
                 Session().commit()
                 return redirect(url('login_home'))

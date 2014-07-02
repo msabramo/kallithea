@@ -1076,7 +1076,7 @@ class BaseTestApi(object):
                                   owner=owner)
         response = api_call(self, params)
 
-        expected = 'Only RhodeCode admin can specify `owner` param'
+        expected = 'Only Kallithea admin can specify `owner` param'
         self._compare_error(id_, expected, given=response.body)
         fixture.destroy_repo(repo_name)
 
@@ -1285,7 +1285,7 @@ class BaseTestApi(object):
                                   owner=TEST_USER_ADMIN_LOGIN,
         )
         response = api_call(self, params)
-        expected = 'Only RhodeCode admin can specify `owner` param'
+        expected = 'Only Kallithea admin can specify `owner` param'
         self._compare_error(id_, expected, given=response.body)
         fixture.destroy_repo(fork_name)
 

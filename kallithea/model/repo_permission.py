@@ -15,7 +15,7 @@
 kallithea.model.users_group
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-repository permission model for RhodeCode
+repository permission model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

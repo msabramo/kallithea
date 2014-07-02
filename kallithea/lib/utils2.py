@@ -675,7 +675,7 @@ def suuid(url=None, truncate_to=22, alphabet=None):
 
 def get_current_authuser():
     """
-    Gets rhodecode user from threadlocal tmpl_context variable if it's
+    Gets kallithea user from threadlocal tmpl_context variable if it's
     defined, else returns None.
     """
     from pylons import tmpl_context

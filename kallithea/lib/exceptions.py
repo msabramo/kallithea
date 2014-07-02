@@ -15,7 +15,7 @@
 kallithea.lib.exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Set of custom exceptions used in RhodeCode
+Set of custom exceptions used in Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -74,7 +74,7 @@ class NonRelativePathError(Exception):
 
 class HTTPLockedRC(HTTPClientError):
     """
-    Special Exception For locked Repos in RhodeCode, the return code can
+    Special Exception For locked Repos in Kallithea, the return code can
     be overwritten by _code keyword argument passed into constructors
     """
     code = 423

@@ -76,8 +76,8 @@ class TestAdminSettingsController(TestController):
 
     def test_ga_code_active(self):
         self.log_user()
-        old_title = 'RhodeCode'
-        old_realm = 'RhodeCode authentication'
+        old_title = 'Kallithea'
+        old_realm = 'Kallithea authentication'
         new_ga_code = 'ga-test-123456789'
         response = self.app.post(url('admin_settings_global'),
                         params=dict(rhodecode_title=old_title,
@@ -97,8 +97,8 @@ class TestAdminSettingsController(TestController):
 
     def test_ga_code_inactive(self):
         self.log_user()
-        old_title = 'RhodeCode'
-        old_realm = 'RhodeCode authentication'
+        old_title = 'Kallithea'
+        old_realm = 'Kallithea authentication'
         new_ga_code = ''
         response = self.app.post(url('admin_settings_global'),
                         params=dict(rhodecode_title=old_title,
@@ -117,8 +117,8 @@ class TestAdminSettingsController(TestController):
 
     def test_captcha_activate(self):
         self.log_user()
-        old_title = 'RhodeCode'
-        old_realm = 'RhodeCode authentication'
+        old_title = 'Kallithea'
+        old_realm = 'Kallithea authentication'
         new_ga_code = ''
         response = self.app.post(url('admin_settings_global'),
                         params=dict(rhodecode_title=old_title,
@@ -137,8 +137,8 @@ class TestAdminSettingsController(TestController):
 
     def test_captcha_deactivate(self):
         self.log_user()
-        old_title = 'RhodeCode'
-        old_realm = 'RhodeCode authentication'
+        old_title = 'Kallithea'
+        old_realm = 'Kallithea authentication'
         new_ga_code = ''
         response = self.app.post(url('admin_settings_global'),
                         params=dict(rhodecode_title=old_title,
@@ -157,9 +157,9 @@ class TestAdminSettingsController(TestController):
 
     def test_title_change(self):
         self.log_user()
-        old_title = 'RhodeCode'
+        old_title = 'Kallithea'
         new_title = old_title + '_changed'
-        old_realm = 'RhodeCode authentication'
+        old_realm = 'Kallithea authentication'
 
         for new_title in ['Changed', 'Żółwik', old_title]:
             response = self.app.post(url('admin_settings_global'),

@@ -158,7 +158,7 @@ class SimpleGit(BaseVCSController):
                     return HTTPForbidden()(environ, start_response)
 
         # extras are injected into UI object and later available
-        # in hooks executed by rhodecode
+        # in hooks executed by kallithea
         from kallithea import CONFIG
         server_url = get_server_url(environ)
         extras = {

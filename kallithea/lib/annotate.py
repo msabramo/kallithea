@@ -15,7 +15,7 @@
 kallithea.lib.annotate
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Anontation library for usage in rhodecode, previously part of vcs
+Anontation library for usage in kallithea, previously part of vcs
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

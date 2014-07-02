@@ -221,7 +221,7 @@ class TestLoginController(TestController):
                                              'lastname': lastname,
                                              'admin': True})  # This should be overriden
         self.assertEqual(response.status, '302 Found')
-        self.checkSessionFlash(response, 'You have successfully registered into RhodeCode')
+        self.checkSessionFlash(response, 'You have successfully registered into Kallithea')
 
         ret = Session().query(User).filter(User.username == 'test_regular4').one()
         self.assertEqual(ret.username, username)

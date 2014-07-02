@@ -15,7 +15,7 @@
 kallithea.lib.utils
 ~~~~~~~~~~~~~~~~~~~
 
-Utilities library for RhodeCode
+Utilities library for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -387,7 +387,7 @@ def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
                 baseui.setconfig(safe_str(ui_.ui_section), safe_str(ui_.ui_key),
                                  safe_str(ui_.ui_value))
             if ui_.ui_key == 'push_ssl':
-                # force set push_ssl requirement to False, rhodecode
+                # force set push_ssl requirement to False, kallithea
                 # handles that
                 baseui.setconfig(safe_str(ui_.ui_section), safe_str(ui_.ui_key),
                                  False)
@@ -410,7 +410,7 @@ def set_app_settings(config):
 
 def set_vcs_config(config):
     """
-    Patch VCS config with some RhodeCode specific stuff
+    Patch VCS config with some Kallithea specific stuff
 
     :param config: kallithea.CONFIG
     """
@@ -499,7 +499,7 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
         group = map_groups(name)
         unicode_name = safe_unicode(name)
         db_repo = repo_model.get_by_repo_name(unicode_name)
-        # found repo that is on filesystem not in RhodeCode database
+        # found repo that is on filesystem not in Kallithea database
         if not db_repo:
             log.info('repository %s not found, creating now' % name)
             added.append(name)
@@ -795,7 +795,7 @@ class BasePasterCommand(Command):
 def check_git_version():
     """
     Checks what version of git is installed in system, and issues a warning
-    if it's too old for RhodeCode to properly work.
+    if it's too old for Kallithea to properly work.
     """
     from kallithea import BACKENDS
     from kallithea.lib.vcs.backends.git.repository import GitRepository
@@ -826,7 +826,7 @@ def check_git_version():
         if stderr:
             log.warning('Unable to detect git version, org error was: %r' % stderr)
         elif to_old_git:
-            log.warning('RhodeCode detected git version %s, which is too old '
+            log.warning('Kallithea detected git version %s, which is too old '
                         'for the system to function properly. Make sure '
                         'its version is at least %s' % (ver, req_ver))
     return _ver

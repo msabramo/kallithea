@@ -15,7 +15,7 @@
 kallithea.controllers.admin.admin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Controller for Admin panel of Rhodecode
+Controller for Admin panel of Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

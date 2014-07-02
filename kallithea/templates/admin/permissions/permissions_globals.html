@@ -10,7 +10,7 @@ ${h.form(url('admin_permissions'), method='post')}
                     <div class="checkbox">
                         ${h.checkbox('anonymous',True)}
                     </div>
-                     <span class="help-block">${h.literal(_('Allow access to RhodeCode without need to log in. Anonymous users use %s user permissions' % (h.link_to('*default*',h.url('admin_permissions_perms')))))}</span>
+                     <span class="help-block">${h.literal(_('Allow access to Kallithea without need to log in. Anonymous users use %s user permissions' % (h.link_to('*default*',h.url('admin_permissions_perms')))))}</span>
                 </div>
             </div>
             <div class="field">

@@ -15,7 +15,7 @@
 kallithea.controllers.error
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode error controller
+Kallithea error controller
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

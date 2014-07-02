@@ -15,7 +15,7 @@
 kallithea.lib.db_manage
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Database creation, and setup module for RhodeCode. Used for creation
+Database creation, and setup module for Kallithea. Used for creation
 of database as well as for migration operations
 
 This file was forked by the Kallithea project in July 2014.
@@ -184,7 +184,7 @@ class DbManage(object):
 
     def fix_repo_paths(self):
         """
-        Fixes a old rhodecode version path into new one without a '*'
+        Fixes a old kallithea version path into new one without a '*'
         """
 
         paths = self.sa.query(Ui)\
@@ -222,7 +222,7 @@ class DbManage(object):
 
     def fix_settings(self):
         """
-        Fixes rhodecode settings adds ga_code key for google analytics
+        Fixes kallithea settings adds ga_code key for google analytics
         """
 
         hgsettings3 = Setting('ga_code', '')
@@ -488,7 +488,7 @@ class DbManage(object):
         real_path = os.path.normpath(os.path.realpath(path))
 
         if real_path != os.path.normpath(path):
-            if not ask_ok(('Path looks like a symlink, Rhodecode will store '
+            if not ask_ok(('Path looks like a symlink, Kallithea will store '
                            'given path as %s ? [y/n]') % (real_path,)):
                 log.error('Canceled by user')
                 sys.exit(-1)
@@ -515,7 +515,7 @@ class DbManage(object):
             self.sa.add(ui_conf)
 
         settings = [
-            ('realm', 'RhodeCode', 'unicode'),
+            ('realm', 'Kallithea', 'unicode'),
             ('title', '', 'unicode'),
             ('ga_code', '', 'unicode'),
             ('show_public_icon', True, 'bool'),
@@ -541,7 +541,7 @@ class DbManage(object):
     def create_user(self, username, password, email='', admin=False):
         log.info('creating user %s' % username)
         UserModel().create_or_update(username, password, email,
-                                     firstname='RhodeCode', lastname='Admin',
+                                     firstname='Kallithea', lastname='Admin',
                                      active=True, admin=admin,
                                      extern_type="internal")
 

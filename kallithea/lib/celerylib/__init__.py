@@ -15,7 +15,7 @@
 kallithea.lib.celerylib.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-celery libs for RhodeCode
+celery libs for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

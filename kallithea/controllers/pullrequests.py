@@ -15,7 +15,7 @@
 kallithea.controllers.pullrequests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-pull requests controller for rhodecode for initializing pull requests
+pull requests controller for Kallithea for initializing pull requests
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

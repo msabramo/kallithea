@@ -15,7 +15,7 @@
 kallithea.lib.auth_modules.auth_crowd
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode authentication plugin for Atlassian CROWD
+Kallithea authentication plugin for Atlassian CROWD
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -130,7 +130,7 @@ class CrowdServer(object):
         return self._request(url)
 
 
-class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
+class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
 
     @hybrid_property
     def name(self):
@@ -174,7 +174,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
                 "name": "admin_groups",
                 "validator": self.validators.UnicodeString(strip=True),
                 "type": "string",
-                "description": "A comma separated list of group names that identify users as RhodeCode Administrators",
+                "description": "A comma separated list of group names that identify users as Kallithea Administrators",
                 "formname": "Admin Groups"
             }
         ]
@@ -195,7 +195,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
 
         Return None on failure. On success, return a dictionary of the form:
 
-            see: RhodeCodeAuthPluginBase.auth_func_attrs
+            see: KallitheaAuthPluginBase.auth_func_attrs
         This is later validated for correctness
         """
         if not username or not password:
@@ -214,7 +214,7 @@ class RhodeCodeAuthPlugin(auth_modules.RhodeCodeExternalAuthPlugin):
         log.debug("Crowd groups: \n%s" % (formatted_json(res)))
         crowd_user["groups"] = [x["name"] for x in res["groups"]]
 
-        # old attrs fetched from RhodeCode database
+        # old attrs fetched from Kallithea database
         admin = getattr(userobj, 'admin', False)
         active = getattr(userobj, 'active', True)
         email = getattr(userobj, 'email', '')

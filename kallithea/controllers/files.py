@@ -15,7 +15,7 @@
 kallithea.controllers.files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Files controller for RhodeCode
+Files controller for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -321,7 +321,7 @@ class FilesController(BaseRepoController):
         c.cs = self.__get_cs_or_redirect(revision, repo_name)
         c.file = self.__get_filenode_or_redirect(repo_name, c.cs, f_path)
 
-        c.default_message = _('Deleted file %s via RhodeCode') % (f_path)
+        c.default_message = _('Deleted file %s via Kallithea') % (f_path)
         c.f_path = f_path
         node_path = f_path
         author = self.authuser.full_contact
@@ -384,7 +384,7 @@ class FilesController(BaseRepoController):
         if c.file.is_binary:
             return redirect(url('files_home', repo_name=c.repo_name,
                             revision=c.cs.raw_id, f_path=f_path))
-        c.default_message = _('Edited file %s via RhodeCode') % (f_path)
+        c.default_message = _('Edited file %s via Kallithea') % (f_path)
         c.f_path = f_path
 
         if r_post:
@@ -437,7 +437,7 @@ class FilesController(BaseRepoController):
                                          redirect_after=False)
         if c.cs is None:
             c.cs = EmptyChangeset(alias=c.db_repo_scm_instance.alias)
-        c.default_message = (_('Added file via RhodeCode'))
+        c.default_message = (_('Added file via Kallithea'))
         c.f_path = f_path
 
         if r_post:

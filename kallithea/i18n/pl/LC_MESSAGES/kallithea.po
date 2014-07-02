@@ -1,6 +1,6 @@
-# Translations template for RhodeCode.
+# Translations template for Kallithea.
 # Copyright (C) 2014 RhodeCode GmbH, and others.
-# This file is distributed under the same license as the RhodeCode project.
+# This file is distributed under the same license as the Kallithea project.
 # Translators:
 # Nemcio <areczek01@gmail.com>, 2013
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010
@@ -9,12 +9,12 @@
 # Nemcio <areczek01@gmail.com>, 2012-2013
 msgid ""
 msgstr ""
-"Project-Id-Version: RhodeCode\n"
-"Report-Msgid-Bugs-To: marcin@rhodecode.com\n"
+"Project-Id-Version: Kallithea\n"
+"Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-02-13 15:30+0100\n"
 "PO-Revision-Date: 2014-02-13 14:34+0000\n"
 "Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
-"Language-Team: Polish (http://www.transifex.com/projects/p/RhodeCode/language/pl/)\n"
+"Language-Team: Polish (http://www.transifex.com/projects/p/Kallithea/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -142,7 +142,7 @@ msgstr ""
 
 #: kallithea/controllers/files.py:322
 #, python-format
-msgid "Deleted file %s via RhodeCode"
+msgid "Deleted file %s via Kallithea"
 msgstr ""
 
 #: kallithea/controllers/files.py:344
@@ -161,8 +161,8 @@ msgstr "Można tylko edytować pliki z rewizji obecnej gałęzi"
 
 #: kallithea/controllers/files.py:385
 #, python-format
-msgid "Edited file %s via RhodeCode"
-msgstr "Edytowanie %s w RhodeCode"
+msgid "Edited file %s via Kallithea"
+msgstr "Edytowanie %s w Kallithea"
 
 #: kallithea/controllers/files.py:401
 msgid "No changes"
@@ -174,8 +174,8 @@ msgid "Successfully committed to %s"
 msgstr "Committ wykonany do %s"
 
 #: kallithea/controllers/files.py:438
-msgid "Added file via RhodeCode"
-msgstr "Dodano %s poprzez RhodeCode"
+msgid "Added file via Kallithea"
+msgstr "Dodano %s poprzez Kallithea"
 
 #: kallithea/controllers/files.py:459
 msgid "No content"
@@ -279,7 +279,7 @@ msgid "bad captcha"
 msgstr ""
 
 #: kallithea/controllers/login.py:191
-msgid "You have successfully registered into RhodeCode"
+msgid "You have successfully registered into Kallithea"
 msgstr "Udało Ci się zarejestrować na stronie"
 
 #: kallithea/controllers/login.py:235
@@ -1106,8 +1106,8 @@ msgid "[pushed] into"
 msgstr "[wysłane zmiany] w"
 
 #: kallithea/lib/helpers.py:779
-msgid "[committed via RhodeCode] into repository"
-msgstr "[synchronizacja przez RhodeCode] z repozytorium"
+msgid "[committed via Kallithea] into repository"
+msgstr "[synchronizacja przez Kallithea] z repozytorium"
 
 #: kallithea/lib/helpers.py:781
 msgid "[pulled from remote] into repository"
@@ -1329,7 +1329,7 @@ msgstr "Repozytoria Grupy dostęp administratora"
 #: kallithea/lib/dbmigrate/schema/db_2_1_0.py:1570
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1620
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1647 kallithea/model/db.py:1657
-msgid "RhodeCode Administrator"
+msgid "Kallithea Administrator"
 msgstr "Administrator Repo"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1175
@@ -1403,14 +1403,14 @@ msgstr "Rejestracja wyłączona"
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1199
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1319
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1404
-msgid "Register new user with RhodeCode with manual activation"
+msgid "Register new user with Kallithea with manual activation"
 msgstr "Rejestracja nowego użytkownika na stronie z ręczną aktywacją"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1183
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1202
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1322
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1407
-msgid "Register new user with RhodeCode with auto activation"
+msgid "Register new user with Kallithea with auto activation"
 msgstr "Rejestracja nowego użytkownika na stronie z automatyczną aktywacją"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1624
@@ -1714,7 +1714,7 @@ msgstr "%(user)s wspomniał o Tobie w %(when)s"
 
 #: kallithea/model/notification.py:232
 #, python-format
-msgid "%(user)s registered in RhodeCode at %(when)s"
+msgid "%(user)s registered in Kallithea at %(when)s"
 msgstr "%(user)s zarejestrował na stronie w %(when)s"
 
 #: kallithea/model/notification.py:233
@@ -1765,7 +1765,7 @@ msgstr "Nowe hasło"
 
 #: kallithea/model/user.py:332
 #, python-format
-msgid "Your new RhodeCode password:%s"
+msgid "Your new Kallithea password:%s"
 msgstr "Nowe hasło do strony: %s"
 
 #: kallithea/model/validators.py:82 kallithea/model/validators.py:83
@@ -2332,7 +2332,7 @@ msgstr "Włączone Wtyczki"
 #: kallithea/templates/admin/auth/auth_settings.html:36
 msgid ""
 "Comma separated list of plugins. Order of plugins is also order in which "
-"RhodeCode will try to authenticate user"
+"Kallithea will try to authenticate user"
 msgstr ""
 
 #: kallithea/templates/admin/auth/auth_settings.html:37
@@ -2940,7 +2940,7 @@ msgstr "Dostęp anonimowy"
 #: kallithea/templates/admin/permissions/permissions_globals.html:13
 #, python-format
 msgid ""
-"Allow access to RhodeCode without need to log in. Anonymous users use %s "
+"Allow access to Kallithea without need to log in. Anonymous users use %s "
 "user permissions"
 msgstr ""
 
@@ -3310,7 +3310,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_creating.html:42
 msgid ""
 "We're sorry but error occured during this operation. Please check your "
-"RhodeCode server logs, or contact administrator."
+"Kallithea server logs, or contact administrator."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:8
@@ -3430,7 +3430,7 @@ msgstr "Usuń rozwidlenie"
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:94
 msgid ""
 "This repository will be renamed in a special way in order to be unaccesible "
-"for RhodeCode and VCS systems. If you need to fully delete it from file "
+"for Kallithea and VCS systems. If you need to fully delete it from file "
 "system please do it manually"
 msgstr "To repozytorium zostanie zmienione w sposób szczególny, żeby było niedostępne dla strony i systemów VCS. Jeśli chcesz całkowicie usunąć go z systemu plików prosimy zrobić to ręcznie"
 
@@ -3643,7 +3643,7 @@ msgid "Email prefix"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_email.html:5
-msgid "RhodeCode email from"
+msgid "Kallithea email from"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_email.html:6
@@ -3695,7 +3695,7 @@ msgid "Site branding"
 msgstr "Nazwa strony"
 
 #: kallithea/templates/admin/settings/settings_global.html:12
-msgid "Set a custom title for your RhodeCode Service."
+msgid "Set a custom title for your Kallithea Service."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_global.html:18
@@ -3755,7 +3755,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_license.html:9
 #: kallithea/templates/admin/settings/settings_system.html:4
-msgid "RhodeCode version"
+msgid "Kallithea version"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_license.html:10
@@ -3791,7 +3791,7 @@ msgid "License key"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_license.html:37
-msgid "Paste your RhodeCode license key into that textarea."
+msgid "Paste your Kallithea license key into that textarea."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_license.html:52
@@ -3830,7 +3830,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_mapping.html:25
 msgid ""
-"Verify if RhodeCodes GIT hooks are installed for each repository. Current "
+"Verify if Kallitheas GIT hooks are installed for each repository. Current "
 "hooks will be updated to latest version"
 msgstr ""
 
@@ -3848,7 +3848,7 @@ msgstr "Buduj od podstaw"
 
 #: kallithea/templates/admin/settings/settings_search.html:15
 msgid ""
-"This option completely reindex all the files within RhodeCode for proper "
+"This option completely reindex all the files within Kallithea for proper "
 "fulltext search capabilities."
 msgstr ""
 
@@ -3902,7 +3902,7 @@ msgstr "Wymagaj ssl dla operacji vcs"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:13
 msgid ""
-"Activate to set RhodeCode to require SSL for pushing or pulling. If SSL "
+"Activate to set Kallithea to require SSL for pushing or pulling. If SSL "
 "certificate is missing it will return a HTTP Error 406: Not Acceptable."
 msgstr ""
 
@@ -3946,9 +3946,9 @@ msgstr "Położenie repozytorium"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:69
 msgid ""
-"Click to unlock. You must restart RhodeCode in order to make this setting "
+"Click to unlock. You must restart Kallithea in order to make this setting "
 "take effect."
-msgstr "Kliknij, aby odblokować. Musisz ponownie uruchomić RhodeCode żeby wprowadzić to ustawienie w życie."
+msgstr "Kliknij, aby odblokować. Musisz ponownie uruchomić Kallithea żeby wprowadzić to ustawienie w życie."
 
 #: kallithea/templates/admin/settings/settings_vcs.html:72
 msgid ""
@@ -3969,34 +3969,34 @@ msgid "Allows storing additional customized fields per repository."
 msgstr "Umożliwia przechowywanie dodatkowych niestandardowych pól w repozytorium."
 
 #: kallithea/templates/admin/settings/settings_visual.html:18
-msgid "Show RhodeCode version"
-msgstr "Pokaż wersję RhodeCode"
+msgid "Show Kallithea version"
+msgstr "Pokaż wersję Kallithea"
 
 #: kallithea/templates/admin/settings/settings_visual.html:20
-msgid "Shows or hides a version number of RhodeCode displayed in the footer."
+msgid "Shows or hides a version number of Kallithea displayed in the footer."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_visual.html:24
-msgid "Use Gravatars in RhodeCode"
+msgid "Use Gravatars in Kallithea"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_visual.html:30
 msgid ""
 "Gravatar url allows you to use other avatar server application.\n"
 "                                                        Following variables of the URL will be replaced accordingly.\n"
-"                                                        {scheme}    'http' or 'https' sent from running RhodeCode server,\n"
+"                                                        {scheme}    'http' or 'https' sent from running Kallithea server,\n"
 "                                                        {email}     user email,\n"
 "                                                        {md5email}  md5 hash of the user email (like at gravatar.com),\n"
 "                                                        {size}      size of the image that is expected from the server application,\n"
-"                                                        {netloc}    network location/server host of running RhodeCode server"
+"                                                        {netloc}    network location/server host of running Kallithea server"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_visual.html:42
 msgid ""
 "Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}', available vars:\n"
-"                                                        {scheme} 'http' or 'https' sent from running RhodeCode server,\n"
+"                                                        {scheme} 'http' or 'https' sent from running Kallithea server,\n"
 "                                                        {user}   current user username,\n"
-"                                                        {netloc} network location/server host of running RhodeCode server,\n"
+"                                                        {netloc} network location/server host of running Kallithea server,\n"
 "                                                        {repo}   full repository name,\n"
 "                                                        {repoid} ID of repository, can be used to contruct clone-by-id"
 msgstr ""
@@ -4712,7 +4712,7 @@ msgid "Refs"
 msgstr "Gałąź/Etykieta"
 
 #: kallithea/templates/changelog/changelog_summary_data.html:86
-msgid "Add or upload files directly via RhodeCode"
+msgid "Add or upload files directly via Kallithea"
 msgstr "Dodaj lub prześlij pliki bezpośrednio przez stronę"
 
 #: kallithea/templates/changelog/changelog_summary_data.html:89
@@ -4862,7 +4862,7 @@ msgstr "Komentarze analizowane za pomocą %s składni od %s wsparcia."
 #: kallithea/templates/changeset/changeset_file_comment.html:69
 #: kallithea/templates/changeset/changeset_file_comment.html:155
 msgid ""
-"Use @username inside this text to send notification to this RhodeCode user"
+"Use @username inside this text to send notification to this Kallithea user"
 msgstr "Użyj @username wewnątrz tego tekstu, aby wysłać powiadomienie do użytkownika strony"
 
 #: kallithea/templates/changeset/changeset_file_comment.html:73
@@ -5028,7 +5028,7 @@ msgid "The changeset status was changed to"
 msgstr "Status zestawienia zmian został zmieniony na"
 
 #: kallithea/templates/email_templates/main.html:8
-msgid "This is a notification from RhodeCode."
+msgid "This is a notification from Kallithea."
 msgstr "To jest powiadomienie z strony"
 
 #: kallithea/templates/email_templates/password_reset.html:4

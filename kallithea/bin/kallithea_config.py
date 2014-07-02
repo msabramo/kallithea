@@ -15,7 +15,7 @@
 kallithea.bin.kallithea_config
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-configuration generator for RhodeCode
+configuration generator for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -44,7 +44,7 @@ def argparser(argv):
     )
 
     parser = argparse.ArgumentParser(
-        description='RhodeCode CONFIG generator with variable replacement',
+        description='Kallithea CONFIG generator with variable replacement',
         usage=usage
     )
 

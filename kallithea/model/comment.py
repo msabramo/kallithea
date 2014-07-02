@@ -15,7 +15,7 @@
 kallithea.model.comment
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-comments model for RhodeCode
+comments model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -97,7 +97,7 @@ class ChangesetCommentsModel(BaseModel):
                 (user.username, h.short_id(revision))
             # get the current participants of this changeset
             recipients = ChangesetComment.get_users(revision=revision)
-            # add changeset author if it's in rhodecode system
+            # add changeset author if it's in kallithea system
             cs_author = User.get_from_cs_author(cs.author)
             if not cs_author:
                 #use repo owner if we cannot extract the author correctly

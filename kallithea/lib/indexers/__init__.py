@@ -15,7 +15,7 @@
 kallithea.lib.indexers.__init__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Whoosh indexing module for RhodeCode
+Whoosh indexing module for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

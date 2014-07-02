@@ -63,7 +63,7 @@ def load_environment(global_conf, app_conf, initial=False,
     # Initialize config with the basic options
     config.init_app(global_conf, app_conf, package='kallithea', paths=paths)
 
-    # store some globals into rhodecode
+    # store some globals into kallithea
     kallithea.CELERY_ON = str2bool(config['app_conf'].get('use_celery'))
     kallithea.CELERY_EAGER = str2bool(config['app_conf'].get('celery.always.eager'))
 

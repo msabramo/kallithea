@@ -45,7 +45,7 @@ class LazyFormencode(object):
         return formencode_obj(*self.args, **self.kwargs)
 
 
-class RhodeCodeAuthPluginBase(object):
+class KallitheaAuthPluginBase(object):
     auth_func_attrs = {
         "username": "unique username",
         "firstname": "first name",
@@ -54,16 +54,16 @@ class RhodeCodeAuthPluginBase(object):
         "groups": '["list", "of", "groups"]',
         "extern_name": "name in external source of record",
         "extern_type": "type of external source of record",
-        "admin": 'True|False defines if user should be RhodeCode super admin',
-        "active": 'True|False defines active state of user internally for RhodeCode',
+        "admin": 'True|False defines if user should be Kallithea super admin',
+        "active": 'True|False defines active state of user internally for Kallithea',
         "active_from_extern": "True|False\None, active state from the external auth, "
-                              "None means use definition from RhodeCode extern_type active value"
+                              "None means use definition from Kallithea extern_type active value"
     }
 
     @property
     def validators(self):
         """
-        Exposes RhodeCode validators modules
+        Exposes Kallithea validators modules
         """
         # this is a hack to overcome issues with pylons threadlocals and
         # translator object _() not beein registered properly.
@@ -136,7 +136,7 @@ class RhodeCodeAuthPluginBase(object):
         :param kwargs: extra arguments needed for user fetching.
         """
         user = None
-        log.debug('Trying to fetch user `%s` from RhodeCode database'
+        log.debug('Trying to fetch user `%s` from Kallithea database'
                   % (username))
         if username:
             user = User.get_by_username(username)
@@ -175,7 +175,7 @@ class RhodeCodeAuthPluginBase(object):
 
         'validator' is an lazy instantiated form field validator object, ala
         formencode. You need to *call* this object to init the validators.
-        All calls to RhodeCode validators should be used through self.validators
+        All calls to Kallithea validators should be used through self.validators
         which is a lazy loading proxy of formencode module.
         """
         raise NotImplementedError("Not implemented in base class")
@@ -216,7 +216,7 @@ class RhodeCodeAuthPluginBase(object):
 
         Return None on failure. On success, return a dictionary of the form:
 
-            see: RhodeCodeAuthPluginBase.auth_func_attrs
+            see: KallitheaAuthPluginBase.auth_func_attrs
         This is later validated for correctness
         """
         raise NotImplementedError("not implemented in base class")
@@ -244,7 +244,7 @@ class RhodeCodeAuthPluginBase(object):
         return ret
 
 
-class RhodeCodeExternalAuthPlugin(RhodeCodeAuthPluginBase):
+class KallitheaExternalAuthPlugin(KallitheaAuthPluginBase):
     def use_fake_password(self):
         """
         Return a boolean that indicates whether or not we should set the user's
@@ -256,14 +256,14 @@ class RhodeCodeExternalAuthPlugin(RhodeCodeAuthPluginBase):
         raise NotImplementedError("Not implemented in base class")
 
     def _authenticate(self, userobj, username, passwd, settings, **kwargs):
-        auth = super(RhodeCodeExternalAuthPlugin, self)._authenticate(
+        auth = super(KallitheaExternalAuthPlugin, self)._authenticate(
             userobj, username, passwd, settings, **kwargs)
         if auth:
             # maybe plugin will clean the username ?
             # we should use the return value
             username = auth['username']
             # if user is not active from our extern type we should fail to authe
-            # this can prevent from creating users in RhodeCode when using
+            # this can prevent from creating users in Kallithea when using
             # external authentication, but if it's inactive user we shouldn't
             # create that user anyway
             if auth['active_from_extern'] is False:
@@ -306,15 +306,15 @@ def importplugin(plugin):
     """
     Imports and returns the authentication plugin in the module named by plugin
     (e.g., plugin='kallithea.lib.auth_modules.auth_internal'). Returns the
-    RhodeCodeAuthPluginBase subclass on success, raises exceptions on failure.
+    KallitheaAuthPluginBase subclass on success, raises exceptions on failure.
 
     raises:
-        AttributeError -- no RhodeCodeAuthPlugin class in the module
-        TypeError -- if the RhodeCodeAuthPlugin is not a subclass of ours RhodeCodeAuthPluginBase
+        AttributeError -- no KallitheaAuthPlugin class in the module
+        TypeError -- if the KallitheaAuthPlugin is not a subclass of ours KallitheaAuthPluginBase
         ImportError -- if we couldn't import the plugin at all
     """
     log.debug("Importing %s" % plugin)
-    PLUGIN_CLASS_NAME = "RhodeCodeAuthPlugin"
+    PLUGIN_CLASS_NAME = "KallitheaAuthPlugin"
     try:
         module = importlib.import_module(plugin)
     except (ImportError, TypeError):
@@ -327,9 +327,9 @@ def importplugin(plugin):
               % (plugin, module.__name__, module.__file__))
 
     pluginclass = getattr(module, PLUGIN_CLASS_NAME)
-    if not issubclass(pluginclass, RhodeCodeAuthPluginBase):
-        raise TypeError("Authentication class %s.RhodeCodeAuthPlugin is not "
-                        "a subclass of %s" % (plugin, RhodeCodeAuthPluginBase))
+    if not issubclass(pluginclass, KallitheaAuthPluginBase):
+        raise TypeError("Authentication class %s.KallitheaAuthPlugin is not "
+                        "a subclass of %s" % (plugin, KallitheaAuthPluginBase))
     return pluginclass
 
 
@@ -340,8 +340,8 @@ def loadplugin(plugin):
         see: importplugin
     """
     plugin = importplugin(plugin)()
-    if plugin.plugin_settings.im_func != RhodeCodeAuthPluginBase.plugin_settings.im_func:
-        raise TypeError("Authentication class %s.RhodeCodeAuthPluginBase "
+    if plugin.plugin_settings.im_func != KallitheaAuthPluginBase.plugin_settings.im_func:
+        raise TypeError("Authentication class %s.KallitheaAuthPluginBase "
                         "has overriden the plugin_settings method, which is "
                         "forbidden." % plugin)
     return plugin
@@ -367,7 +367,7 @@ def authenticate(username, password, environ=None):
             raise ImportError('Failed to load authentication module %s : %s'
                               % (module, str(e)))
         log.debug('Trying authentication using ** %s **' % (module,))
-        # load plugin settings from RhodeCode database
+        # load plugin settings from Kallithea database
         plugin_name = plugin.name
         plugin_settings = {}
         for v in plugin.plugin_settings():
@@ -395,9 +395,9 @@ def authenticate(username, password, environ=None):
 
         log.info('Authenticating user using %s plugin' % plugin.__module__)
         # _authenticate is a wrapper for .auth() method of plugin.
-        # it checks if .auth() sends proper data. for RhodeCodeExternalAuthPlugin
+        # it checks if .auth() sends proper data. for KallitheaExternalAuthPlugin
         # it also maps users to Database and maps the attributes returned
-        # from .auth() to RhodeCode database. If this function returns data
+        # from .auth() to Kallithea database. If this function returns data
         # then auth is correct.
         plugin_user = plugin._authenticate(user, username, password,
                                            plugin_settings,

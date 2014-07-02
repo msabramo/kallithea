@@ -15,7 +15,7 @@
 kallithea.controllers.changelog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-changelog controller for rhodecode
+changelog controller for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

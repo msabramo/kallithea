@@ -75,7 +75,7 @@ class API(object):
         }
 
     def post(self, method, args):
-        """Send a generic API post to Rhodecode.
+        """Send a generic API post to Kallithea.
 
         This will generate the UUID for validation check after the
         response is returned. Handle errors and get the result back.
@@ -99,7 +99,7 @@ class API(object):
         return response["result"]
 
     def create_group(self, name, active=True):
-        """Create the Rhodecode user group."""
+        """Create the Kallithea user group."""
         args = {
             "group_name": name,
             "active": str(active)
@@ -208,7 +208,7 @@ class LdapSync(object):
                                           config.get("default", "api_key"))
 
     def update_groups_from_ldap(self):
-        """Add all the groups from LDAP to Rhodecode."""
+        """Add all the groups from LDAP to Kallithea."""
         added = existing = 0
         groups = self.ldap_client.get_groups()
         for group in groups:

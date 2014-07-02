@@ -1,11 +1,11 @@
-# English translations for rhodecode.
+# English translations for Kallithea.
 # Copyright (C) 2010 ORGANIZATION
-# This file is distributed under the same license as the rhodecode project.
+# This file is distributed under the same license as the Kallithea project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rhodecode 0.1\n"
+"Project-Id-Version: Kallithea 0.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2013-06-01 18:38+0200\n"
 "PO-Revision-Date: 2011-02-25 19:13+0100\n"
@@ -122,7 +122,7 @@ msgstr ""
 
 #: kallithea/controllers/files.py:297
 #, python-format
-msgid "Edited file %s via RhodeCode"
+msgid "Edited file %s via Kallithea"
 msgstr ""
 
 #: kallithea/controllers/files.py:313
@@ -139,7 +139,7 @@ msgid "Error occurred during commit"
 msgstr ""
 
 #: kallithea/controllers/files.py:351
-msgid "Added file via RhodeCode"
+msgid "Added file via Kallithea"
 msgstr ""
 
 #: kallithea/controllers/files.py:368
@@ -212,7 +212,7 @@ msgid "journal"
 msgstr ""
 
 #: kallithea/controllers/login.py:138
-msgid "You have successfully registered into RhodeCode"
+msgid "You have successfully registered into Kallithea"
 msgstr ""
 
 #: kallithea/controllers/login.py:159
@@ -969,7 +969,7 @@ msgid "[pushed] into"
 msgstr ""
 
 #: kallithea/lib/helpers.py:761
-msgid "[committed via RhodeCode] into repository"
+msgid "[committed via Kallithea] into repository"
 msgstr ""
 
 #: kallithea/lib/helpers.py:763
@@ -1156,7 +1156,7 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1313
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1398
 #: kallithea/lib/dbmigrate/schema/db_1_7_0.py:1406 kallithea/model/db.py:1411
-msgid "RhodeCode Administrator"
+msgid "Kallithea Administrator"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1174
@@ -1202,14 +1202,14 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1199
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1319
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1404
-msgid "Register new user with RhodeCode with manual activation"
+msgid "Register new user with Kallithea with manual activation"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1182
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1202
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1322
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1407
-msgid "Register new user with RhodeCode with auto activation"
+msgid "Register new user with Kallithea with auto activation"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1623
@@ -1357,7 +1357,7 @@ msgstr ""
 
 #: kallithea/model/notification.py:231
 #, python-format
-msgid "%(user)s registered in RhodeCode at %(when)s"
+msgid "%(user)s registered in Kallithea at %(when)s"
 msgstr ""
 
 #: kallithea/model/notification.py:232
@@ -1408,7 +1408,7 @@ msgstr ""
 
 #: kallithea/model/user.py:367
 #, python-format
-msgid "Your new RhodeCode password:%s"
+msgid "Your new Kallithea password:%s"
 msgstr ""
 
 #: kallithea/model/validators.py:38 kallithea/model/validators.py:39
@@ -2604,7 +2604,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit.html:315
 msgid ""
 "This repository will be renamed in a special way in order to be "
-"unaccesible for RhodeCode and VCS systems. If you need to fully delete it"
+"unaccesible for Kallithea and VCS systems. If you need to fully delete it"
 " from file system please do it manually"
 msgstr ""
 
@@ -2919,11 +2919,11 @@ msgid "Allows storing additional customized fields per repository."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings.html:139
-msgid "Show RhodeCode version"
+msgid "Show Kallithea version"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings.html:141
-msgid "Shows or hides displayed version of RhodeCode in the footer"
+msgid "Shows or hides displayed version of Kallithea in the footer"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings.html:146
@@ -2974,7 +2974,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings.html:220
 msgid ""
-"RhodeCode will require SSL for pushing or pulling. If SSL is missing it "
+"Kallithea will require SSL for pushing or pulling. If SSL is missing it "
 "will return HTTP Error 406: Not Acceptable"
 msgstr ""
 
@@ -3026,7 +3026,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings.html:279
 msgid ""
-"Click to unlock. You must restart RhodeCode in order to make this setting"
+"Click to unlock. You must restart Kallithea in order to make this setting"
 " take effect."
 msgstr ""
 
@@ -3697,7 +3697,7 @@ msgid "Refs"
 msgstr ""
 
 #: kallithea/templates/changelog/changelog_summary_data.html:86
-msgid "Add or upload files directly via RhodeCode"
+msgid "Add or upload files directly via Kallithea"
 msgstr ""
 
 #: kallithea/templates/changelog/changelog_summary_data.html:89
@@ -3828,7 +3828,7 @@ msgstr ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:61
 #: kallithea/templates/changeset/changeset_file_comment.html:147
-msgid "Use @username inside this text to send notification to this RhodeCode user"
+msgid "Use @username inside this text to send notification to this Kallithea user"
 msgstr ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:65
@@ -3990,7 +3990,7 @@ msgid "The changeset status was changed to"
 msgstr ""
 
 #: kallithea/templates/email_templates/main.html:8
-msgid "This is a notification from RhodeCode."
+msgid "This is a notification from Kallithea."
 msgstr ""
 
 #: kallithea/templates/email_templates/password_reset.html:4

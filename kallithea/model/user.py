@@ -15,7 +15,7 @@
 kallithea.model.user
 ~~~~~~~~~~~~~~~~~~~~
 
-users model for RhodeCode
+users model for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -141,7 +141,7 @@ class UserModel(BaseModel):
         # raises UserCreationError if it's not allowed
         check_allowed_create_user(user_data, cur_user)
 
-        log.debug('Checking for %s account in RhodeCode database' % username)
+        log.debug('Checking for %s account in Kallithea database' % username)
         user = User.get_by_username(username, case_insensitive=True)
         if user is None:
             log.debug('creating new user %s' % username)
@@ -331,7 +331,7 @@ class UserModel(BaseModel):
             pre_db = False
             run_task(tasks.send_email, user_email,
                      _('Your new password'),
-                     _('Your new RhodeCode password:%s') % (new_passwd,))
+                     _('Your new Kallithea password:%s') % (new_passwd,))
             log.info('send new password mail to %s' % user_email)
 
         except Exception:

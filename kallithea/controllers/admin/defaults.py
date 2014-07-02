@@ -15,7 +15,7 @@
 kallithea.controllers.admin.defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-default settings controller for Rhodecode
+default settings controller for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

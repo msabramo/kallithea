@@ -15,7 +15,7 @@
 kallithea.lib.celerylib.tasks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RhodeCode task modules, containing all task that suppose to be run
+Kallithea task modules, containing all task that suppose to be run
 by celery daemon
 
 This file was forked by the Kallithea project in July 2014.
@@ -278,7 +278,7 @@ def send_email(recipients, subject, body='', html_body=''):
                   .filter(User.admin == True).all()]
         recipients = [email_config.get('email_to')] + admins
 
-    mail_from = email_config.get('app_email_from', 'RhodeCode')
+    mail_from = email_config.get('app_email_from', 'Kallithea')
     user = email_config.get('smtp_username')
     passwd = email_config.get('smtp_password')
     mail_server = email_config.get('smtp_server')

@@ -46,7 +46,7 @@ FORMAT_JSON = 'json'
 
 def api_call(apikey, apihost, method=None, **kw):
     """
-    Api_call wrapper for RhodeCode.
+    Api_call wrapper for Kallithea.
 
     :param apikey:
     :param apihost:
@@ -91,7 +91,7 @@ def api_call(apikey, apihost, method=None, **kw):
 
 class RcConf(object):
     """
-    RhodeCode config for API
+    Kallithea config for API
 
     conf = RcConf()
     conf['key']
