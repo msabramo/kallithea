@@ -1697,6 +1697,7 @@ div.form div.fields div.field div.button {
 
 #content div.box #summary {
     margin-right: 200px;
+    min-height: 240px;
 }
 
 #summary-menu-stats {
