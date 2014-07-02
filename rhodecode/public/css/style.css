@@ -1303,6 +1303,9 @@ tbody .yui-dt-editable { cursor: pointer }
 #content div.box div.form div.fields div.field div.file {
     margin: 0 0 0 200px;
 }
+#content div.box div.form div.fields div.field div.editor {
+    margin: 0 0 0 200px;
+}
 
 #content div.box-left div.form div.fields div.field div.input, #content div.box-right div.form div.fields div.field div.input {
     margin: 0 0 0 0px;
