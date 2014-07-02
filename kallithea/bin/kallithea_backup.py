@@ -39,7 +39,7 @@ logging.basicConfig(level=logging.DEBUG,
 class BackupManager(object):
     def __init__(self, repos_location, rsa_key, backup_server):
         today = datetime.datetime.now().weekday() + 1
-        self.backup_file_name = "rhodecode_repos.%s.tar.gz" % today
+        self.backup_file_name = "repos.%s.tar.gz" % today
 
         self.id_rsa_path = self.get_id_rsa(rsa_key)
         self.repos_path = self.get_repos_path(repos_location)

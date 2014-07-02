@@ -32,10 +32,10 @@ from kallithea.bin.base import json, api_call, RcConf, FORMAT_JSON, FORMAT_PRETT
 
 def argparser(argv):
     usage = (
-      "rhodecode-api [-h] [--format=FORMAT] [--apikey=APIKEY] [--apihost=APIHOST] "
+      "kallithea-api [-h] [--format=FORMAT] [--apikey=APIKEY] [--apihost=APIHOST] "
       "[--config=CONFIG] [--save-config] "
       "METHOD <key:val> <key2:val> ...\n"
-      "Create config file: rhodecode-api --apikey=<key> --apihost=http://your.kallithea.server --save-config"
+      "Create config file: kallithea-api --apikey=<key> --apihost=http://your.kallithea.server --save-config"
     )
 
     parser = argparse.ArgumentParser(description='RhodeCode API cli',

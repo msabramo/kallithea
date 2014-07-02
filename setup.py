@@ -158,9 +158,9 @@ setup(
     paster_plugins=['PasteScript', 'Pylons'],
     entry_points="""
     [console_scripts]
-    rhodecode-api =    kallithea.bin.rhodecode_api:main
-    rhodecode-gist =   kallithea.bin.rhodecode_gist:main
-    rhodecode-config = kallithea.bin.rhodecode_config:main
+    kallithea-api =    kallithea.bin.kallithea_api:main
+    kallithea-gist =   kallithea.bin.kallithea_gist:main
+    kallithea-config = kallithea.bin.kallithea_config:main
 
     [paste.app_factory]
     main = kallithea.config.middleware:make_app

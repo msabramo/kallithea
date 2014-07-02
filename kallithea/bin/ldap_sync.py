@@ -45,7 +45,7 @@ class InvalidResponseIDError(Exception):
     """ Request and response don't have the same UUID. """
 
 
-class RhodecodeResponseError(Exception):
+class ResponseError(Exception):
     """ Response has an error, something went wrong with request execution. """
 
 
@@ -57,7 +57,7 @@ class UserNotInGroupError(Exception):
     """ User is not a member of the target group. """
 
 
-class RhodecodeAPI(object):
+class API(object):
 
     def __init__(self, url, key):
         self.url = url
@@ -72,7 +72,7 @@ class RhodecodeAPI(object):
             "args": args
         }
 
-    def rhodecode_api_post(self, method, args):
+    def post(self, method, args):
         """Send a generic API post to Rhodecode.
 
         This will generate the UUID for validation check after the
@@ -92,7 +92,7 @@ class RhodecodeAPI(object):
             raise InvalidResponseIDError("UUID does not match.")
 
         if response["error"] is not None:
-            raise RhodecodeResponseError(response["error"])
+            raise ResponseError(response["error"])
 
         return response["result"]
 
@@ -102,7 +102,7 @@ class RhodecodeAPI(object):
             "group_name": name,
             "active": str(active)
         }
-        self.rhodecode_api_post("create_user_group", args)
+        self.post("create_user_group", args)
 
     def add_membership(self, group, username):
         """Add specific user to a group."""
@@ -110,7 +110,7 @@ class RhodecodeAPI(object):
             "usersgroupid": group,
             "userid": username
         }
-        result = self.rhodecode_api_post("add_user_to_user_group", args)
+        result = self.post("add_user_to_user_group", args)
         if not result["success"]:
             raise UserAlreadyInGroupError("User %s already in group %s." %
                                           (username, group))
@@ -121,7 +121,7 @@ class RhodecodeAPI(object):
             "usersgroupid": group,
             "userid": username
         }
-        result = self.rhodecode_api_post("remove_user_from_user_group", args)
+        result = self.post("remove_user_from_user_group", args)
         if not result["success"]:
             raise UserNotInGroupError("User %s not in group %s." %
                                       (username, group))
@@ -129,7 +129,7 @@ class RhodecodeAPI(object):
     def get_group_members(self, name):
         """Get the list of member usernames from a user group."""
         args = {"usersgroupid": name}
-        members = self.rhodecode_api_post("get_user_group", args)['members']
+        members = self.post("get_user_group", args)['members']
         member_list = []
         for member in members:
             member_list.append(member["username"])
@@ -138,12 +138,12 @@ class RhodecodeAPI(object):
     def get_group(self, name):
         """Return group info."""
         args = {"usersgroupid": name}
-        return self.rhodecode_api_post("get_user_group", args)
+        return self.post("get_user_group", args)
 
     def get_user(self, username):
         """Return user info."""
         args = {"userid": username}
-        return self.rhodecode_api_post("get_user", args)
+        return self.post("get_user", args)
 
 
 class LdapClient(object):
@@ -202,7 +202,7 @@ class LdapSync(object):
                                       config.get("default", "ldap_user"),
                                       config.get("default", "ldap_key"),
                                       config.get("default", "base_dn"))
-        self.rhodocode_api = RhodecodeAPI(config.get("default", "api_url"),
+        self.rhodocode_api = API(config.get("default", "api_url"),
                                           config.get("default", "api_key"))
 
     def update_groups_from_ldap(self):
@@ -211,7 +211,7 @@ class LdapSync(object):
         groups = self.ldap_client.get_groups()
         for group in groups:
             try:
-                self.rhodecode_api.create_repo_group(group)
+                self.kallithea_api.create_repo_group(group)
                 added += 1
             except Exception:
                 existing += 1
@@ -219,25 +219,25 @@ class LdapSync(object):
         return added, existing
 
     def update_memberships_from_ldap(self, group):
-        """Update memberships in rhodecode based on the LDAP groups."""
+        """Update memberships based on the LDAP groups."""
         groups = self.ldap_client.get_groups()
         group_users = self.ldap_client.get_group_users(groups, group)
 
         # Delete memberships first from each group which are not part
         # of the group any more.
-        rhodecode_members = self.rhodecode_api.get_group_members(group)
-        for rhodecode_member in rhodecode_members:
-            if rhodecode_member not in group_users:
+        members = self.kallithea_api.get_group_members(group)
+        for member in members:
+            if member not in group_users:
                 try:
                     self.rhodocode_api.remove_membership(group,
-                                                         rhodecode_member)
+                                                         member)
                 except UserNotInGroupError:
                     pass
 
         # Add memberships.
         for member in group_users:
             try:
-                self.rhodecode_api.add_membership(group, member)
+                self.kallithea_api.add_membership(group, member)
             except UserAlreadyInGroupError:
                 # TODO: handle somehow maybe..
                 pass
@@ -252,5 +252,5 @@ if __name__ == '__main__':
         # How should we handle this.. Either sync users as well at this step,
         # or just ignore those who don't exist. If we want the second case,
         # we need to find a way to recognize the right exception (we always get
-        # RhodecodeResponseError with no error code so maybe by return msg (?)
+        # ResponseError with no error code so maybe by return msg (?)
         sync.update_memberships_from_ldap(gr)

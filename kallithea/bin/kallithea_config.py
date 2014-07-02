@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-kallithea.bin.rhodecode_config
+kallithea.bin.kallithea_config
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 configuration generator for RhodeCode
@@ -35,7 +35,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 def argparser(argv):
     usage = (
-      "rhodecode-config [-h] [--filename=FILENAME] [--template=TEMPLATE] \n"
+      "kallithea-config [-h] [--filename=FILENAME] [--template=TEMPLATE] \n"
       "VARS optional specify extra template variable that will be available in "
       "template. Use comma separated key=val format eg.\n"
       "key1=val1,port=5000,host=127.0.0.1,elements='a\,b\,c'\n"

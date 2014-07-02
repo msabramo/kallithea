@@ -79,12 +79,12 @@ API CLIENT
 ++++++++++
 
 From version 1.4 RhodeCode adds a script that allows to easily
-communicate with API. After installing RhodeCode a `rhodecode-api` script
+communicate with API. After installing RhodeCode a `kallithea-api` script
 will be available.
 
 To get started quickly simply run::
 
-  rhodecode-api _create_config --apikey=<youapikey> --apihost=<your.kallithea.server>
+  kallithea-api _create_config --apikey=<youapikey> --apihost=<your.kallithea.server>
 
 This will create a file named .config in the directory you executed it storing
 json config file with credentials. You can skip this step and always provide
@@ -93,7 +93,7 @@ both of the arguments to be able to communicate with server
 
 after that simply run any api command for example get_repo::
 
- rhodecode-api get_repo
+ kallithea-api get_repo
 
  calling {"api_key": "<apikey>", "id": 75, "args": {}, "method": "get_repo"} to http://127.0.0.1:5000
  rhodecode said:
@@ -105,7 +105,7 @@ Ups looks like we forgot to add an argument
 
 Let's try again now giving the repoid as parameters::
 
-    rhodecode-api get_repo repoid:rhodecode
+    kallithea-api get_repo repoid:rhodecode
 
     calling {"api_key": "<apikey>", "id": 39, "args": {"repoid": "rhodecode"}, "method": "get_repo"} to http://127.0.0.1:5000
     rhodecode said:

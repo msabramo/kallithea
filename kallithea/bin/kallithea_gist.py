@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-kallithea.bin.rhodecode_gist
+kallithea.bin.kallithea_gist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Gist CLI client for RhodeCode
@@ -35,10 +35,10 @@ from kallithea.bin.base import json, api_call, RcConf, FORMAT_JSON, FORMAT_PRETT
 
 def argparser(argv):
     usage = (
-      "rhodecode-gist [-h] [--format=FORMAT] [--apikey=APIKEY] [--apihost=APIHOST] "
+      "kallithea-gist [-h] [--format=FORMAT] [--apikey=APIKEY] [--apihost=APIHOST] "
       "[--config=CONFIG] [--save-config] [GIST OPTIONS] "
       "[filename or stdin use - for terminal stdin ]\n"
-      "Create config file: rhodecode-gist --apikey=<key> --apihost=http://your.kallithea.server --save-config"
+      "Create config file: kallithea-gist --apikey=<key> --apihost=http://your.kallithea.server --save-config"
     )
 
     parser = argparse.ArgumentParser(description='RhodeCode Gist cli',
