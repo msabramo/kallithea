@@ -108,7 +108,7 @@ def make_map(config):
     rmap.connect('rst_help',
                  "http://docutils.sourceforge.net/docs/user/rst/quickref.html",
                  _static=True)
-    rmap.connect('rhodecode_official', "https://kallithea-scm.org/", _static=True)
+    rmap.connect('kallithea_project_url', "https://kallithea-scm.org/", _static=True)
     rmap.connect('rc_issue_tracker', 'https://bitbucket.org/conservancy/kallithea/issues', _static=True)
 
     #ADMIN REPOSITORY ROUTES
