@@ -27,10 +27,11 @@ Original author and date, and relevant copyright and licensing information is be
 
 
 import logging
+
+from kallithea import EXTERN_TYPE_INTERNAL
 from kallithea.lib import auth_modules
 from kallithea.lib.compat import formatted_json, hybrid_property
 from kallithea.model.db import User
-
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaAuthPluginBase):
 
     @hybrid_property
     def name(self):
-        return "internal"
+        return EXTERN_TYPE_INTERNAL
 
     def settings(self):
         return []

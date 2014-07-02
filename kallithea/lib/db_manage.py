@@ -34,8 +34,7 @@ import logging
 from os.path import dirname as dn, join as jn
 import datetime
 
-from kallithea import __dbversion__, __py_version__
-
+from kallithea import __dbversion__, __py_version__, EXTERN_TYPE_INTERNAL
 from kallithea.model.user import UserModel
 from kallithea.lib.utils import ask_ok
 from kallithea.model import init_model
@@ -543,7 +542,7 @@ class DbManage(object):
         UserModel().create_or_update(username, password, email,
                                      firstname='Kallithea', lastname='Admin',
                                      active=True, admin=admin,
-                                     extern_type="internal")
+                                     extern_type=EXTERN_TYPE_INTERNAL)
 
     def create_default_user(self):
         log.info('creating default user')

@@ -36,6 +36,7 @@ from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
+from kallithea import EXTERN_TYPE_INTERNAL
 from kallithea.lib import helpers as h
 from kallithea.lib.auth import LoginRequired, NotAnonymous, AuthUser
 from kallithea.lib.base import BaseController, render
@@ -70,6 +71,7 @@ class MyAccountController(BaseController):
             h.flash(_("You can't edit this user since it's"
                       " crucial for entire application"), category='warning')
             return redirect(url('users'))
+        c.EXTERN_TYPE_INTERNAL = EXTERN_TYPE_INTERNAL
 
     def _load_my_repos_data(self, watched=False):
         if watched:
@@ -118,7 +120,7 @@ class MyAccountController(BaseController):
                 skip_attrs = ['admin', 'active', 'extern_type', 'extern_name',
                               'new_password', 'password_confirmation']
                 #TODO: plugin should define if username can be updated
-                if c.extern_type != "internal":
+                if c.extern_type != EXTERN_TYPE_INTERNAL:
                     # forbid updating username for external accounts
                     skip_attrs.append('username')
 

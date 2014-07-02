@@ -177,7 +177,7 @@ class UsersController(BaseController):
             form_result = _form.to_python(dict(request.POST))
             skip_attrs = ['extern_type', 'extern_name']
             #TODO: plugin should define if username can be updated
-            if c.extern_type != "internal":
+            if c.extern_type != kallithea.EXTERN_TYPE_INTERNAL:
                 # forbid updating username for external accounts
                 skip_attrs.append('username')
 
@@ -245,6 +245,7 @@ class UsersController(BaseController):
         c.active = 'profile'
         c.extern_type = c.user.extern_type
         c.extern_name = c.user.extern_name
+        c.EXTERN_TYPE_INTERNAL = kallithea.EXTERN_TYPE_INTERNAL
         c.perm_user = AuthUser(user_id=id, ip_addr=self.ip_addr)
 
         defaults = c.user.get_dict()

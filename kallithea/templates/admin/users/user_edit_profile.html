@@ -20,7 +20,7 @@ ${h.form(url('update_user', id=c.user.user_id),method='put')}
         <% readonly = None %>
         <% disabled = "" %>
         <div class="fields">
-            %if c.extern_type != 'internal':
+            %if c.extern_type != c.EXTERN_TYPE_INTERNAL:
              <div class="field">
                <% readonly = "readonly" %>
                <% disabled = " disabled" %>

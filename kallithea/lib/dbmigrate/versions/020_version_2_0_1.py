@@ -7,6 +7,7 @@ from sqlalchemy.orm import relation, backref, class_mapper, joinedload
 from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base
 
+from kallithea import EXTERN_TYPE_INTERNAL
 from kallithea.lib.dbmigrate.migrate import *
 from kallithea.lib.dbmigrate.migrate.changeset import *
 from kallithea.lib.utils2 import str2bool
@@ -39,7 +40,7 @@ def fixups(models, _SESSION):
     #fix all empty extern type users to default 'internal'
     for usr in models.User.query().all():
         if not usr.extern_name:
-            usr.extern_name = 'internal'
-            usr.extern_type = 'internal'
+            usr.extern_name = EXTERN_TYPE_INTERNAL
+            usr.extern_type = EXTERN_TYPE_INTERNAL
             _SESSION().add(usr)
             _SESSION().commit()

@@ -61,6 +61,9 @@ except ImportError:
 # Prefix for the ui and settings table names
 DB_PREFIX = (BRAND + "_") if BRAND != "kallithea" else ""
 
+# Users.extern_type and .extern_name value for local users
+EXTERN_TYPE_INTERNAL = BRAND if BRAND != 'kallithea' else 'internal'
+
 try:
     from kallithea.lib import get_current_revision
     _rev = get_current_revision(quiet=True)

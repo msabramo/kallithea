@@ -33,7 +33,7 @@ from pylons.i18n.translation import _
 
 from sqlalchemy.exc import DatabaseError
 
-
+from kallithea import EXTERN_TYPE_INTERNAL
 from kallithea.lib.utils2 import safe_unicode, generate_api_key, get_current_authuser
 from kallithea.lib.caching_query import FromCache
 from kallithea.model import BaseModel
@@ -187,8 +187,8 @@ class UserModel(BaseModel):
 
         try:
             form_data['admin'] = False
-            form_data['extern_name'] = 'internal'
-            form_data['extern_type'] = 'internal'
+            form_data['extern_name'] = EXTERN_TYPE_INTERNAL
+            form_data['extern_type'] = EXTERN_TYPE_INTERNAL
             new_user = self.create(form_data)
 
             self.sa.add(new_user)
