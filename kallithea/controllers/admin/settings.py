@@ -38,7 +38,7 @@ from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator
 from kallithea.lib.base import BaseController, render
 from kallithea.lib.celerylib import tasks, run_task
 from kallithea.lib.exceptions import HgsubversionImportError
-from kallithea.lib.utils import repo2db_mapper, set_rhodecode_config
+from kallithea.lib.utils import repo2db_mapper, set_app_settings
 from kallithea.model.db import RhodeCodeUi, Repository, RhodeCodeSetting
 from kallithea.model.forms import ApplicationSettingsForm, \
     ApplicationUiSettingsForm, ApplicationVisualisationForm
@@ -264,7 +264,7 @@ class SettingsController(BaseController):
                 Session().add(sett5)
 
                 Session().commit()
-                set_rhodecode_config(config)
+                set_app_settings(config)
                 h.flash(_('Updated application settings'), category='success')
 
             except Exception:
@@ -321,7 +321,7 @@ class SettingsController(BaseController):
                     Session().add(sett)
 
                 Session().commit()
-                set_rhodecode_config(config)
+                set_app_settings(config)
                 h.flash(_('Updated visualisation settings'),
                         category='success')
 

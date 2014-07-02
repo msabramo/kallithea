@@ -33,7 +33,7 @@ from kallithea.config.routing import make_map
 
 from kallithea.lib import helpers
 from kallithea.lib.auth import set_available_permissions
-from kallithea.lib.utils import repo2db_mapper, make_ui, set_rhodecode_config,\
+from kallithea.lib.utils import repo2db_mapper, make_ui, set_app_settings,\
     load_rcextensions, check_git_version, set_vcs_config
 from kallithea.lib.utils2 import engine_from_config, str2bool
 from kallithea.lib.db_manage import DbManage
@@ -117,7 +117,7 @@ def load_environment(global_conf, app_conf, initial=False,
     set_available_permissions(config)
     repos_path = make_ui('db').configitems('paths')[0][1]
     config['base_path'] = repos_path
-    set_rhodecode_config(config)
+    set_app_settings(config)
 
     instance_id = kallithea.CONFIG.get('instance_id')
     if instance_id == '*':

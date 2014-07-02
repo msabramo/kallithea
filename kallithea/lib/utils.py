@@ -394,7 +394,7 @@ def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
     return baseui
 
 
-def set_rhodecode_config(config):
+def set_app_settings(config):
     """
     Updates pylons config with new settings from database
 
