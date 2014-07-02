@@ -1,13 +1,15 @@
 ################################################################################
 ################################################################################
-# Kallithea - Pylons environment configuration                                 #
+# Kallithea - Example config                                                   #
 #                                                                              #
 # The %(here)s variable will be replaced with the parent directory of this file#
+################################################################################
 ################################################################################
 
 [DEFAULT]
 debug = true
 pdebug = false
+
 ################################################################################
 ## Uncomment and replace with the address which should receive                ##
 ## any error reports after application crash                                  ##
@@ -58,7 +60,7 @@ max_request_body_size = 107374182400
 ## type of worker class, one of sync, eventlet, gevent, tornado
 ## recommended for bigger setup is using of of other than sync one
 #worker_class = sync
-#max_requests = 5
+#max_requests = 1000
 ## ammount of time a worker can handle request before it gets killed and
 ## restarted
 #timeout = 3600
@@ -139,18 +141,18 @@ use = egg:kallithea
 
 full_stack = true
 static_files = true
-## Optional Languages
-## en, fr, ja, pt_BR, zh_CN, zh_TW, pl
+## Available Languages:
+## de en fr ja pl pt_BR ru zh_CN zh_TW
 lang = en
 cache_dir = %(here)s/data
 index_dir = %(here)s/data/index
 
 ## perform a full repository scan on each server start, this should be
 ## set to false after first startup, to allow faster server restarts.
-initial_repo_scan = true
+initial_repo_scan = false
 
 ## uncomment and set this path to use archive download cache
-#archive_cache_dir = /tmp/tarballcache
+archive_cache_dir = %(here)s/tarballcache
 
 ## change this to unique ID for security
 app_instance_uuid = ${app_instance_uuid}
@@ -178,7 +180,7 @@ git_path = git
 
 ## git rev filter option, --all is the default filter, if you need to
 ## hide all refs in changelog switch this to --branches --tags
-git_rev_filter=--all
+#git_rev_filter = --branches --tags
 
 ## RSS feed options
 rss_cut_off_limit = 256000
@@ -200,7 +202,7 @@ gist_alias_url =
 ## api access to raw_files put `FilesController:raw`, to enable access to patches
 ## add `ChangesetController:changeset_patch`. This list should be "," separated
 ## Syntax is <ControllerClass>:<function>. Check debug logs for generated names
-## Recommended settings bellow are commented out:
+## Recommended settings below are commented out:
 api_access_controllers_whitelist =
 #    ChangesetController:changeset_patch,
 #    ChangesetController:changeset_raw,
@@ -262,7 +264,7 @@ issue_prefix = #
 ## issue_pat, issue_server_link, issue_prefix can have suffixes to specify
 ## multiple patterns, to other issues server, wiki or others
 ## below an example how to create a wiki pattern
-#  #wiki-some-id -> https://mywiki.com/some-id
+# wiki-some-id -> https://mywiki.com/some-id
 
 #issue_pat_wiki = (?:wiki-)(.+)
 #issue_server_link_wiki = https://mywiki.com/{id}
@@ -294,6 +296,7 @@ allow_custom_hooks_settings = True
 ####################################
 ###        CELERY CONFIG        ####
 ####################################
+
 use_celery = false
 broker.host = localhost
 broker.vhost = rabbitmqhost
@@ -321,6 +324,7 @@ celery.always.eager = false
 ####################################
 ###         BEAKER CACHE        ####
 ####################################
+
 beaker.cache.data_dir=%(here)s/data/cache/data
 beaker.cache.lock_dir=%(here)s/data/cache/lock
 
@@ -483,6 +487,7 @@ set debug = false
 ##################################
 ###       LOGVIEW CONFIG       ###
 ##################################
+
 logview.sqlalchemy = #faa
 logview.pylons.templating = #bfb
 logview.pylons.util = #eee
@@ -492,7 +497,7 @@ logview.pylons.util = #eee
 #########################################################
 
 # SQLITE [default]
-sqlalchemy.db1.url = sqlite:///%(here)s/kallithea.db?timeout=30
+sqlalchemy.db1.url = sqlite:///%(here)s/kallithea.db?timeout=60
 
 # POSTGRESQL
 # sqlalchemy.db1.url = postgresql://user:pass@localhost/kallithea
@@ -509,6 +514,7 @@ sqlalchemy.db1.convert_unicode = true
 ################################
 ### LOGGING CONFIGURATION   ####
 ################################
+
 [loggers]
 keys = root, routes, kallithea, sqlalchemy, beaker, templates, whoosh_indexer
 
@@ -521,6 +527,7 @@ keys = generic, color_formatter, color_formatter_sql
 #############
 ## LOGGERS ##
 #############
+
 [logger_root]
 level = NOTSET
 handlers = console

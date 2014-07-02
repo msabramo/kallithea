@@ -1,11 +1,8 @@
 ## -*- coding: utf-8 -*-
-<%text>
+<%text>################################################################################
 ################################################################################
+# Kallithea - config file generated with kallithea-config                      #
 ################################################################################
-# Kallithea - Example config                                                   #
-# Built-in functions and variables                                             #
-# The ${here} variable will be replaced with the parent directory of this file #
-# ${uuid()} function will generate a unique hash                               #
 ################################################################################
 </%text>
 [DEFAULT]
@@ -16,8 +13,7 @@ pdebug = false
 ## Uncomment and replace with the address which should receive                ##
 ## any error reports after application crash                                  ##
 ## Additionally those settings will be used by Kallithea mailing system       ##
-################################################################################
-</%text>
+################################################################################</%text>
 #email_to = admin@localhost
 #error_email_from = paste_error@localhost
 #app_email_from = kallithea-noreply@localhost
@@ -77,7 +73,7 @@ timeout = 3600
 [uwsgi]
 socket = /tmp/uwsgi.sock
 master = true
-http = 0.0.0.0:5000
+http = 127.0.0.1:5000
 
 <%text>## set as deamon and redirect all output to file</%text>
 #daemonize = ./uwsgi_kallithea.log
@@ -86,7 +82,7 @@ http = 0.0.0.0:5000
 pidfile = ./uwsgi_kallithea.pid
 
 <%text>## stats server with workers statistics, use uwsgitop</%text>
-<%text>## for monitoring</%text>
+<%text>## for monitoring, `uwsgitop 127.0.0.1:1717`</%text>
 stats = 127.0.0.1:1717
 memory-report = true
 
@@ -148,8 +144,8 @@ use = egg:kallithea
 
 full_stack = true
 static_files = true
-<%text>## Optional Languages</%text>
-<%text>## en, fr, ja, pt_BR, zh_CN, zh_TW, pl, ru</%text>
+<%text>## Available Languages:</%text>
+<%text>## de en fr ja pl pt_BR ru zh_CN zh_TW</%text>
 lang = ${lang}
 cache_dir = ${here}/data
 index_dir = ${here}/data/index
@@ -187,7 +183,7 @@ git_path = git
 
 <%text>## git rev filter option, --all is the default filter, if you need to</%text>
 <%text>## hide all refs in changelog switch this to --branches --tags</%text>
-git_rev_filter=--branches --tags
+#git_rev_filter = --branches --tags
 
 <%text>## RSS feed options</%text>
 rss_cut_off_limit = 256000
@@ -209,7 +205,12 @@ gist_alias_url =
 <%text>## api access to raw_files put `FilesController:raw`, to enable access to patches</%text>
 <%text>## add `ChangesetController:changeset_patch`. This list should be "," separated</%text>
 <%text>## Syntax is <ControllerClass>:<function>. Check debug logs for generated names</%text>
+<%text>## Recommended settings below are commented out:</%text>
 api_access_controllers_whitelist =
+#    ChangesetController:changeset_patch,
+#    ChangesetController:changeset_raw,
+#    FilesController:raw,
+#    FilesController:archivefile
 
 <%text>## alternative_gravatar_url allows you to use your own avatar server application</%text>
 <%text>## the following parts of the URL will be replaced</%text>
@@ -266,7 +267,7 @@ issue_prefix = #
 <%text>## issue_pat, issue_server_link, issue_prefix can have suffixes to specify</%text>
 <%text>## multiple patterns, to other issues server, wiki or others</%text>
 <%text>## below an example how to create a wiki pattern</%text>
-<%text>## wiki-some-id -> https://mywiki.com/some-id</%text>
+# wiki-some-id -> https://mywiki.com/some-id
 
 #issue_pat_wiki = (?:wiki-)(.+)
 #issue_server_link_wiki = https://mywiki.com/{id}
@@ -484,8 +485,7 @@ sentry.exclude_paths =
 ## WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*  ##
 ## Debug mode will enable the interactive debugging tool, allowing ANYONE to  ##
 ## execute malicious code after an exception is raised.                       ##
-################################################################################
-</%text>
+################################################################################</%text>
 set debug = false
 <%text>
 ##################################
