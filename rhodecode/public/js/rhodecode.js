@@ -964,7 +964,8 @@ var initCodeMirror = function(textarea_id, resetUrl){
     var myCodeMirror = CodeMirror.fromTextArea($('#' + textarea_id)[0], {
             mode: "null",
             lineNumbers: true,
-            indentUnit: 4
+            indentUnit: 4,
+            autofocus: true,
         });
     $('#reset').click(function(e){
             window.location=resetUrl;
