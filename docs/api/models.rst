@@ -22,7 +22,7 @@ The :mod:`models` Module
 .. automodule:: kallithea.model.repo
    :members:
 
-.. automodule:: kallithea.model.repos_group
+.. automodule:: kallithea.model.repo_group
    :members:
 
 .. automodule:: kallithea.model.scm
@@ -31,5 +31,5 @@ The :mod:`models` Module
 .. automodule:: kallithea.model.user
    :members:
 
-.. automodule:: kallithea.model.users_group
+.. automodule:: kallithea.model.user_group
    :members:

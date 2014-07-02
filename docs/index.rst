@@ -11,6 +11,7 @@ Users Guide
    :maxdepth: 1
 
    installation
+   installation_win
    setup
    upgrade
 
