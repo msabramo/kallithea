@@ -795,7 +795,7 @@ var _placeAddButton = function($line_tr){
     }
     $tr.find('.add-comment').remove();
     var label = TRANSLATION_MAP['Add another comment'];
-    var $html_el = $('<div class="add-comment"><span class="ui-btn">{0}</span></div>'.format(label));
+    var $html_el = $('<div class="add-comment"><span class="btn btn-mini">{0}</span></div>'.format(label));
     $html_el.click(function(e) {
         injectInlineForm($line_tr);
     });
