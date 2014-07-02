@@ -214,9 +214,7 @@ def log_push_action(ui, repo, **kwargs):
 
 def log_create_repository(repository_dict, created_by, **kwargs):
     """
-    Post create repository Hook. This is a dummy function for admins to re-use
-    if needed. It's taken from rhodecode-extensions module and executed
-    if present
+    Post create repository Hook.
 
     :param repository: dict dump of repository object
     :param created_by: username who created repository
@@ -261,9 +259,7 @@ def check_allowed_create_user(user_dict, created_by, **kwargs):
 
 def log_create_user(user_dict, created_by, **kwargs):
     """
-    Post create user Hook. This is a dummy function for admins to re-use
-    if needed. It's taken from rhodecode-extensions module and executed
-    if present
+    Post create user Hook.
 
     :param user_dict: dict dump of user object
 
@@ -300,9 +296,7 @@ def log_create_user(user_dict, created_by, **kwargs):
 
 def log_delete_repository(repository_dict, deleted_by, **kwargs):
     """
-    Post delete repository Hook. This is a dummy function for admins to re-use
-    if needed. It's taken from rhodecode-extensions module and executed
-    if present
+    Post delete repository Hook.
 
     :param repository: dict dump of repository object
     :param deleted_by: username who deleted the repository
@@ -338,9 +332,7 @@ def log_delete_repository(repository_dict, deleted_by, **kwargs):
 
 def log_delete_user(user_dict, deleted_by, **kwargs):
     """
-    Post delete user Hook. This is a dummy function for admins to re-use
-    if needed. It's taken from rhodecode-extensions module and executed
-    if present
+    Post delete user Hook.
 
     :param user_dict: dict dump of user object
 

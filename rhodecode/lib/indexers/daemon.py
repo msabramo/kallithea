@@ -36,7 +36,7 @@ from time import mktime
 from os.path import dirname as dn
 from os.path import join as jn
 
-#to get the rhodecode import
+# Add location of top level folder to sys.path
 project_path = dn(dn(dn(dn(os.path.realpath(__file__)))))
 sys.path.append(project_path)
 

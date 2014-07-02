@@ -31,7 +31,7 @@ import logging
 
 from rhodecode.lib.utils import BasePasterCommand
 
-# fix rhodecode import
+# Add location of top level folder to sys.path
 from os.path import dirname as dn
 rc_path = dn(dn(dn(os.path.realpath(__file__))))
 sys.path.append(rc_path)

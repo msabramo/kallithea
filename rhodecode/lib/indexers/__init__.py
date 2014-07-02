@@ -28,7 +28,7 @@ import sys
 import logging
 from os.path import dirname as dn, join as jn
 
-#to get the rhodecode import
+# Add location of top level folder to sys.path
 sys.path.append(dn(dn(dn(os.path.realpath(__file__)))))
 
 from whoosh.analysis import RegexTokenizer, LowercaseFilter, StopFilter
