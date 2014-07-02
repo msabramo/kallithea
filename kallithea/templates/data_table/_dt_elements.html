@@ -6,7 +6,7 @@
   <ul class="menu_items hidden">
   ##<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
 
-    <li style="border-top:1px solid #003367;margin-left:18px;padding-left:-99px"></li>
+    <li style="border-top:1px solid #577632;margin-left:18px;padding-left:-99px"></li>
     <li>
        <a title="${_('Summary')}" href="${h.url('summary_home',repo_name=repo_name)}">
        <span class="icon">
@@ -60,7 +60,7 @@
 
     ##TYPE OF REPO
     %if h.is_hg(rtype):
-        <span title="${_('Mercurial repository')}"><i class="icon-hg" style="color: #316293; font-size: 14px;"></i></span>
+        <span title="${_('Mercurial repository')}"><i class="icon-hg" style="color: #576622; font-size: 14px;"></i></span>
     %elif h.is_git(rtype):
         <span title="${_('Git repository')}"><i class="icon-git" style="color: #e85634; font-size: 14px;"></i></span>
     %endif

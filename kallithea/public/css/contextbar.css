@@ -70,7 +70,7 @@ i[class^='icon-'] {
 #content #context-bar {
     position: relative;
     overflow: visible;
-    background-color: #336699;
+    background-color: #577632;
     border-top: 1px solid #517da8;
     border-bottom: 1px solid #003162;
     padding: 0 5px;
@@ -161,14 +161,14 @@ ul.horizontal-list li a {
 #context-pages,
 #context-pages ul {
     background: #3b6998; /* Old browsers */
-    background: -moz-linear-gradient(top, #4574a2 0%, #2f5d8b 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4574a2), color-stop(100%,#2f5d8b)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #4574a2 0%, #2f5d8b 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #4574a2 0%, #2f5d8b 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #4574a2 0%, #2f5d8b 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #4574a2 0%, #2f5d8b 100%); /* W3C */
+    background: -moz-linear-gradient(top, #577632 0%, #577632 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#577632), color-stop(100%,#577632)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #577632 0%, #577632 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #577632 0%, #577632 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #577632 0%, #577632 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #577632 0%, #577632 100%); /* W3C */
     /*Filter on IE will also use overflow:hidden implicitly, and that would clip our inner menus.*/
-    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4574a2', endColorstr='#2f5d8b',GradientType=0 ); /* IE6-9 */*/
+    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#577632', endColorstr='#577632',GradientType=0 ); /* IE6-9 */*/
 }
 
 #header #header-inner #quick a,
@@ -188,7 +188,7 @@ ul#context-actions {
     display: inline-block;
     float: right;
     border-radius: 4px;
-    background-image: linear-gradient(top, #4574a2 0%, #2f5d8b 100%);
+    background-image: linear-gradient(top, #577632 0%, #577632 100%);
 }
 
 #content ul#context-actions li {

@@ -50,13 +50,13 @@ html {
 }
 
 a {
-    color: #003367;
+    color: #577632;
     text-decoration: none;
     cursor: pointer;
 }
 
 a:hover {
-    color: #316293;
+    color: #576622;
     text-decoration: underline;
 }
 
@@ -269,16 +269,16 @@ div:hover > a.permalink {
     -khtml-border-radius: 0px 0px 8px 8px;
     border-radius: 0px 0px 8px 8px;
     height: 37px;
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#003B76), to(#00376E) );
-    background-image: -moz-linear-gradient(top, #003b76, #00376e);
-    background-image: -ms-linear-gradient(top, #003b76, #00376e);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #003b76), color-stop(100%, #00376e) );
-    background-image: -webkit-linear-gradient(top, #003b76, #00376e);
-    background-image: -o-linear-gradient(top, #003b76, #00376e);
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#003b76',endColorstr='#00376e', GradientType=0 );
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#577632), to(#577632) );
+    background-image: -moz-linear-gradient(top, #577632, #577632);
+    background-image: -ms-linear-gradient(top, #577632, #577632);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #577632), color-stop(100%, #577632) );
+    background-image: -webkit-linear-gradient(top, #577632, #577632);
+    background-image: -o-linear-gradient(top, #577632, #577632);
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#577632',endColorstr='#577632', GradientType=0 );
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
 }
 
@@ -287,7 +287,7 @@ div:hover > a.permalink {
     float: left;
     margin: 8px 0 0;
     padding: 4px 12px;
-    border-left: 1px solid #316293;
+    border-left: 1px solid #576622;
 }
 
 #header ul#logged-user li.first {
@@ -328,7 +328,7 @@ div:hover > a.permalink {
 #header-dd {
     clear: both;
     position: fixed !important;
-    background-color: #003B76;
+    background-color: #577632;
     opacity: 0.01;
     cursor: pointer;
     min-height: 10px;
@@ -349,16 +349,16 @@ div:hover > a.permalink {
     min-height: 44px;
     clear: both;
     position: relative;
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#003B76), to(#00376E) );
-    background-image: -moz-linear-gradient(top, #003b76, #00376e);
-    background-image: -ms-linear-gradient(top, #003b76, #00376e);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #003b76),color-stop(100%, #00376e) );
-    background-image: -webkit-linear-gradient(top, #003b76, #00376e);
-    background-image: -o-linear-gradient(top, #003b76, #00376e);
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#003b76',endColorstr='#00376e', GradientType=0 );
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#577632), to(#577632) );
+    background-image: -moz-linear-gradient(top, #577632, #577632);
+    background-image: -ms-linear-gradient(top, #577632, #577632);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #577632),color-stop(100%, #577632) );
+    background-image: -webkit-linear-gradient(top, #577632, #577632);
+    background-image: -o-linear-gradient(top, #577632, #577632);
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#577632',endColorstr='#577632', GradientType=0 );
     margin: 0;
     padding: 0;
     display: block;
@@ -618,7 +618,7 @@ td.quick_repo_menu {
 
 td.quick_repo_menu.active {
     background: url("../images/dt-arrow-dn.png") no-repeat scroll 5px 50% #FFFFFF !important;
-    border: 1px solid #003367;
+    border: 1px solid #577632;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
 }
@@ -630,7 +630,7 @@ td.quick_repo_menu .menu_items {
     position: absolute;
     background-color: #FFF;
     background: none repeat scroll 0 0 #FFFFFF;
-    border-color: #003367 #666666 #666666;
+    border-color: #577632 #666666 #666666;
     border-right: 1px solid #666666;
     border-style: solid;
     border-width: 1px;
@@ -956,16 +956,16 @@ tbody .yui-dt-editable { cursor: pointer }
 #content div.box div.title {
     clear: both;
     overflow: hidden;
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#003B76), to(#00376E) );
-    background-image: -moz-linear-gradient(top, #003b76, #00376e);
-    background-image: -ms-linear-gradient(top, #003b76, #00376e);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #003b76), color-stop(100%, #00376e) );
-    background-image: -webkit-linear-gradient(top, #003b76, #00376e);
-    background-image: -o-linear-gradient(top, #003b76, #00376e);
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#003b76', endColorstr='#00376e', GradientType=0 );
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#577632), to(#577632) );
+    background-image: -moz-linear-gradient(top, #577632, #577632);
+    background-image: -ms-linear-gradient(top, #577632, #577632);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #577632), color-stop(100%, #577632) );
+    background-image: -webkit-linear-gradient(top, #577632, #577632);
+    background-image: -o-linear-gradient(top, #577632, #577632);
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#577632', endColorstr='#577632', GradientType=0 );
     margin: 0 0 20px;
     padding: 0;
     border-radius: 4px 4px 0 0;
@@ -1834,7 +1834,7 @@ div.form div.fields div.field div.button {
 }
 
 a.metatag[tag="license"]:hover {
-    background-color: #003367;
+    background-color: #577632;
     color: #FFF;
     text-decoration: none;
 }
@@ -1861,16 +1861,16 @@ a.metatag[tag="license"]:hover {
 }
 
 #footer div#footer-inner {
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient( linear, left top, left bottom, from(#003B76), to(#00376E));
-    background-image: -moz-linear-gradient(top, #003b76, #00376e);
-    background-image: -ms-linear-gradient( top, #003b76, #00376e);
-    background-image: -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #003b76), color-stop( 100%, #00376e));
-    background-image: -webkit-linear-gradient( top, #003b76, #00376e));
-    background-image: -o-linear-gradient( top, #003b76, #00376e));
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid : DXImageTransform.Microsoft.gradient ( startColorstr = '#003b76', endColorstr = '#00376e', GradientType = 0);
+    background-image: -khtml-gradient( linear, left top, left bottom, from(#577632), to(#577632));
+    background-image: -moz-linear-gradient(top, #577632, #577632);
+    background-image: -ms-linear-gradient( top, #577632, #577632);
+    background-image: -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #577632), color-stop( 100%, #577632));
+    background-image: -webkit-linear-gradient( top, #577632, #577632));
+    background-image: -o-linear-gradient( top, #577632, #577632));
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid : DXImageTransform.Microsoft.gradient ( startColorstr = '#577632', endColorstr = '#577632', GradientType = 0);
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
     -webkit-border-radius: 4px 4px 4px 4px;
     -khtml-border-radius: 4px 4px 4px 4px;
@@ -1896,16 +1896,16 @@ a.metatag[tag="license"]:hover {
     clear: both;
     overflow: hidden;
     position: relative;
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient( linear, left top, left bottom, from(#003B76), to(#00376E));
-    background-image: -moz-linear-gradient( top, #003b76, #00376e);
-    background-image: -ms-linear-gradient( top, #003b76, #00376e);
-    background-image: -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #003b76), color-stop( 100%, #00376e));
-    background-image: -webkit-linear-gradient( top, #003b76, #00376e));
-    background-image: -o-linear-gradient( top, #003b76, #00376e));
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid : DXImageTransform.Microsoft.gradient ( startColorstr = '#003b76', endColorstr = '#00376e', GradientType = 0);
+    background-image: -khtml-gradient( linear, left top, left bottom, from(#577632), to(#577632));
+    background-image: -moz-linear-gradient( top, #577632, #577632);
+    background-image: -ms-linear-gradient( top, #577632, #577632);
+    background-image: -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #577632), color-stop( 100%, #577632));
+    background-image: -webkit-linear-gradient( top, #577632, #577632));
+    background-image: -o-linear-gradient( top, #577632, #577632));
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid : DXImageTransform.Microsoft.gradient ( startColorstr = '#577632', endColorstr = '#577632', GradientType = 0);
     margin: 0 auto;
     padding: 0;
 }
@@ -1979,16 +1979,16 @@ a.metatag[tag="license"]:hover {
     padding: 4px;
     position: absolute;
     right: 0;
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#003B76), to(#00376E) );
-    background-image: -moz-linear-gradient(top, #003b76, #00376e);
-    background-image: -ms-linear-gradient(top, #003b76, #00376e);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #003b76), color-stop(100%, #00376e) );
-    background-image: -webkit-linear-gradient(top, #003b76, #00376e);
-    background-image: -o-linear-gradient(top, #003b76, #00376e);
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#003b76', endColorstr='#00376e', GradientType=0 );
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#577632), to(#577632) );
+    background-image: -moz-linear-gradient(top, #577632, #577632);
+    background-image: -ms-linear-gradient(top, #577632, #577632);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #577632), color-stop(100%, #577632) );
+    background-image: -webkit-linear-gradient(top, #577632, #577632);
+    background-image: -o-linear-gradient(top, #577632, #577632);
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#577632', endColorstr='#577632', GradientType=0 );
 
     z-index: 999;
     -webkit-border-radius: 0px 0px 4px 4px;
@@ -2146,17 +2146,17 @@ a.metatag[tag="license"]:hover {
     clear: both;
     overflow: hidden;
     position: relative;
-    background-color: #003B76;
+    background-color: #577632;
     background-repeat: repeat-x;
-    background-image: -khtml-gradient(linear, left top, left bottom, from(#003B76), to(#00376E) );
-    background-image: -moz-linear-gradient(top, #003b76, #00376e);
-    background-image: -ms-linear-gradient(top, #003b76, #00376e);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #003b76), color-stop(100%, #00376e) );
-    background-image: -webkit-linear-gradient(top, #003b76, #00376e);
-    background-image: -o-linear-gradient(top, #003b76, #00376e);
-    background-image: linear-gradient(to bottom, #003b76, #00376e);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#003b76',
-        endColorstr='#00376e', GradientType=0 );
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#577632), to(#577632) );
+    background-image: -moz-linear-gradient(top, #577632, #577632);
+    background-image: -ms-linear-gradient(top, #577632, #577632);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #577632), color-stop(100%, #577632) );
+    background-image: -webkit-linear-gradient(top, #577632, #577632);
+    background-image: -o-linear-gradient(top, #577632, #577632);
+    background-image: linear-gradient(to bottom, #577632, #577632);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#577632',
+        endColorstr='#577632', GradientType=0 );
     margin: 0 auto;
     padding: 0;
 }
@@ -2296,7 +2296,7 @@ a.metatag[tag="license"]:hover {
 }
 
 .trending_language {
-    background-color: #003367;
+    background-color: #577632;
     color: #FFF;
     display: block;
     min-width: 20px;
@@ -2412,7 +2412,7 @@ h3.files_location {
 
 .cs_files .changes {
     float: right;
-    color: #003367;
+    color: #577632;
 }
 
 .cs_files .changes .added {
@@ -2812,7 +2812,7 @@ BIN_FILENODE = 6
 .spantag {
     padding: 1px 3px 1px 3px;
     font-size: 10px;
-    color: #336699;
+    color: #577632;
     white-space: nowrap;
     -webkit-border-radius: 4px;
     border-radius: 4px;
@@ -3001,7 +3001,7 @@ table.code-browser .browser-file {
 .diffblock .diff-menu {
     position: absolute;
     background: none repeat scroll 0 0 #FFFFFF;
-    border-color: #003367 #666666 #666666;
+    border-color: #577632 #666666 #666666;
     border-right: 1px solid #666666;
     border-style: solid solid solid;
     border-width: 1px;
@@ -3061,7 +3061,7 @@ table.code-browser .submodule-dir {
 }
 
 .box .search div.search_path div.link a {
-    color: #003367;
+    color: #577632;
     cursor: pointer;
     text-decoration: none;
 }
@@ -3078,7 +3078,7 @@ table.code-browser .submodule-dir {
 }
 
 .info_box .rev {
-    color: #003367;
+    color: #577632;
     font-size: 1.6em;
     font-weight: bold;
     vertical-align: sub;
@@ -3116,7 +3116,7 @@ table.code-browser .submodule-dir {
     position: absolute;
 
     background-color: #FFF;
-    border: 2px solid #003367;
+    border: 2px solid #577632;
     font: 100% sans-serif;
     width: auto;
     opacity: 1;
@@ -3136,7 +3136,7 @@ table.code-browser .submodule-dir {
     position: absolute;
     color: #666;
     background-color: #FFF;
-    border: 2px solid #003367;
+    border: 2px solid #577632;
     font: 100% sans-serif;
     width: auto;
     opacity: 1;
@@ -3571,11 +3571,11 @@ div.gravatar img {
 }
 
 #content div.box div.title div.search {
-    border-left: 1px solid #316293;
+    border-left: 1px solid #576622;
 }
 
 #content div.box div.title div.search div.input input {
-    border: 1px solid #316293;
+    border: 1px solid #576622;
 }
 
 .btn {
@@ -3834,7 +3834,7 @@ div#legend_data, div#legend_container, div#legend_choices {
     -moz-box-shadow: none;
     box-shadow: none;
     color: #fff;
-    background-color: #316293;
+    background-color: #576622;
 }
 
 .repo-switcher-dropdown.select2-drop.select2-drop-active .select2-results .select2-highlighted {
@@ -4782,7 +4782,7 @@ span.pr-closed-tag {
     font-size: 10px;
     padding: 1px 3px 1px 3px;
     font-size: 10px;
-    color: #336699;
+    color: #577632;
     white-space: nowrap;
     -webkit-border-radius: 4px;
     border-radius: 4px;
