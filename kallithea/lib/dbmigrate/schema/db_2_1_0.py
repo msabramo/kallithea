@@ -171,7 +171,7 @@ class Setting(Base, BaseModel):
         'bool': str2bool,
         'list': functools.partial(aslist, sep=',')
     }
-    DEFAULT_UPDATE_URL = 'https://kallithea-scm.org/api/v1/info/versions'
+    DEFAULT_UPDATE_URL = ''
 
     app_settings_id = Column("app_settings_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
     app_settings_name = Column("app_settings_name", String(255, convert_unicode=False, assert_unicode=None), nullable=True, unique=None, default=None)

@@ -487,6 +487,7 @@ class SettingsController(BaseController):
         defaults = Setting.get_app_settings()
         defaults.update(self._get_hg_ui_settings())
         _update_url = defaults.get('rhodecode_update_url', '')
+        _update_url = "" # FIXME: disabled
 
         _err = lambda s: '<div style="color:#ff8888; padding:4px 0px">%s</div>' % (s)
         try:
