@@ -346,11 +346,6 @@ def make_map(config):
         m.connect("admin_settings_system_update", "/settings/system/updates",
                   action="settings_system_update", conditions=dict(method=["GET"]))
 
-        m.connect("admin_settings_license", "/settings/license",
-                  action="settings_license", conditions=dict(method=["POST"]))
-        m.connect("admin_settings_license", "/settings/license",
-                  action="settings_license", conditions=dict(method=["GET"]))
-
     #ADMIN MY ACCOUNT
     with rmap.submapper(path_prefix=ADMIN_PREFIX,
                         controller='admin/my_account') as m:

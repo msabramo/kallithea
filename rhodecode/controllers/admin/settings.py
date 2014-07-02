@@ -42,7 +42,6 @@ from rhodecode.lib.utils import repo2db_mapper, set_rhodecode_config
 from rhodecode.model.db import RhodeCodeUi, Repository, RhodeCodeSetting
 from rhodecode.model.forms import ApplicationSettingsForm, \
     ApplicationUiSettingsForm, ApplicationVisualisationForm
-from rhodecode.model.license import LicenseModel
 from rhodecode.model.scm import ScmModel
 from rhodecode.model.notification import EmailNotificationModel
 from rhodecode.model.meta import Session
@@ -517,63 +516,3 @@ class SettingsController(BaseController):
         c.important_notices = latest['general']
 
         return render('admin/settings/settings_system_update.html'),
-
-    @HasPermissionAllDecorator('hg.admin')
-    def settings_license(self):
-        """GET /admin/settings/hooks: All items in the collection"""
-        # url('admin_settings_license')
-        c.active = 'license'
-        if request.POST:
-            form_result = request.POST
-            try:
-                sett1 = RhodeCodeSetting.create_or_update('license_key',
-                                    form_result['rhodecode_license_key'],
-                                    'unicode')
-                Session().add(sett1)
-                Session().commit()
-                set_rhodecode_config(config)
-                h.flash(_('Updated license information'),
-                        category='success')
-
-            except Exception:
-                log.error(traceback.format_exc())
-                h.flash(_('Error occurred during updating license info'),
-                        category='error')
-
-            return redirect(url('admin_settings_license'))
-
-        defaults = RhodeCodeSetting.get_app_settings()
-        defaults.update(self._get_hg_ui_settings())
-
-        import rhodecode
-        c.rhodecode_ini = rhodecode.CONFIG
-        c.license_token = c.rhodecode_ini.get('license_token')
-        c.generated_license_token = LicenseModel.generate_license_token()
-        c.license_info = {}
-        c.license_loaded = False
-        # try to read info about license
-        try:
-            license_key = defaults.get('rhodecode_license_key')
-            if c.license_token and license_key:
-                c.license_info = json.loads(
-                    LicenseModel(key=c.license_token).decrypt(license_key))
-                expires = h.fmt_date(h.time_to_datetime(c.license_info['valid_till']))
-                now = time.time()
-                if 0 < (c.license_info['valid_till'] - now) < 60*60*24*7:
-                    h.flash(_('Your license will expire on %s, please contact '
-                              'support to extend your license.' % expires), category='warning')
-                if c.license_info['valid_till'] - now < 0:
-                    h.flash(_('Your license has expired on %s, please contact '
-                              'support to extend your license.' % expires), category='error')
-                c.license_loaded = True
-        except Exception, e:
-            log.error(traceback.format_exc())
-            h.flash(_('Unexpected error while reading license key. Please '
-                      'make sure your license token and key are correct'),
-                    category='error')
-
-        return htmlfill.render(
-            render('admin/settings/settings.html'),
-            defaults=defaults,
-            encoding="UTF-8",
-            force_defaults=False)

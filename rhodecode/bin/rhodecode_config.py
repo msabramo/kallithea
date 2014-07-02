@@ -93,8 +93,6 @@ def _run(argv):
         print parser.print_help()
         sys.exit(0)
     # defaults that can be overwritten by arguments
-    from rhodecode.model.license import LicenseModel
-    license_token = LicenseModel.generate_license_token()
     tmpl_stored_args = {
         'http_server': 'waitress',
         'lang': 'en',
@@ -102,7 +100,6 @@ def _run(argv):
         'host': '127.0.0.1',
         'port': 5000,
         'error_aggregation_service': None,
-        'license_token': license_token
     }
     if other:
         # parse arguments, we assume only first is correct

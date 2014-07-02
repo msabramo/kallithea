@@ -258,30 +258,6 @@ def check_allowed_create_user(user_dict, created_by, **kwargs):
         if not allowed:
             raise UserCreationError(reason)
 
-    # license limit hook
-    import rhodecode
-    from rhodecode.model.license import LicenseModel
-    license_token = rhodecode.CONFIG.get('license_token')
-    license_key = LicenseModel.get_license_key()
-    license_info = LicenseModel.get_license_info(
-        license_token=license_token, enc_license_key=license_key,
-        fill_defaults=True)
-    expiration_check = False
-    if expiration_check:
-        now = time.time()
-        #check expiration
-        if now > license_info['valid_till']:
-            reason = ('Your license has expired, '
-                      'please contact support to extend your license.')
-            raise UserCreationError(reason)
-    # user count check
-    cur_user_count = User.query().count()
-    if cur_user_count > int(license_info['users']) > 0:
-        reason = ('You have reached the maximum number of users (%s), '
-                  'please contact support to extend your license.'
-                  % license_info['users'])
-        raise UserCreationError(reason)
-
 
 def log_create_user(user_dict, created_by, **kwargs):
     """
