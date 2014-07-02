@@ -44,19 +44,22 @@ CONFIG = {}
 # Linked module for extensions
 EXTENSIONS = {}
 
-# SETTINGS_PREFIX is the prefix to use for form fields and database table names.
-
-#  Ideally, SETTINGS_PREFIX would be in an ini file of some sort instead of
-#  in this code.  However, since this is used in kallithea/model/db.py as
-#  part of the database initialization in code that typically runs before
-#  CONFIG (above) is populated with settings from the ini file, it's instead
-#  hard-coded herein.
-
-SETTINGS_PREFIX = "kallithea_"
+# BRAND controls internal references in database and config to the products
+# own name.
+#
 # NOTE: If you want compatibility with a database that was originally created
-#  for use with the Rhodecode software product, changing SETTINGS_PREFIX to
-#  "rhodecode_" might work to make the old database and forms compatible with
-#  this application.
+#  for use with the RhodeCode software product, change BRAND to "rhodecode",
+#  either by editing here or by creating a new file:
+#  echo "BRAND = 'rhodecode'" > kallithea/brand.py
+
+BRAND = "kallithea"
+try:
+    from kallithea.brand import BRAND
+except ImportError:
+    pass
+
+# Prefix for the ui and settings table names
+SETTINGS_PREFIX = BRAND + "_"
 
 try:
     from kallithea.lib import get_current_revision
