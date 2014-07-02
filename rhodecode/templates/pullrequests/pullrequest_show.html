@@ -104,7 +104,7 @@ ${self.repo_context_bar('showpullrequest')}
        <div class="pr-details-title">${_('Pull request reviewers')}</div>
         <div id="reviewers" style="padding:0px 0px 5px 10px">
           ## members goes here !
-          <div style="min-height:30px">
+          <div>
             <ul id="review_members" class="group_members">
             %for member,status in c.pull_request_reviewers:
               <li id="reviewer_${member.user_id}">

@@ -4140,6 +4140,10 @@ div#legend_container table td, div#legend_choices table td {
     padding: 0px 0px 0px 0px;
 }
 
+.reviewer_status {
+    float: left;
+}
+
 .reviewers_member {
     height: 15px;
     padding: 0px 0px 0px 10px;
