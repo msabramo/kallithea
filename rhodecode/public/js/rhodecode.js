@@ -923,6 +923,7 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
                     }
                     if(match.length >= matches_max){
                         match.push('<tr><td>{0}</td><td colspan="5"></td></tr>'.format(_TM['Search truncated']));
+                        break;
                     }
                 }
             }
