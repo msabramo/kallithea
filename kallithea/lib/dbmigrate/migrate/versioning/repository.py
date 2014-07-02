@@ -9,6 +9,7 @@ import logging
 from pkg_resources import resource_filename
 from tempita import Template as TempitaTemplate
 
+import kallithea
 from kallithea.lib.dbmigrate.migrate import exceptions
 from kallithea.lib.dbmigrate.migrate.versioning import version, pathed, cfgparse
 from kallithea.lib.dbmigrate.migrate.versioning.template import Template
@@ -175,7 +176,11 @@ class Repository(pathed.Pathed):
     @property
     def id(self):
         """Returns repository id specified in config"""
-        return self.config.get('db_settings', 'repository_id')
+        # Adjust the value read from kallithea/lib/dbmigrate/migrate.cfg, normally "kallithea_db_migrations"
+        s = self.config.get('db_settings', 'repository_id')
+        if s == "kallithea_db_migrations":
+            s = kallithea.DB_MIGRATIONS
+        return s
 
     @property
     def use_timestamp_numbering(self):

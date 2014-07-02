@@ -34,7 +34,7 @@ import logging
 from os.path import dirname as dn, join as jn
 import datetime
 
-from kallithea import __dbversion__, __py_version__, EXTERN_TYPE_INTERNAL
+from kallithea import __dbversion__, __py_version__, EXTERN_TYPE_INTERNAL, DB_MIGRATIONS
 from kallithea.model.user import UserModel
 from kallithea.lib.utils import ask_ok
 from kallithea.model import init_model
@@ -110,7 +110,7 @@ class DbManage(object):
     def set_db_version(self):
         ver = DbMigrateVersion()
         ver.version = __dbversion__
-        ver.repository_id = 'rhodecode_db_migrations'
+        ver.repository_id = DB_MIGRATIONS
         ver.repository_path = 'versions'
         self.sa.add(ver)
         log.info('db version set to: %s' % __dbversion__)

@@ -64,6 +64,9 @@ DB_PREFIX = (BRAND + "_") if BRAND != "kallithea" else ""
 # Users.extern_type and .extern_name value for local users
 EXTERN_TYPE_INTERNAL = BRAND if BRAND != 'kallithea' else 'internal'
 
+# db_migrate_version.repository_id value, same as kallithea/lib/dbmigrate/migrate.cfg
+DB_MIGRATIONS = BRAND + "_db_migrations"
+
 try:
     from kallithea.lib import get_current_revision
     _rev = get_current_revision(quiet=True)
