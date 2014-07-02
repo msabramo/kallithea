@@ -34,7 +34,7 @@ script: nosetests
 
 notifications:
     email:
-        - marcinkuz@gmail.com
+        - ci@kallithea-scm.org
     irc: "irc.freenode.org#kallithea"
 
 branches:
