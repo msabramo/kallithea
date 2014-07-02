@@ -19,8 +19,6 @@ Kallithea works on \*nix systems and Windows it is powered by a vcs_ library
 that Lukasz Balcerzak and Marcin Kuzminski created to handle multiple
 different version control systems.
 
-Kallithea uses `PEP386 versioning <http://www.python.org/dev/peps/pep-0386/>`_
-
 Installation
 ------------
 Stable releases of Kallithea are best installed via::
