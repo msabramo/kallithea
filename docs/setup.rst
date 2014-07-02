@@ -36,7 +36,7 @@ up for you.
 
 setup process can be fully automated, example for lazy::
 
-    paster setup-rhodecode production.ini --user=marcink --password=secret --email=marcin@rhodecode.org --repos=/home/marcink/my_repos
+    paster setup-rhodecode production.ini --user=nn --password=secret --email=nn@your.kallithea.server --repos=/home/nn/my_repos
 
 
 - The ``setup-rhodecode`` command will create all of the needed tables and an
@@ -542,8 +542,8 @@ Sample config for nginx using proxy::
        error_log       /var/log/nginx/gist.error.log;
 
        ssl on;
-       ssl_certificate     gist.rhodecode.myserver.com.crt;
-       ssl_certificate_key gist.rhodecode.myserver.com.key;
+       ssl_certificate     gist.your.kallithea.server.crt;
+       ssl_certificate_key gist.your.kallithea.server.key;
 
        ssl_session_timeout 5m;
 
@@ -551,19 +551,19 @@ Sample config for nginx using proxy::
        ssl_ciphers DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:EDH-RSA-DES-CBC3-SHA:AES256-SHA:DES-CBC3-SHA:AES128-SHA:RC4-SHA:RC4-MD5;
        ssl_prefer_server_ciphers on;
 
-       rewrite ^/(.+)$ https://rhodecode.myserver.com/_admin/gists/$1;
-       rewrite (.*)    https://rhodecode.myserver.com/_admin/gists;
+       rewrite ^/(.+)$ https://your.kallithea.server/_admin/gists/$1;
+       rewrite (.*)    https://your.kallithea.server/_admin/gists;
     }
 
     server {
        listen          443;
-       server_name     rhodecode.myserver.com;
+       server_name     your.kallithea.server;
        access_log      /var/log/nginx/rhodecode.access.log;
        error_log       /var/log/nginx/rhodecode.error.log;
 
        ssl on;
-       ssl_certificate     rhodecode.myserver.com.crt;
-       ssl_certificate_key rhodecode.myserver.com.key;
+       ssl_certificate     your.kallithea.server.crt;
+       ssl_certificate_key your.kallithea.server.key;
 
        ssl_session_timeout 5m;
 

@@ -200,8 +200,8 @@ show_revision_number = true
 
 <%text>## gist URL alias, used to create nicer urls for gist. This should be an</%text>
 <%text>## url that does rewrites to _admin/gists/<gistid>.</%text>
-<%text>## example: http://gist.rhodecode.org/{gistid}. Empty means use the internal</%text>
-<%text>## RhodeCode url, ie. http[s]://rhodecode.server/_admin/gists/<gistid></%text>
+<%text>## example: http://gist.kallithea.server/{gistid}. Empty means use the internal</%text>
+<%text>## RhodeCode url, ie. http[s]://your.kallithea.server/_admin/gists/<gistid></%text>
 gist_alias_url =
 
 <%text>## white list of API enabled controllers. This allows to add list of</%text>

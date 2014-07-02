@@ -38,7 +38,7 @@ def argparser(argv):
       "rhodecode-gist [-h] [--format=FORMAT] [--apikey=APIKEY] [--apihost=APIHOST] "
       "[--config=CONFIG] [--save-config] [GIST OPTIONS] "
       "[filename or stdin use - for terminal stdin ]\n"
-      "Create config file: rhodecode-gist --apikey=<key> --apihost=http://rhodecode.server --save-config"
+      "Create config file: rhodecode-gist --apikey=<key> --apihost=http://your.kallithea.server --save-config"
     )
 
     parser = argparse.ArgumentParser(description='RhodeCode Gist cli',

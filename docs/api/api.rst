@@ -84,7 +84,7 @@ will be available.
 
 To get started quickly simply run::
 
-  rhodecode-api _create_config --apikey=<youapikey> --apihost=<rhodecode host>
+  rhodecode-api _create_config --apikey=<youapikey> --apihost=<your.kallithea.server>
 
 This will create a file named .config in the directory you executed it storing
 json config file with credentials. You can skip this step and always provide
