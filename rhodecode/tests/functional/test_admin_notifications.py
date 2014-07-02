@@ -18,7 +18,7 @@ class TestNotificationsController(TestController):
         self.log_user()
 
         u1 = UserModel().create_or_update(username='u1', password='qweqwe',
-                                          email='u1@rhodecode.org',
+                                          email='u1@example.com',
                                           firstname='u1', lastname='u1')
         u1 = u1.user_id
 
@@ -37,10 +37,10 @@ class TestNotificationsController(TestController):
         cur_user = self._get_logged_user()
 
         u1 = UserModel().create_or_update(username='u1', password='qweqwe',
-                                               email='u1@rhodecode.org',
+                                               email='u1@example.com',
                                                firstname='u1', lastname='u1')
         u2 = UserModel().create_or_update(username='u2', password='qweqwe',
-                                               email='u2@rhodecode.org',
+                                               email='u2@example.com',
                                                firstname='u2', lastname='u2')
 
         # make notifications
@@ -71,10 +71,10 @@ class TestNotificationsController(TestController):
         self.log_user()
         cur_user = self._get_logged_user()
         u1 = UserModel().create_or_update(username='u1', password='qweqwe',
-                                          email='u1@rhodecode.org',
+                                          email='u1@example.com',
                                           firstname='u1', lastname='u1')
         u2 = UserModel().create_or_update(username='u2', password='qweqwe',
-                                          email='u2@rhodecode.org',
+                                          email='u2@example.com',
                                           firstname='u2', lastname='u2')
 
         subject = u'test'

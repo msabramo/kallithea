@@ -123,7 +123,7 @@ class TestAdminUsersController(TestController):
     def test_update(self, name, attrs):
         self.log_user()
         usr = fixture.create_user(self.test_user_1, password='qweqwe',
-                                  email='testme@rhodecode.org',
+                                  email='testme@example.com',
                                   extern_type='rhodecode',
                                   extern_name=self.test_user_1,
                                   skip_if_exists=True)

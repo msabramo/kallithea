@@ -105,7 +105,7 @@ class Fixture(object):
         defs = dict(
             username=name,
             password='qweqwe',
-            email='%s+test@rhodecode.org' % name,
+            email='%s+test@example.com' % name,
             firstname='TestUser',
             lastname='Test',
             active=True,

@@ -29,20 +29,20 @@ class TestPermissions(BaseTestCase):
     def setUp(self):
         self.u1 = UserModel().create_or_update(
             username=u'u1', password=u'qweqwe',
-            email=u'u1@rhodecode.org', firstname=u'u1', lastname=u'u1'
+            email=u'u1@example.com', firstname=u'u1', lastname=u'u1'
         )
         self.u2 = UserModel().create_or_update(
             username=u'u2', password=u'qweqwe',
-            email=u'u2@rhodecode.org', firstname=u'u2', lastname=u'u2'
+            email=u'u2@example.com', firstname=u'u2', lastname=u'u2'
         )
         self.u3 = UserModel().create_or_update(
             username=u'u3', password=u'qweqwe',
-            email=u'u3@rhodecode.org', firstname=u'u3', lastname=u'u3'
+            email=u'u3@example.com', firstname=u'u3', lastname=u'u3'
         )
         self.anon = User.get_default_user()
         self.a1 = UserModel().create_or_update(
             username=u'a1', password=u'qweqwe',
-            email=u'a1@rhodecode.org', firstname=u'a1', lastname=u'a1', admin=True
+            email=u'a1@example.com', firstname=u'a1', lastname=u'a1', admin=True
         )
         Session().commit()
 

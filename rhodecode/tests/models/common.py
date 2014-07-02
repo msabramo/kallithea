@@ -54,7 +54,7 @@ def _create_project_tree():
     """
     test_u1 = UserModel().create_or_update(
         username=u'test_u1', password=u'qweqwe',
-        email=u'test_u1@rhodecode.org', firstname=u'test_u1', lastname=u'test_u1'
+        email=u'test_u1@example.com', firstname=u'test_u1', lastname=u'test_u1'
     )
     g0 = fixture.create_repo_group('g0')
     g0_1 = fixture.create_repo_group('g0_1', group_parent_id=g0)

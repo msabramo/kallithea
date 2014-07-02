@@ -33,7 +33,7 @@ class _BaseTest(TestController):
         self.username = u'forkuser'
         self.password = u'qweqwe'
         self.u1 = fixture.create_user(self.username, password=self.password,
-                                      email=u'fork_king@rhodecode.org')
+                                      email=u'fork_king@example.com')
         Session().commit()
 
     def tearDown(self):

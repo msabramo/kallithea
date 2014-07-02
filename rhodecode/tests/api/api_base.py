@@ -99,7 +99,7 @@ class BaseTestApi(object):
         cls.test_user = UserModel().create_or_update(
             username='test-api',
             password='test',
-            email='test@api.rhodecode.org',
+            email='test@example.com',
             firstname='first',
             lastname='last'
         )
@@ -649,7 +649,7 @@ class BaseTestApi(object):
     def test_api_delete_user(self):
         usr = UserModel().create_or_update(username=u'test_user',
                                            password=u'qweqwe',
-                                           email=u'u232@rhodecode.org',
+                                           email=u'u232@example.com',
                                            firstname=u'u1', lastname=u'u1')
         Session().commit()
         username = usr.username
@@ -670,7 +670,7 @@ class BaseTestApi(object):
     def test_api_delete_user_when_exception_happened(self):
         usr = UserModel().create_or_update(username=u'test_user',
                                            password=u'qweqwe',
-                                           email=u'u232@rhodecode.org',
+                                           email=u'u232@example.com',
                                            firstname=u'u1', lastname=u'u1')
         Session().commit()
         username = usr.username

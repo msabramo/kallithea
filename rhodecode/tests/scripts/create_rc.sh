@@ -6,9 +6,9 @@ API_KEY=`psql -R " " -A -U postgres -h localhost -c "select api_key from users w
 echo "run those after running server"
 paster serve rc.ini --pid-file=rc.pid --daemon
 sleep 3
-rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user username:demo1 password:qweqwe email:demo1@rhodecode.org
-rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user username:demo2 password:qweqwe email:demo2@rhodecode.org
-rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user username:demo3 password:qweqwe email:demo3@rhodecode.org
+rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user username:demo1 password:qweqwe email:demo1@example.com
+rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user username:demo2 password:qweqwe email:demo2@example.com
+rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user username:demo3 password:qweqwe email:demo3@example.com
 rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 create_user_group group_name:demo12
 rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 add_user_to_user_group usergroupid:demo12 userid:demo1
 rhodecode-api --apikey=$API_KEY --apihost=http://127.0.0.1:5001 add_user_to_user_group usergroupid:demo12 userid:demo2

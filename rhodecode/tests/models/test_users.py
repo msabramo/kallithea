@@ -22,7 +22,7 @@ class TestUser(BaseTestCase):
     def test_create_and_remove(self):
         usr = UserModel().create_or_update(username=u'test_user',
                                            password=u'qweqwe',
-                                           email=u'u232@rhodecode.org',
+                                           email=u'u232@example.com',
                                            firstname=u'u1', lastname=u'u1')
         Session().commit()
         self.assertEqual(User.get_by_username(u'test_user'), usr)
@@ -44,13 +44,13 @@ class TestUser(BaseTestCase):
     def test_additonal_email_as_main(self):
         usr = UserModel().create_or_update(username=u'test_user',
                                            password=u'qweqwe',
-                                     email=u'main_email@rhodecode.org',
+                                     email=u'main_email@example.com',
                                      firstname=u'u1', lastname=u'u1')
         Session().commit()
 
         def do():
             m = UserEmailMap()
-            m.email = u'main_email@rhodecode.org'
+            m.email = u'main_email@example.com'
             m.user = usr
             Session().add(m)
             Session().commit()
@@ -62,24 +62,24 @@ class TestUser(BaseTestCase):
     def test_extra_email_map(self):
         usr = UserModel().create_or_update(username=u'test_user',
                                            password=u'qweqwe',
-                                     email=u'main_email@rhodecode.org',
+                                     email=u'main_email@example.com',
                                      firstname=u'u1', lastname=u'u1')
         Session().commit()
 
         m = UserEmailMap()
-        m.email = u'main_email2@rhodecode.org'
+        m.email = u'main_email2@example.com'
         m.user = usr
         Session().add(m)
         Session().commit()
 
-        u = User.get_by_email(email='main_email@rhodecode.org')
+        u = User.get_by_email(email='main_email@example.com')
         self.assertEqual(usr.user_id, u.user_id)
         self.assertEqual(usr.username, u.username)
 
-        u = User.get_by_email(email='main_email2@rhodecode.org')
+        u = User.get_by_email(email='main_email2@example.com')
         self.assertEqual(usr.user_id, u.user_id)
         self.assertEqual(usr.username, u.username)
-        u = User.get_by_email(email='main_email3@rhodecode.org')
+        u = User.get_by_email(email='main_email3@example.com')
         self.assertEqual(None, u)
 
         UserModel().delete(usr.user_id)
@@ -94,7 +94,7 @@ class TestUsers(BaseTestCase):
     def setUp(self):
         self.u1 = UserModel().create_or_update(username=u'u1',
                                         password=u'qweqwe',
-                                        email=u'u1@rhodecode.org',
+                                        email=u'u1@example.com',
                                         firstname=u'u1', lastname=u'u1')
 
     def tearDown(self):

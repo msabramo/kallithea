@@ -63,7 +63,7 @@ class TestLoginController(TestController):
 
     @parameterized.expand([
           ('data:text/html,<script>window.alert("xss")</script>',),
-          ('mailto:test@rhodecode.org',),
+          ('mailto:test@example.com',),
           ('file:///etc/passwd',),
           ('ftp://some.ftp.server',),
           ('http://other.domain',),
