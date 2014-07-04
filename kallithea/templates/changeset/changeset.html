@@ -136,7 +136,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                   </div>
               %endfor
               % if c.limited_diff:
-                <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}" onclick="return confirm('${_("Showing a huge diff might take some time and resources")}')">${_('Show full diff')}</a></h5>
+                <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff anyway')}</a></h5>
               % endif
             </div>
         </div>
@@ -148,7 +148,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
     ${diff_block.diff_block(c.changes[c.changeset.raw_id])}
 
     % if c.limited_diff:
-      <h4>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}" onclick="return confirm('${_("Showing a huge diff might take some time and resources")}')">${_('Show full diff')}</a></h4>
+      <h4>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff anyway')}</a></h4>
     % endif
 
     ## template for inline comment form
