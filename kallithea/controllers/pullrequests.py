@@ -366,7 +366,7 @@ class PullrequestsController(BaseRepoController):
         org_repo_name = _form['org_repo']
         org_ref = _form['org_ref'] # will have merge_rev as rev but symbolic name
         org_repo = RepoModel()._get_repo(org_repo_name)
-        (_org_ref_type,
+        (org_ref_type,
          org_ref_name,
          org_rev) = org_ref.split(':')
 
@@ -392,7 +392,8 @@ class PullrequestsController(BaseRepoController):
 
         title = _form['pullrequest_title']
         if not title:
-            title = '%s#%s to %s#%s' % (org_repo_name, org_ref_name, other_repo_name, other_ref_name)
+            title = '%s#%s to %s#%s' % (org_repo_name, h.short_ref(org_ref_type, org_ref_name),
+                                        other_repo_name, h.short_ref(other_ref_type, other_ref_name))
         description = _form['pullrequest_desc'].strip() or _('No description')
         try:
             pull_request = PullRequestModel().create(

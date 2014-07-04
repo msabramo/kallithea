@@ -1379,6 +1379,11 @@ def rst_w_mentions(source):
     return literal('<div class="rst-block">%s</div>' %
                    MarkupRenderer.rst_with_mentions(source))
 
+def short_ref(ref_type, ref_name):
+    if ref_type == 'rev':
+        return short_id(ref_name)
+    return ref_name
+
 def link_to_ref(repo_name, ref_type, ref_name, rev=None):
     """
     Return full markup for a href to changeset_home for a changeset.
@@ -1386,10 +1391,7 @@ def link_to_ref(repo_name, ref_type, ref_name, rev=None):
     ref_name is shortened if ref_type is 'rev'.
     if rev is specified show it too, explicitly linking to that revision.
     """
-    if ref_type == 'rev':
-        txt = short_id(ref_name)
-    else:
-        txt = ref_name
+    txt = short_ref(ref_type, ref_name)
     if ref_type == 'branch':
         u = url('changelog_home', repo_name=repo_name, branch=ref_name)
     else:
