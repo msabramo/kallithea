@@ -77,7 +77,7 @@ dependency_links = [
 ]
 
 classifiers = [
-    'Development Status :: 4 - Beta'
+    'Development Status :: 4 - Beta',
     'Environment :: Web Environment',
     'Framework :: Pylons',
     'Intended Audience :: Developers',
@@ -87,6 +87,7 @@ classifiers = [
     'Programming Language :: Python :: 2.5',
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
+    'Topic :: Software Development :: Version Control',
 ]
 
 
