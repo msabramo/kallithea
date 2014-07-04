@@ -25,6 +25,16 @@
                 <img height="16" width="16" src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cs.raw_id][0])}" />
             </div>
           %endif
+          %if c.cs_comments.get(cs.raw_id):
+              <div class="comments-container">
+                  <div class="comments-cnt" title="${_('Changeset has comments')}">
+                      <a href="${h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.cs_comments[cs.raw_id][0].comment_id)}">
+                          ${len(c.cs_comments[cs.raw_id])}
+                          <i class="icon-comment-alt icon-comment-colored"></i>
+                      </a>
+                  </div>
+              </div>
+          %endif
         </td>
         <td style="width: 140px"><span class="tooltip" title="${h.tooltip(h.age(cs.date))}">${cs.date}</span></td>
         <td><div class="gravatar" commit_id="${cs.raw_id}"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}" height="14" width="14"/></div></td>

@@ -204,7 +204,9 @@ class PullrequestsController(BaseRepoController):
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
         c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
 
-        c.statuses = c.org_repo.statuses([x.raw_id for x in c.cs_ranges])
+        raw_ids = [x.raw_id for x in c.cs_ranges]
+        c.cs_comments = c.org_repo.get_comments(raw_ids)
+        c.statuses = c.org_repo.statuses(raw_ids)
 
         ignore_whitespace = request.GET.get('ignorews') == '1'
         line_context = request.GET.get('context', 3)

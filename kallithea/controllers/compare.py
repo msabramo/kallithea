@@ -222,14 +222,12 @@ class CompareController(BaseRepoController):
         c.cs_ranges, c.cs_ranges_org, c.ancestor = self._get_changesets(
             org_repo.scm_instance.alias, org_repo.scm_instance, c.org_rev,
             other_repo.scm_instance, c.other_rev)
-        c.statuses = c.db_repo.statuses(
-            [x.raw_id for x in c.cs_ranges])
+        raw_ids = [x.raw_id for x in c.cs_ranges]
+        c.cs_comments = other_repo.get_comments(raw_ids)
+        c.statuses = other_repo.statuses(raw_ids)
 
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
         c.jsdata = json.dumps(graph_data(c.other_repo.scm_instance, revs))
-
-        c.statuses = c.db_repo.statuses([x.raw_id for x in
-                                                   c.cs_ranges])
 
         if partial:
             return render('compare/compare_cs.html')

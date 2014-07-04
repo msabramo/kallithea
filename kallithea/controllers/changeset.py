@@ -312,6 +312,7 @@ class ChangesetController(BaseRepoController):
                 return render('changeset/changeset.html')
             else:
                 c.cs_ranges_org = None
+                c.cs_comments = {}
                 revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
                 c.jsdata = json.dumps(graph_data(c.db_repo_scm_instance, revs))
                 return render('changeset/changeset_range.html')

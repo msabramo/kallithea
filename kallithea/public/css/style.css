@@ -2657,6 +2657,8 @@ BIN_FILENODE = 6
     height: 41px;
 }
 
+#pull_request_overview .comments-container,
+#changeset_compare_view_content .comments-container,
 #graph_content .comments-container,
 #shortlog_data .comments-container,
 #graph_content .logtags {
@@ -2761,13 +2763,14 @@ BIN_FILENODE = 6
     padding: 3px 0;
 }
 
+#pull_request_overview .comments-cnt a,
+#changeset_compare_view_content .comments-cnt a,
 #graph_content .comments-cnt a,
 #shortlog_data .comments-cnt a {
     background-image: url('../images/icons/comments.png');
     background-repeat: no-repeat;
     background-position: 100% 50%;
     padding: 5px 0;
-    padding-right: 20px;
 }
 
 .right .changes {
