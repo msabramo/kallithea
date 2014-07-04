@@ -210,24 +210,38 @@ ${self.repo_context_bar('showpullrequest')}
       });
   }
 
-  ## refresh automatically when something changes (org_repo can't change)
+  YAHOO.util.Event.onDOMReady(function(){
+      $("#org_repo").select2({
+          dropdownAutoWidth: true,
+      });
+      ## (org_repo can't change)
 
-  YUE.on('org_ref', 'change', function(e){
-     loadPreview();
-  });
+      $("#org_ref").select2({
+          dropdownAutoWidth: true,
+      });
+      $("#org_ref").on("change", function(e){
+          loadPreview();
+      });
 
-  YUE.on('other_repo', 'change', function(e){
+      $("#other_repo").select2({
+          dropdownAutoWidth: true,
+      });
+      $("#other_repo").on("change", function(e){
+          otherrepoChanged();
+          loadPreview();
+      });
+
+      $("#other_ref").select2({
+          dropdownAutoWidth: true,
+      });
+      $("#other_ref").on("change", function(e){
+          loadPreview();
+      });
+
       otherrepoChanged();
-      loadPreview();
+      //lazy load overview after 0.5s
+      setTimeout(loadPreview, 500);
   });
-
-  YUE.on('other_ref', 'change', function(e){
-     loadPreview();
-  });
-
-  otherrepoChanged();
-  //lazy load overview after 0.5s
-  setTimeout(loadPreview, 500);
 
 </script>
 

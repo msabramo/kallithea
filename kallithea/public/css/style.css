@@ -4804,6 +4804,14 @@ span.pr-closed-tag {
     max-width: 978px;
 }
 
+#s2id_org_ref,
+#s2id_other_ref,
+#s2id_org_repo,
+#s2id_other_repo {
+    min-width: 150px;
+    margin: 5px;
+}
+
 /****
   PERMS
 *****/
