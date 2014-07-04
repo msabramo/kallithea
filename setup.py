@@ -138,7 +138,7 @@ setup(
     keywords=keywords,
     license=__license__,
     author=__author__,
-    author_email='marcin@python-works.com',
+    author_email='kallithea@sfconservancy.org',
     dependency_links=dependency_links,
     url=__url__,
     install_requires=requirements,
