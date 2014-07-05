@@ -36,23 +36,25 @@
 </div>
 
 <script>
-$('#j_filter').click(function(){
+$(document).ready(function() {
+  $('#j_filter').click(function(){
     var jfilter = $('#j_filter');
     if(jfilter.hasClass('initial')){
         jfilter.val('');
     }
-});
-var fix_j_filter_width = function(len){
-    $('#j_filter').css('width', Math.max(80, len*6.50)+'px');
-};
-$('#j_filter').keyup(function(){
+  });
+  var fix_j_filter_width = function(len){
+      $('#j_filter').css('width', Math.max(80, len*6.50)+'px');
+  };
+  $('#j_filter').keyup(function () {
     fix_j_filter_width($('#j_filter').val().length);
+  });
+  $('filter_form').submit(function (e) {
+      e.preventDefault();
+      var val = $('#j_filter').val();
+      window.location = "${url.current(filter='__FILTER__')}".replace('__FILTER__',val);
+  });
+  fix_j_filter_width($('#j_filter').val().length);
 });
-$('filter_form').submit(function(e){
-    e.preventDefault();
-    var val = $('#j_filter').val();
-    window.location = "${url.current(filter='__FILTER__')}".replace('__FILTER__',val);
-});
-fix_j_filter_width($('#j_filter').val().length);
 </script>
 </%def>
