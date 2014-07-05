@@ -36,23 +36,23 @@
 </div>
 
 <script>
-YUE.on('j_filter','click',function(){
-    var jfilter = YUD.get('j_filter');
-    if(YUD.hasClass(jfilter, 'initial')){
-        jfilter.value = '';
+$('#j_filter').click(function(){
+    var jfilter = $('#j_filter');
+    if(jfilter.hasClass('initial')){
+        jfilter.val('');
     }
 });
 var fix_j_filter_width = function(len){
-    YUD.setStyle(YUD.get('j_filter'),'width',Math.max(80, len*6.50)+'px');
-}
-YUE.on('j_filter','keyup',function(){
-    fix_j_filter_width(YUD.get('j_filter').value.length);
+    $('#j_filter').css('width', Math.max(80, len*6.50)+'px');
+};
+$('#j_filter').keyup(function(){
+    fix_j_filter_width($('#j_filter').val().length);
 });
-YUE.on('filter_form','submit',function(e){
-    YUE.preventDefault(e)
-    var val = YUD.get('j_filter').value;
+$('filter_form').submit(function(e){
+    e.preventDefault();
+    var val = $('#j_filter').val();
     window.location = "${url.current(filter='__FILTER__')}".replace('__FILTER__',val);
 });
-fix_j_filter_width(YUD.get('j_filter').value.length);
+fix_j_filter_width($('#j_filter').val().length);
 </script>
 </%def>
