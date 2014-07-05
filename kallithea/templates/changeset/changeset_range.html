@@ -110,22 +110,5 @@ ${self.repo_context_bar('changelog')}
           ${diff_block.diff_block(c.changes[cs.raw_id])}
 
      %endfor
-     <script type="text/javascript">
-
-      YUE.onDOMReady(function(){
-
-          YUE.on(YUQ('.diff-menu-activate'),'click',function(e){
-              var act = e.currentTarget.nextElementSibling;
-
-              if(YUD.hasClass(act,'active')){
-                  YUD.removeClass(act,'active');
-                  YUD.setStyle(act,'display','none');
-              }else{
-                  YUD.addClass(act,'active');
-                  YUD.setStyle(act,'display','');
-              }
-          });
-      })
-    </script>
     </div>
 </%def>
