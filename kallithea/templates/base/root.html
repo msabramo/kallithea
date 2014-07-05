@@ -128,7 +128,7 @@
               pyroutes.register('repo_size', "${h.url('repo_size', repo_name='%(repo_name)s')}", ['repo_name']);
               pyroutes.register('changeset_comment_preview', "${h.url('changeset_comment_preview', repo_name='%(repo_name)s')}", ['repo_name']);
               pyroutes.register('repo_refs_data', "${h.url('repo_refs_data', repo_name='%(repo_name)s')}", ['repo_name']);
-           })
+           });
             </script>
         </%def>
         <%def name="js_extra()"></%def>
@@ -139,13 +139,13 @@
     <body id="body">
      ## IE hacks
       <!--[if IE 7]>
-      <script>YUD.addClass(document.body,'ie7')</script>
+      <script>$(document.body).addClass('ie7')</script>
       <![endif]-->
       <!--[if IE 8]>
-      <script>YUD.addClass(document.body,'ie8')</script>
+      <script>$(document.body).addClass('ie8')</script>
       <![endif]-->
       <!--[if IE 9]>
-      <script>YUD.addClass(document.body,'ie9')</script>
+      <script>$(document.body).addClass('ie9')</script>
       <![endif]-->
 
       ${next.body()}
