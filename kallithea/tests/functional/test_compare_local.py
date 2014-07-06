@@ -154,3 +154,44 @@ class TestCompareController(TestController):
 
         ## files
         response.mustcontain("""<a href="#C--c8e92ef85cd1">.hgignore</a>""")
+
+    def test_compare_revisions_hg_as_form(self):
+        self.log_user()
+        rev1 = 'b986218ba1c9'
+        rev2 = '3d8f361e72ab'
+
+        response = self.app.get(url('compare_url',
+                                    repo_name=HG_REPO,
+                                    org_ref_type="rev",
+                                    org_ref_name=rev1,
+                                    other_ref_type="rev",
+                                    other_ref_name=rev2,
+                                    as_form=True,
+                                    ),
+                                extra_environ={'HTTP_X_PARTIAL_XHR': '1'},)
+
+        ## outgoing changesets between those revisions
+        response.mustcontain("""<a href="/%s/changeset/3d8f361e72ab303da48d799ff1ac40d5ac37c67e">r1:%s</a>""" % (HG_REPO, rev2))
+
+        response.mustcontain('Common ancestor')
+        response.mustcontain("""<a href="/%s/changeset/b986218ba1c9b0d6a259fac9b050b1724ed8e545">%s</a>""" % (HG_REPO, rev1))
+
+    def test_compare_revisions_git_as_form(self):
+        self.log_user()
+        rev1 = 'c1214f7e79e02fc37156ff215cd71275450cffc3'
+        rev2 = '38b5fe81f109cb111f549bfe9bb6b267e10bc557'
+
+        response = self.app.get(url('compare_url',
+                                    repo_name=GIT_REPO,
+                                    org_ref_type="rev",
+                                    org_ref_name=rev1,
+                                    other_ref_type="rev",
+                                    other_ref_name=rev2,
+                                    as_form=True,
+                                    ),
+                                extra_environ={'HTTP_X_PARTIAL_XHR': '1'},)
+        ## outgoing changesets between those revisions
+        response.mustcontain("""<a href="/%s/changeset/38b5fe81f109cb111f549bfe9bb6b267e10bc557">r1:%s</a>""" % (GIT_REPO, rev2[:12]))
+
+        response.mustcontain('Common ancestor')
+        response.mustcontain("""<a href="/%s/changeset/c1214f7e79e02fc37156ff215cd71275450cffc3">%s</a>""" % (GIT_REPO, rev1[:12]))

@@ -133,6 +133,10 @@ class CompareController(BaseRepoController):
                 )
                 other_changesets = [org_repo.get_changeset(cs)
                               for cs in re.findall(r'[0-9a-fA-F]{40}', so)]
+                so, se = org_repo.run_git_command(
+                    'merge-base %s %s' % (org_rev, other_rev)
+                )
+                ancestor = re.findall(r'[0-9a-fA-F]{40}', so)[0]
             org_changesets = []
 
         else:
