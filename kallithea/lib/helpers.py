@@ -1397,7 +1397,7 @@ def journal_filter_help():
     return _(textwrap.dedent('''
         Example filter terms:
             repository:vcs
-            username:marcin
+            username:developer
             action:*push*
             ip:127.0.0.1
             date:20120101
