@@ -186,7 +186,7 @@ htmlhelp_basename = 'Kallithea-docs'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'Kallithea.tex', u'Kallithea Documentation',
-   u'Marcin Kuzminski', 'manual'),
+   u'Kallithea Developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -219,7 +219,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'kallithea', u'Kallithea Documentation',
-     [u'Marcin Kuzminski'], 1)
+     [u'Kallithea Developers'], 1)
 ]
 
 
