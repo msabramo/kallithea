@@ -29,7 +29,7 @@ class GitChangeset(BaseChangeset):
         self.repository = repository
 
         try:
-            commit = self.repository._repo[revision]
+            commit = self.repository._repo[str(revision)]
             if isinstance(commit, objects.Tag):
                 revision = commit.object[1]
                 commit = self.repository._repo.get_object(commit.object[1])
