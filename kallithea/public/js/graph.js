@@ -68,6 +68,15 @@ function BranchRenderer(canvas_id, content_id, row_id_prefix) {
 		this.canvas.setAttribute('width',canvasWidth);
 		this.canvas.setAttribute('height',content.clientHeight);
 
+		// retina version needs to be scaled by 2x then halved via css
+		if (window.devicePixelRatio) {
+			this.canvas.setAttribute('width', canvasWidth * window.devicePixelRatio);
+			this.canvas.setAttribute('height', content.clientHeight * window.devicePixelRatio);
+			this.canvas.style.width = canvasWidth + "px";
+			this.canvas.style.height = content.clientHeight + "px";
+			this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+		}
+
 		var lineCount = 1;
 		for (var i=0;i<data.length;i++) {
 			var in_l = data[i][1];
