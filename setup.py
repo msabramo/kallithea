@@ -50,10 +50,10 @@ requirements = [
     "python-dateutil>=1.5.0,<2.0.0",
     "dulwich>=0.9.3,<=0.9.7",
     "markdown==2.2.1",
-    "docutils==0.8.1",
+    "docutils>=0.8.1,<=0.11",
     "simplejson==2.5.2",
     "mock",
-    "pycrypto==2.6.0",
+    "pycrypto>=2.6.0,<=2.6.1",
     "URLObject==2.3.4",
     "Routes==1.13",
 ]
