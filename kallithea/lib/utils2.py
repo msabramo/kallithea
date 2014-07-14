@@ -634,7 +634,8 @@ def _extract_extras(env=None):
 
 
 def _set_extras(extras):
-    os.environ['KALLITHEA_EXTRAS'] = json.dumps(extras)
+    # RC_SCM_DATA can probably be removed in the future, but for compatibilty now...
+    os.environ['KALLITHEA_EXTRAS'] = os.environ['RC_SCM_DATA'] = json.dumps(extras)
 
 
 def unique_id(hexlen=32):
