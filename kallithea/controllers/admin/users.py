@@ -66,6 +66,7 @@ class UsersController(BaseController):
     def __before__(self):
         super(UsersController, self).__before__()
         c.available_permissions = config['available_permissions']
+        c.EXTERN_TYPE_INTERNAL = kallithea.EXTERN_TYPE_INTERNAL
 
     def index(self, format='html'):
         """GET /users: All items in the collection"""
@@ -245,7 +246,6 @@ class UsersController(BaseController):
         c.active = 'profile'
         c.extern_type = c.user.extern_type
         c.extern_name = c.user.extern_name
-        c.EXTERN_TYPE_INTERNAL = kallithea.EXTERN_TYPE_INTERNAL
         c.perm_user = AuthUser(user_id=id, ip_addr=self.ip_addr)
 
         defaults = c.user.get_dict()
