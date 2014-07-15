@@ -43,7 +43,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                         <div style="float:left; margin-left:20px;">
                         ${h.form(h.url.current(),method='get')}
                             ${h.submit('set',_('Show'),class_="btn btn-small")}
-                            ${h.text('size',size=1,value=c.size)}
+                            ${h.text('size',size=3,value=c.size)}
                             ${_('revisions')}
                             %if c.branch_name:
                             ${h.hidden('branch', c.branch_name)}
