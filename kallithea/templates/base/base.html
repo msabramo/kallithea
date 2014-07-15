@@ -170,9 +170,9 @@
              %endif
               %if c.db_repo.fork:
                <li><a href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref_name=c.db_repo.landing_rev[1], other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref_name=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}">
-                   <i class="icon-loop"></i> ${_('Compare Fork')}</a></li>
+                   <i class="icon-git-compare"></i> ${_('Compare Fork')}</a></li>
               %endif
-              <li><a href="${h.url('compare_home',repo_name=c.repo_name)}"><i class="icon-loop"></i> ${_('Compare')}</a></li>
+              <li><a href="${h.url('compare_home',repo_name=c.repo_name)}"><i class="icon-git-compare"></i> ${_('Compare')}</a></li>
 
               <li><a href="${h.url('search_repo',repo_name=c.repo_name)}"><i class="icon-search"></i> ${_('Search')}</a></li>
 

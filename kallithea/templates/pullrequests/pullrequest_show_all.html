@@ -35,9 +35,9 @@ ${self.repo_context_bar('showpullrequest')}
              %endif
               <span>
                 %if c.from_:
-                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed)}"><i class="icon-loop-2"></i> ${_('Show Pull Requests to %s') % c.repo_name}</a>
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed)}"><i class="icon-git-compare"></i> ${_('Show Pull Requests to %s') % c.repo_name}</a>
                 %else:
-                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1)}"><i class="icon-loop-2"></i> ${_("Show Pull Requests from '%s'") % c.repo_name}</a>
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1)}"><i class="icon-git-compare"></i> ${_("Show Pull Requests from '%s'") % c.repo_name}</a>
                 %endif
               </span>
           </li>

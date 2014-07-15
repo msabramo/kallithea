@@ -15,8 +15,6 @@ i.icon-heart-empty { background-image: url("../images/icons/heart.png"); }
 i.icon-hg { background-image: url('../images/icons/hgicon.png');}
 i.icon-lock { background-image: url('../images/icons/lock.png');}
 i.icon-lock-alt { background-image: url('../images/icons/private_repo.png');}
-i.icon-loop { background-image: url('../images/icons/arrow_inout.png');}
-i.icon-loop-2 { background-image: url('../images/icons/arrow_inout.png');}
 i.icon-private { background-image: url('../images/icons/private_repo.png');}
 i.icon-refresh { background-image: url('../images/icons/arrow_refresh.png');}
 i.icon-tag { background-image: url("../images/icons/tag_blue.png"); }
