@@ -50,7 +50,7 @@ ${self.repo_context_bar('changelog')}
                           <img class="icon" src="${h.url('/images/icons/application_double.png')}"/>
                       </a>
                       <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='raw')}" class="tooltip" title="${h.tooltip(_('Raw diff'))}">
-                          <img class="icon" src="${h.url('/images/icons/page_white.png')}"/>
+                          <i class="icon-diff"></i>
                       </a>
                       <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='download')}" class="tooltip" title="${h.tooltip(_('Download diff'))}">
                           <img class="icon" src="${h.url('/images/icons/page_save.png')}"/>
