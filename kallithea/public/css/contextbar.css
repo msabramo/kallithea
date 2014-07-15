@@ -18,7 +18,6 @@ i.icon-group { background-image: url("../images/icons/group_edit.png"); }
 i.icon-heart { background-image: url("../images/icons/heart_delete.png"); }
 i.icon-heart-empty { background-image: url("../images/icons/heart.png"); }
 i.icon-hg { background-image: url('../images/icons/hgicon.png');}
-i.icon-key { background-image: url("../images/icons/server_key.png"); }
 i.icon-lock { background-image: url('../images/icons/lock.png');}
 i.icon-lock-alt { background-image: url('../images/icons/private_repo.png');}
 i.icon-loop { background-image: url('../images/icons/arrow_inout.png');}

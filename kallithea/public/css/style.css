@@ -545,11 +545,6 @@ div.header img {
     background-image: url("../images/icons/key.png");
 }
 
-#header #header-inner #quick li ul li a.ldap,
-#header #header-inner #quick li ul li a.ldap:hover {
-    background-image: url("../images/icons/server_key.png");
-}
-
 #header #header-inner #quick li ul li a.fork,
 #header #header-inner #quick li ul li a.fork:hover {
     background-image: url("../images/icons/arrow_divide.png");
