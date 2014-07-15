@@ -590,11 +590,6 @@ div.header img {
     background-image: url("../images/icons/arrow_inout.png");
 }
 
-#header #header-inner #quick li ul li a.search,
-#header #header-inner #quick li ul li a.search:hover {
-    background-image: url("../images/icons/search_16.png");
-}
-
 #header #header-inner #quick li ul li a.delete,
 #header #header-inner #quick li ul li a.delete:hover {
     background-image: url("../images/icons/delete.png");
