@@ -530,11 +530,6 @@ div.header img {
     background-image: url("../images/icons/database_link.png");
 }
 
-#header #header-inner #quick li ul li a.users,
-#header #header-inner #quick li ul li a.users:hover {
-    background-image: url("../images/icons/user_edit.png");
-}
-
 #header #header-inner #quick li ul li a.groups,
 #header #header-inner #quick li ul li a.groups:hover {
     background-image: url("../images/icons/group_edit.png");
