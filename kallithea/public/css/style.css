@@ -3290,13 +3290,6 @@ table.code-browser .submodule-dir {
     padding-bottom: 5px;
 }
 
-.add_icon {
-    background: url("../images/icons/add.png") no-repeat scroll 3px;
-    padding-left: 20px;
-    padding-top: 0px;
-    text-align: left;
-}
-
 .accept_icon {
     background: url("../images/icons/accept.png") no-repeat scroll 3px;
     padding-left: 20px;

@@ -14,7 +14,6 @@ i.icon-lock { background-image: url('../images/icons/lock.png');}
 i.icon-lock-alt { background-image: url('../images/icons/private_repo.png');}
 i.icon-private { background-image: url('../images/icons/private_repo.png');}
 i.icon-refresh { background-image: url('../images/icons/arrow_refresh.png');}
-i.icon-plus-sign { background-image: url('../images/icons/add.png');}
 i.icon-chevron-left:after { content: "\00AB";}
 i.icon-chevron-right:after { content: "\00BB";}
 i.icon-pencil { background-image: url('../images/icons/application_form_edit.png');}
