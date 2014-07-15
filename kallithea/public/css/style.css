@@ -501,11 +501,6 @@ div.header img {
     margin: 0px 2px 0px 2px;
 }
 
-#header #header-inner #quick li ul li a.private_repo,
-#header #header-inner #quick li ul li a.private_repo:hover {
-    background-image: url("../images/icons/private_repo.png")
-}
-
 #header #header-inner #quick li ul li a.hg,
 #header #header-inner #quick li ul li a.hg:hover {
     background-image: url("../images/icons/hgicon.png");
