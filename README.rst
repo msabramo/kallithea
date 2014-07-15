@@ -5,19 +5,19 @@ Kallithea
 About
 -----
 
-``Kallithea`` is a fast and powerful management tool for Mercurial_ and GIT_
-with a built in push/pull server, full text search and code-review.
+``Kallithea`` is a fast and powerful management tool for Mercurial_ and Git_
+with a built-in push/pull server, full text search and code-review.
 It works on http/https and has a built in permission/authentication system with
 the ability to authenticate via LDAP or ActiveDirectory. Kallithea also provides
-simple API so it's easy integrable with existing external systems.
+simple API so it's easy to integrate with existing external systems.
 
-Kallithea is similar in some respects to github_ or bitbucket_,
+Kallithea is similar in some respects to GitHub_ or Bitbucket_,
 however Kallithea can be run as standalone hosted application on your own server.
-It is open source and donation ware and focuses more on providing a customized,
-self administered interface for Mercurial_ and GIT_  repositories.
-Kallithea works on \*nix systems and Windows it is powered by a vcs_ library
-that Lukasz Balcerzak and Marcin Kuzminski created to handle multiple
-different version control systems.
+It is open-source donationware and focuses more on providing a customised,
+self-administered interface for Mercurial_ and Git_  repositories.
+Kallithea works on Unix-like systems and Windows, and is powered by the vcs_ library
+created by Łukasz Balcerzak and Marcin Kuźmiński to uniformly handle multiple
+version control systems.
 
 Kallithea was forked from RhodeCode in July 2014 and has been heavily modified.
 
@@ -34,7 +34,7 @@ Or::
 Detailed instructions and links may be found on the Installation page.
 
 Please visit http://packages.python.org/Kallithea/installation.html for
-more details
+more details.
 
 
 Source code
@@ -45,7 +45,7 @@ The latest sources can be obtained from https://kallithea-scm.org/repos/kallithe
 
 MIRRORS:
 
-Issue tracker and sources at bitbucket_
+Issue tracker and sources at Bitbucket_
 
 https://bitbucket.org/conservancy/kallithea
 
@@ -54,10 +54,10 @@ https://bitbucket.org/conservancy/kallithea
 Kallithea Features
 ------------------
 
-- Has its own middleware to handle mercurial_ and git_ protocol requests.
+- Has its own middleware to handle Mercurial_ and Git_ protocol requests.
   Each request is authenticated and logged together with IP address.
-- Build for speed and performance. You can make multiple pulls/pushes simultaneous.
-  Proven to work with 1000s of repositories and users
+- Built for speed and performance. You can make multiple pulls/pushes simultaneously.
+  Proven to work with thousands of repositories and users.
 - Supports http/https, LDAP, AD, proxy-pass authentication.
 - Full permissions (private/read/write/admin) together with IP restrictions for each repository,
   additional explicit forking, repositories group and repository creation permissions.
@@ -65,46 +65,46 @@ Kallithea Features
 - Repository groups let you group repos and manage them easier. They come with
   permission delegation features, so you can delegate groups management.
 - Users can fork other users repos, and compare them at any time.
-- Built in Gist functionality for sharing code snippets.
+- Built-in versioned paste functionality (Gist) for sharing code snippets.
 - Integrates easily with other systems, with custom created mappers you can connect it to almost
   any issue tracker, and with an JSON-RPC API you can make much more
-- Build in commit-api let's you add, edit and commit files right from Kallithea
+- Built-in commit API lets you add, edit and commit files right from Kallithea
   web interface using simple editor or upload binary files using simple form.
-- Powerfull pull-request driven review system with inline commenting,
+- Powerful pull request driven review system with inline commenting,
   changeset statuses, and notification system.
-- Importing and syncing repositories from remote locations for GIT_, Mercurial_ and  SVN.
-- Mako templates let's you customize the look and feel of the application.
+- Importing and syncing repositories from remote locations for Git_, Mercurial_ and Subversion.
+- Mako templates let you customize the look and feel of the application.
 - Beautiful diffs, annotations and source code browsing all colored by pygments.
-  Raw diffs are made in git-diff format for both VCS systems, including GIT_ binary-patches
-- Mercurial_ and Git_ DAG graphs and yui-flot powered graphs with zooming and statistics
+  Raw diffs are made in Git-diff format for both VCS systems, including Git_ binary-patches
+- Mercurial_ and Git_ DAG graphs and Flot-powered graphs with zooming and statistics
   to track activity for repositories
 - Admin interface with user/permission management. Admin activity journal, logs
   pulls, pushes, forks, registrations and other actions made by all users.
 - Server side forks. It is possible to fork a project and modify it freely
   without breaking the main repository.
-- rst and markdown README support for repositories.
+- reST and Markdown README support for repositories.
 - Full text search powered by Whoosh on the source files, commit messages, and file names.
-  Build in indexing daemons, with optional incremental index build
+  Built-in indexing daemons, with optional incremental index build
   (no external search servers required all in one application)
-- Setup project descriptions/tags and info inside built in db for easy, non
-  file-system operations.
+- Setup project descriptions/tags and info inside built in DB for easy,
+  non-filesystem operations.
 - Intelligent cache with invalidation after push or project change, provides
   high performance and always up to date data.
-- RSS / Atom feeds, gravatar support, downloadable sources as zip/tar/gz
-- Optional async tasks for speed and performance using celery_
+- RSS/Atom feeds, Gravatar support, downloadable sources as zip/tar/gz
+- Optional async tasks for speed and performance using Celery_
 - Backup scripts can do backup of whole app and send it over scp to desired
   location
-- Based on pylons / sqlalchemy / sqlite / whoosh / vcs
+- Based on Pylons, SQLAlchemy, SQLite, Whoosh, vcs
 
 
 Incoming / Plans
 ----------------
 
 - Finer granular permissions per branch, or subrepo
-- Web based merges for pull requests
+- Web-based merges for pull requests
 - Tracking history for each lines in files
 - Simple issue tracker
-- SSH based authentication with server side key management
+- SSH-based authentication with server side key management
 - Commit based built in wiki system
 - More statistics and graph (global annotation + some more statistics)
 - Other advancements as development continues (or you can of course make
@@ -141,12 +141,12 @@ Online documentation for the current version of Kallithea is available at
  - http://packages.python.org/Kallithea/
  - http://kallithea.readthedocs.org/
 
-You may also build the documentation for yourself - go into ``docs/`` and run::
+You may also build the documentation for yourself: go into ``docs/`` and run::
 
    make html
 
-(You need to have sphinx_ installed to build the documentation. If you don't
-have sphinx_ installed you can install it via the command:
+(You need to have Sphinx_ installed to build the documentation. If you don't
+have Sphinx_ installed you can install it via the command:
 ``easy_install sphinx``)
 
 
@@ -164,7 +164,7 @@ Interoperability with RhodeCode 2.2.5 installations is provided so you don't
 have to immediately commit to switching to Kallithea. This option will most
 likely go away once the two projects have diverged significantly.
 
-To run Kallithea on a Rhodecode database, run::
+To run Kallithea on a RhodeCode database, run::
 
    echo "BRAND = 'rhodecode'" > kallithea/brand.py
 
@@ -194,13 +194,12 @@ database, using the database string you can find in your ``production.ini`` (or
    an empty file (or watch out for stray brand.pyc after removing brand.py).
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
-.. _python: http://www.python.org/
-.. _sphinx: http://sphinx.pocoo.org/
-.. _mercurial: http://mercurial.selenic.com/
-.. _bitbucket: http://bitbucket.org/
-.. _github: http://github.com/
-.. _subversion: http://subversion.tigris.org/
-.. _git: http://git-scm.com/
-.. _celery: http://celeryproject.org/
+.. _Python: http://www.python.org/
 .. _Sphinx: http://sphinx.pocoo.org/
+.. _Mercurial: http://mercurial.selenic.com/
+.. _Bitbucket: http://bitbucket.org/
+.. _GitHub: http://github.com/
+.. _Subversion: http://subversion.tigris.org/
+.. _Git: http://git-scm.com/
+.. _Celery: http://celeryproject.org/
 .. _vcs: http://pypi.python.org/pypi/vcs
