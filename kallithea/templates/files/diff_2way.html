@@ -47,7 +47,7 @@ ${self.repo_context_bar('changelog')}
                           <i class="icon-file-code"></i>
                       </a>
                       <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
-                          <img class="icon" src="${h.url('/images/icons/application_double.png')}"/>
+                          <i class="icon-docs"></i>
                       </a>
                       <a href="${h.url('files_diff_home',repo_name=c.repo_name,f_path=h.safe_unicode(c.node1.path),diff2=c.cs2.raw_id,diff1=c.cs1.raw_id,diff='raw')}" class="tooltip" title="${h.tooltip(_('Raw diff'))}">
                           <i class="icon-diff"></i>
