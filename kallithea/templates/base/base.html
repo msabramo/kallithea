@@ -147,9 +147,9 @@
       <ul id="context-pages" class="horizontal-list">
         <li ${is_current('summary')}><a href="${h.url('summary_home', repo_name=c.repo_name)}"><i class="icon-file-text"></i> ${_('Summary')}</a></li>
         %if rev:
-        <li ${is_current('changelog')}><a href="${h.url('changelog_file_home', repo_name=c.repo_name, revision=rev, f_path='')}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
+        <li ${is_current('changelog')}><a href="${h.url('changelog_file_home', repo_name=c.repo_name, revision=rev, f_path='')}"><i class="icon-clock"></i> ${_('Changelog')}</a></li>
         %else:
-        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
+        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-clock"></i> ${_('Changelog')}</a></li>
         %endif
         <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name, revision=rev or 'tip')}"><i class="icon-file"></i> ${_('Files')}</a></li>
         <li ${is_current('switch-to')}>
