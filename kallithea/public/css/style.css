@@ -1718,7 +1718,6 @@ div.form div.fields div.field div.button {
     border-top: none;
 }
 
-#summary-menu-stats a.followers { background-image: url('../images/icons/heart.png')}
 #summary-menu-stats a.forks { background-image: url('../images/icons/arrow_divide.png')}
 #summary-menu-stats a.repo-size { background-image: url('../images/icons/server.png')}
 
