@@ -70,7 +70,7 @@ if sys.version_info < (2, 7):
 if is_windows:
     requirements.append("mercurial==2.8.2")
 else:
-    requirements.append("py-bcrypt==0.3.0")
+    requirements.append("py-bcrypt>=0.3.0,<=0.4")
     requirements.append("mercurial==2.8.2")
 
 
