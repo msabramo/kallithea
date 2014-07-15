@@ -585,11 +585,6 @@ div.header img {
     background-image: url("../images/icons/delete.png");
 }
 
-#header #header-inner #quick li ul li a.branches,
-#header #header-inner #quick li ul li a.branches:hover {
-    background-image: url("../images/icons/arrow_branch.png");
-}
-
 #header #header-inner #quick li ul li a.tags,
 #header #header-inner #quick li ul li a.tags:hover {
     background: #FFF url("../images/icons/tag_blue.png") no-repeat 4px 9px;

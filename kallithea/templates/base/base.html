@@ -192,13 +192,13 @@
                     <span class="show-following"><i class="icon-heart"></i> ${_('Unfollow')}</span>
                   </a>
                   </li>
-                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Fork')}</a></li>
-                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Create Pull Request')}</a></li>
+                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}"><i class="icon-git-pull-request"></i> ${_('Fork')}</a></li>
+                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-git-pull-request"></i> ${_('Create Pull Request')}</a></li>
               %endif
              </ul>
         </li>
         <li ${is_current('showpullrequest')}>
-          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests for %s') % c.repo_name}"> <i class="icon-code-fork"></i> ${_('Pull Requests')}
+          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests for %s') % c.repo_name}"> <i class="icon-git-pull-request"></i> ${_('Pull Requests')}
             %if c.repository_pull_requests:
               <span>${c.repository_pull_requests}</span>
             %endif
@@ -285,7 +285,7 @@
 
     <li ${is_current('my_pullrequests')}>
       <a class="menu_link" title="${_('My Pull Requests')}" href="${h.url('my_pullrequests')}">
-        <i class="icon-code-fork"></i> ${_('My Pull Requests')}
+        <i class="icon-git-pull-request"></i> ${_('My Pull Requests')}
         %if c.my_pr_count != 0:
           <span class="menu_link_notifications">${c.my_pr_count}</span>
         %endif
