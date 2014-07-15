@@ -1,6 +1,6 @@
 ## -*- coding: utf-8 -*-
 <li>
-    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Branches'),len(c.db_repo_scm_instance.branches.values()))}</a>
+    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-fork"></i> ${'%s (%s)' % (_('Branches'),len(c.db_repo_scm_instance.branches.values()))}</a>
     <ul>
     %if c.db_repo_scm_instance.branches.values():
         %for cnt,branch in enumerate(c.db_repo_scm_instance.branches.items()):
@@ -13,7 +13,7 @@
 </li>
 %if c.db_repo_scm_instance.closed_branches.values():
 <li>
-    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Closed Branches'),len(c.db_repo_scm_instance.closed_branches.values()))}</a>
+    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-fork"></i> ${'%s (%s)' % (_('Closed Branches'),len(c.db_repo_scm_instance.closed_branches.values()))}</a>
     <ul>
         %for cnt,branch in enumerate(c.db_repo_scm_instance.closed_branches.items()):
             <li><div><pre>${h.link_to('%s - %s' % (branch[0],h.short_id(branch[1])),h.url('files_home',repo_name=c.repo_name,revision=(branch[0] if '/' not in branch[0] else branch[1]), at=branch[0]))}</pre></div></li>

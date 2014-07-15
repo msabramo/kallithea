@@ -22,14 +22,14 @@
     ##FORK
     %if c.db_repo.fork:
     <span>
-        - <i class="icon-code-fork"></i> ${_('Fork of')} "<a href="${h.url('summary_home',repo_name=c.db_repo.fork.repo_name)}">${c.db_repo.fork.repo_name}</a>"
+        - <i class="icon-fork"></i> ${_('Fork of')} "<a href="${h.url('summary_home',repo_name=c.db_repo.fork.repo_name)}">${c.db_repo.fork.repo_name}</a>"
     </span>
     %endif
 
     ##REMOTE
     %if c.db_repo.clone_uri:
     <span>
-       - <i class="icon-code-fork"></i> ${_('Clone from')} "<a href="${h.url(str(h.hide_credentials(c.db_repo.clone_uri)))}">${h.hide_credentials(c.db_repo.clone_uri)}</a>"
+       - <i class="icon-fork"></i> ${_('Clone from')} "<a href="${h.url(str(h.hide_credentials(c.db_repo.clone_uri)))}">${h.hide_credentials(c.db_repo.clone_uri)}</a>"
     <span>
     %endif
 </%def>
@@ -153,7 +153,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
             </li>
             <li>
               <a title="${_('Forks')}" href="${h.url('repo_forks_home',repo_name=c.repo_name)}">
-                <i class="icon-code-fork"></i> ${_('Forks')}
+                <i class="icon-fork"></i> ${_('Forks')}
                 <span class="stats-bullet">${c.repository_forks}</span>
               </a>
             </li>
