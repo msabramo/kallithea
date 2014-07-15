@@ -73,7 +73,7 @@
   <ul class="admin_menu">
       <li><a href="${h.url('admin_home')}"><i class="icon-book"></i> ${_('Admin Journal')}</a></li>
       <li><a href="${h.url('repos')}"><i class="icon-database"></i> ${_('Repositories')}</a></li>
-      <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository Groups')}</a></li>
+      <li><a href="${h.url('repos_groups')}"><i class="icon-folder"></i> ${_('Repository Groups')}</a></li>
       <li><a href="${h.url('users')}"><i class="icon-user"></i> ${_('Users')}</a></li>
       <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User Groups')}</a></li>
       <li><a href="${h.url('admin_permissions')}"><i class="icon-ban-circle"></i> ${_('Permissions')}</a></li>
@@ -92,7 +92,7 @@
       <li><a href="${h.url('repos')}"><i class="icon-database"></i> ${_('Repositories')}</a></li>
    %endif
    %if repository_groups:
-      <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository Groups')}</a></li>
+      <li><a href="${h.url('repos_groups')}"><i class="icon-folder"></i> ${_('Repository Groups')}</a></li>
    %endif
    %if user_groups:
       <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User Groups')}</a></li>
@@ -393,7 +393,7 @@
                 tmpl += '</span>';
             }
             if(obj_dict && state.type == 'group'){
-                    tmpl += '<i class="icon-folder-close"></i> ';
+                    tmpl += '<i class="icon-folder"></i> ';
             }
             tmpl += state.text;
             return tmpl;
