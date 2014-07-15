@@ -10,7 +10,6 @@ i.icon-eye-open { background-image: url("../images/icons/eye.png"); }
 i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
 i.icon-git { background-image: url('../images/icons/giticon.png');}
 i.icon-hg { background-image: url('../images/icons/hgicon.png');}
-i.icon-lock { background-image: url('../images/icons/lock.png');}
 i.icon-lock-alt { background-image: url('../images/icons/private_repo.png');}
 i.icon-private { background-image: url('../images/icons/private_repo.png');}
 i.icon-refresh { background-image: url('../images/icons/arrow_refresh.png');}
