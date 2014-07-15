@@ -525,11 +525,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.groups,
-#header #header-inner #quick li ul li a.groups:hover {
-    background-image: url("../images/icons/group_edit.png");
-}
-
 #header #header-inner #quick li ul li a.defaults,
 #header #header-inner #quick li ul li a.defaults:hover {
     background-image: url("../images/icons/wrench.png");
