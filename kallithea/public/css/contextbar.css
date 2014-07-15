@@ -20,14 +20,12 @@ i.icon-lock-alt { background-image: url('../images/icons/private_repo.png');}
 i.icon-loop { background-image: url('../images/icons/arrow_inout.png');}
 i.icon-loop-2 { background-image: url('../images/icons/arrow_inout.png');}
 i.icon-private { background-image: url('../images/icons/private_repo.png');}
-i.icon-public { background-image: url('../images/icons/public_repo.png');}
 i.icon-random { background-image: url("../images/icons/arrow_switch.png"); }
 i.icon-refresh { background-image: url('../images/icons/arrow_refresh.png');}
 i.icon-tag { background-image: url("../images/icons/tag_blue.png"); }
 i.icon-time { background-image: url("../images/icons/time.png"); }
 i.icon-list-alt { background-image: url("../images/icons/time.png"); }
 i.icon-unlock { background-image: url('../images/icons/lock_open.png');}
-i.icon-unlock-alt { background-image: url('../images/icons/public_repo.png');}
 i.icon-rss-sign { background-image: url('../images/icons/rss_16.png');}
 i.icon-plus-sign { background-image: url('../images/icons/add.png');}
 i.icon-chevron-left:after { content: "\00AB";}

@@ -506,11 +506,6 @@ div.header img {
     background-image: url("../images/icons/private_repo.png")
 }
 
-#header #header-inner #quick li ul li a.public_repo,
-#header #header-inner #quick li ul li a.public_repo:hover {
-    background-image: url("../images/icons/public_repo.png");
-}
-
 #header #header-inner #quick li ul li a.hg,
 #header #header-inner #quick li ul li a.hg:hover {
     background-image: url("../images/icons/hgicon.png");
