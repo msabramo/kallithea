@@ -41,7 +41,7 @@ requirements = [
     "Pylons==1.0.0",
     "Beaker==1.6.4",
     "WebHelpers==1.3",
-    "formencode==1.2.4",
+    "formencode>=1.2.4,<=1.2.6",
     "SQLAlchemy==0.7.10",
     "Mako>=0.9.0,<=1.0.0",
     "pygments>=1.5",
