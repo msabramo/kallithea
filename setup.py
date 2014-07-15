@@ -45,7 +45,7 @@ requirements = [
     "SQLAlchemy==0.7.10",
     "Mako>=0.9.0,<=1.0.0",
     "pygments>=1.5",
-    "whoosh>=2.4.0,<2.5",
+    "whoosh>=2.4.0,<=2.5.7",
     "celery>=2.2.5,<2.3",
     "babel==0.9.6",
     "python-dateutil>=1.5.0,<2.0.0",
