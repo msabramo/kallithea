@@ -550,14 +550,6 @@ div.header img {
     background-image: url("../images/icons/delete.png");
 }
 
-#header #header-inner #quick li ul li a.bookmarks,
-#header #header-inner #quick li ul li a.bookmarks:hover {
-    background: #FFF url("../images/icons/tag_green.png") no-repeat 4px 9px;
-    width: 167px;
-    margin: 0;
-    padding: 12px 9px 7px 24px;
-}
-
 .groups_breadcrumbs a {
     color: #fff;
 }
