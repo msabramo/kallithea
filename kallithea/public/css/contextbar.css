@@ -28,7 +28,6 @@ i.icon-time { background-image: url("../images/icons/time.png"); }
 i.icon-list-alt { background-image: url("../images/icons/time.png"); }
 i.icon-unlock { background-image: url('../images/icons/lock_open.png');}
 i.icon-unlock-alt { background-image: url('../images/icons/public_repo.png');}
-i.icon-wrench { background-image: url("../images/icons/wrench.png"); }
 i.icon-rss-sign { background-image: url('../images/icons/rss_16.png');}
 i.icon-plus-sign { background-image: url('../images/icons/add.png');}
 i.icon-chevron-left:after { content: "\00AB";}

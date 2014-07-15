@@ -525,11 +525,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.defaults,
-#header #header-inner #quick li ul li a.defaults:hover {
-    background-image: url("../images/icons/wrench.png");
-}
-
 #header #header-inner #quick li ul li a.permissions,
 #header #header-inner #quick li ul li a.permissions:hover {
     background-image: url("../images/icons/key.png");
