@@ -9,7 +9,6 @@ i.icon-code-merge { background-image: url("../images/icons/arrow_merge.png"); } 
 i.icon-cogs { background-image: url("../images/icons/table_gear.png"); }
 i.icon-ellipsis-horizontal:after { content: ' ...';}
 i.icon-eye-open { background-image: url("../images/icons/eye.png"); }
-i.icon-file { background-image: url("../images/icons/file.png"); }
 i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
 i.icon-git { background-image: url('../images/icons/giticon.png');}
 i.icon-heart { background-image: url("../images/icons/heart_delete.png"); }

@@ -151,7 +151,7 @@
         %else:
         <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-clock"></i> ${_('Changelog')}</a></li>
         %endif
-        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name, revision=rev or 'tip')}"><i class="icon-file"></i> ${_('Files')}</a></li>
+        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name, revision=rev or 'tip')}"><i class="icon-doc-inv"></i> ${_('Files')}</a></li>
         <li ${is_current('switch-to')}>
           <a href="#" id="branch_tag_switcher_2" class="dropdown"><i class="icon-random"></i> ${_('Switch To')}</a>
           <ul id="switch_to_list_2" class="switch_to submenu">

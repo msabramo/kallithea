@@ -21,7 +21,7 @@
 <div id="body" class="codeblock">
     <div class="code-header">
         <div class="stats">
-            <div class="left img"><i class="icon-file"></i></div>
+            <div class="left img"><i class="icon-doc-inv"></i></div>
             <div class="left item"><pre class="tooltip" title="${h.tooltip(h.fmt_date(c.file_changeset.date))}">${h.link_to(h.show_id(c.file_changeset),h.url('changeset_home',repo_name=c.repo_name,revision=c.file_changeset.raw_id))}</pre></div>
             <div class="left item"><pre>${h.format_byte_size(c.file.size,binary=True)}</pre></div>
             <div class="left item last"><pre>${c.file.mimetype}</pre></div>
