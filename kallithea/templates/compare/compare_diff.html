@@ -33,7 +33,7 @@ ${self.repo_context_bar('changelog')}
                 <div>
                     ${h.hidden('compare_org')} <i class="icon-arrow-right"></i> ${h.hidden('compare_other')}
                     %if not c.compare_home:
-                        <a class="btn btn-small" href="${c.swap_url}"><i class="icon-refresh"></i> ${_('Swap')}</a>
+                        <a class="btn btn-small" href="${c.swap_url}"><i class="icon-arrows-cw"></i> ${_('Swap')}</a>
                     %endif
                     <div id="compare_revs" class="btn btn-small"><i class="icon-git-compare"></i> ${_('Compare Revisions')}</div>
                 </div>
