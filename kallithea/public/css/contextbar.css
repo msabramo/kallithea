@@ -6,7 +6,6 @@ i.icon-arrow-right { background-image: url('../images/icons/arrow_right.png');}
 i.icon-bar-chart { background-image: url("../images/icons/chart_bar.png"); }
 i.icon-code-merge { background-image: url("../images/icons/arrow_merge.png"); } /* unused! */
 i.icon-ellipsis-horizontal:after { content: ' ...';}
-i.icon-eye-open { background-image: url("../images/icons/eye.png"); }
 i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
 i.icon-git { background-image: url('../images/icons/giticon.png');}
 i.icon-hg { background-image: url('../images/icons/hgicon.png');}
