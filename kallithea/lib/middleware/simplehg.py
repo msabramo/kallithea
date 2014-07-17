@@ -284,9 +284,6 @@ class SimpleHg(BaseVCSController):
 
         hgrc = os.path.join(repo_path, '.hg', 'hgrc')
 
-        # make our hgweb quiet so it doesn't print output
-        baseui.setconfig('ui', 'quiet', 'true')
-
         repoui = make_ui('file', hgrc, False)
 
         if repoui:
