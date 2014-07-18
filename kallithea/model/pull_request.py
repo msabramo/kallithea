@@ -49,6 +49,13 @@ class PullRequestModel(BaseModel):
     def __get_pull_request(self, pull_request):
         return self._get_instance(PullRequest, pull_request)
 
+    def get_pullrequest_cnt_for_user(self, user):
+        return PullRequest.query()\
+                                .join(PullRequestReviewers)\
+                                .filter(PullRequestReviewers.user_id == user)\
+                                .filter(PullRequest.status != PullRequest.STATUS_CLOSED)\
+                                .count()
+
     def get_all(self, repo_name, from_=False, closed=False):
         """Get all PRs for repo.
         Default is all PRs to the repo, PRs from the repo if from_.

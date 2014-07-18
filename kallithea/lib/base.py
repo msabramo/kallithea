@@ -55,6 +55,7 @@ from kallithea.model.db import Repository, Ui, User, Setting
 from kallithea.model.notification import NotificationModel
 from kallithea.model.scm import ScmModel
 from kallithea.model.meta import Session
+from kallithea.model.pull_request import PullRequestModel
 
 log = logging.getLogger(__name__)
 
@@ -319,6 +320,9 @@ class BaseController(WSGIController):
                         .get_unread_cnt_for_user(c.authuser.user_id)
 
         self.cut_off_limit = safe_int(config.get('cut_off_limit'))
+
+        c.my_pr_count = PullRequestModel().get_pullrequest_cnt_for_user(c.authuser.user_id)
+
         self.sa = meta.Session
         self.scm_model = ScmModel(self.sa)
 

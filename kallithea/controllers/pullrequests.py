@@ -48,7 +48,8 @@ from kallithea.lib.utils import action_logger, jsonify
 from kallithea.lib.vcs.utils import safe_str
 from kallithea.lib.vcs.exceptions import EmptyRepositoryError
 from kallithea.lib.diffs import LimitedDiffContainer
-from kallithea.model.db import  PullRequest, ChangesetStatus, ChangesetComment
+from kallithea.model.db import  PullRequest, ChangesetStatus, ChangesetComment,\
+    PullRequestReviewers
 from kallithea.model.pull_request import PullRequestModel
 from kallithea.model.meta import Session
 from kallithea.model.repo import RepoModel
@@ -255,6 +256,34 @@ class PullrequestsController(BaseRepoController):
             return c.pullrequest_data
 
         return render('/pullrequests/pullrequest_show_all.html')
+
+    @LoginRequired()
+    def show_my(self): # my_account_my_pullrequests
+        c.show_closed = request.GET.get('pr_show_closed')
+        return render('/pullrequests/pullrequest_show_my.html')
+
+    @NotAnonymous()
+    def show_my_data(self):
+        c.show_closed = request.GET.get('pr_show_closed')
+
+        def _filter(pr):
+            s = sorted(pr, key=lambda o: o.created_on, reverse=True)
+            if not c.show_closed:
+                s = filter(lambda p: p.status != PullRequest.STATUS_CLOSED, s)
+            return s
+
+        c.my_pull_requests = _filter(PullRequest.query()\
+                                .filter(PullRequest.user_id ==
+                                        self.authuser.user_id)\
+                                .all())
+
+        c.participate_in_pull_requests = _filter(PullRequest.query()\
+                                .join(PullRequestReviewers)\
+                                .filter(PullRequestReviewers.user_id ==
+                                        self.authuser.user_id)\
+                                                 )
+
+        return render('/pullrequests/pullrequest_show_my_data.html')
 
     @LoginRequired()
     @NotAnonymous()

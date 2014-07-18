@@ -222,7 +222,78 @@
   <!--- END CONTEXT BAR -->
 </%def>
 
-<%def name="usermenu()">
+<%def name="menu(current=None)">
+  <%
+  def is_current(selected):
+      if selected == current:
+          return h.literal('class="current"')
+  %>
+
+  <ul id="quick" class="horizontal-list">
+    <!-- repo switcher -->
+    <li ${is_current('repositories')}>
+      <input id="repo_switcher" name="repo_switcher" type="hidden">
+    </li>
+
+    ##ROOT MENU
+    %if c.authuser.username != 'default':
+      <li ${is_current('journal')}>
+        <a class="menu_link" title="${_('Show recent activity')}"  href="${h.url('journal')}">
+          <i class="icon-book"></i> ${_('Journal')}
+        </a>
+      </li>
+    %else:
+      <li ${is_current('journal')}>
+        <a class="menu_link" title="${_('Public journal')}"  href="${h.url('public_journal')}">
+          <i class="icon-book"></i> ${_('Public journal')}
+        </a>
+      </li>
+    %endif
+      <li ${is_current('gists')}>
+        <a class="menu_link childs" title="${_('Show public gists')}"  href="${h.url('gists')}">
+          <i class="icon-file-2"></i> ${_('Gists')}
+        </a>
+          <ul class="admin_menu">
+            <li><a href="${h.url('new_gist', public=1)}"><i class="icon-file-alt"></i> ${_('Create new gist')}</a></li>
+            <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All public gists')}</a></li>
+            %if c.authuser.username != 'default':
+              <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My public gists')}</a></li>
+              <li><a href="${h.url('gists', private=1)}"><i class="icon-file-text"></i> ${_('My private gists')}</a></li>
+            %endif
+          </ul>
+      </li>
+    <li ${is_current('search')}>
+        <a class="menu_link" title="${_('Search in repositories')}"  href="${h.url('search')}">
+          <i class="icon-search"></i> ${_('Search')}
+        </a>
+    </li>
+    % if h.HasPermissionAll('hg.admin')('access admin main page'):
+      <li ${is_current('admin')}>
+        <a class="menu_link childs" title="${_('Admin')}" href="${h.url('admin_home')}">
+          <i class="icon-cog"></i> ${_('Admin')}
+        </a>
+        ${admin_menu()}
+      </li>
+    % elif c.authuser.repositories_admin or c.authuser.repository_groups_admin or c.authuser.user_groups_admin:
+    <li ${is_current('admin')}>
+        <a class="menu_link childs" title="${_('Admin')}">
+          <i class="icon-cog"></i> ${_('Admin')}
+        </a>
+        ${admin_menu_simple(c.authuser.repositories_admin,
+                            c.authuser.repository_groups_admin,
+                            c.authuser.user_groups_admin or h.HasPermissionAny('hg.usergroup.create.true')())}
+    </li>
+    % endif
+
+    <li ${is_current('my_pullrequests')}>
+      <a class="menu_link" title="${_('My Pull Requests')}" href="${h.url('my_pullrequests')}">
+        <i class="icon-code-fork"></i> ${_('My Pull Requests')}
+        %if c.my_pr_count != 0:
+          <span class="menu_link_notifications">${c.my_pr_count}</span>
+        %endif
+      </a>
+    </li>
+
     ## USER MENU
     <li>
       <a class="menu_link childs" id="quick_login_link">
@@ -239,9 +310,9 @@
           %endif
       </a>
 
-  <div class="user-menu">
-      <div id="quick_login">
-        %if c.authuser.username == 'default':
+      <div class="user-menu">
+        <div id="quick_login">
+          %if c.authuser.username == 'default':
             <h4>${_('Login to your account')}</h4>
             ${h.form(h.url('login_home',came_from=h.url.current()))}
             <div class="form">
@@ -278,7 +349,7 @@
                 </div>
             </div>
             ${h.end_form()}
-        %else:
+          %else:
             <div class="links_left">
                 <div class="big_gravatar"><img alt="gravatar" src="${h.gravatar_url(c.authuser.email,48)}" /></div>
                 <div class="full_name">${c.authuser.full_name_or_username}</div>
@@ -291,75 +362,10 @@
               <li class="logout">${h.link_to(_(u'Log Out'),h.url('logout_home'))}</li>
             </ol>
             </div>
-        %endif
-      </div>
-  </div>
-
-    </li>
-</%def>
-
-<%def name="menu(current=None)">
-        <%
-        def is_current(selected):
-            if selected == current:
-                return h.literal('class="current"')
-        %>
-        <ul id="quick" class="horizontal-list">
-          <!-- repo switcher -->
-          <li ${is_current('repositories')}>
-            <input id="repo_switcher" name="repo_switcher" type="hidden">
-          </li>
-
-          ##ROOT MENU
-          %if c.authuser.username != 'default':
-            <li ${is_current('journal')}>
-              <a class="menu_link" title="${_('Show recent activity')}"  href="${h.url('journal')}">
-                <i class="icon-book"></i> ${_('Journal')}
-              </a>
-            </li>
-          %else:
-            <li ${is_current('journal')}>
-              <a class="menu_link" title="${_('Public journal')}"  href="${h.url('public_journal')}">
-                <i class="icon-book"></i> ${_('Public journal')}
-              </a>
-            </li>
           %endif
-            <li ${is_current('gists')}>
-              <a class="menu_link childs" title="${_('Show public gists')}"  href="${h.url('gists')}">
-                <i class="icon-file-2"></i> ${_('Gists')}
-              </a>
-                <ul class="admin_menu">
-                  <li><a href="${h.url('new_gist', public=1)}"><i class="icon-file-alt"></i> ${_('Create new gist')}</a></li>
-                  <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All public gists')}</a></li>
-                  %if c.authuser.username != 'default':
-                    <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My public gists')}</a></li>
-                    <li><a href="${h.url('gists', private=1)}"><i class="icon-file-text"></i> ${_('My private gists')}</a></li>
-                  %endif
-                </ul>
-            </li>
-          <li ${is_current('search')}>
-              <a class="menu_link" title="${_('Search in repositories')}"  href="${h.url('search')}">
-                <i class="icon-search"></i> ${_('Search')}
-              </a>
-          </li>
-          % if h.HasPermissionAll('hg.admin')('access admin main page'):
-            <li ${is_current('admin')}>
-              <a class="menu_link childs" title="${_('Admin')}" href="${h.url('admin_home')}">
-                <i class="icon-cog"></i> ${_('Admin')}
-              </a>
-              ${admin_menu()}
-            </li>
-          % elif c.authuser.repositories_admin or c.authuser.repository_groups_admin or c.authuser.user_groups_admin:
-          <li ${is_current('admin')}>
-              <a class="menu_link childs" title="${_('Admin')}">
-                <i class="icon-cog"></i> ${_('Admin')}
-              </a>
-              ${admin_menu_simple(c.authuser.repositories_admin,
-                                  c.authuser.repository_groups_admin,
-                                  c.authuser.user_groups_admin or h.HasPermissionAny('hg.usergroup.create.true')())}
-          </li>
-          % endif
-          ${usermenu()}
+        </div>
+      </div>
+    </li>
 
     <script type="text/javascript">
         var visual_show_public_icon = "${c.visual.show_public_icon}" == "True";
