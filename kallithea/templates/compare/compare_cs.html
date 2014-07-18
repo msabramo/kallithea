@@ -32,7 +32,7 @@
         <td>${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id))}</td>
         <td>
         %if cs.branch:
-        <span class="branchtag">${cs.branch}</span>
+        <span class="branchtag">${h.link_to(cs.branch,h.url('changelog_home',repo_name=c.other_repo.repo_name,branch=cs.branch))}</span>
         %endif
         </td>
         <td class="expand_commit" commit_id="${cs.raw_id}" title="${_('Expand commit message')}">
