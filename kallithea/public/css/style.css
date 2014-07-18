@@ -2635,6 +2635,18 @@ BIN_FILENODE = 6
     height: 1.1em;
 }
 
+#graph_content_pr .compare_view_commits .message {
+    white-space: normal !important;
+    padding: 0 !important;
+    height: 1.1em;
+}
+
+#graph_content .container .mid .message.expanded,
+#graph_content_pr .compare_view_commits .message.expanded {
+    height: auto;
+    margin: 4px 0px 4px 0px;
+}
+
 #graph_content .container .extra-container {
     display: block;
     position: absolute;

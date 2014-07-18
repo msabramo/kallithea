@@ -42,7 +42,7 @@ def _commit_change(repo, filename, content, message, vcs_type, parent=None, newf
 
 
 def _commit_div(sha, msg):
-    return """<div id="C-%s" class="message" style="white-space:normal; height:1.1em; padding:0">%s</div>""" % (sha, msg)
+    return """<div id="C-%s" class="message">%s</div>""" % (sha, msg)
 
 
 class TestCompareController(TestController):

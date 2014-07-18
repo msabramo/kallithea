@@ -32,7 +32,7 @@
         <td class="expand_commit" commit_id="${cs.raw_id}" title="${_('Expand commit message')}">
             <i class="icon-resize-vertical" style="color:#DDD"></i>
         </td>
-        <td><div id="C-${cs.raw_id}" class="message" style="white-space:normal; height:1.1em; padding:0">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
+        <td><div id="C-${cs.raw_id}" class="message">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
         </tr>
     %endfor
     </table>
@@ -72,9 +72,8 @@
 
 <script>
 $('.expand_commit').on('click',function(e){
-    $(this).children('i').hide();
     var cid = $(this).attr('commit_id');
-    $('#C-'+cid).css({'height': 'auto','width': 'auto', 'white-space': 'pre'})
+    $('#C-'+cid).toggleClass('expanded');
 });
 $('.gravatar').on('click',function(e){
     var cid = $(this).attr('commit_id');

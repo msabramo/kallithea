@@ -259,9 +259,8 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                 }
 
                 $('.expand_commit').on('click',function(e){
-                    $(this).children('i').hide();
                     var cid = $(this).attr('commit_id');
-                    $('#C-'+cid).css({'height': 'auto', 'margin': '4px 0px 4px 0px'})
+                    $('#C-'+cid).toggleClass('expanded');
 
                     //redraw the graph, r and jsdata are bound outside function
                     r.render(jsdata,100);
