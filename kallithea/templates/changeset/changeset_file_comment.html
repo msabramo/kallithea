@@ -60,35 +60,35 @@
 <div id='comment-inline-form-template' style="display:none">
   <div class="comment-inline-form ac">
   %if c.authuser.username != 'default':
-      ${h.form('#', class_='inline-form')}
+    ${h.form('#', class_='inline-form')}
       <div id="edit-container_{1}" class="clearfix">
-          <div class="comment-help">${_('Commenting on line {1}.')}
+        <div class="comment-help">${_('Commenting on line {1}.')}
           ${(_('Comments parsed using %s syntax with %s support.') % (
                  ('<a href="%s">RST</a>' % h.url('rst_help')),
                    ('<span style="color:#577632" class="tooltip" title="%s">@mention</span>' % _('Use @username inside this text to notify another user'))
                )
             )|n
            }
-          <div id="preview-btn_{1}" class="preview-btn btn btn-mini">${_('Preview')}</div>
-          </div>
-            <div class="mentions-container" id="mentions_container_{1}"></div>
-            <textarea id="text_{1}" name="text" class="comment-block-ta yui-ac-input"></textarea>
+        </div>
+        <div class="mentions-container" id="mentions_container_{1}"></div>
+        <textarea id="text_{1}" name="text" class="comment-block-ta yui-ac-input"></textarea>
       </div>
       <div id="preview-container_{1}" class="clearfix" style="display:none">
-         <div class="comment-help">
-              ${_('Comment preview')}
-            <div id="edit-btn_{1}" class="edit-btn btn btn-mini">${_('Edit')}</div>
-          </div>
-          <div id="preview-box_{1}" class="preview-box"></div>
+        <div class="comment-help">
+            ${_('Comment preview')}
+        </div>
+        <div id="preview-box_{1}" class="preview-box"></div>
       </div>
       <div class="comment-button">
-      <div class="submitting-overlay">${_('Submitting ...')}</div>
-      <input type="hidden" name="f_path" value="{0}">
-      <input type="hidden" name="line" value="{1}">
-      ${h.submit('save', _('Comment'), class_='btn btn-small save-inline-form')}
-      ${h.reset('hide-inline-form', _('Cancel'), class_='btn btn-small hide-inline-form')}
+        <div class="submitting-overlay">${_('Submitting ...')}</div>
+        <input type="hidden" name="f_path" value="{0}">
+        <input type="hidden" name="line" value="{1}">
+        ${h.submit('save', _('Comment'), class_='btn btn-small save-inline-form')}
+        ${h.reset('hide-inline-form', _('Cancel'), class_='btn btn-small hide-inline-form')}
+        <div id="preview-btn_{1}" class="preview-btn btn btn-small">${_('Preview')}</div>
+        <div id="edit-btn_{1}" class="edit-btn btn btn-small" style="display:none">${_('Edit')}</div>
       </div>
-      ${h.end_form()}
+    ${h.end_form()}
   %else:
       ${h.form('')}
       <div class="clearfix">
@@ -143,13 +143,12 @@
 <div class="comments">
     %if c.authuser.username != 'default':
     <div class="comment-form ac">
-        ${h.form(post_url)}
+      ${h.form(post_url)}
         <div id="edit-container" class="clearfix">
             <div class="comment-help">
                 ${(_('Comments parsed using %s syntax with %s support.') % (('<a href="%s">RST</a>' % h.url('rst_help')),
                   '<span style="color:#577632" class="tooltip" title="%s">@mention</span>' %
                   _('Use @username inside this text to send notification to this Kallithea user')))|n}
-                <div id="preview-btn" class="preview-btn btn btn-mini">${_('Preview')}</div>
             </div>
             <div class="mentions-container" id="mentions_container"></div>
             ${h.textarea('text', class_="comment-block-ta")}
@@ -179,17 +178,18 @@
         </div>
 
         <div id="preview-container" class="clearfix" style="display:none">
-           <div class="comment-help">
+            <div class="comment-help">
                 ${_('Comment preview')}
-              <div id="edit-btn" class="edit-btn btn btn-mini">${_('Edit')}</div>
             </div>
             <div id="preview-box" class="preview-box"></div>
         </div>
 
         <div class="comment-button">
-        ${h.submit('save', _('Comment'), class_="btn")}
+            ${h.submit('save', _('Comment'), class_="btn")}
+            <div id="preview-btn" class="preview-btn btn">${_('Preview')}</div>
+            <div id="edit-btn" class="edit-btn btn" style="display:none">${_('Edit')}</div>
         </div>
-        ${h.end_form()}
+      ${h.end_form()}
     </div>
     %endif
 </div>
@@ -208,7 +208,9 @@ YUE.onDOMReady(function () {
        YUD.addClass('preview-box', 'unloaded');
        YUD.get('preview-box').innerHTML = _TM['Loading ...'];
        YUD.setStyle('edit-container', 'display', 'none');
+       YUD.setStyle('edit-btn', 'display', '');
        YUD.setStyle('preview-container', 'display', '');
+       YUD.setStyle('preview-btn', 'display', 'none');
 
        var url = pyroutes.url('changeset_comment_preview', {'repo_name': '${c.repo_name}'});
        ajaxPOST(url,post_data,function(o){
@@ -218,7 +220,9 @@ YUE.onDOMReady(function () {
    })
    YUE.on('edit-btn', 'click', function(e){
        YUD.setStyle('edit-container', 'display', '');
+       YUD.setStyle('edit-btn', 'display', 'none');
        YUD.setStyle('preview-container', 'display', 'none');
+       YUD.setStyle('preview-btn', 'display', '');
    })
 
 });

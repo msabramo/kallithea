@@ -734,7 +734,9 @@ var injectInlineForm = function(tr){
         $('#preview-box_'+lineno).addClass('unloaded');
         $('#preview-box_'+lineno).html(_TM['Loading ...']);
         $('#edit-container_'+lineno).hide();
+        $('#edit-btn_'+lineno).show();
         $('#preview-container_'+lineno).show();
+        $('#preview-btn_'+lineno).hide();
 
         var url = pyroutes.url('changeset_comment_preview', {'repo_name': REPO_NAME});
         var post_data = {'text': text};
@@ -745,7 +747,9 @@ var injectInlineForm = function(tr){
     })
     $('#edit-btn_'+lineno).click(function(e){
         $('#edit-container_'+lineno).show();
+        $('#edit-btn_'+lineno).hide();
         $('#preview-container_'+lineno).hide();
+        $('#preview-btn_'+lineno).show();
     })
 
     setTimeout(function(){
