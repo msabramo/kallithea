@@ -25,7 +25,7 @@ from kallithea.lib.vcs.exceptions import (
     RepositoryError, VCSError, TagAlreadyExistError, TagDoesNotExistError
 )
 from kallithea.lib.vcs.utils import (
-    author_email, author_name, date_fromtimestamp, makedate, safe_unicode
+    author_email, author_name, date_fromtimestamp, makedate, safe_unicode, safe_str,
 )
 from kallithea.lib.vcs.utils.lazy import LazyProperty
 from kallithea.lib.vcs.utils.ordered_dict import OrderedDict
@@ -429,6 +429,8 @@ class MercurialRepository(BaseRepository):
 
         :param revision: str or int or None
         """
+        if isinstance(revision, unicode):
+            revision = safe_str(revision)
 
         if self._empty:
             raise EmptyRepositoryError("There are no changesets yet")
