@@ -13,14 +13,14 @@
     <table class="compare_view_commits noborder">
     %for cs in reversed(c.cs_ranges):
         <tr id="row-${cs.raw_id}">
-        <td>
+        <td style="width:50px">
           %if cs.raw_id in c.statuses:
             <div title="${_('Changeset status: %s') % c.statuses[cs.raw_id][1]}" class="changeset-status-ico">
                 <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cs.raw_id][0])}" />
             </div>
           %endif
         </td>
-        <td style="min-width: 120px"><span class="tooltip" title="${h.tooltip(h.age(cs.date))}">${cs.date}</span></td>
+        <td style="width: 140px"><span class="tooltip" title="${h.tooltip(h.age(cs.date))}">${cs.date}</span></td>
         <td><div class="gravatar" commit_id="${cs.raw_id}"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
         <td><div class="author">${h.person(cs.author)}</div></td>
         <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.other_repo.repo_name,revision=cs.raw_id))}
