@@ -4940,6 +4940,7 @@ div.diffblock .children {
 
 div.diffblock .code-body {
     background: #FFFFFF;
+    clear: both;
 }
 div.diffblock pre.raw {
     background: #FFFFFF;
