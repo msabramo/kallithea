@@ -103,7 +103,7 @@ ${self.repo_context_bar('changelog')}
 
                         %if c.changeset.branch:
                          <span class="branchtag" title="${_('Branch %s') % c.changeset.branch}">
-                         ${h.link_to(c.changeset.branch,h.url('changeset_home',repo_name=c.repo_name,revision=c.changeset.raw_id))}
+                         ${h.link_to(c.changeset.branch,h.url('changelog_home',repo_name=c.repo_name,branch=c.changeset.branch))}
                          </span>
                         %endif
                     </span>

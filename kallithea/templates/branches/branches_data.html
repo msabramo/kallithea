@@ -18,8 +18,9 @@
             <td>${branch[0]}</td>
             <td>
                 <span class="logtags">
-                    <span class="branchtag">${h.link_to(branch[0],
-                    h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id))}</span>
+                    <span class="branchtag">
+                    ${h.link_to(branch[0],h.url('changelog_home',repo_name=c.repo_name,branch=branch[0]))}
+                    </span>
                 </span>
             </td>
             <td>${branch[1]._timestamp}</td>
@@ -44,8 +45,9 @@
               <td>${branch[0]}</td>
               <td>
                   <span class="logtags">
-                      <span class="branchtag">${h.link_to(branch[0]+' [closed]',
-                      h.url('changeset_home',repo_name=c.repo_name,revision=branch[1].raw_id))}</span>
+                      <span class="branchtag">
+                      ${h.link_to(branch[0]+' [closed]',h.url('changelog_home',repo_name=c.repo_name,branch=branch[0]))}
+                      </span>
                   </span>
               </td>
               <td>${branch[1]._timestamp}</td>
