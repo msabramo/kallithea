@@ -720,7 +720,7 @@ class DiffProcessor(object):
                         'cc': code_class,
                         'inc': comments
                     })
-                    _html.append('''\n\t\t<pre>%(code)s</pre>\n''' % {
+                    _html.append('''\n\t\t<div class="add-bubble"><div>&nbsp;</div></div><pre>%(code)s</pre>\n''' % {
                         'code': change['line']
                     })
 

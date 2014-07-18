@@ -197,12 +197,12 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                }
           })
 
-          YUE.on(YUQ('.line'),'click',function(e){
+          YUE.on(YUQ('.add-bubble'),'click',function(e){
               var tr = e.currentTarget;
               if(tr == null){
                   tr = this;
               }
-              injectInlineForm(tr);
+              injectInlineForm(tr.parentNode.parentNode);
           });
 
           // inject comments into they proper positions
