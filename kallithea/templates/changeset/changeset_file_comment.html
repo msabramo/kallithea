@@ -171,8 +171,8 @@
                     </span>
                 %endfor
                 %if is_pr and change_status:
-                <input id="save_close" type="checkbox" name="save_close" disabled="${'1' if cur_status in ['not_reviewed','under_review'] else ''}">
-                <label id="save_close_label" for="save_close" class="${'disabled' if cur_status in ['not_reviewed','under_review'] else ''}">${_("Close (when approved or rejected)")}</label>
+                <input id="save_close" type="checkbox" name="save_close">
+                <label id="save_close_label" for="save_close">${_("Close")}</label>
                 %endif
               </div>
             %endif
@@ -198,26 +198,6 @@
 
 YUE.onDOMReady(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
-
-   var set_close_button_state = function(cur_val){
-     %if is_pr and change_status:
-       if (cur_val == 'approved' || cur_val == 'rejected') {
-           YUD.removeClass('save_close_label', 'disabled');
-           YUD.get('save_close').disabled = false;
-       }else{
-           YUD.addClass('save_close_label', 'disabled');
-           YUD.get('save_close').disabled = true;
-           YUD.get('save_close').checked = false;
-       }
-     %endif
-   }
-   YUE.on(YUQ('.status_change_radio'), 'change',function(e){
-       var val = e.currentTarget.value;
-       set_close_button_state(val);
-   })
-   // if currect checked status is approved or rejected we should unlock the close button
-   var cur_val = YUQ('.status_change_radio[checked]')[0].value;
-   set_close_button_state(cur_val)
 
    YUE.on('preview-btn', 'click', function(e){
        var _text = YUD.get('text').value;

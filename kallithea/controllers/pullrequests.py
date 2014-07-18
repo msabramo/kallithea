@@ -584,15 +584,10 @@ class PullrequestsController(BaseRepoController):
                 )
 
             if close_pr:
-                if status in ['rejected', 'approved']:
-                    PullRequestModel().close_pull_request(pull_request_id)
-                    action_logger(self.authuser,
+                PullRequestModel().close_pull_request(pull_request_id)
+                action_logger(self.authuser,
                               'user_closed_pull_request:%s' % pull_request_id,
                               c.db_repo, self.ip_addr, self.sa)
-                else:
-                    h.flash(_('Closing pull request on other statuses than '
-                              'rejected or approved forbidden'),
-                            category='warning')
 
         Session().commit()
 
