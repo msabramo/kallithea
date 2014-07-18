@@ -26,7 +26,6 @@ function BranchRenderer(canvas_id, content_id) {
 
 	this.canvas = document.getElementById(canvas_id);
 	var t = document.getElementById(content_id);
-	this.canvas.setAttribute('height',t.clientHeight);
 	
 	if (!document.createElement("canvas").getContext)
 		this.canvas = window.G_vmlCanvasManager.initElement(this.canvas);
@@ -62,6 +61,7 @@ function BranchRenderer(canvas_id, content_id) {
 		var rela = this.canvas;
 
 		this.canvas.setAttribute('width',canvasWidth);
+		this.canvas.setAttribute('height',t.clientHeight);
 
 		var lineCount = 1;
 		for (var i=0;i<data.length;i++) {
