@@ -64,7 +64,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaAuthPluginBase):
             log.debug('userobj was:%s skipping' % (userobj, ))
             return None
         if userobj.extern_type != self.name:
-            log.warn("userobj:%s extern_type mismatch got:`%s` expected:`%s`"
+            log.warning("userobj:%s extern_type mismatch got:`%s` expected:`%s`"
                      % (userobj, userobj.extern_type, self.name))
             return None
 

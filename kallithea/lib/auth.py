@@ -765,7 +765,7 @@ class LoginRequired(object):
                 if not _api_key:
                     log.debug("API KEY *NOT* present in request")
                 else:
-                    log.warn("API KEY ****%s *NOT* valid" % _api_key[-4:])
+                    log.warning("API KEY ****%s *NOT* valid" % _api_key[-4:])
 
         log.debug('Checking if %s is authenticated @ %s' % (user.username, loc))
         reason = 'RegularAuth' if user.is_authenticated else 'APIAuth'
@@ -776,7 +776,7 @@ class LoginRequired(object):
             )
             return func(*fargs, **fkwargs)
         else:
-            log.warn('user %s authenticating with:%s NOT authenticated on func: %s: '
+            log.warning('user %s authenticating with:%s NOT authenticated on func: %s: '
                      'IP_ACCESS:%s API_ACCESS:%s'
                      % (user, reason, loc, ip_access_valid, api_access_valid)
             )
