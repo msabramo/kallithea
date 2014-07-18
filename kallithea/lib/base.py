@@ -411,9 +411,6 @@ class BaseRepoController(BaseController):
 
                 redirect(url('home'))
 
-            # update last change according to VCS data
-            dbr.update_changeset_cache(dbr.get_changeset())
-
             # some globals counter for menu
             c.repository_followers = self.scm_model.get_followers(dbr)
             c.repository_forks = self.scm_model.get_forks(dbr)

@@ -1321,7 +1321,7 @@ class Repository(Base, BaseModel):
         if isinstance(cs_cache, BaseChangeset):
             cs_cache = cs_cache.__json__()
 
-        if (cs_cache != self.changeset_cache or not self.changeset_cache):
+        if (not self.changeset_cache or cs_cache['raw_id'] != self.changeset_cache['raw_id']):
             _default = datetime.datetime.fromtimestamp(0)
             last_change = cs_cache.get('date') or _default
             log.debug('updated repo %s with new cs cache %s'
@@ -1331,8 +1331,8 @@ class Repository(Base, BaseModel):
             Session().add(self)
             Session().commit()
         else:
-            log.debug('Skipping repo:%s already with latest changes'
-                      % self.repo_name)
+            log.debug('changeset_cache for %s already up to date with %s'
+                      % (self.repo_name, cs_cache['raw_id']))
 
     @property
     def tip(self):
