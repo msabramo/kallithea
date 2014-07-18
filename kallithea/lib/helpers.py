@@ -1244,28 +1244,15 @@ def urlify_changesets(text_, repository):
     :param repository: repo name to build the URL with
     """
     from pylons import url  # doh, we need to re-import url to mock it later
-    URL_PAT = re.compile(r'(^|\s)([0-9a-fA-F]{12,40})($|\s)')
 
     def url_func(match_obj):
-        rev = match_obj.groups()[1]
-        pref = match_obj.groups()[0]
-        suf = match_obj.groups()[2]
-
-        tmpl = (
-        '%(pref)s<a class="%(cls)s" href="%(url)s">'
-        '%(rev)s</a>%(suf)s'
-        )
-        return tmpl % {
-         'pref': pref,
-         'cls': 'revision-link',
+        rev = match_obj.group(0)
+        return '<a class="revision-link" href="%(url)s">%(rev)s</a>' % {
          'url': url('changeset_home', repo_name=repository, revision=rev),
          'rev': rev,
-         'suf': suf
         }
 
-    newtext = URL_PAT.sub(url_func, text_)
-
-    return newtext
+    return re.sub(r'(?:^|(?<=\s))([0-9a-fA-F]{12,40})(?=$|\s|[.,:])', url_func, text_)
 
 
 def urlify_commit(text_, repository, link_=None):
