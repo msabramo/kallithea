@@ -1376,8 +1376,7 @@ class Repository(Base, BaseModel):
             .filter(ChangesetStatus.revision.in_(revisions))
         grouped = {}
 
-        #maybe we have open new pullrequest without a status ?
-        stat = ChangesetStatus.STATUS_UNDER_REVIEW
+        stat = ChangesetStatus.DEFAULT
         status_lbl = ChangesetStatus.get_status_lbl(stat)
         for pr in PullRequest.query().filter(PullRequest.org_repo == self).all():
             for rev in pr.revisions:
