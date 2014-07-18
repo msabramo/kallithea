@@ -412,7 +412,7 @@ var ajaxGET = function(url,success) {
         success: success,
         failure: function (o) {
             if (o.status != 0) {
-                alert("error: " + o.statusText);
+                alert("Ajax GET error: " + o.statusText);
             };
         },
     };
@@ -429,7 +429,7 @@ var ajaxPOST = function(url,postData,success) {
     var callback = {
         success: success,
         failure: function (o) {
-            alert("error");
+            alert("Ajax POST error: " + o.statusText);
         },
     };
     var postData = _toQueryString(postData);
@@ -697,11 +697,11 @@ var injectInlineForm = function(tr){
         e.preventDefault();
 
         if(lineno === undefined){
-            alert('missing line !');
+            alert('Error submitting, line ' + lineno + ' not found.');
             return
         }
         if(f_path === undefined){
-            alert('missing file path !');
+            alert('Error submitting, file path ' + f_path + ' not found.');
             return
         }
 
@@ -1066,7 +1066,7 @@ var deleteNotification = function(url, notification_id, callbacks){
             _run_callbacks(callbacks);
         },
         failure:function(o){
-            alert("error");
+            alert("deleteNotification failure");
         },
     };
     var postData = '_method=delete';
@@ -1084,7 +1084,7 @@ var readNotification = function(url, notification_id, callbacks){
             _run_callbacks(callbacks);
         },
         failure:function(o){
-            alert("error");
+            alert("readNotification failure");
         },
     };
     var postData = '_method=put';
