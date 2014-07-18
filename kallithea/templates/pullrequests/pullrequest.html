@@ -31,7 +31,7 @@ ${self.repo_context_bar('showpullrequest')}
                     <label for="pullrequest_title">${_('Title')}:</label>
                 </div>
                 <div class="input">
-                    ${h.text('pullrequest_title', class_="large")}
+                    ${h.text('pullrequest_title',class_="large",placeholder=_('Summarize the changes - or leave empty'))}
                 </div>
              </div>
 
@@ -40,8 +40,7 @@ ${self.repo_context_bar('showpullrequest')}
                     <label for="pullrequest_desc">${_('Description')}:</label>
                 </div>
                 <div class="textarea text-area editor">
-                    ${h.textarea('pullrequest_desc',size=30, style="height:100px")}
-                    <span class="help-block">${_('Write a short description on this pull request')}</span>
+                    ${h.textarea('pullrequest_desc',size=30,placeholder=_('Write a short description on this pull request'))}
                 </div>
             </div>
 
@@ -116,8 +115,7 @@ ${self.repo_context_bar('showpullrequest')}
 
               <div class='ac'>
                 <div class="reviewer_ac">
-                   ${h.text('user', class_='yui-ac-input')}
-                   <span class="help-block">${_('Add reviewer to this pull request.')}</span>
+                   ${h.text('user', class_='yui-ac-input',placeholder=_('Type name of reviewer to add'))}
                    <div id="reviewers_container"></div>
                 </div>
               </div>

@@ -165,8 +165,7 @@ ${self.repo_context_bar('showpullrequest')}
           <div class='ac'>
             %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.authuser.user_id:
             <div class="reviewer_ac">
-               ${h.text('user', class_='yui-ac-input')}
-               <span class="help-block">${_('Add or remove reviewer to this pull request.')}</span>
+               ${h.text('user', class_='yui-ac-input',placeholder=_('Type name of reviewer to add'))}
                <div id="reviewers_container"></div>
             </div>
             <div style="padding:0px 10px">
