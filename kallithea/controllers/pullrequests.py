@@ -146,7 +146,11 @@ class PullrequestsController(BaseRepoController):
         # prio 4: tip revision
         if not selected:
             if h.is_hg(repo):
-                selected = 'tag:tip:%s' % repo.tags['tip']
+                if 'tip' in repo.tags:
+                    selected = 'tag:tip:%s' % repo.tags['tip']
+                else:
+                    selected = 'tag:null:0'
+                    tags.append((selected, 'null'))
             else:
                 if 'master' in repo.branches:
                     selected = 'branch:master:%s' % repo.branches['master']
