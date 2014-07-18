@@ -60,7 +60,6 @@
 <div id='comment-inline-form-template' style="display:none">
   <div class="comment-inline-form ac">
   %if c.authuser.username != 'default':
-    <div class="overlay"><div class="overlay-text">${_('Submitting...')}</div></div>
       ${h.form('#', class_='inline-form')}
       <div id="edit-container_{1}" class="clearfix">
           <div class="comment-help">${_('Commenting on line {1}.')}
@@ -83,6 +82,7 @@
           <div id="preview-box_{1}" class="preview-box"></div>
       </div>
       <div class="comment-button">
+      <div class="submitting-overlay">${_('Submitting ...')}</div>
       <input type="hidden" name="f_path" value="{0}">
       <input type="hidden" name="line" value="{1}">
       ${h.submit('save', _('Comment'), class_='btn btn-small save-inline-form')}

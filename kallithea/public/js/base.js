@@ -690,7 +690,7 @@ var injectInlineForm = function(tr){
         var $parent = $parent.next();
     }
     $form.insertAfter($parent);
-    var $overlay = $form.find('.overlay');
+    var $overlay = $form.find('.submitting-overlay');
     var $inlineform = $form.find('.inline-form');
 
     $form.submit(function(e){
@@ -710,11 +710,7 @@ var injectInlineForm = function(tr){
             return
         }
 
-        if ($overlay.hasClass('overlay')){
-            $overlay.css('width', $inlineform.offsetWidth + 'px');
-            $overlay.css('height', $inlineform.offsetHeight + 'px');
-        }
-        $overlay.addClass('submitting');
+        $overlay.show();
 
         var success = function(o){
             $tr.removeClass('form-open');
