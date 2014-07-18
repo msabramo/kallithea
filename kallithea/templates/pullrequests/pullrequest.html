@@ -210,7 +210,7 @@ ${self.repo_context_bar('showpullrequest')}
       });
   }
 
-  YAHOO.util.Event.onDOMReady(function(){
+  $(document).ready(function(){
       $("#org_repo").select2({
           dropdownAutoWidth: true,
       });

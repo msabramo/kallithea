@@ -196,7 +196,7 @@
 
 <script>
 
-YUE.onDOMReady(function () {
+$(document).ready(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
    YUE.on('preview-btn', 'click', function(e){

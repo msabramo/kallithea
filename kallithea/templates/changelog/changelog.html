@@ -167,8 +167,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
 
         <script type="text/javascript" src="${h.url('/js/graph.js')}"></script>
         <script type="text/javascript">
-            YAHOO.util.Event.onDOMReady(function(){
-
+            $(document).ready(function(){
                 //Monitor range checkboxes and build a link to changesets ranges
                 var checkboxes = YUD.getElementsByClassName('changeset_range');
                 // register extra routes needed for this view
@@ -232,7 +231,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                         YUD.setStyle('compare_fork','display','');
                     }
                 };
-                YUE.onDOMReady(checkbox_checker);
+                checkbox_checker();
                 YUE.on(checkboxes,'click', checkbox_checker);
 
                 YUE.on('rev_range_clear','click',function(e){

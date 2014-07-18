@@ -25,7 +25,7 @@
     % endfor
   <div class="pagination-wh pagination-left">
   <script type="text/javascript">
-  YUE.onDOMReady(function(){
+  $(document).ready(function(){
       YUE.delegate("forks","click",function(e, matchedEl, container){
           ypjax(e.target.href,"forks",function(){
               show_more_event();

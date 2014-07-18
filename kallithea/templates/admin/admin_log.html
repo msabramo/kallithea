@@ -38,7 +38,7 @@
 </table>
 
 <script type="text/javascript">
-  YUE.onDOMReady(function(){
+  $(document).ready(function(){
     YUE.delegate("user_log","click",function(e, matchedEl, container){
         ypjax(e.target.href,"user_log",function(){
             show_more_event();

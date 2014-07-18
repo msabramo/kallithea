@@ -39,7 +39,7 @@
   ${c.journal_pager.pager('$link_previous ~2~ $link_next')}
   </div>
     <script type="text/javascript">
-    YUE.onDOMReady(function(){
+    $(document).ready(function(){
         YUE.delegate("journal","click",function(e, matchedEl, container){
             ypjax(e.target.href,"journal",function(){
                 show_more_event();

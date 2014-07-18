@@ -69,7 +69,7 @@
 </table>
 
 <script type="text/javascript">
-  YUE.onDOMReady(function(){
+  $(document).ready(function(){
     YUE.delegate("shortlog_data","click",function(e, matchedEl, container){
         ypjax(e.target.href,"shortlog_data",function(){tooltip_activate();});
         YUE.preventDefault(e);

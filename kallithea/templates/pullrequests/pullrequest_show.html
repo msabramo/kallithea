@@ -330,7 +330,7 @@ ${self.repo_context_bar('showpullrequest')}
     %endif
 
     <script type="text/javascript">
-      YUE.onDOMReady(function(){
+      $(document).ready(function(){
           PullRequestAutoComplete('user', 'reviewers_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
           YUE.on(YUQ('.show-inline-comments'),'change',function(e){
