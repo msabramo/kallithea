@@ -114,6 +114,10 @@ class NotificationModel(BaseModel):
         #don't send email to person who created this comment
         rec_objs = set(recipients_objs).difference(set([created_by_obj]))
 
+        headers = None
+        if 'threading' in email_kwargs:
+            headers = {'References': ' '.join('<%s>' % x for x in email_kwargs['threading'])}
+
         # send email with notification to all other participants
         for rec in rec_objs:
             email_body = None  # we set body to none, we just send HTML emails
@@ -131,7 +135,7 @@ class NotificationModel(BaseModel):
                                 .get_email_tmpl(type_, **kwargs)
 
             run_task(tasks.send_email, [rec.email], email_subject, email_body,
-                     email_body_html)
+                     email_body_html, headers)
 
         return notif
 

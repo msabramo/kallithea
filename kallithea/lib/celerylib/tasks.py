@@ -257,7 +257,7 @@ def get_commits_stats(repo_name, ts_min_y, ts_max_y, recurse_limit=100):
 
 @task(ignore_result=True)
 @dbsession
-def send_email(recipients, subject, body='', html_body=''):
+def send_email(recipients, subject, body='', html_body='', headers=None):
     """
     Sends an email with defined parameters from the .ini files.
 
@@ -304,7 +304,7 @@ def send_email(recipients, subject, body='', html_body=''):
     try:
         m = SmtpMailer(mail_from, user, passwd, mail_server, smtp_auth,
                        mail_port, ssl, tls, debug=debug)
-        m.send(recipients, subject, body, html_body)
+        m.send(recipients, subject, body, html_body, headers=headers)
     except:
         log.error('Mail sending failed')
         log.error(traceback.format_exc())

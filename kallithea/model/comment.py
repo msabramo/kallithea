@@ -82,7 +82,11 @@ class ChangesetCommentsModel(BaseModel):
             cs = repo.scm_instance.get_changeset(revision)
             desc = "%s" % (cs.short_id)
 
-            _url = h.url('changeset_home',
+            revision_url = h.url('changeset_home',
+                repo_name=repo.repo_name,
+                revision=revision,
+                qualified=True,)
+            comment_url = h.url('changeset_home',
                 repo_name=repo.repo_name,
                 revision=revision,
                 anchor='comment-%s' % comment.comment_id,
@@ -91,7 +95,7 @@ class ChangesetCommentsModel(BaseModel):
             subj = safe_unicode(
                 h.link_to('Re changeset: %(desc)s %(line)s' % \
                           {'desc': desc, 'line': line},
-                          _url)
+                          comment_url)
             )
             # get the current participants of this changeset
             recipients = ChangesetComment.get_users(revision=revision)
@@ -106,20 +110,25 @@ class ChangesetCommentsModel(BaseModel):
                 'cs_comment_user': h.person(user),
                 'cs_target_repo': h.url('summary_home', repo_name=repo.repo_name,
                                         qualified=True),
-                'cs_comment_url': _url,
+                'cs_comment_url': comment_url,
                 'raw_id': revision,
                 'message': cs.message,
                 'repo_name': repo.repo_name,
                 'short_id': h.short_id(revision),
                 'branch': cs.branch,
                 'comment_username': user.username,
+                'threading': [revision_url, comment_url], # TODO: url to line number
             }
         #pull request
         elif pull_request:
             notification_type = Notification.TYPE_PULL_REQUEST_COMMENT
             desc = comment.pull_request.title
             _org_ref_type, org_ref_name, _org_rev = comment.pull_request.org_ref.split(':')
-            _url = h.url('pullrequest_show',
+            pr_url = h.url('pullrequest_show',
+                repo_name=pull_request.other_repo.repo_name,
+                pull_request_id=pull_request.pull_request_id,
+                qualified=True,)
+            comment_url = h.url('pullrequest_show',
                 repo_name=pull_request.other_repo.repo_name,
                 pull_request_id=pull_request.pull_request_id,
                 anchor='comment-%s' % comment.comment_id,
@@ -130,7 +139,7 @@ class ChangesetCommentsModel(BaseModel):
                           {'desc': desc,
                            'pr_id': comment.pull_request.pull_request_id,
                            'line': line},
-                          _url)
+                          comment_url)
             )
             # get the current participants of this pull request
             recipients = ChangesetComment.get_users(pull_request_id=
@@ -147,7 +156,7 @@ class ChangesetCommentsModel(BaseModel):
                 'pr_id': pull_request.pull_request_id,
                 'status_change': status_change,
                 'closing_pr': closing_pr,
-                'pr_comment_url': _url,
+                'pr_comment_url': comment_url,
                 'pr_comment_user': h.person(user),
                 'pr_target_repo': h.url('summary_home',
                                    repo_name=pull_request.other_repo.repo_name,
@@ -155,6 +164,7 @@ class ChangesetCommentsModel(BaseModel):
                 'repo_name': pull_request.other_repo.repo_name,
                 'ref': org_ref_name,
                 'comment_username': user.username,
+                'threading': [pr_url, comment_url], # TODO: url to line number
             }
 
         return subj, body, recipients, notification_type, email_kwargs

@@ -144,6 +144,7 @@ class PullRequestModel(BaseModel):
             'pr_id': pr.pull_request_id,
             'ref': org_ref_name,
             'pr_username': pr.author.username,
+            'threading': [pr_url],
             }
         NotificationModel().create(created_by=pr.author, subject=subject, body=body,
                                    recipients=reviewers,

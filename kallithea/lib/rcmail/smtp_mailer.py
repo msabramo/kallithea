@@ -61,13 +61,13 @@ class SmtpMailer(object):
         self.auth = smtp_auth
 
     def send(self, recipients=[], subject='', body='', html='',
-             attachment_files=None):
+             attachment_files=None, headers=None):
 
         if isinstance(recipients, basestring):
             recipients = [recipients]
-        headers = {
-            'Date': formatdate(time.time())
-        }
+        if headers is None:
+            headers = {}
+        headers.setdefault('Date', formatdate(time.time()))
         msg = Message(subject, recipients, body, html, self.mail_from,
                       recipients_separator=", ", extra_headers=headers)
         raw_msg = msg.to_message()
