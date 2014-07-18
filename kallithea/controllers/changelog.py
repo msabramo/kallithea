@@ -71,12 +71,10 @@ class ChangelogController(BaseRepoController):
         super(ChangelogController, self).__before__()
         c.affected_files_cut_off = 60
 
-    def __get_cs_or_redirect(self, rev, repo, redirect_after=True,
-                             partial=False):
+    @staticmethod
+    def __get_cs(rev, repo):
         """
-        Safe way to get changeset if error occur it redirects to changeset with
-        proper message. If partial is set then don't do redirect raise Exception
-        instead
+        Safe way to get changeset. If error occur fail with error message.
 
         :param rev: revision to fetch
         :param repo: repo instance
@@ -85,18 +83,12 @@ class ChangelogController(BaseRepoController):
         try:
             return c.db_repo_scm_instance.get_changeset(rev)
         except EmptyRepositoryError, e:
-            if not redirect_after:
-                return None
             h.flash(h.literal(_('There are no changesets yet')),
-                    category='warning')
-            redirect(url('changelog_home', repo_name=repo.repo_name))
-
+                    category='error')
         except RepositoryError, e:
             log.error(traceback.format_exc())
-            h.flash(safe_str(e), category='warning')
-            if not partial:
-                redirect(h.url('changelog_home', repo_name=repo.repo_name))
-            raise HTTPBadRequest()
+            h.flash(safe_str(e), category='error')
+        raise HTTPBadRequest()
 
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
@@ -136,7 +128,7 @@ class ChangelogController(BaseRepoController):
                 except (NodeDoesNotExistError, ChangesetError):
                     #this node is not present at tip !
                     try:
-                        cs = self.__get_cs_or_redirect(revision, repo_name)
+                        cs = self.__get_cs(revision, repo_name)
                         collection = cs.get_file_history(f_path)
                     except RepositoryError, e:
                         h.flash(safe_str(e), category='warning')

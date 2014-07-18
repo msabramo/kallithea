@@ -72,19 +72,19 @@ class FilesController(BaseRepoController):
         super(FilesController, self).__before__()
         c.cut_off_limit = self.cut_off_limit
 
-    def __get_cs_or_redirect(self, rev, repo_name, redirect_after=True):
+    def __get_cs(self, rev, silent_empty=False):
         """
         Safe way to get changeset if error occur it redirects to tip with
         proper message
 
         :param rev: revision to fetch
-        :param repo_name: repo name to redirect after
+        :silent_empty: return None if repository is empty
         """
 
         try:
             return c.db_repo_scm_instance.get_changeset(rev)
         except EmptyRepositoryError, e:
-            if not redirect_after:
+            if silent_empty:
                 return None
             url_ = url('files_add_home',
                        repo_name=c.repo_name,
@@ -92,7 +92,7 @@ class FilesController(BaseRepoController):
             add_new = h.link_to(_('Click here to add new file'), url_, class_="alert-link")
             h.flash(h.literal(_('There are no files yet. %s') % add_new),
                     category='warning')
-            redirect(h.url('summary_home', repo_name=repo_name))
+            raise HTTPNotFound()
         except(ChangesetDoesNotExistError, LookupError), e:
             log.error(traceback.format_exc())
             msg = _('Such revision does not exist for this repository')
@@ -102,12 +102,10 @@ class FilesController(BaseRepoController):
             h.flash(safe_str(e), category='error')
             raise HTTPNotFound()
 
-    def __get_filenode_or_redirect(self, repo_name, cs, path):
+    def __get_filenode(self, cs, path):
         """
-        Returns file_node, if error occurs or given path is directory,
-        it'll redirect to top level path
+        Returns file_node or raise HTTP error.
 
-        :param repo_name: repo_name
         :param cs: given changeset
         :param path: path to lookup
         """
@@ -134,10 +132,10 @@ class FilesController(BaseRepoController):
         # redirect to given revision from form if given
         post_revision = request.POST.get('at_rev', None)
         if post_revision:
-            cs = self.__get_cs_or_redirect(post_revision, repo_name)
+            cs = self.__get_cs(post_revision)
 
         c.revision = revision
-        c.changeset = self.__get_cs_or_redirect(revision, repo_name)
+        c.changeset = self.__get_cs(revision)
         c.branch = request.GET.get('branch', None)
         c.f_path = f_path
         c.annotate = annotate
@@ -200,7 +198,7 @@ class FilesController(BaseRepoController):
                                    'repository.admin')
     @jsonify
     def history(self, repo_name, revision, f_path):
-        changeset = self.__get_cs_or_redirect(revision, repo_name)
+        changeset = self.__get_cs(revision)
         f_path = f_path
         _file = changeset.get_node(f_path)
         if _file.is_file():
@@ -223,7 +221,7 @@ class FilesController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def authors(self, repo_name, revision, f_path):
-        changeset = self.__get_cs_or_redirect(revision, repo_name)
+        changeset = self.__get_cs(revision)
         f_path = f_path
         _file = changeset.get_node(f_path)
         if _file.is_file():
@@ -237,8 +235,8 @@ class FilesController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def rawfile(self, repo_name, revision, f_path):
-        cs = self.__get_cs_or_redirect(revision, repo_name)
-        file_node = self.__get_filenode_or_redirect(repo_name, cs, f_path)
+        cs = self.__get_cs(revision)
+        file_node = self.__get_filenode(cs, f_path)
 
         response.content_disposition = 'attachment; filename=%s' % \
             safe_str(f_path.split(Repository.url_sep())[-1])
@@ -250,8 +248,8 @@ class FilesController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def raw(self, repo_name, revision, f_path):
-        cs = self.__get_cs_or_redirect(revision, repo_name)
-        file_node = self.__get_filenode_or_redirect(repo_name, cs, f_path)
+        cs = self.__get_cs(revision)
+        file_node = self.__get_filenode(cs, f_path)
 
         raw_mimetype_mapping = {
             # map original mimetype to a mimetype used for "show as raw"
@@ -318,8 +316,8 @@ class FilesController(BaseRepoController):
 
         r_post = request.POST
 
-        c.cs = self.__get_cs_or_redirect(revision, repo_name)
-        c.file = self.__get_filenode_or_redirect(repo_name, c.cs, f_path)
+        c.cs = self.__get_cs(revision)
+        c.file = self.__get_filenode(c.cs, f_path)
 
         c.default_message = _('Deleted file %s via Kallithea') % (f_path)
         c.f_path = f_path
@@ -378,8 +376,8 @@ class FilesController(BaseRepoController):
 
         r_post = request.POST
 
-        c.cs = self.__get_cs_or_redirect(revision, repo_name)
-        c.file = self.__get_filenode_or_redirect(repo_name, c.cs, f_path)
+        c.cs = self.__get_cs(revision)
+        c.file = self.__get_filenode(c.cs, f_path)
 
         if c.file.is_binary:
             return redirect(url('files_home', repo_name=c.repo_name,
@@ -433,8 +431,7 @@ class FilesController(BaseRepoController):
                                   repo_name=repo_name, revision='tip'))
 
         r_post = request.POST
-        c.cs = self.__get_cs_or_redirect(revision, repo_name,
-                                         redirect_after=False)
+        c.cs = self.__get_cs(revision, silent_empty=True)
         if c.cs is None:
             c.cs = EmptyChangeset(alias=c.db_repo_scm_instance.alias)
         c.default_message = (_('Added file via Kallithea'))
@@ -799,7 +796,7 @@ class FilesController(BaseRepoController):
     @jsonify
     def nodelist(self, repo_name, revision, f_path):
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
-            cs = self.__get_cs_or_redirect(revision, repo_name)
+            cs = self.__get_cs(revision)
             _d, _f = ScmModel().get_nodes(repo_name, cs.raw_id, f_path,
                                           flat=False)
             return {'nodes': _d + _f}

@@ -58,17 +58,10 @@ class CompareController(BaseRepoController):
     def __before__(self):
         super(CompareController, self).__before__()
 
-    def __get_rev_or_redirect(self, ref, repo, redirect_after=True,
-                              partial=False):
+    @staticmethod
+    def __get_rev(ref, repo):
         """
-        Safe way to get changeset if error occur it redirects to changeset with
-        proper message. If partial is set then don't do redirect raise Exception
-        instead
-
-        :param ref:
-        :param repo:
-        :param redirect_after:
-        :param partial:
+        Safe way to get changeset. If error occurs show error.
         """
         rev = ref[1] # default and used for git
         if repo.scm_instance.alias == 'hg':
@@ -88,17 +81,12 @@ class CompareController(BaseRepoController):
         try:
             return repo.scm_instance.get_changeset(rev).raw_id
         except EmptyRepositoryError, e:
-            if not redirect_after:
-                return None
             h.flash(h.literal(_('There are no changesets yet')),
-                    category='warning')
-            redirect(url('summary_home', repo_name=repo.repo_name))
-
+                    category='error')
+            raise HTTPNotFound()
         except RepositoryError, e:
             log.error(traceback.format_exc())
-            h.flash(safe_str(e), category='warning')
-            if not partial:
-                redirect(h.url('summary_home', repo_name=repo.repo_name))
+            h.flash(safe_str(e), category='error')
             raise HTTPBadRequest()
 
     @staticmethod
@@ -256,8 +244,8 @@ class CompareController(BaseRepoController):
             h.flash(msg, category='error')
             return redirect(url('compare_home', repo_name=c.repo_name))
 
-        c.org_rev = self.__get_rev_or_redirect(ref=org_ref, repo=org_repo, partial=partial)
-        c.other_rev = self.__get_rev_or_redirect(ref=other_ref, repo=other_repo, partial=partial)
+        c.org_rev = self.__get_rev(ref=org_ref, repo=org_repo)
+        c.other_rev = self.__get_rev(ref=other_ref, repo=other_repo)
 
         c.compare_home = False
         c.org_repo = org_repo

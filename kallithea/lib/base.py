@@ -33,13 +33,14 @@ import time
 import traceback
 
 from paste.auth.basic import AuthBasicAuthenticator
-from paste.httpexceptions import HTTPUnauthorized, HTTPForbidden
+from paste.httpexceptions import HTTPUnauthorized, HTTPForbidden, HTTPNotFound
 from paste.httpheaders import WWW_AUTHENTICATE, AUTHORIZATION
 
 from pylons import config, tmpl_context as c, request, session, url
 from pylons.controllers import WSGIController
 from pylons.controllers.util import redirect
 from pylons.templating import render_mako as render  # don't remove this import
+from pylons.i18n.translation import _
 
 from kallithea import __version__, BACKENDS
 
@@ -408,8 +409,10 @@ class BaseRepoController(BaseController):
             if c.db_repo_scm_instance is None:
                 log.error('%s this repository is present in database but it '
                           'cannot be created as an scm instance', c.repo_name)
-
-                redirect(url('home'))
+                from kallithea.lib import helpers as h
+                h.flash(h.literal(_('Repository not found in the filesystem')),
+                        category='error')
+                raise HTTPNotFound()
 
             # some globals counter for menu
             c.repository_followers = self.scm_model.get_followers(dbr)
