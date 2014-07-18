@@ -173,17 +173,33 @@ ${self.repo_context_bar('changelog')}
         },
     });
 
+    var values_changed = function() {
+        var values = $('#compare_org').select2('data') && $('#compare_other').select2('data');
+        if (values) {
+             $('#compare_revs').removeClass("disabled");
+             // TODO: the swap button ... if any
+        } else {
+             $('#compare_revs').addClass("disabled");
+             // TODO: the swap button ... if any
+        }
+    }
+    values_changed();
+    $('#compare_org').change(values_changed);
+    $('#compare_other').change(values_changed);
     $('#compare_revs').on('click', function(e){
         var org = $('#compare_org').select2('data');
         var other = $('#compare_other').select2('data');
+        if (!org || !other) {
+            return;
+        }
 
         var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='__other_ref_type__',org_ref_name='__org__',other_ref_type='__org_ref_type__',other_ref_name='__other__', other_repo=c.other_repo.repo_name)}";
         var u = compare_url.replace('__other_ref_type__',org.type)
                            .replace('__org__',org.text)
                            .replace('__org_ref_type__',other.type)
                            .replace('__other__',other.text);
-        window.location=u;
-    })
+        window.location = u;
+    });
    });
     </script>
 </%def>
