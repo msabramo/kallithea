@@ -193,7 +193,7 @@ class PullrequestsController(BaseRepoController):
          c.org_ref_name,
          c.org_rev) = pull_request.org_ref.split(':')
 
-        c.other_repo = c.org_repo
+        c.other_repo = pull_request.other_repo
         (c.other_ref_type,
          c.other_ref_name,
          c.other_rev) = pull_request.other_ref.split(':')
