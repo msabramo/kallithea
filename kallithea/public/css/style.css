@@ -12,8 +12,7 @@ body {
     line-height: 1;
     height: 100%;
     background: url("../images/background.png") repeat scroll 0 0 #B0B0B0;
-    font-family: Lucida Grande, Verdana, Lucida Sans Regular,
-        Lucida Sans Unicode, Arial, sans-serif; font-size : 12px;
+    font-family: Lucida Grande, Verdana, Lucida Sans Regular, Lucida Sans Unicode, Arial, sans-serif;
     color: #000;
     margin: 0;
     padding: 0;
@@ -3643,6 +3642,19 @@ ul.nav-stacked {
 
 ul.nav-stacked a {
     color: inherit;
+}
+
+/* make .btn inputs and buttons and divs look the same */
+button.btn,
+input.btn {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.btn::-moz-focus-inner {
+    border: 0;
+    padding: 0;
 }
 
 /* make .btn inputs and buttons and divs look the same */
