@@ -154,7 +154,7 @@ class ChangelogController(BaseRepoController):
             return redirect(url('changelog_home', repo_name=c.repo_name))
 
         c.branch_name = branch_name
-        c.branch_filters = [('', _('All Branches'))] + \
+        c.branch_filters = [('', _('None'))] + \
             [(k, k) for k in c.db_repo_scm_instance.branches.keys()]
         if c.db_repo_scm_instance.closed_branches:
             prefix = _('(closed)') + ' '

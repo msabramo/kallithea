@@ -66,12 +66,12 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                             %endif
                             ## text and href of open_new_pr is controlled from javascript
                             <a id="open_new_pr" class="btn btn-small"></a>
-                            ${h.select('branch_filter',c.branch_name,c.branch_filters)}
+                            ${_("Branch filter:")} ${h.select('branch_filter',c.branch_name,c.branch_filters)}
                         </div>
                     </div>
                 </div>
 
-                <div style="clear:both">
+                <div id="changelog" style="clear:both">
 
                 <div id="graph_nodes">
                     <canvas id="graph_canvas"></canvas>
@@ -269,14 +269,20 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                 });
 
                 // change branch filter
-                YUE.on(YUD.get('branch_filter'),'change',function(e){
+                $("#branch_filter").select2({
+                    dropdownAutoWidth: true,
+                    minimumInputLength: 1,
+                    });
+
+                $("#branch_filter").change(function(e){
                     var selected_branch = e.currentTarget.options[e.currentTarget.selectedIndex].value;
                     if(selected_branch != ''){
                         window.location = pyroutes.url('changelog_home', {'repo_name': '${c.repo_name}',
-                                                                          'branch':selected_branch});
+                                                                          'branch': selected_branch});
                     }else{
                         window.location = pyroutes.url('changelog_home', {'repo_name': '${c.repo_name}'});
                     }
+                    $("#changelog").hide();
                 });
 
                 var jsdata = ${c.jsdata|n};
