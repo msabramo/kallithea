@@ -384,3 +384,7 @@ class MercurialChangeset(BaseChangeset):
         Returns list of removed ``FileNode`` objects.
         """
         return RemovedFileNodesGenerator([n for n in self.status[2]], self)
+
+    @LazyProperty
+    def extra(self):
+        return self._ctx.extra()

@@ -552,3 +552,5 @@ class GitChangeset(BaseChangeset):
             return []
         return RemovedFileNodesGenerator([n for n in
                                 self._get_paths_for_status('deleted')], self)
+
+    extra = {}

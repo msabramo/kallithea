@@ -116,6 +116,18 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                          <span><b>${h.person(c.changeset.author,'username_and_name')}</b> - ${h.age(c.changeset.date,True)} ${h.fmt_date(c.changeset.date)}</span><br/>
                          <span>${h.email_or_none(c.changeset.author)}</span><br/>
                      </div>
+                     <% rev = c.changeset.extra.get('source') %>
+                     %if rev:
+                     <div>
+                       ${_('Grafted from:')} ${h.link_to(h.short_id(rev),h.url('changeset_home',repo_name=c.repo_name,revision=rev))}
+                     </div>
+                     %endif
+                     <% rev = c.changeset.extra.get('transplant_source', '').encode('hex') %>
+                     %if rev:
+                     <div>
+                       ${_('Transplanted from:')} ${h.link_to(h.short_id(rev),h.url('changeset_home',repo_name=c.repo_name,revision=rev))}
+                     </div>
+                     %endif
                      <div class="message">${h.urlify_commit(c.changeset.message, c.repo_name)}</div>
                 </div>
             </div>
