@@ -108,7 +108,7 @@ ${self.repo_context_bar('showpullrequest')}
               <label>${_('Description')}:</label>
           </div>
           <div class="input">
-              <div style="white-space:pre-wrap">${h.urlify_commit(c.pull_request.description, c.repo_name)}</div>
+              <div style="white-space:pre-wrap">${h.urlify_commit(c.pull_request.description, c.pull_request.org_repo.repo_name)}</div>
           </div>
          </div>
          <div class="field">
