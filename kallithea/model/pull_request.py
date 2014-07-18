@@ -132,17 +132,23 @@ class PullRequestModel(BaseModel):
                 pr_url)
             )
         body = pr.description
-        kwargs = {
+        _org_ref_type, org_ref_name, _org_rev = pr.org_ref.split(':')
+        email_kwargs = {
             'pr_title': pr.title,
             'pr_user_created': h.person(pr.author),
             'pr_repo_url': h.url('summary_home', repo_name=pr.other_repo.repo_name,
                                  qualified=True,),
             'pr_url': pr_url,
-            'pr_revisions': revision_data}
-
+            'pr_revisions': revision_data,
+            'repo_name': pr.other_repo.repo_name,
+            'pr_id': pr.pull_request_id,
+            'ref': org_ref_name,
+            'pr_username': pr.author.username,
+            }
         NotificationModel().create(created_by=pr.author, subject=subject, body=body,
                                    recipients=reviewers,
-                                   type_=Notification.TYPE_PULL_REQUEST, email_kwargs=kwargs)
+                                   type_=Notification.TYPE_PULL_REQUEST,
+                                   email_kwargs=email_kwargs)
 
     def update_reviewers(self, pull_request, reviewers_ids):
         reviewers_ids = set(reviewers_ids)

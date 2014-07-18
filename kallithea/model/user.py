@@ -203,12 +203,11 @@ class UserModel(BaseModel):
                     '- Email: %s\n')
             body = body % (new_user.username, new_user.full_name, new_user.email)
             edit_url = url('edit_user', id=new_user.user_id, qualified=True)
-            kw = {'registered_user_url': edit_url}
+            email_kwargs = {'registered_user_url': edit_url, 'new_username': new_user.username}
             NotificationModel().create(created_by=new_user, subject=subject,
                                        body=body, recipients=None,
                                        type_=Notification.TYPE_REGISTRATION,
-                                       email_kwargs=kw)
-
+                                       email_kwargs=email_kwargs)
         except Exception:
             log.error(traceback.format_exc())
             raise
@@ -297,8 +296,8 @@ class UserModel(BaseModel):
                            qualified=True)
                 reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
                 body = EmailNotificationModel().get_email_tmpl(reg_type,
-                                                    **{'user': user.short_contact,
-                                                       'reset_url': link})
+                                                               user=user.short_contact,
+                                                               reset_url=link)
                 log.debug('sending email')
                 run_task(tasks.send_email, [user_email],
                          _("Password reset link"), body, body)

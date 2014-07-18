@@ -93,8 +93,6 @@ class ChangesetCommentsModel(BaseModel):
                           {'desc': desc, 'line': line},
                           _url)
             )
-            email_subject = '%s commented on changeset %s' % \
-                (user.username, h.short_id(revision))
             # get the current participants of this changeset
             recipients = ChangesetComment.get_users(revision=revision)
             # add changeset author if it's in kallithea system
@@ -110,12 +108,17 @@ class ChangesetCommentsModel(BaseModel):
                                         qualified=True),
                 'cs_comment_url': _url,
                 'raw_id': revision,
-                'message': cs.message
+                'message': cs.message,
+                'repo_name': repo.repo_name,
+                'short_id': h.short_id(revision),
+                'branch': cs.branch,
+                'comment_username': user.username,
             }
         #pull request
         elif pull_request:
             notification_type = Notification.TYPE_PULL_REQUEST_COMMENT
             desc = comment.pull_request.title
+            _org_ref_type, org_ref_name, _org_rev = comment.pull_request.org_ref.split(':')
             _url = h.url('pullrequest_show',
                 repo_name=pull_request.other_repo.repo_name,
                 pull_request_id=pull_request.pull_request_id,
@@ -129,8 +132,6 @@ class ChangesetCommentsModel(BaseModel):
                            'line': line},
                           _url)
             )
-            email_subject = '%s commented on pull request #%s' % \
-                    (user.username, comment.pull_request.pull_request_id)
             # get the current participants of this pull request
             recipients = ChangesetComment.get_users(pull_request_id=
                                                 pull_request.pull_request_id)
@@ -150,10 +151,13 @@ class ChangesetCommentsModel(BaseModel):
                 'pr_comment_user': h.person(user),
                 'pr_target_repo': h.url('summary_home',
                                    repo_name=pull_request.other_repo.repo_name,
-                                   qualified=True)
+                                   qualified=True),
+                'repo_name': pull_request.other_repo.repo_name,
+                'ref': org_ref_name,
+                'comment_username': user.username,
             }
 
-        return subj, body, recipients, notification_type, email_kwargs, email_subject
+        return subj, body, recipients, notification_type, email_kwargs
 
     def create(self, text, repo, user, revision=None, pull_request=None,
                f_path=None, line_no=None, status_change=None, closing_pr=False,
@@ -200,7 +204,7 @@ class ChangesetCommentsModel(BaseModel):
 
         if send_email:
             (subj, body, recipients, notification_type,
-             email_kwargs, email_subject) = self._get_notification_data(
+             email_kwargs) = self._get_notification_data(
                                 repo, comment, user,
                                 comment_text=text,
                                 line_no=line_no,
@@ -212,7 +216,7 @@ class ChangesetCommentsModel(BaseModel):
             NotificationModel().create(
                 created_by=user, subject=subj, body=body,
                 recipients=recipients, type_=notification_type,
-                email_kwargs=email_kwargs, email_subject=email_subject
+                email_kwargs=email_kwargs,
             )
 
             mention_recipients = set(self._extract_mentions(body))\

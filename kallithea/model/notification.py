@@ -59,7 +59,7 @@ class NotificationModel(BaseModel):
 
     def create(self, created_by, subject, body, recipients=None,
                type_=Notification.TYPE_MESSAGE, with_email=True,
-               email_kwargs={}, email_subject=None):
+               email_kwargs={}):
         """
 
         Creates notification of given type
@@ -73,7 +73,6 @@ class NotificationModel(BaseModel):
         :param type_: type of notification
         :param with_email: send email with this notification
         :param email_kwargs: additional dict to pass as args to email template
-        :param email_subject: use given subject as email subject
         """
         from kallithea.lib.celerylib import tasks, run_task
 
@@ -117,14 +116,17 @@ class NotificationModel(BaseModel):
 
         # send email with notification to all other participants
         for rec in rec_objs:
-            if not email_subject:
-                email_subject = NotificationModel()\
-                                    .make_description(notif, show_age=False)
-            type_ = type_
             email_body = None  # we set body to none, we just send HTML emails
             ## this is passed into template
-            kwargs = {'subject': subject, 'body': h.rst_w_mentions(body)}
+            kwargs = {'subject': subject,
+                      'body': h.rst_w_mentions(body),
+                      'when': h.fmt_date(notif.created_on),
+                      'user': notif.created_by_user.username,
+                      }
+
             kwargs.update(email_kwargs)
+            email_subject = EmailNotificationModel()\
+                                .get_email_description(type_, **kwargs)
             email_body_html = EmailNotificationModel()\
                                 .get_email_tmpl(type_, **kwargs)
 
@@ -253,6 +255,8 @@ class NotificationModel(BaseModel):
 class EmailNotificationModel(BaseModel):
 
     TYPE_CHANGESET_COMMENT = Notification.TYPE_CHANGESET_COMMENT
+    TYPE_MESSAGE = Notification.TYPE_MESSAGE # only used for testing
+    # Notification.TYPE_MENTION is not used
     TYPE_PASSWORD_RESET = 'password_link'
     TYPE_REGISTRATION = Notification.TYPE_REGISTRATION
     TYPE_PULL_REQUEST = Notification.TYPE_PULL_REQUEST
@@ -271,13 +275,30 @@ class EmailNotificationModel(BaseModel):
             self.TYPE_PULL_REQUEST: 'email_templates/pull_request.html',
             self.TYPE_PULL_REQUEST_COMMENT: 'email_templates/pull_request_comment.html',
         }
+        self._subj_map = {
+            self.TYPE_CHANGESET_COMMENT: _('Comment on %(repo_name)s changeset %(short_id)s on %(branch)s by %(comment_username)s'),
+            self.TYPE_MESSAGE: 'Test Message',
+            # self.TYPE_PASSWORD_RESET
+            self.TYPE_REGISTRATION: _('New user %(new_username)s registered'),
+            # self.TYPE_DEFAULT
+            self.TYPE_PULL_REQUEST: _('Review request on %(repo_name)s pull request #%(pr_id)s from %(ref)s by %(pr_username)s'),
+            self.TYPE_PULL_REQUEST_COMMENT: _('Comment on %(repo_name)s pull request #%(pr_id)s from %(ref)s by %(comment_username)s'),
+        }
 
+    def get_email_description(self, type_, **kwargs):
+        """
+        return subject for email based on given type
+        """
+        tmpl = self._subj_map[type_]
+        try:
+            return tmpl % kwargs
+        except KeyError, e:
+            log.error('error generating email subject for %r from %s: %s', type_, ','.join(self._subj_map.keys()), e)
+            raise
 
     def get_email_tmpl(self, type_, **kwargs):
         """
         return generated template for email based on given type
-
-        :param type_:
         """
 
         base = self.email_types.get(type_, self.email_types[self.TYPE_DEFAULT])
