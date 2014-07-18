@@ -199,6 +199,7 @@ class PullrequestsController(BaseRepoController):
          c.other_rev) = pull_request.other_ref.split(':')
 
         org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
+        c.cs_repo = c.org_repo
         c.cs_ranges = [org_scm_instance.get_changeset(x) for x in pull_request.revisions]
         c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]

@@ -43,7 +43,7 @@ ${self.repo_context_bar('changelog')}
             %for cnt,cs in enumerate(c.cs_ranges):
                 <tr>
                 <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
-                <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}</td>
+                <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</td>
                 <td><div class="author">${h.person(cs.author)}</div></td>
                 <td><span class="tooltip" title="${h.age(cs.date)}">${cs.date}</span></td>
                 <td>
@@ -59,7 +59,7 @@ ${self.repo_context_bar('changelog')}
             <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${_('Files affected')}</div>
             <div class="cs_files">
                 %for cs in c.cs_ranges:
-                    <div class="cur_cs">${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}</div>
+                    <div class="cur_cs">${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</div>
                     %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[cs.raw_id].iteritems():
                         <div class="cs_${change}">
                             <div class="node">
@@ -79,7 +79,7 @@ ${self.repo_context_bar('changelog')}
           ##${comment.comment_inline_form(cs)}
           ## diff block
           <div class="h3">
-          <a class="tooltip" title="${h.tooltip(cs.message)}" href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a>
+          <a class="tooltip" title="${h.tooltip(cs.message)}" href="${h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a>
              <div class="gravatar">
                  <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),20)}"/>
              </div>
@@ -91,17 +91,17 @@ ${self.repo_context_bar('changelog')}
                 %if h.is_hg(c.db_repo_scm_instance):
                   %for book in cs.bookmarks:
                   <span class="booktag" title="${_('Bookmark %s') % book}">
-                     ${h.link_to(book,h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
+                     ${h.link_to(book,h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}
                   </span>
                   %endfor
                 %endif
                 %for tag in cs.tags:
                     <span class="tagtag" title="${_('Tag %s') % tag}">
-                    ${h.link_to(tag,h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}</span>
+                    ${h.link_to(tag,h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</span>
                 %endfor
                 %if cs.branch:
                 <span class="branchtag" title="${_('Branch %s') % cs.branch}">
-                   ${h.link_to(cs.branch,h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
+                   ${h.link_to(cs.branch,h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}
                 </span>
                 %endif
               </span>

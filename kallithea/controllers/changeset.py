@@ -192,6 +192,7 @@ class ChangesetController(BaseRepoController):
         #get ranges of revisions if preset
         rev_range = revision.split('...')[:2]
         enable_comments = True
+        c.cs_repo = c.db_repo
         try:
             if len(rev_range) == 2:
                 enable_comments = False

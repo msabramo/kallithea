@@ -219,6 +219,7 @@ class CompareController(BaseRepoController):
         c.org_ref_type = org_ref_type
         c.other_ref_type = other_ref_type
 
+        c.cs_repo = other_repo
         c.cs_ranges, c.cs_ranges_org, c.ancestor = self._get_changesets(
             org_repo.scm_instance.alias, org_repo.scm_instance, c.org_rev,
             other_repo.scm_instance, c.other_rev)
