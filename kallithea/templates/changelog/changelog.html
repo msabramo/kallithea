@@ -40,12 +40,21 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
             <div>
                 <div style="overflow:auto; display:${'none' if c.changelog_for_path else ''}">
                     <div class="container_header">
-                       <div style="float:right; margin: 0px 0px 0px 4px">${h.select('branch_filter',c.branch_name,c.branch_filters)}</div>
-                       <div class="info_box" style="text-align: right; float: right">
-                            <a href="#" class="btn btn-mini" id="rev_range_container" style="display:none"></a>
-                            <a href="#" class="btn btn-mini" id="rev_range_clear" style="display:none">${_('Clear selection')}</a>
+                        <div style="float:left; margin-left:20px;">
+                        ${h.form(h.url.current(),method='get')}
+                            ${h.submit('set',_('Show'),class_="btn btn-small")}
+                            ${h.text('size',size=1,value=c.size)}
+                            ${_('revisions')}
+                            %if c.branch_name:
+                            ${h.hidden('branch', c.branch_name)}
+                            %endif
+                        ${h.end_form()}
+                        </div>
+                        <div style="float: right; margin: 0px 0px 0px 4px">
+                            <a href="#" class="btn btn-small" id="rev_range_container" style="display:none"></a>
+                            <a href="#" class="btn btn-small" id="rev_range_clear" style="display:none">${_('Clear selection')}</a>
                             %if c.revision:
-                                <a class="btn btn-mini" href="${h.url('changelog_home', repo_name=c.repo_name)}">
+                                <a class="btn btn-small" href="${h.url('changelog_home', repo_name=c.repo_name)}">
                                     ${_('Go to tip of repository')}
                                 </a>
                             %endif
@@ -53,19 +62,12 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                                 <a id="compare_fork"
                                    title="${_('Compare fork with %s' % c.db_repo.fork.repo_name)}"
                                    href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref_name=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref_name=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
-                                   class="btn btn-mini"><i class="icon-loop"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
+                                   class="btn btn-small"><i class="icon-loop"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
                             %endif
                             ## text and href of open_new_pr is controlled from javascript
-                            <a id="open_new_pr" class="btn btn-mini"></a>
-                       </div>
-
-                       ${h.form(h.url.current(),method='get')}
-                       <div style="float:left">
-                           ${h.submit('set',_('Show'),class_="btn btn-mini")}
-                           ${h.text('size',size=1,value=c.size)}
-                           ${_('revisions')}
-                       </div>
-                       ${h.end_form()}
+                            <a id="open_new_pr" class="btn btn-small"></a>
+                            ${h.select('branch_filter',c.branch_name,c.branch_filters)}
+                        </div>
                     </div>
                 </div>
 
