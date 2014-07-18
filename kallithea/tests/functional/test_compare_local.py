@@ -29,17 +29,17 @@ class TestCompareController(TestController):
         response.mustcontain('11 files changed with 94 insertions and 64 deletions')
 
         ## files diff
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--1c5cf9e91c12">docs/api/utils/index.rst</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--e3305437df55">test_and_report.sh</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--c8e92ef85cd1">.hgignore</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--6e08b694d687">.hgtags</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--2c14b00f3393">docs/api/index.rst</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--430ccbc82bdf">vcs/__init__.py</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--9c390eb52cd6">vcs/backends/hg.py</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--ebb592c595c0">vcs/utils/__init__.py</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--7abc741b5052">vcs/utils/annotate.py</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--2ef0ef106c56">vcs/utils/diffs.py</a></div>''' % (HG_REPO, tag1, tag2))
-        response.mustcontain('''<div class="node"><a href="/%s/compare/tag@%s...tag@%s#C--3150cb87d4b7">vcs/utils/lazy.py</a></div>''' % (HG_REPO, tag1, tag2))
+        response.mustcontain('''<div class="node"><a href="#C--1c5cf9e91c12">docs/api/utils/index.rst</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--e3305437df55">test_and_report.sh</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--c8e92ef85cd1">.hgignore</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--6e08b694d687">.hgtags</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--2c14b00f3393">docs/api/index.rst</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--430ccbc82bdf">vcs/__init__.py</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--9c390eb52cd6">vcs/backends/hg.py</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--ebb592c595c0">vcs/utils/__init__.py</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--7abc741b5052">vcs/utils/annotate.py</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--2ef0ef106c56">vcs/utils/diffs.py</a></div>''')
+        response.mustcontain('''<div class="node"><a href="#C--3150cb87d4b7">vcs/utils/lazy.py</a></div>''')
 
     def test_compare_tag_git(self):
         self.log_user()
@@ -67,17 +67,17 @@ class TestCompareController(TestController):
         response.mustcontain('11 files changed with 94 insertions and 64 deletions')
 
         #files
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--1c5cf9e91c12">docs/api/utils/index.rst</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--e3305437df55">test_and_report.sh</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--c8e92ef85cd1">.hgignore</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--6e08b694d687">.hgtags</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--2c14b00f3393">docs/api/index.rst</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--430ccbc82bdf">vcs/__init__.py</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--9c390eb52cd6">vcs/backends/hg.py</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--ebb592c595c0">vcs/utils/__init__.py</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--7abc741b5052">vcs/utils/annotate.py</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--2ef0ef106c56">vcs/utils/diffs.py</a>''' % (GIT_REPO, tag1, tag2))
-        response.mustcontain('''<a href="/%s/compare/tag@%s...tag@%s#C--3150cb87d4b7">vcs/utils/lazy.py</a>''' % (GIT_REPO, tag1, tag2))
+        response.mustcontain('''<a href="#C--1c5cf9e91c12">docs/api/utils/index.rst</a>''')
+        response.mustcontain('''<a href="#C--e3305437df55">test_and_report.sh</a>''')
+        response.mustcontain('''<a href="#C--c8e92ef85cd1">.hgignore</a>''')
+        response.mustcontain('''<a href="#C--6e08b694d687">.hgtags</a>''')
+        response.mustcontain('''<a href="#C--2c14b00f3393">docs/api/index.rst</a>''')
+        response.mustcontain('''<a href="#C--430ccbc82bdf">vcs/__init__.py</a>''')
+        response.mustcontain('''<a href="#C--9c390eb52cd6">vcs/backends/hg.py</a>''')
+        response.mustcontain('''<a href="#C--ebb592c595c0">vcs/utils/__init__.py</a>''')
+        response.mustcontain('''<a href="#C--7abc741b5052">vcs/utils/annotate.py</a>''')
+        response.mustcontain('''<a href="#C--2ef0ef106c56">vcs/utils/diffs.py</a>''')
+        response.mustcontain('''<a href="#C--3150cb87d4b7">vcs/utils/lazy.py</a>''')
 
     def test_index_branch_hg(self):
         self.log_user()
@@ -131,7 +131,7 @@ class TestCompareController(TestController):
 
         response.mustcontain('1 file changed with 7 insertions and 0 deletions')
         ## files
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s#C--c8e92ef85cd1">.hgignore</a>""" % (HG_REPO, rev1, rev2))
+        response.mustcontain("""<a href="#C--c8e92ef85cd1">.hgignore</a>""")
 
     def test_compare_revisions_git(self):
         self.log_user()
@@ -153,4 +153,4 @@ class TestCompareController(TestController):
         response.mustcontain('1 file changed with 7 insertions and 0 deletions')
 
         ## files
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s#C--c8e92ef85cd1">.hgignore</a>""" % (GIT_REPO, rev1, rev2))
+        response.mustcontain("""<a href="#C--c8e92ef85cd1">.hgignore</a>""")

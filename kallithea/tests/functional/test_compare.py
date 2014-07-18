@@ -103,7 +103,7 @@ class TestCompareController(TestController):
         response.mustcontain("""<a href="/%s/changeset/%s">r1:%s</a>""" % (repo2.repo_name, cs1.raw_id, cs1.short_id))
         response.mustcontain("""<a href="/%s/changeset/%s">r2:%s</a>""" % (repo2.repo_name, cs2.raw_id, cs2.short_id))
         ## files
-        response.mustcontain("""<a href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=1#C--826e8142e6ba">file1</a>""" % (repo1.repo_name, rev2, rev1, repo2.repo_name))
+        response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
         response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
@@ -151,7 +151,7 @@ class TestCompareController(TestController):
         response.mustcontain("""<a href="/%s/changeset/%s">r1:%s</a>""" % (repo2.repo_name, cs1.raw_id, cs1.short_id))
         response.mustcontain("""<a href="/%s/changeset/%s">r2:%s</a>""" % (repo2.repo_name, cs2.raw_id, cs2.short_id))
         ## files
-        response.mustcontain("""<a href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=1#C--826e8142e6ba">file1</a>""" % (repo1.repo_name, rev2, rev1, repo2.repo_name))
+        response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
         response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
@@ -206,7 +206,7 @@ class TestCompareController(TestController):
         response.mustcontain("""<a href="/%s/changeset/%s">r1:%s</a>""" % (repo2.repo_name, cs1.raw_id, cs1.short_id))
         response.mustcontain("""<a href="/%s/changeset/%s">r2:%s</a>""" % (repo2.repo_name, cs2.raw_id, cs2.short_id))
         ## files
-        response.mustcontain("""<a href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=1#C--826e8142e6ba">file1</a>""" % (repo1.repo_name, rev2, rev1, repo2.repo_name))
+        response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
         response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
@@ -261,7 +261,7 @@ class TestCompareController(TestController):
         response.mustcontain("""<a href="/%s/changeset/%s">r1:%s</a>""" % (repo2.repo_name, cs1.raw_id, cs1.short_id))
         response.mustcontain("""<a href="/%s/changeset/%s">r2:%s</a>""" % (repo2.repo_name, cs2.raw_id, cs2.short_id))
         ## files
-        response.mustcontain("""<a href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=1#C--826e8142e6ba">file1</a>""" % (repo1.repo_name, rev2, rev1, repo2.repo_name))
+        response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
         response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
@@ -419,9 +419,9 @@ class TestCompareController(TestController):
         response.mustcontain("""<a href="/%s/changeset/7d4bc8ec6be56c0f10425afb40b6fc315a4c25e7">r6:%s</a>""" % (HG_FORK, rev2))
 
         ## files
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s?other_repo=%s&amp;merge=1#C--9c390eb52cd6">vcs/backends/hg.py</a>""" % (HG_REPO, rev1, rev2, HG_FORK))
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s?other_repo=%s&amp;merge=1#C--41b41c1f2796">vcs/backends/__init__.py</a>""" % (HG_REPO, rev1, rev2, HG_FORK))
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s?other_repo=%s&amp;merge=1#C--2f574d260608">vcs/backends/base.py</a>""" % (HG_REPO, rev1, rev2, HG_FORK))
+        response.mustcontain("""<a href="#C--9c390eb52cd6">vcs/backends/hg.py</a>""")
+        response.mustcontain("""<a href="#C--41b41c1f2796">vcs/backends/__init__.py</a>""")
+        response.mustcontain("""<a href="#C--2f574d260608">vcs/backends/base.py</a>""")
 
     def test_compare_remote_branches_git(self):
         self.log_user()
@@ -449,9 +449,9 @@ class TestCompareController(TestController):
         response.mustcontain("""<a href="/%s/changeset/d7e0d30fbcae12c90680eb095a4f5f02505ce501">r6:%s</a>""" % (GIT_FORK, rev2[:12]))
 
         ## files
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s?other_repo=%s&amp;merge=1#C--9c390eb52cd6">vcs/backends/hg.py</a>""" % (GIT_REPO, rev1, rev2, GIT_FORK))
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s?other_repo=%s&amp;merge=1#C--41b41c1f2796">vcs/backends/__init__.py</a>""" % (GIT_REPO, rev1, rev2, GIT_FORK))
-        response.mustcontain("""<a href="/%s/compare/rev@%s...rev@%s?other_repo=%s&amp;merge=1#C--2f574d260608">vcs/backends/base.py</a>""" % (GIT_REPO, rev1, rev2, GIT_FORK))
+        response.mustcontain("""<a href="#C--9c390eb52cd6">vcs/backends/hg.py</a>""")
+        response.mustcontain("""<a href="#C--41b41c1f2796">vcs/backends/__init__.py</a>""")
+        response.mustcontain("""<a href="#C--2f574d260608">vcs/backends/base.py</a>""")
 
     def test_org_repo_new_commits_after_forking_simple_diff_hg(self):
         self.log_user()

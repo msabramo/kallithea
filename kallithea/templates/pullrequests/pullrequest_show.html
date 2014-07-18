@@ -250,7 +250,7 @@ ${self.repo_context_bar('showpullrequest')}
                 %endif
                 %for fid, change, f, stat in c.files:
                     <div class="cs_${change}">
-                      <div class="node">${h.link_to(h.safe_unicode(f),h.url.current(anchor=fid))}</div>
+                      <div class="node">${h.link_to(h.safe_unicode(f),'#' + fid)}</div>
                       <div class="changes">${h.fancy_file_stats(stat)}</div>
                     </div>
                 %endfor
