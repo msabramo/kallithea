@@ -245,8 +245,10 @@ class CompareController(BaseRepoController):
             if merge:
                 log.error('Unable to find ancestor revision')
             if org_repo != other_repo:
+                # TODO: we could do this by using hg unionrepo
                 log.error('cannot compare across repos %s and %s', org_repo, other_repo)
-                raise HTTPNotFound
+                h.flash(_('Cannot compare repositories without using common ancestor'), category='error')
+                raise HTTPBadRequest
             rev1 = c.org_rev
 
         diff_limit = self.cut_off_limit if not c.fulldiff else None
