@@ -36,6 +36,8 @@ function BranchRenderer(canvas_id, content_id) {
 	this.cur = [0, 0];
 	this.line_width = 2.0;
 	this.dot_radius = 3.5;
+	this.close_x = 1.5 * this.dot_radius;
+	this.close_y = 0.5 * this.dot_radius;
 
 	this.calcColor = function(color, bg, fg) {
 		color %= colors.length;
@@ -86,6 +88,7 @@ function BranchRenderer(canvas_id, content_id) {
 			cur = data[i];
 			node = cur[0];
 			in_l = cur[1];
+			closing = cur[2];
 
 			var rowY = row.offsetTop + row.offsetHeight/2 - rela.offsetTop;
 			var nextY = (next == null) ? rowY + row.offsetHeight/2 : next.offsetTop + next.offsetHeight/2 - rela.offsetTop;
@@ -156,15 +159,20 @@ function BranchRenderer(canvas_id, content_id) {
 			column = node[0];
 			color = node[1];
 			
-			radius = this.dot_radius;
-
 			x = base_x - box_size * column;
 		
-			this.ctx.beginPath();
 			this.setColor(color, 0.25, 0.75);
-			this.ctx.arc(x, rowY, radius, 0, Math.PI * 2, true);
-			this.ctx.fill();
-			
+			if (closing)
+			{
+				this.ctx.fillRect(x - this.close_x, rowY - this.close_y, 2*this.close_x, 2*this.close_y);
+			}
+			else
+			{
+				this.ctx.beginPath();
+				this.ctx.arc(x, rowY, this.dot_radius, 0, Math.PI * 2, true);
+				this.ctx.fill();
+			}
+
 			idx++;
 		}
 				

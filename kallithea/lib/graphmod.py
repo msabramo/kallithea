@@ -149,5 +149,6 @@ def _colored(repo, dag):
                     edges.append((ecol, nextrow.index(p), colors[p]))
 
         # Yield and move on
-        yield ((col, color), edges)
+        closing = int(repo[rev].closesbranch)
+        yield ((col, color), edges, closing)
         row = nextrow

@@ -663,6 +663,9 @@ class BaseChangeset(object):
         data['removed'] = [node.path for node in self.removed]
         return data
 
+    @LazyProperty
+    def closesbranch(self):
+        return False
 
 class BaseWorkdir(object):
     """
