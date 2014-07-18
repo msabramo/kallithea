@@ -17,6 +17,12 @@ import urllib2
 import logging
 import posixpath
 import string
+try:
+    # Python <=2.7
+    from pipes import quote
+except ImportError:
+    # Python 3.3+
+    from shlex import quote
 
 from dulwich.objects import Tag
 from dulwich.repo import Repo, NotGitRepository
@@ -654,7 +660,7 @@ class GitRepository(BaseRepository):
             cmd.append('--bare')
         elif not update_after_clone:
             cmd.append('--no-checkout')
-        cmd += ['--', '"%s"' % url, '"%s"' % self.path]
+        cmd += ['--', quote(url), self.path]
         cmd = ' '.join(cmd)
         # If error occurs run_git_command raises RepositoryError already
         self.run_git_command(cmd)
@@ -664,7 +670,7 @@ class GitRepository(BaseRepository):
         Tries to pull changes from external location.
         """
         url = self._get_url(url)
-        cmd = ['pull', "--ff-only", url]
+        cmd = ['pull', "--ff-only", quote(url)]
         cmd = ' '.join(cmd)
         # If error occurs run_git_command raises RepositoryError already
         self.run_git_command(cmd)
@@ -674,13 +680,13 @@ class GitRepository(BaseRepository):
         Tries to pull changes from external location.
         """
         url = self._get_url(url)
-        so, se = self.run_git_command('ls-remote -h %s' % url)
+        so, se = self.run_git_command('ls-remote -h %s' % quote(url))
         refs = []
         for line in (x for x in so.splitlines()):
             sha, ref = line.split('\t')
             refs.append(ref)
         refs = ' '.join(('+%s:%s' % (r, r) for r in refs))
-        cmd = '''fetch %s -- %s''' % (url, refs)
+        cmd = '''fetch %s -- %s''' % (quote(url), refs)
         self.run_git_command(cmd)
 
     def _update_server_info(self):
