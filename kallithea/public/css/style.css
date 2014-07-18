@@ -4787,6 +4787,10 @@ span.pr-closed-tag {
     line-height: 1.5em;
 }
 
+.pr-box {
+    max-width: 978px;
+}
+
 /****
   PERMS
 *****/

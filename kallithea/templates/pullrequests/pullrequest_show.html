@@ -23,7 +23,7 @@ ${self.repo_context_bar('showpullrequest')}
         ${self.breadcrumbs()}
     </div>
 
-    <div class="form" style="float: left">
+    <div class="form pr-box" style="float: left">
         <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
             ${_('Title')}: ${c.pull_request.title}
             %if c.pull_request.is_closed():
