@@ -192,7 +192,10 @@ class DiffProcessor(object):
     """, re.VERBOSE | re.MULTILINE)
 
     #used for inline highlighter word split
-    _token_re = re.compile(r'()(&gt;|&lt;|&amp;|\W+?)')
+    _token_re = re.compile(r'()(&gt;|&lt;|&amp;|<u>\t</u>| <i></i>|\W+?)')
+
+    _escape_re = re.compile(r'(&)|(<)|(>)|(\t)|( \n| $)')
+
 
     def __init__(self, diff, vcs='hg', format='gitdiff', diff_limit=None):
         """
@@ -248,9 +251,20 @@ class DiffProcessor(object):
         if self.diff_limit is not None and self.cur_diff_size > self.diff_limit:
             raise DiffLimitExceeded('Diff Limit Exceeded')
 
-        return safe_unicode(string).replace('&', '&amp;')\
-                .replace('<', '&lt;')\
-                .replace('>', '&gt;')
+        def substitute(m):
+            groups = m.groups()
+            if groups[0]:
+                return '&amp;'
+            if groups[1]:
+                return '&lt;'
+            if groups[2]:
+                return '&gt;'
+            if groups[3]:
+                return '<u>\t</u>'
+            if groups[4] and m.start(): # skip 1st column with +/-
+                return ' <i></i>'
+
+        return self._escape_re.sub(substitute, safe_unicode(string))
 
     def _line_counter(self, l):
         """

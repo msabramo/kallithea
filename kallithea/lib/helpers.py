@@ -266,6 +266,18 @@ class CodeHtmlFormatter(HtmlFormatter):
         yield 0, '</td></tr></table>'
 
 
+_whitespace_re = re.compile(r'(\t)|( )(?=\n|</div>)')
+
+def _markup_whitespace(m):
+    groups = m.groups()
+    if groups[0]:
+        return '<u>\t</u>'
+    if groups[1]:
+        return ' <i></i>'
+
+def markup_whitespace(s):
+    return _whitespace_re.sub(_markup_whitespace, s)
+
 def pygmentize(filenode, **kwargs):
     """
     pygmentize function using pygments
@@ -273,8 +285,8 @@ def pygmentize(filenode, **kwargs):
     :param filenode:
     """
     lexer = get_custom_lexer(filenode.extension) or filenode.lexer
-    return literal(code_highlight(filenode.content, lexer,
-                                  CodeHtmlFormatter(**kwargs)))
+    return literal(markup_whitespace(
+        code_highlight(filenode.content, lexer, CodeHtmlFormatter(**kwargs))))
 
 
 def pygmentize_annotation(repo_name, filenode, **kwargs):
@@ -361,7 +373,7 @@ def pygmentize_annotation(repo_name, filenode, **kwargs):
             return uri
         return _url_func
 
-    return literal(annotate_highlight(filenode, url_func(repo_name), **kwargs))
+    return literal(markup_whitespace(annotate_highlight(filenode, url_func(repo_name), **kwargs)))
 
 
 def is_following_repo(repo_name, user_id):
