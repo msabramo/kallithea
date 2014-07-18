@@ -160,7 +160,6 @@
                 %else:
                   ${_('Set changeset status')}:
                 %endif
-                <input id="show_changeset_status_box" type="checkbox" name="change_changeset_status" style="display: none;" />
                 <input type="radio" class="status_change_radio" name="changeset_status" id="changeset_status_unchanged" value="" checked="checked" />
                 <label for="changeset_status_unchanged">
                   ${_('No change')}
@@ -201,7 +200,6 @@ YUE.onDOMReady(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
    var set_close_button_state = function(cur_val){
-     YUD.get('show_changeset_status_box').checked = (cur_val != '');
      %if is_pr and change_status:
        if (cur_val == 'approved' || cur_val == 'rejected') {
            YUD.removeClass('save_close_label', 'disabled');

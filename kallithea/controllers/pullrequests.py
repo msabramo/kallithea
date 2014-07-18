@@ -546,12 +546,11 @@ class PullrequestsController(BaseRepoController):
             raise HTTPForbidden()
 
         status = request.POST.get('changeset_status')
-        change_status = request.POST.get('change_changeset_status')
         text = request.POST.get('text')
         close_pr = request.POST.get('save_close')
 
         allowed_to_change_status = self._get_is_allowed_change_status(pull_request)
-        if status and change_status and allowed_to_change_status:
+        if status and allowed_to_change_status:
             _def = (_('Status change -> %s')
                             % ChangesetStatus.get_status_lbl(status))
             if close_pr:
@@ -565,8 +564,7 @@ class PullrequestsController(BaseRepoController):
             f_path=request.POST.get('f_path'),
             line_no=request.POST.get('line'),
             status_change=(ChangesetStatus.get_status_lbl(status)
-                           if status and change_status
-                           and allowed_to_change_status else None),
+                           if status and allowed_to_change_status else None),
             closing_pr=close_pr
         )
 
@@ -576,7 +574,7 @@ class PullrequestsController(BaseRepoController):
 
         if allowed_to_change_status:
             # get status if set !
-            if status and change_status:
+            if status:
                 ChangesetStatusModel().set_status(
                     c.db_repo.repo_id,
                     status,

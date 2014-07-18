@@ -350,9 +350,8 @@ class ChangesetController(BaseRepoController):
     @jsonify
     def comment(self, repo_name, revision):
         status = request.POST.get('changeset_status')
-        change_status = request.POST.get('change_changeset_status')
         text = request.POST.get('text')
-        if status and change_status:
+        if status:
             text = text or (_('Status change -> %s')
                             % ChangesetStatus.get_status_lbl(status))
 
@@ -364,11 +363,11 @@ class ChangesetController(BaseRepoController):
             f_path=request.POST.get('f_path'),
             line_no=request.POST.get('line'),
             status_change=(ChangesetStatus.get_status_lbl(status)
-                           if status and change_status else None)
+                           if status else None)
         )
 
         # get status if set !
-        if status and change_status:
+        if status:
             # if latest status was from pull request and it's closed
             # disallow changing status !
             # dont_allow_on_closed_pull_request = True !
