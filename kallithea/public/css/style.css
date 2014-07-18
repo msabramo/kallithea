@@ -4428,7 +4428,8 @@ div.rst-block  pre {
     background: #f8f8f8;
     padding: 4px;
     border-bottom: 1px solid #ddd;
-    height: 18px;
+    min-height: 18px;
+    overflow: auto;
 }
 
 .comments .comment .meta img {
@@ -4649,7 +4650,8 @@ form.comment-inline-form {
     background: #f8f8f8;
     padding: 4px;
     border-bottom: 1px solid #ddd;
-    height: 20px;
+    min-height: 20px;
+    overflow: auto;
 }
 
 .inline-comments .comment .meta img {
