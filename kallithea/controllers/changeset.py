@@ -211,9 +211,6 @@ class ChangesetController(BaseRepoController):
             msg = _('Such revision does not exist for this repository')
             h.flash(msg, category='error')
             raise HTTPNotFound()
-        except (Exception,), e:
-            log.error(traceback.format_exc())
-            raise HTTPNotFound()
 
         c.changes = OrderedDict()
 

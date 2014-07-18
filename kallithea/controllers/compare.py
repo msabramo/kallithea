@@ -36,7 +36,6 @@ from pylons import request, response, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
 from pylons.i18n.translation import _
 
-from kallithea.lib.vcs.exceptions import EmptyRepositoryError, RepositoryError
 from kallithea.lib.vcs.utils import safe_str
 from kallithea.lib.vcs.utils.hgcompat import unionrepo
 from kallithea.lib import helpers as h
@@ -57,37 +56,6 @@ class CompareController(BaseRepoController):
 
     def __before__(self):
         super(CompareController, self).__before__()
-
-    @staticmethod
-    def __get_rev(ref, repo):
-        """
-        Safe way to get changeset. If error occurs show error.
-        """
-        rev = ref[1] # default and used for git
-        if repo.scm_instance.alias == 'hg':
-            # lookup up the exact node id
-            _revset_predicates = {
-                    'branch': 'branch',
-                    'book': 'bookmark',
-                    'tag': 'tag',
-                    'rev': 'id',
-                }
-            rev_spec = "max(%s(%%s))" % _revset_predicates[ref[0]]
-            revs = repo.scm_instance._repo.revs(rev_spec, safe_str(ref[1]))
-            if revs:
-                rev = revs[-1]
-            # else: TODO: just report 'not found'
-
-        try:
-            return repo.scm_instance.get_changeset(rev).raw_id
-        except EmptyRepositoryError, e:
-            h.flash(h.literal(_('There are no changesets yet')),
-                    category='error')
-            raise HTTPNotFound()
-        except RepositoryError, e:
-            log.error(traceback.format_exc())
-            h.flash(safe_str(e), category='error')
-            raise HTTPBadRequest()
 
     @staticmethod
     def _get_changesets(alias, org_repo, org_rev, other_repo, other_rev):
@@ -188,11 +156,7 @@ class CompareController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def compare(self, repo_name, org_ref_type, org_ref_name, other_ref_type, other_ref_name):
-        # org_ref will be evaluated in org_repo
         org_repo = c.db_repo.repo_name
-        org_ref = (org_ref_type, org_ref_name)
-        # other_ref will be evaluated in other_repo
-        other_ref = (other_ref_type, other_ref_name)
         other_repo = request.GET.get('other_repo', org_repo)
         # If merge is True:
         #   Show what org would get if merged with other:
@@ -244,8 +208,8 @@ class CompareController(BaseRepoController):
             h.flash(msg, category='error')
             return redirect(url('compare_home', repo_name=c.repo_name))
 
-        c.org_rev = self.__get_rev(ref=org_ref, repo=org_repo)
-        c.other_rev = self.__get_rev(ref=other_ref, repo=other_repo)
+        c.org_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name)
+        c.other_rev = self._get_ref_rev(other_repo, other_ref_type, other_ref_name)
 
         c.compare_home = False
         c.org_repo = org_repo

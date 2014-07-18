@@ -449,6 +449,34 @@ class MercurialRepository(BaseRepository):
 
         return revision
 
+    def get_ref_revision(self, ref_type, ref_name):
+        """
+        Returns revision number for the given reference.
+        """
+        # lookup up the exact node id
+        _revset_predicates = {
+                'branch': 'branch',
+                'book': 'bookmark',
+                'tag': 'tag',
+                'rev': 'id',
+            }
+        rev_spec = "max(%s(%%s))" % _revset_predicates[ref_type]
+        try:
+            revs = self._repo.revs(rev_spec, safe_str(ref_name))
+        except (LookupError, ):
+            msg = ("Ambiguous identifier %s:%s for %s" % (ref_type, ref_name, self.name))
+            raise ChangesetDoesNotExistError(msg)
+        except (IndexError, ValueError, RepoLookupError, TypeError):
+            msg = ("Revision %s:%s does not exist for %s" % (ref_type, ref_name, self.name))
+            raise ChangesetDoesNotExistError(msg)
+        if revs:
+            revision = revs[-1]
+        else:
+            # TODO: just report 'not found'?
+            revision = ref_name
+
+        return self._get_revision(revision)
+
     def _get_archives(self, archive_name='tip'):
         allowed = self.baseui.configlist("web", "allow_archive",
                                          untrusted=True)

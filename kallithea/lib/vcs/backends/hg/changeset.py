@@ -24,6 +24,7 @@ class MercurialChangeset(BaseChangeset):
 
     def __init__(self, repository, revision):
         self.repository = repository
+        assert isinstance(revision, basestring), repr(revision)
         self.raw_id = revision
         self._ctx = repository._repo[revision]
         self.revision = self._ctx._rev

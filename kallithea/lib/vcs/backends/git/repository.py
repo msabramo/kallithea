@@ -313,6 +313,13 @@ class GitRepository(BaseRepository):
                 % revision)
         return revision
 
+    def get_ref_revision(self, ref_type, ref_name):
+        """
+        Returns ``MercurialChangeset`` object representing repository's
+        changeset at the given ``revision``.
+        """
+        return self._get_revision(ref_name)
+
     def _get_archives(self, archive_name='tip'):
 
         for i in [('zip', '.zip'), ('gz', '.tar.gz'), ('bz2', '.tar.bz2')]:

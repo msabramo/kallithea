@@ -32,9 +32,10 @@ import logging
 import time
 import traceback
 
-from paste.auth.basic import AuthBasicAuthenticator
-from paste.httpexceptions import HTTPUnauthorized, HTTPForbidden, HTTPNotFound
-from paste.httpheaders import WWW_AUTHENTICATE, AUTHORIZATION
+import webob.exc
+import paste.httpexceptions
+import paste.auth.basic
+import paste.httpheaders
 
 from pylons import config, tmpl_context as c, request, session, url
 from pylons.controllers import WSGIController
@@ -50,6 +51,7 @@ from kallithea.lib import auth_modules
 from kallithea.lib.auth import AuthUser, HasPermissionAnyMiddleware, CookieStoreWrapper
 from kallithea.lib.utils import get_repo_slug
 from kallithea.lib.exceptions import UserCreationError
+from kallithea.lib.vcs.exceptions import RepositoryError, EmptyRepositoryError, ChangesetDoesNotExistError
 from kallithea.model import meta
 
 from kallithea.model.db import Repository, Ui, User, Setting
@@ -102,7 +104,7 @@ def _get_access_path(environ):
     return path
 
 
-class BasicAuth(AuthBasicAuthenticator):
+class BasicAuth(paste.auth.basic.AuthBasicAuthenticator):
 
     def __init__(self, realm, authfunc, auth_http_code=None):
         self.realm = realm
@@ -110,15 +112,15 @@ class BasicAuth(AuthBasicAuthenticator):
         self._rc_auth_http_code = auth_http_code
 
     def build_authentication(self):
-        head = WWW_AUTHENTICATE.tuples('Basic realm="%s"' % self.realm)
+        head = paste.httpheaders.WWW_AUTHENTICATE.tuples('Basic realm="%s"' % self.realm)
         if self._rc_auth_http_code and self._rc_auth_http_code == '403':
             # return 403 if alternative http return code is specified in
             # Kallithea config
-            return HTTPForbidden(headers=head)
-        return HTTPUnauthorized(headers=head)
+            return paste.httpexceptions.HTTPForbidden(headers=head)
+        return paste.httpexceptions.HTTPUnauthorized(headers=head)
 
     def authenticate(self, environ):
-        authorization = AUTHORIZATION(environ)
+        authorization = paste.httpheaders.AUTHORIZATION(environ)
         if not authorization:
             return self.build_authentication()
         (authmeth, auth) = authorization.split(' ', 1)
@@ -412,7 +414,7 @@ class BaseRepoController(BaseController):
                 from kallithea.lib import helpers as h
                 h.flash(h.literal(_('Repository not found in the filesystem')),
                         category='error')
-                raise HTTPNotFound()
+                raise paste.httpexceptions.HTTPNotFound()
 
             # some globals counter for menu
             c.repository_followers = self.scm_model.get_followers(dbr)
@@ -420,3 +422,24 @@ class BaseRepoController(BaseController):
             c.repository_pull_requests = self.scm_model.get_pull_requests(dbr)
             c.repository_following = self.scm_model.is_following_repo(
                                     c.repo_name, self.authuser.user_id)
+
+    @staticmethod
+    def _get_ref_rev(repo, ref_type, ref_name):
+        """
+        Safe way to get changeset. If error occurs show error.
+        """
+        from kallithea.lib import helpers as h
+        try:
+            return repo.scm_instance.get_ref_revision(ref_type, ref_name)
+        except EmptyRepositoryError as e:
+            h.flash(h.literal(_('There are no changesets yet')),
+                    category='error')
+            raise webob.exc.HTTPNotFound()
+        except ChangesetDoesNotExistError as e:
+            h.flash(h.literal(_('Changeset not found')),
+                    category='error')
+            raise webob.exc.HTTPNotFound()
+        except RepositoryError as e:
+            log.error(traceback.format_exc())
+            h.flash(safe_str(e), category='error')
+            raise webob.exc.HTTPBadRequest()
