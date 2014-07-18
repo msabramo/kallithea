@@ -291,10 +291,14 @@ class EmailNotificationModel(BaseModel):
         """
         tmpl = self._subj_map[type_]
         try:
-            return tmpl % kwargs
+            subj = tmpl % kwargs
         except KeyError, e:
             log.error('error generating email subject for %r from %s: %s', type_, ','.join(self._subj_map.keys()), e)
             raise
+        l = [str(x) for x in [kwargs.get('status_change'), kwargs.get('closing_pr') and _('Closing')] if x]
+        if l:
+            subj += ' (%s)' % (', '.join(l))
+        return subj
 
     def get_email_tmpl(self, type_, **kwargs):
         """
