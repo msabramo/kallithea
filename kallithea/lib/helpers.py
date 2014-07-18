@@ -1380,6 +1380,25 @@ def rst_w_mentions(source):
     return literal('<div class="rst-block">%s</div>' %
                    MarkupRenderer.rst_with_mentions(source))
 
+def link_to_ref(repo_name, ref_type, ref_name, rev=None):
+    """
+    Return full markup for a href to changeset_home for a changeset.
+    If ref_type is branch it will link to changelog.
+    ref_name is shortened if ref_type is 'rev'.
+    if rev is specified show it too, explicitly linking to that revision.
+    """
+    if ref_type == 'rev':
+        txt = short_id(ref_name)
+    else:
+        txt = ref_name
+    if ref_type == 'branch':
+        u = url('changelog_home', repo_name=repo_name, branch=ref_name)
+    else:
+        u = url('changeset_home', repo_name=repo_name, revision=ref_name)
+    l = link_to(repo_name + '#' + txt, u)
+    if rev and ref_type != 'rev':
+        l = literal('%s (%s)' % (l, link_to(short_id(rev), url('changeset_home', repo_name=repo_name, revision=rev))))
+    return l
 
 def changeset_status(repo, revision):
     return ChangesetStatusModel().get_status(repo, revision)
