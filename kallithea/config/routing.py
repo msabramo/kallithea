@@ -693,6 +693,11 @@ def make_map(config):
                  action='create', conditions=dict(function=check_repo,
                                                   method=["POST"]))
 
+    rmap.connect('pullrequest_copy_update',
+                 '/{repo_name:.*?}/pull-request-update/{pull_request_id}', controller='pullrequests',
+                 action='copy_update', conditions=dict(function=check_repo,
+                                                       method=["POST"]))
+
     rmap.connect('pullrequest_show',
                  '/{repo_name:.*?}/pull-request/{pull_request_id}',
                  controller='pullrequests',

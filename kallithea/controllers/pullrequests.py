@@ -28,6 +28,7 @@ Original author and date, and relevant copyright and licensing information is be
 import logging
 import traceback
 import formencode
+import re
 
 from webob.exc import HTTPNotFound, HTTPForbidden
 from collections import defaultdict
@@ -196,7 +197,7 @@ class PullrequestsController(BaseRepoController):
         c.other_repo = pull_request.other_repo
         (c.other_ref_type,
          c.other_ref_name,
-         c.other_rev) = pull_request.other_ref.split(':')
+         c.other_rev) = pull_request.other_ref.split(':') # other_rev is ancestor
 
         org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
         c.cs_repo = c.org_repo
@@ -204,6 +205,22 @@ class PullrequestsController(BaseRepoController):
         c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
         c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
+
+        c.available = []
+        c.org_branch_name = c.org_ref_name
+        if org_scm_instance.alias == 'hg' and c.other_ref_name != 'ancestor':
+            if c.org_ref_type != 'branch':
+                c.org_branch_name = org_scm_instance.get_changeset(c.org_ref_name).branch # use ref_type ?
+            other_branch_name = c.other_ref_name
+            if c.other_ref_type != 'branch':
+                other_branch_name = c.other_repo.scm_instance.get_changeset(c.other_ref_name).branch # use ref_type ?
+            # candidates: descendants of old head that are on the right branch
+            #             and not are the old head itself ...
+            #             and nothing at all if old head is a descendent of target ref name
+            arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s - (%s&::%s)::',
+                                                revs[0], c.org_branch_name,
+                                                revs[0], revs[0], other_branch_name)
+            c.available = [org_scm_instance.get_changeset(x) for x in arevs]
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = c.org_repo.get_comments(raw_ids)
@@ -391,7 +408,7 @@ class PullrequestsController(BaseRepoController):
                                               )
         revisions = [cs.raw_id for cs in cs_ranges]
 
-        # hack: ancestor_rev is not an other_ref but we want to show the
+        # hack: ancestor_rev is not an other_rev but we want to show the
         # requested destination and have the exact ancestor
         other_ref = '%s:%s:%s' % (other_ref_type, other_ref_name, ancestor_rev)
 
@@ -423,6 +440,118 @@ class PullrequestsController(BaseRepoController):
     @NotAnonymous()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
+    def copy_update(self, repo_name, pull_request_id):
+        old_pull_request = PullRequest.get_or_404(pull_request_id)
+        assert old_pull_request.other_repo.repo_name == repo_name
+
+        org_repo = RepoModel()._get_repo(old_pull_request.org_repo.repo_name)
+        org_ref_type, org_ref_name, org_rev = old_pull_request.org_ref.split(':')
+        updaterev = request.POST.get('updaterev')
+        if updaterev:
+            new_org_rev = self._get_ref_rev(org_repo, 'rev', updaterev)
+        else:
+            # assert org_ref_type == 'branch', org_ref_type # TODO: what if not?
+            new_org_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name)
+
+        other_repo = RepoModel()._get_repo(old_pull_request.other_repo.repo_name)
+        other_ref_type, other_ref_name, other_rev = old_pull_request.other_ref.split(':') # other_rev is ancestor
+        #assert other_ref_type == 'branch', other_ref_type # TODO: what if not?
+        new_other_rev = self._get_ref_rev(other_repo, other_ref_type, other_ref_name)
+
+        cs_ranges, _cs_ranges_not, ancestor_rev = CompareController._get_changesets(org_repo.scm_instance.alias,
+            other_repo.scm_instance, new_other_rev, # org and other "swapped"
+            org_repo.scm_instance, new_org_rev)
+
+        old_revisions = set(old_pull_request.revisions)
+        revisions = [cs.raw_id for cs in cs_ranges]
+        new_revisions = [r for r in revisions if r not in old_revisions]
+        lost = old_revisions.difference(revisions)
+
+        infos = ['','', 'This is an update of %s "%s".' %
+                 (url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
+                      pull_request_id=pull_request_id, qualified=True),
+                  old_pull_request.title)]
+
+        if lost:
+            infos.append(_('Missing changesets since the previous version:'))
+            for r in old_pull_request.revisions:
+                if r in lost:
+                    desc = org_repo.get_changeset(r).message.split('\n')[0]
+                    infos.append('  %s "%s"' % (h.short_id(r), desc))
+
+        if new_revisions:
+            infos.append(_('New changesets on %s %s since the previous version:') % (org_ref_type, org_ref_name))
+            for r in reversed(revisions):
+                if r in new_revisions:
+                    desc = org_repo.get_changeset(r).message.split('\n')[0]
+                    infos.append('  %s "%s"' % (h.short_id(r), desc))
+
+            if ancestor_rev == other_rev:
+                infos.append(_("Ancestor didn't change - show diff since previous version: %s .") %
+                             url('compare_url',
+                                 repo_name=org_repo.repo_name, # other_repo is always same as repo_name
+                                 org_ref_type='rev', org_ref_name=h.short_id(org_rev), # use old org_rev as base
+                                 other_ref_type='rev', other_ref_name=h.short_id(new_org_rev),
+                                 qualified=True)) # note: linear diff, merge or not doesn't matter
+            else:
+                infos.append(_('This pull request uses another merge ancestor than the previous version and they are not directly comparable.'))
+        else:
+           infos.append(_('No changes found on %s %s since previous version.') % (org_ref_type, org_ref_name))
+           # TODO: fail?
+
+        # hack: ancestor_rev is not an other_ref but we want to show the
+        # requested destination and have the exact ancestor
+        new_other_ref = '%s:%s:%s' % (other_ref_type, other_ref_name, ancestor_rev)
+        new_org_ref = '%s:%s:%s' % (org_ref_type, org_ref_name, new_org_rev)
+
+        reviewers = [r.user_id for r in old_pull_request.reviewers]
+        try:
+            old_title, old_v = re.match(r'(.*)\(v(\d+)\)\s*$', old_pull_request.title).groups()
+            v = int(old_v) + 1
+        except (AttributeError, ValueError):
+            old_title = old_pull_request.title
+            v = 2
+        title = '%s (v%s)' % (old_title.strip(), v)
+        description = (old_pull_request.description.rstrip() +
+                       '\n'.join(infos))
+
+        try:
+            pull_request = PullRequestModel().create(
+                self.authuser.user_id,
+                old_pull_request.org_repo.repo_name, new_org_ref,
+                old_pull_request.other_repo.repo_name, new_other_ref,
+                revisions, reviewers, title, description
+            )
+        except Exception:
+            h.flash(_('Error occurred while creating pull request'),
+                    category='error')
+            log.error(traceback.format_exc())
+            return redirect(url('pullrequest_show', repo_name=repo_name,
+                                pull_request_id=pull_request_id))
+
+        comm = ChangesetCommentsModel().create(
+            text=_('Closed, replaced by %s .') % url('pullrequest_show',
+                                                   repo_name=old_pull_request.other_repo.repo_name,
+                                                   pull_request_id=pull_request.pull_request_id,
+                                                   qualified=True),
+            repo=old_pull_request.other_repo.repo_id,
+            user=c.authuser.user_id,
+            pull_request=pull_request_id,
+            closing_pr=True)
+        PullRequestModel().close_pull_request(pull_request_id)
+
+        Session().commit()
+        h.flash(_('Pull request update created'),
+                category='success')
+
+        return redirect(url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
+                            pull_request_id=pull_request.pull_request_id))
+
+    # pullrequest_post for PR editing
+    @LoginRequired()
+    @NotAnonymous()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
     def post(self, repo_name, pull_request_id):
         repo = RepoModel()._get_repo(repo_name)
         pull_request = PullRequest.get_or_404(pull_request_id)
@@ -438,6 +567,7 @@ class PullrequestsController(BaseRepoController):
         return redirect(url('pullrequest_show', repo_name=repo.repo_name,
                             pull_request_id=pull_request_id))
 
+    # pullrequest_update for updating reviewer list
     @LoginRequired()
     @NotAnonymous()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',

@@ -112,26 +112,25 @@ ${self.repo_context_bar('showpullrequest')}
         </div>
         <div class="field">
           <div class="label-summary">
-              <label>${_('Origin repository')}:</label>
+              <label>${_('Origin')}:</label>
           </div>
           <div class="input">
-              <div>
-              <span><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name)}">${c.pull_request.org_repo.clone_url()}</a></span>
-
-              ## branch link is only valid if it is a branch
-              <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.org_repo.repo_name, anchor=c.org_ref_name)}">${c.org_ref_type}: ${c.org_ref_name}</a></span>
-              </div>
+            <div>
+              ${h.link_to_ref(c.pull_request.org_repo.repo_name, c.org_ref_type, c.org_ref_name, c.org_rev)}
+              %if c.org_ref_type != 'branch':
+                ${_('on')} ${h.link_to_ref(c.pull_request.org_repo.repo_name, 'branch', c.org_branch_name)}
+              %endif
+            </div>
           </div>
         </div>
         <div class="field">
           <div class="label-summary">
-              <label>${_('Target repository')}:</label>
+              <label>${_('Target')}:</label>
           </div>
           <div class="input">
               <div>
-              <span><a href="${h.url('summary_home', repo_name=c.pull_request.other_repo.repo_name)}">${c.pull_request.other_repo.clone_url()}</a></span>
-              ## branch link is only valid if it is a branch
-              <span class="spantag"><a href="${h.url('summary_home', repo_name=c.pull_request.other_repo.repo_name, anchor=c.other_ref_name)}">${c.other_ref_type}: ${c.other_ref_name}</a></span>
+              ${h.link_to_ref(c.pull_request.other_repo.repo_name, c.other_ref_type, c.other_ref_name)}
+              ## we don't know other rev - c.other_rev is ancestor and not necessarily on other_name_branch branch
               </div>
           </div>
         </div>
@@ -172,6 +171,36 @@ ${self.repo_context_bar('showpullrequest')}
               </div>
           </div>
         </div>
+
+        ${h.form(url('pullrequest_copy_update',repo_name=c.repo_name,pull_request_id=c.pull_request.pull_request_id), method='post')}
+          <div class="field">
+            <div class="label-summary">
+              <label>${_('Update')}:</label>
+            </div>
+            %if c.available:
+              <div class="input" style="max-height:200px; overflow-y:auto; overflow-x:hidden">
+                ${_("Changesets on %s not included in this pull request:") % c.org_branch_name}
+                <table class="noborder">
+                  %for cnt, cs in enumerate(reversed(c.available)):
+                    <tr>
+                    <td>${h.radio(name='updaterev', value=cs.raw_id)}</td>
+                    <td>${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.org_repo.repo_name,revision=cs.raw_id))}</td>
+                    <td><div class="message" style="white-space:normal; height:1.1em; max-width: 500px; padding:0">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
+                    </tr>
+                  %endfor
+                </table>
+              </div>
+              <div class="buttons">
+                ${h.submit('copy_update',_('Create pull request update'),class_="btn btn-small")}
+              </div>
+            %else:
+              <div class="input">
+                ${_("No changesets found for updating this pull request.")}
+              </div>
+            %endif
+          </div>
+        ${h.end_form()}
+
       </div>
     </div>
     ## REVIEWERS
