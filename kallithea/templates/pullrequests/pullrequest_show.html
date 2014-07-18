@@ -364,6 +364,11 @@ ${self.repo_context_bar('showpullrequest')}
           YUE.on(YUD.get('update_pull_request'),'click',function(e){
               updateReviewers(undefined, "${c.repo_name}", "${c.pull_request.pull_request_id}");
           })
+
+          // hack: re-navigate to target after JS is done ... if a target is set and setting href thus won't reload
+          if (window.location.hash != "") {
+              window.location.href = window.location.href;
+          }
       })
     </script>
 
