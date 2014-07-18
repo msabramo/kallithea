@@ -8,7 +8,7 @@
 </%def>
 
 <%def name="breadcrumbs_links()">
-    ${_('Pull request #%s') % c.pull_request.pull_request_id}
+    ${_('Pull request #%s from %s#%s') % (c.pull_request.pull_request_id, c.pull_request.org_repo.repo_name, c.org_branch_name)}
 </%def>
 
 <%def name="page_nav()">
