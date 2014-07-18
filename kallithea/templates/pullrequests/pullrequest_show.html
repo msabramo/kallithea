@@ -255,6 +255,7 @@ ${self.repo_context_bar('showpullrequest')}
                     </div>
                 %endfor
               </div>
+              <div class="comments-number pr-comments-number">${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span> </div>
               % if c.limited_diff:
                 <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff anyway')}</a></h5>
               % endif
@@ -328,6 +329,8 @@ ${self.repo_context_bar('showpullrequest')}
           // inject comments into they proper positions
           var file_comments = YUQ('.inline-comment-placeholder');
           renderInlineComments(file_comments);
+
+          linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
 
           YUE.on(YUD.get('update_pull_request'),'click',function(e){
               updateReviewers(undefined, "${c.repo_name}", "${c.pull_request.pull_request_id}");

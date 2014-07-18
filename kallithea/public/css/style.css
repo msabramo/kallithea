@@ -4450,7 +4450,9 @@ div.rst-block  pre {
     margin: 0.5em 0px !important;
 }
 
-.comments .comments-number {
+.comments .comments-number,
+.pr-comments-number {
+    margin: 5px;
     padding: 0px 0px 10px 0px;
     font-weight: bold;
     color: #666;
@@ -5080,6 +5082,13 @@ div.comment:target>.comment-wrapp {
 .lineno:target a {
     border: solid 2px #ee0 !important;
     margin: -2px;
+}
+
+div.prev-next-comment div.prev-comment,
+div.prev-next-comment div.next-comment {
+    display: inline-block;
+    min-width: 150px;
+    margin: 3px 6px;
 }
 
 #help_kb {

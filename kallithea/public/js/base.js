@@ -814,7 +814,9 @@ var _placeInline = function(target_id, lineno, html){
         $after_tr = $after_tr.next();
     }
     // put in the comment at the bottom
-    $after_tr.after(_table_tr('inline-comments', html));
+    var $tr = _table_tr('inline-comments', html)
+    $tr.find('div.comment').addClass('inline-comment');
+    $after_tr.after($tr);
 
     // scan nodes, and attach add button to last one
     _placeAddButton($line_tr);
@@ -860,6 +862,36 @@ var renderInlineComments = function(file_comments){
         }
         $(box).show();
     }
+}
+
+/**
+ * Double link comments
+ */
+var linkInlineComments = function(firstlinks, comments){
+    var $comments = $(comments);
+    if ($comments.length > 0) {
+        $(firstlinks).html('<a href="#{0}">First comment</a>'.format($comments.attr('id')));
+    }
+    if ($comments.length <= 1) {
+        return;
+    }
+
+    $comments.each(function(i, e){
+            var prev = '';
+            if (i > 0){
+                var prev_anchor = YUD.getAttribute(comments.item(i-1),'id');
+                prev = '<a href="#{0}">Previous comment</a>'.format(prev_anchor);
+            }
+            var next = '';
+            if (i+1 < comments.length){
+                var next_anchor = YUD.getAttribute(comments.item(i+1),'id');
+                next = '<a href="#{0}">Next comment</a>'.format(next_anchor);
+            }
+            var $div = $(('<div class="prev-next-comment">'+
+                          '<div class="prev-comment">{0}</div>'+
+                          '<div class="next-comment">{1}</div>').format(prev, next));
+            $div.prependTo(this);
+        });
 }
 
 /* activate files.html stuff */
