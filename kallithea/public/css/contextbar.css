@@ -12,7 +12,6 @@ i.icon-ellipsis-horizontal:after { content: ' ...';}
 i.icon-eye-open { background-image: url("../images/icons/eye.png"); }
 i.icon-file-alt { background-image: url("../images/icons/note_add.png"); }
 i.icon-file { background-image: url("../images/icons/file.png"); }
-i.icon-file-text { background-image: url("../images/icons/clipboard_16.png"); }
 i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
 i.icon-folder-close { background-image: url("../images/icons/database_link.png"); }
 i.icon-git { background-image: url('../images/icons/giticon.png');}
