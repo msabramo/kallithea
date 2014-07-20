@@ -5110,10 +5110,15 @@ tr.line.unmod td.code:hover .add-bubble {
     position: relative;
     left: -32px;
     width: 32px;
-    top: -8px;
     height: 32px;
-    background: url("../images/icons/comment_add.png") no-repeat 100% 50%;
     cursor: pointer;
+}
+
+.add-bubble div:before {
+    font-size: 14px;
+    color: #577632;
+    font-family: "kallithea";
+    content: '\e80c';
 }
 
 div.comment:target>.comment-wrapp {
