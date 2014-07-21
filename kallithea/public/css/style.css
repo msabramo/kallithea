@@ -3215,13 +3215,6 @@ table.code-browser i[class^='icon-'] {
     padding-bottom: 5px;
 }
 
-.pull_icon {
-    background: url("../images/icons/connect.png") no-repeat scroll 3px;
-    padding-left: 20px;
-    padding-top: 0px;
-    text-align: left;
-}
-
 .archive_icon {
     background: url("../images/icons/compress.png") no-repeat scroll 3px;
     padding-left: 20px;
