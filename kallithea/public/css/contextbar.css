@@ -3,7 +3,6 @@
  */
 
 i.icon-arrow-right { background-image: url('../images/icons/arrow_right.png');}
-i.icon-bar-chart { background-image: url("../images/icons/chart_bar.png"); }
 i.icon-code-merge { background-image: url("../images/icons/arrow_merge.png"); } /* unused! */
 i.icon-ellipsis-horizontal:after { content: ' ...';}
 i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
