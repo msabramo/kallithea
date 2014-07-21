@@ -70,10 +70,10 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    YUE.delegate("shortlog_data","click",function(e, matchedEl, container){
-        ypjax(e.target.href,"shortlog_data",function(){tooltip_activate();});
-        YUE.preventDefault(e);
-    },'.pager_link');
+    $('#shortlog_data').on('click','.pager_link',function(e){
+      ypjax(e.target.href,"shortlog_data",function(){tooltip_activate();});
+      e.preventDefault();
+    });
   });
 </script>
 
