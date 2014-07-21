@@ -107,31 +107,30 @@
 </div>
 
 <script>
-    YUE.on(YUQ('.toggle-plugin'),'click', function(e){
-        var auth_plugins_input = YUD.get('auth_plugins');
-
+    $('.toggle-plugin').click(function(e){
+        var $auth_plugins_input = $('#auth_plugins');
         var notEmpty = function(element, index, array) {
             return (element != "");
         }
-        var elems = auth_plugins_input.value.split(',').filter(notEmpty);
-        var cur_button = e.currentTarget;
-        var plugin_id = YUD.getAttribute(cur_button, 'plugin_id');
+        var elems = $auth_plugins_input.val().split(',').filter(notEmpty);
+        var $cur_button = $(e.currentTarget);
+        var plugin_id = $cur_button.attr('plugin_id');
 
-        if(YUD.hasClass(cur_button, 'btn-success')){
+        if($cur_button.hasClass('btn-success')){
             elems.splice(elems.indexOf(plugin_id), 1);
-            auth_plugins_input.value = elems.join(',');
-            YUD.removeClass(cur_button, 'btn-success');
-            cur_button.innerHTML = _TM['disabled'];
+            $auth_plugins_input.val(elems.join(','));
+            $cur_button.removeClass('btn-success');
+            $cur_button.html(_TM['disabled']);
         }
         else{
-            console.log(elems)
+            console.log(elems);
             if(elems.indexOf(plugin_id) == -1){
-               elems.push(plugin_id);
+                elems.push(plugin_id);
             }
-            auth_plugins_input.value = elems.join(',');
-            YUD.addClass(cur_button, 'btn-success');
-            cur_button.innerHTML = _TM['enabled'];
+            $auth_plugins_input.val(elems.join(','));
+            $cur_button.addClass('btn-success');
+            $cur_button.html(_TM['enabled']);
         }
-    })
+    });
 </script>
 </%def>
