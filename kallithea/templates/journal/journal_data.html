@@ -40,14 +40,14 @@
   </div>
     <script type="text/javascript">
     $(document).ready(function(){
-        YUE.delegate("journal","click",function(e, matchedEl, container){
+        $('#journal').on('click','.pager_link',function(e){
             ypjax(e.target.href,"journal",function(){
                 show_more_event();
                 tooltip_activate();
                 show_changeset_tooltip();
-                });
-            YUE.preventDefault(e);
-        },'.pager_link');
+            });
+            e.preventDefault();
+        });
     });
     </script>
 %else:
