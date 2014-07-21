@@ -1845,8 +1845,13 @@ a.metatag[tag="license"]:hover {
     padding: 0;
 }
 
+#login div.inner .icon-lock {
+    font-size: 80pt;
+    color: #DDD;
+}
+
 #login div.inner {
-    background: #FFF url("../images/login.png") no-repeat top left;
+    background: #FFF;
     border-top: none;
     border-bottom: none;
     margin: 0 auto;
