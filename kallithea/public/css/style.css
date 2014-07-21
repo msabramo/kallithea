@@ -551,7 +551,7 @@ td.quick_repo_menu.active {
 }
 
 td.quick_repo_menu .menu_items {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: -6px;
     width: 150px;
     position: absolute;
