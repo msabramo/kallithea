@@ -49,9 +49,9 @@
 <script type="text/javascript">
 var url = "${url('notification', notification_id='__NOTIFICATION_ID__')}";
 var main = "${url('notifications')}";
-   YUE.on(YUQ('.delete-notification'),'click',function(e){
+   $('.delete-notification').click(function(e){
        var notification_id = e.currentTarget.id;
        deleteNotification(url,notification_id,[function(){window.location=main}])
-   })
+   });
 </script>
 </%def>
