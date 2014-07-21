@@ -3486,19 +3486,6 @@ input.btn {
     padding: 0;
 }
 
-/* make .btn inputs and buttons and divs look the same */
-button.btn,
-input.btn {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-}
-
-.btn::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-}
-
 .btn.badge {
     cursor: default !important;
 }
