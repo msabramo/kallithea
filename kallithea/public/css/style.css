@@ -3215,13 +3215,6 @@ table.code-browser i[class^='icon-'] {
     padding-bottom: 5px;
 }
 
-.start_following_icon {
-    background: url("../images/icons/heart_add.png") no-repeat scroll 3px;
-    padding-left: 20px;
-    text-align: left;
-    padding-top: 0px;
-}
-
 .action_button {
     border: 0;
     display: inline;
