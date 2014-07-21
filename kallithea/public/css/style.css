@@ -671,7 +671,6 @@ th.yui-dt-hidden .yui-dt-resizer { display: none }
     padding: 1em 0;
     text-align: center;
 }
-.yui-skin-sam .yui-dt th { background: #d8d8da url(../images/sprite.png) repeat-x 0 0 }
 .yui-skin-sam .yui-dt th,
 .yui-skin-sam .yui-dt th a {
     font-weight: normal;
@@ -724,7 +723,6 @@ th.yui-dt-hidden .yui-dt-resizer { display: none }
 }
 .yui-skin-sam .yui-dt-scrollable .yui-dt-data tr.yui-dt-last td { border-bottom: 1px solid #7f7f7f }
 .yui-skin-sam th.yui-dt-asc,
-.yui-skin-sam th.yui-dt-desc { background: url(../images/sprite.png) repeat-x 0 -100px }
 .yui-skin-sam th.yui-dt-sortable .yui-dt-label { margin-right: 10px }
 
 .yui-skin-sam th.yui-dt-asc .yui-dt-liner:after {
@@ -751,27 +749,6 @@ tbody .yui-dt-editable { cursor: pointer }
 .yui-dt-editor .yui-dt-button {
     padding-top: 6px;
     text-align: right;
-}
-.yui-dt-editor .yui-dt-button button {
-    background: url(../images/sprite.png) repeat-x 0 0;
-    border: 1px solid #999;
-    width: 4em;
-    height: 1.8em;
-    margin-left: 6px;
-}
-.yui-dt-editor .yui-dt-button button.yui-dt-default {
-    background: url(../images/sprite.png) repeat-x 0 -1400px;
-    background-color: #5584e0;
-    border: 1px solid #304369;
-    color: #FFF;
-}
-.yui-dt-editor .yui-dt-button button:hover {
-    background: url(../images/sprite.png) repeat-x 0 -1300px;
-    color: #000;
-}
-.yui-dt-editor .yui-dt-button button:active {
-    background: url(../images/sprite.png) repeat-x 0 -1700px;
-    color: #000;
 }
 .yui-skin-sam tr.yui-dt-even { background-color: #FFF }
 .yui-skin-sam tr.yui-dt-odd { background-color: #edf5ff }
