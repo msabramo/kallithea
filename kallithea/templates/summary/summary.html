@@ -15,7 +15,7 @@
      %if c.db_repo.locked[0]:
        <span class="locking_locked tooltip" title="${_('Repository locked by %s') % h.person_by_id(c.db_repo.locked[0])}"></span>
      %else:
-       <span class="locking_unlocked tooltip" title="${_('Repository unlocked')}"></span>
+       <span class="locking_unlocked tooltip icon-ok" title="${_('Repository unlocked')}"></span>
      %endif
     %endif
 
