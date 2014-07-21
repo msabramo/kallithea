@@ -515,11 +515,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.fork,
-#header #header-inner #quick li ul li a.fork:hover {
-    background-image: url("../images/icons/arrow_divide.png");
-}
-
 #header #header-inner #quick li ul li a.locking_add,
 #header #header-inner #quick li ul li a.locking_add:hover {
     background-image: url("../images/icons/lock_add.png");
@@ -1703,7 +1698,6 @@ div.form div.fields div.field div.button {
     border-top: none;
 }
 
-#summary-menu-stats a.forks { background-image: url('../images/icons/arrow_divide.png')}
 #summary-menu-stats a.repo-size { background-image: url('../images/icons/server.png')}
 
 #summary-menu-stats a {
