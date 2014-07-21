@@ -524,8 +524,14 @@ div.header img {
     text-decoration: none;
 }
 
+td.quick_repo_menu:before {
+    font-family: "kallithea";
+    content: "\e80f";           /* triangle-right */
+    margin-left: 3px;
+    padding-right: 3px;
+}
+
 td.quick_repo_menu {
-    background: #FFF url("../images/vertical-indicator.png") 8px 50% no-repeat !important;
     cursor: pointer;
     width: 8px;
     border: 1px solid transparent;
