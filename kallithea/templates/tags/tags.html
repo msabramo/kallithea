@@ -33,10 +33,10 @@ ${self.repo_context_bar('switch-to')}
     </div>
 </div>
 <script type="text/javascript">
-YUE.on('compare_tags','click',function(e){
-    YUE.preventDefault(e);
-    var org = YUQ('input[name=compare_org]:checked')[0];
-    var other = YUQ('input[name=compare_other]:checked')[0];
+$('#compare_tags').click(function(e){
+    e.preventDefault();
+    var org = $('input[name=compare_org]:checked')[0];
+    var other = $('input[name=compare_other]:checked')[0];
 
     if(org && other){
         var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='tag',org_ref_name='__ORG__',other_ref_type='tag',other_ref_name='__OTHER__')}";
