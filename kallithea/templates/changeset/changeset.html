@@ -178,27 +178,21 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
     ## FORM FOR MAKING JS ACTION AS CHANGESET COMMENTS
     <script type="text/javascript">
       $(document).ready(function(){
-          YUE.on(YUQ('.show-inline-comments'),'change',function(e){
-              var show = 'none';
+          $('.show-inline-comments').change(function(e){
               var target = e.currentTarget;
               if(target == null){
                   target = this;
               }
+              var boxid = $(target).attr('id_for');
               if(target.checked){
-                  var show = ''
+                  $('#{0} .inline-comments'.format(boxid)).show();
+                  $('#{0} .inline-comments-button'.format(boxid)).show();
+              }else{
+                  $('#{0} .inline-comments'.format(boxid)).hide();
+                  $('#{0} .inline-comments-button'.format(boxid)).hide();
               }
-              var boxid = YUD.getAttribute(target,'id_for');
-              var comments = YUQ('#{0} .inline-comments'.format(boxid));
-              for(c in comments){
-                 YUD.setStyle(comments[c],'display',show);
-              }
-              var btns = YUQ('#{0} .inline-comments-button'.format(boxid));
-              for(c in btns){
-                  YUD.setStyle(btns[c],'display',show);
-               }
-          })
-
-          YUE.on(YUQ('.add-bubble'),'click',function(e){
+          });
+          $('.add-bubble').click(function(e){
               var tr = e.currentTarget;
               if(tr == null){
                   tr = this;
