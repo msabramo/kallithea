@@ -525,11 +525,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.repos,
-#header #header-inner #quick li ul li a.repos:hover {
-    background-image: url("../images/icons/database_edit.png");
-}
-
 #header #header-inner #quick li ul li a.repos_groups,
 #header #header-inner #quick li ul li a.repos_groups:hover {
     background-image: url("../images/icons/database_link.png");

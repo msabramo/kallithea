@@ -72,7 +72,7 @@
 <%def name="admin_menu()">
   <ul class="admin_menu">
       <li><a href="${h.url('admin_home')}"><i class="icon-book"></i> ${_('Admin Journal')}</a></li>
-      <li><a href="${h.url('repos')}"><i class="icon-archive"></i> ${_('Repositories')}</a></li>
+      <li><a href="${h.url('repos')}"><i class="icon-database"></i> ${_('Repositories')}</a></li>
       <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository Groups')}</a></li>
       <li><a href="${h.url('users')}"><i class="icon-user"></i> ${_('Users')}</a></li>
       <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User Groups')}</a></li>
@@ -89,7 +89,7 @@
 <%def name="admin_menu_simple(repositories=None, repository_groups=None, user_groups=None)">
   <ul>
    %if repositories:
-      <li><a href="${h.url('repos')}"><i class="icon-archive"></i> ${_('Repositories')}</a></li>
+      <li><a href="${h.url('repos')}"><i class="icon-database"></i> ${_('Repositories')}</a></li>
    %endif
    %if repository_groups:
       <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository Groups')}</a></li>
@@ -400,7 +400,7 @@
         }
 
         $("#repo_switcher").select2({
-            placeholder: '<i class="icon-archive"></i> ${_('Repositories')}',
+            placeholder: '<i class="icon-database"></i> ${_('Repositories')}',
             dropdownAutoWidth: true,
             formatResult: format,
             formatSelection: format,
@@ -411,7 +411,7 @@
             dropdownCssClass: "repo-switcher-dropdown",
             escapeMarkup: function(m){
                 // don't escape our custom placeholder
-                if(m.substr(0,28) == '<i class="icon-archive"></i>'){
+                if(m.substr(0,29) == '<i class="icon-database"></i>'){
                     return m;
                 }
 

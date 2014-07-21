@@ -124,7 +124,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
                     %endif
                 %else:
                     <span id="${'zip_link'}">
-                        <a class="btn btn-small" href="${h.url('files_archive_home',repo_name=c.db_repo.repo_name,fname='tip.zip')}"><i class="icon-archive"></i> ${_('Download as zip')}</a>
+                        <a class="btn btn-small" href="${h.url('files_archive_home',repo_name=c.db_repo.repo_name,fname='tip.zip')}"><i class="icon-file-zip"></i> ${_('Download as zip')}</a>
                     </span>
                     ${h.hidden('download_options')}
                     <span style="vertical-align: bottom">
@@ -160,7 +160,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
 
             %if c.authuser.username != 'default':
             <li class="repo_size">
-              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-archive"></i> ${_('Repository Size')}</a>
+              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-database"></i> ${_('Repository Size')}</a>
               <span  class="stats-bullet" id="repo_size_2"></span>
             </li>
             %endif
@@ -300,7 +300,7 @@ $(document).ready(function(){
              var title_tmpl = "${_('Download %s as %s') % ('__CS_NAME__','__CS_EXT__')}";
              title_tmpl= title_tmpl.replace('__CS_NAME__',new_cs.text);
              title_tmpl = title_tmpl.replace('__CS_EXT__',k);
-             title_tmpl = '<i class="icon-archive"></i> '+ title_tmpl;
+             title_tmpl = '<i class="icon-file-zip"></i> '+ title_tmpl;
              var url = tmpl_links[k].replace('__CS__',new_cs.id);
              var subrepos = $('#archive_subrepos').is(':checked');
              url = url.replace('__SUB__',subrepos);
