@@ -2736,16 +2736,6 @@ BIN_FILENODE = 6
     padding: 3px 0;
 }
 
-#pull_request_overview .comments-cnt a,
-#changeset_compare_view_content .comments-cnt a,
-#graph_content .comments-cnt a,
-#shortlog_data .comments-cnt a {
-    background-image: url('../images/icons/comments.png');
-    background-repeat: no-repeat;
-    background-position: 100% 50%;
-    padding: 5px 0;
-}
-
 .right .changes {
     clear: both;
 }

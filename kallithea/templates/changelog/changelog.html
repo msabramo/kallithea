@@ -127,7 +127,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                                             <div class="comments-cnt" title="${_('Changeset has comments')}">
                                                 <a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
                                                     ${len(c.comments[cs.raw_id])}
-                                                    <i class="icon-comment-alt icon-comment-colored"></i>
+                                                    <i class="icon-comment-discussion"></i>
                                                 </a>
                                             </div>
                                         </div>
