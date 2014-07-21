@@ -1069,15 +1069,6 @@ tbody .yui-dt-editable { cursor: pointer }
     padding: 9px 6px;
 }
 
-#content div.box div.message div.dismiss a {
-    height: 16px;
-    width: 16px;
-    display: block;
-    background: url("../images/icons/cross.png") no-repeat;
-    margin: 15px 14px 0 0;
-    padding: 0;
-}
-
 #content div.box div.message div.text h1,
 #content div.box div.message div.text h2,
 #content div.box div.message div.text h3,
