@@ -221,37 +221,38 @@ summary = lambda n:{False:'summary-short'}.get(n)
 %endif
 
 <script type="text/javascript">
-var clone_url = 'clone_url';
-YUE.on(clone_url,'click',function(e){
-    if(YUD.hasClass(clone_url,'selected')){
-        return
+var $clone_url = $('#clone_url');
+var $clone_url_id = $('#clone_url_id');
+var $clone_by_name = $('#clone_by_name');
+var $clone_by_id = $('#clone_by_id');
+$clone_url.click(function(e){
+    if($clone_url.hasClass('selected')){
+        return ;
+    }else{
+        $clone_url.addClass('selected');
+        $clone_url.select();
     }
-    else{
-        YUD.addClass(clone_url,'selected');
-        YUD.get(clone_url).select();
-    }
-})
+});
 
-YUE.on('clone_by_name','click',function(e){
+$clone_by_name.click(function(e){
     // show url by name and hide name button
-    YUD.setStyle('clone_url','display','');
-    YUD.setStyle('clone_by_name','display','none');
+    $clone_url.show();
+    $clone_by_name.hide();
 
     // hide url by id and show name button
-    YUD.setStyle('clone_by_id','display','');
-    YUD.setStyle('clone_url_id','display','none');
+    $clone_by_id.show();
+    $clone_url_id.hide();
+});
 
-})
-YUE.on('clone_by_id','click',function(e){
-
+$clone_by_id.click(function(e){
     // show url by id and hide id button
-    YUD.setStyle('clone_by_id','display','none');
-    YUD.setStyle('clone_url_id','display','');
+    $clone_by_id.hide();
+    $clone_url_id.show();
 
     // hide url by name and show id button
-    YUD.setStyle('clone_by_name','display','');
-    YUD.setStyle('clone_url','display','none');
-})
+    $clone_by_name.show();
+    $clone_url.hide();
+});
 
 $(document).ready(function(){
     var cache = {}
@@ -386,14 +387,10 @@ for (var i=0;i<data.length;i++){
 
 }
 
-YUD.get('lang_stats').appendChild(tbl);
-YUE.on('code_stats_show_more','click',function(){
-    l = YUD.getElementsByClassName('stats_hidden')
-    for (e in l){
-        YUD.setStyle(l[e],'display','');
-    };
-    YUD.setStyle(YUD.get('code_stats_show_more'),
-            'display','none');
+$('#lang_stats').appendChild(tbl);
+$('#code_status_show_more').click(function(){
+    $('.stats_hidden').show();
+    $('#code_status_show_more').hide();
 });
 </script>
 %endif
