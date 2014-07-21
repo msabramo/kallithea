@@ -57,7 +57,7 @@ pyroutes.register('files_history_home', "${h.url('files_history_home', repo_name
 pyroutes.register('files_authors_home', "${h.url('files_authors_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
 
 var ypjax_links = function(){
-    YUE.on(YUQ('.ypjax-link'), 'click',function(e){
+    $('.ypjax-link').click(function(e){
 
         //don't do ypjax on middle click
         if(e.which == 2 || !History.enabled){
@@ -92,7 +92,7 @@ var ypjax_links = function(){
         History.pushState(data, title, url);
 
         //now we're sure that we can do ypjax things
-        YUE.preventDefault(e);
+        e.preventDefault();
         return false;
     });
 }
@@ -116,7 +116,7 @@ var callbacks = function(State){
 
     function highlight_lines(lines){
         for(pos in lines){
-          YUD.setStyle('L'+lines[pos],'background-color','#FFFFBE');
+          $('#L'+lines[pos]).css('background-color','#FFFFBE');
         }
     }
     page_highlights = location.href.substring(location.href.indexOf('#')+1).split('L');
@@ -140,14 +140,13 @@ var callbacks = function(State){
             }
       }
       highlight_lines(h_lines);
-      var _first_line= YUD.get('L'+h_lines[0]);
-      if(_first_line){
-          _first_line.scrollIntoView()
-      }
+      $('#L'+h_lines[0]).each(function(){
+          this.scrollIntoView();
+      });
     }
 
     // select code link event
-    YUE.on('hlcode', 'mouseup', getSelectionLink);
+    $('#hlcode').mouseup(getSelectionLink);
 
     // history select field
     var cache = {}
