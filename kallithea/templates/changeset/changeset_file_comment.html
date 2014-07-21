@@ -199,31 +199,31 @@
 $(document).ready(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
-   YUE.on('preview-btn', 'click', function(e){
-       var _text = YUD.get('text').value;
+   $('#preview-btn').click(function(){
+       var _text = $('#text').val();
        if(!_text){
-           return
+           return;
        }
        var post_data = {'text': _text};
-       YUD.addClass('preview-box', 'unloaded');
-       YUD.get('preview-box').innerHTML = _TM['Loading ...'];
-       YUD.setStyle('edit-container', 'display', 'none');
-       YUD.setStyle('edit-btn', 'display', '');
-       YUD.setStyle('preview-container', 'display', '');
-       YUD.setStyle('preview-btn', 'display', 'none');
+       $('#preview-box').addClass('unloaded');
+       $('#preivew-box').html(_TM['Loading ...']);
+       $('#edit-container').hide();
+       $('#edit-btn').show();
+       $('#preview-container').show();
+       $('#preview-btn').hide();
 
        var url = pyroutes.url('changeset_comment_preview', {'repo_name': '${c.repo_name}'});
        ajaxPOST(url,post_data,function(o){
-           YUD.get('preview-box').innerHTML = o.responseText;
-           YUD.removeClass('preview-box', 'unloaded');
-       })
-   })
-   YUE.on('edit-btn', 'click', function(e){
-       YUD.setStyle('edit-container', 'display', '');
-       YUD.setStyle('edit-btn', 'display', 'none');
-       YUD.setStyle('preview-container', 'display', 'none');
-       YUD.setStyle('preview-btn', 'display', '');
-   })
+           $('#preview-box').html(o.responseText);
+           $('#preview-box').removeClass('unloaded');
+       });
+   });
+   $('#edit-btn').click(function(){
+       $('#edit-container').show();
+       $('#edit-btn').hide();
+       $('#preview-container').hide();
+       $('#preview-btn').show();
+   });
 
 });
 </script>
