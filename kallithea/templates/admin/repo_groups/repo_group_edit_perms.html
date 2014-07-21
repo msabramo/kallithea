@@ -129,10 +129,10 @@ ${h.end_form()}
     };
 
     $(document).ready(function () {
-        if (!YUD.hasClass('perm_new_member_name', 'error')) {
-            YUD.setStyle('add_perm_input', 'display', 'none');
+        if (!$('#perm_new_member_name').hasClass('error')) {
+            $('#add_perm_input').hide();
         }
-        YAHOO.util.Event.addListener('add_perm', 'click', function () {
+        $('#add_perm').click(function () {
             addPermAction(${_tmpl}, ${c.users_array|n}, ${c.user_groups_array|n});
         });
     });
