@@ -3824,31 +3824,6 @@ div.form div.fields div.buttons input,
     margin: 0;
 }
 
-input.ui-button {
-    background: #e5e3e3 url("../images/button.png") repeat-x;
-    border-top: 1px solid #DDD;
-    border-left: 1px solid #c6c6c6;
-    border-right: 1px solid #DDD;
-    border-bottom: 1px solid #c6c6c6;
-    color: #515151 !important;
-    outline: none;
-    margin: 0;
-    padding: 6px 12px;
-    -webkit-border-radius: 4px 4px 4px 4px;
-    -khtml-border-radius: 4px 4px 4px 4px;
-    border-radius: 4px 4px 4px 4px;
-    box-shadow: 0 1px 0 #ececec;
-    cursor: pointer;
-}
-
-input.ui-button:hover {
-    background: #b4b4b4 url("../images/button_selected.png") repeat-x;
-    border-top: 1px solid #ccc;
-    border-left: 1px solid #bebebe;
-    border-right: 1px solid #b1b1b1;
-    border-bottom: 1px solid #afafaf;
-}
-
 div.form div.fields div.field div.highlight,
 #content div.box div.form div.fields div.buttons div.highlight {
     display: inline;
@@ -3879,19 +3854,6 @@ div.box-right div.form div.fields div.buttons {
     text-align: right;
     margin: 6px 0 0;
     padding: 0;
-}
-
-#content div.box div.action div.button input.ui-state-hover,
-#login div.form div.fields div.buttons input.ui-state-hover,
-#register div.form div.fields div.buttons input.ui-state-hover {
-    background: #b4b4b4 url("../images/button_selected.png") repeat-x;
-    border-top: 1px solid #ccc;
-    border-left: 1px solid #bebebe;
-    border-right: 1px solid #b1b1b1;
-    border-bottom: 1px solid #afafaf;
-    color: #515151;
-    margin: 0;
-    padding: 6px 12px;
 }
 
 #content div.box div.pagination div.results,
