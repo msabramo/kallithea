@@ -515,11 +515,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.pull_request,
-#header #header-inner #quick li ul li a.pull_request:hover {
-    background-image: url("../images/icons/arrow_join.png") ;
-}
-
 .groups_breadcrumbs a {
     color: #fff;
 }
