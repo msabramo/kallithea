@@ -18,14 +18,14 @@
 <div class="pagination-wh pagination-left">
 <script type="text/javascript">
 $(document).ready(function(){
-    YUE.delegate("followers","click",function(e, matchedEl, container){
+    $('#followers').on('click','.pager_link',function(e){
         ypjax(e.target.href,"followers",function(){
             show_more_event();
             tooltip_activate();
             show_changeset_tooltip();
         });
-        YUE.preventDefault(e);
-    },'.pager_link');
+        e.preventDefault();
+    });
 });
 </script>
 ${c.followers_pager.pager('$link_previous ~2~ $link_next')}
