@@ -77,18 +77,12 @@ $(document).ready(function(e){
         }else{
             $('#inherit_overlay').show();
         }
-    }
+    };
 
-    var defaults = YUD.get('inherit_default_permissions').checked;
-    show_custom_perms(defaults);
-    YUE.on('inherit_default_permissions', 'change', function(e){
-        if(YUD.get('inherit_default_permissions').checked){
-            show_custom_perms(true);
-        }
-        else{
-            show_custom_perms(false);
-        }
-    })
+    show_custom_perms($('#inherit_default_permissions').prop('checked'));
+    $('#inherit_default_permissions').change(function(){
+        show_custom_perms($('#inherit_default_permissions').prop('checked'));
+    });
 })
 </script>
 
