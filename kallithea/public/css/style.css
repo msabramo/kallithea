@@ -537,8 +537,14 @@ td.quick_repo_menu {
     border: 1px solid transparent;
 }
 
+td.quick_repo_menu.active:before {
+    font-family: "kallithea";
+    content: "\e80d";           /* triangle-down */
+    margin-left: 1px;
+    padding-right: 0px;
+}
+
 td.quick_repo_menu.active {
-    background: url("../images/dt-arrow-dn.png") no-repeat scroll 5px 50% #FFFFFF !important;
     border: 1px solid #577632;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -721,7 +727,12 @@ th.yui-dt-hidden .yui-dt-resizer { display: none }
 .yui-skin-sam th.yui-dt-desc { background: url(../images/sprite.png) repeat-x 0 -100px }
 .yui-skin-sam th.yui-dt-sortable .yui-dt-label { margin-right: 10px }
 .yui-skin-sam th.yui-dt-asc .yui-dt-liner { background: url(../images/dt-arrow-up.png) no-repeat right }
-.yui-skin-sam th.yui-dt-desc .yui-dt-liner { background: url(../images/dt-arrow-dn.png) no-repeat right }
+
+.yui-skin-sam th.yui-dt-desc .yui-dt-liner:after {
+    font-family: "kallithea";
+    content: "\e80d";           /* triangle-down */
+}
+
 tbody .yui-dt-editable { cursor: pointer }
 .yui-dt-editor {
     text-align: left;
