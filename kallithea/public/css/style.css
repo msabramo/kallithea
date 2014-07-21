@@ -515,11 +515,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.permissions,
-#header #header-inner #quick li ul li a.permissions:hover {
-    background-image: url("../images/icons/key.png");
-}
-
 #header #header-inner #quick li ul li a.fork,
 #header #header-inner #quick li ul li a.fork:hover {
     background-image: url("../images/icons/arrow_divide.png");
