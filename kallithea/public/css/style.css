@@ -726,7 +726,11 @@ th.yui-dt-hidden .yui-dt-resizer { display: none }
 .yui-skin-sam th.yui-dt-asc,
 .yui-skin-sam th.yui-dt-desc { background: url(../images/sprite.png) repeat-x 0 -100px }
 .yui-skin-sam th.yui-dt-sortable .yui-dt-label { margin-right: 10px }
-.yui-skin-sam th.yui-dt-asc .yui-dt-liner { background: url(../images/dt-arrow-up.png) no-repeat right }
+
+.yui-skin-sam th.yui-dt-asc .yui-dt-liner:after {
+    font-family: "kallithea";
+    content: "\e810";           /* triangle-up */
+}
 
 .yui-skin-sam th.yui-dt-desc .yui-dt-liner:after {
     font-family: "kallithea";
