@@ -2,7 +2,6 @@
  * Stylesheets for the context bar
  */
 
-i.icon-code-merge { background-image: url("../images/icons/arrow_merge.png"); } /* unused! */
 i.icon-ellipsis-horizontal:after { content: ' ...';}
 i.icon-file-txt { background-image: url("../images/icons/note_error.png"); }
 i.icon-git { background-image: url('../images/icons/giticon.png');}
