@@ -73,75 +73,66 @@
 
     <script type="text/javascript">
 
-    YUE.on('j_filter','click',function(){
-        var jfilter = YUD.get('j_filter');
-        if(YUD.hasClass(jfilter, 'initial')){
-            jfilter.value = '';
+    $('#j_filter').click(function(){
+        var $jfilter = $('#j_filter');
+        if($jfilter.hasClass('initial')){
+            $jfilter.val('');
         }
     });
     var fix_j_filter_width = function(len){
-        YUD.setStyle(YUD.get('j_filter'),'width',Math.max(80, len*6.50)+'px');
-    }
-    YUE.on('j_filter','keyup',function(){
-        fix_j_filter_width(YUD.get('j_filter').value.length);
+        $('#j_filter').css('width', Math.max(80, len*6.50)+'px');
+    };
+    $('#j_filter').keyup(function(){
+        fix_j_filter_width($('#j_filter').val().length);
     });
-    YUE.on('filter_form','submit',function(e){
-        YUE.preventDefault(e)
-        var val = YUD.get('j_filter').value;
+    $('#filter_form').submit(function(e){
+        e.preventDefault();
+        var val = $('#j_filter').val();
         window.location = "${url.current(filter='__FILTER__')}".replace('__FILTER__',val);
     });
-    fix_j_filter_width(YUD.get('j_filter').value.length);
+    fix_j_filter_width($('#j_filter').val().length);
 
-    YUE.on('refresh','click',function(e){
+    $('#refresh').click(function(e){
         ypjax("${h.url.current(filter=c.search_term)}","journal",function(){
             show_more_event();
             tooltip_activate();
             show_changeset_tooltip();
             });
-        YUE.preventDefault(e);
+        e.preventDefault();
     });
 
     var show_my = function(e){
-        YUD.setStyle('watched_container','display','none');
-        YUD.setStyle('my_container','display','');
-        YUD.setStyle('q_filter','display','');
-        YUD.setStyle('q_filter_watched','display','none');
+        $('#watched_container').hide();
+        $('#my_container').show();
+        $('#q_filter').show();
+        $('#q_filter_watched').hide();
 
-        YUD.addClass('show_my_li', 'active');
-        YUD.removeClass('show_watched_li','active');
-
-        if(!YUD.hasClass('show_my', 'loaded')){
+        $('#show_my_li').addClass('active');
+        $('#show_watched_li').removeClass('active');
+        if(!$('#show_my').hasClass('loaded')){
             table_renderer(${c.data |n});
-            YUD.addClass('show_my', 'loaded');
+            $('#show_my').addClass('loaded');
         }
-    }
-    YUE.on('show_my','click',function(e){
-        show_my(e);
-    })
-    var show_watched = function(e){
-        YUD.setStyle('my_container','display','none');
-        YUD.setStyle('watched_container','display','');
-        YUD.setStyle('q_filter_watched','display','');
-        YUD.setStyle('q_filter','display','none');
+    };
+    $('#show_my').click(function(){
+        show_my();
+    });
+    var show_watched = function(){
+        $('#my_container').hide();
+        $('#watched_container').show();
+        $('#q_filter_watched').show();
+        $('#q_filter').hide();
 
-        YUD.addClass('show_watched_li', 'active');
-        YUD.removeClass('show_my_li','active');
-        if(!YUD.hasClass('show_watched', 'loaded')){
+        $('#show_watched_li').addClass('active');
+        $('#show_my_li').removeClass('active');
+        if(!$('#show_watched').hasClass('loaded')){
             watched_renderer(${c.watched_data |n});
-            YUD.addClass('show_watched', 'loaded');
+            $('#show_watched').addClass('loaded');
         }
-
-        return
-        var nodes = YUQ('#watched_container .watched_repo a');
-        var target = 'q_filter';
-        var func = function(node){
-            return node.parentNode.parentNode;
-        }
-        q_filter(target,nodes,func);
-    }
-    YUE.on('show_watched','click',function(e){
-        show_watched(e);
-    })
+    };
+    $('#show_watched').click(function(){
+        show_watched();
+    });
     //init watched
     show_watched();
 
@@ -236,14 +227,14 @@
             });
 
         };
-        YUE.on('q_filter_watched','click',function(){
-            if(!YUD.hasClass('q_filter_watched', 'loaded')){
+        $('#q_filter_watched').click(function(){
+            if(!$('#q_filter_watched').hasClass('loaded')) {
                 //TODO: load here full list later to do search within groups
-                YUD.addClass('q_filter_watched', 'loaded');
+                $('#q_filter_watched').css('loaded');
             }
-         });
+        });
 
-        YUE.on('q_filter_watched','keyup',function (e) {
+        $('#q_filter_watched').keyup(function(){
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(updateFilter,600);
         });
@@ -327,19 +318,19 @@
             });
 
         };
-        YUE.on('q_filter','click',function(){
-            if(!YUD.hasClass('q_filter', 'loaded')){
+        $('#q_filter').click(function(){
+            if(!$('#q_filter').hasClass('loaded')){
                 //TODO: load here full list later to do search within groups
-                YUD.addClass('q_filter', 'loaded');
+                $('#q_filter').addClass('loaded');
             }
-         });
+        });
 
-        YUE.on('q_filter','keyup',function (e) {
+        $('#q_filter').keyup(function(){
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(updateFilter,600);
         });
 
-        if(YUD.get('q_filter').value) {
+        if($('#q_filter').val()) {
             updateFilter();
         }
     }
