@@ -515,11 +515,6 @@ div.header img {
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.locking_add,
-#header #header-inner #quick li ul li a.locking_add:hover {
-    background-image: url("../images/icons/lock_add.png");
-}
-
 #header #header-inner #quick li ul li a.locking_del,
 #header #header-inner #quick li ul li a.locking_del:hover {
     background-image: url("../images/icons/lock_delete.png");
