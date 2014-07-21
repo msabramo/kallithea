@@ -75,17 +75,19 @@ ${self.repo_context_bar('files')}
             CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
 
             //inject new modes, based on codeMirrors modeInfo object
-            var modes_select = YUD.get('set_mode');
-            for(var i=0;i<CodeMirror.modeInfo.length;i++){
-                var m = CodeMirror.modeInfo[i];
-                var opt = new Option(m.name, m.mode);
-                modes_select.options[i+1] = opt
-            }
-            YUE.on(modes_select, 'change', function(e){
+            $('#set_mode').each(function(){
+                var modes_select = this;
+                for(var i=0;i<CodeMirror.modeInfo.length;i++){
+                    var m = CodeMirror.modeInfo[i];
+                    var opt = new Option(m.name, m.mode);
+                    modes_select.options[i+1] = opt
+                }
+            });
+            $('#set_mode').change(function(e){
                 var selected = e.currentTarget;
                 var new_mode = selected.options[selected.selectedIndex].value;
                 setCodeMirrorMode(myCodeMirror, new_mode);
-            })
+            });
             </script>
         </div>
     </div>
