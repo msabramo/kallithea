@@ -85,20 +85,20 @@ function table_renderer(data){
           });
 
       };
-      YUE.on('q_filter','click',function(){
-          if(!YUD.hasClass('q_filter', 'loaded')){
+      $('#q_filter').click(function(){
+          if(!$('#q_filter').hasClass('loaded')){
               //TODO: load here full list later to do search within groups
-              YUD.addClass('q_filter', 'loaded');
+              $('#q_filter').addClass('loaded');
           }
-       });
+      });
 
-      YUE.on('q_filter','keyup',function (e) {
+      $('#q_filter').keyup(function(){
           clearTimeout(filterTimeout);
           filterTimeout = setTimeout(updateFilter,600);
       });
 
-      if(YUD.get('q_filter').value) {
-        updateFilter();
+      if($('#q_filter').val()) {
+          updateFilter();
       }
 
     }
