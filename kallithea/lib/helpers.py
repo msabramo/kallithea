@@ -813,7 +813,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'push_remote':                 (_('[pulled from remote] into repository'),
                                     get_cs_links, 'icon-move-up'),
     'pull':                        (_('[pulled] from'),
-                                    None, 'icon-arrow-down'),
+                                    None, 'icon-move-down'),
     'started_following_repo':      (_('[started following] repository'),
                                     None, 'icon-heart icon-heart-colored'),
     'stopped_following_repo':      (_('[stopped following] repository'),
