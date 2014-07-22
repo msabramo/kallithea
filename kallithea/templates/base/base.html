@@ -160,9 +160,9 @@
         </li>
         <li ${is_current('options')}>
              %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
-               <a href="${h.url('edit_repo',repo_name=c.repo_name)}" class="dropdown"><i class="icon-sliders"></i> ${_('Options')}</a>
+               <a href="${h.url('edit_repo',repo_name=c.repo_name)}" class="dropdown"><i class="icon-wrench"></i> ${_('Options')}</a>
              %else:
-               <a href="#" class="dropdown"><i class="icon-sliders"></i> ${_('Options')}</a>
+               <a href="#" class="dropdown"><i class="icon-wrench"></i> ${_('Options')}</a>
              %endif
           <ul>
              %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
