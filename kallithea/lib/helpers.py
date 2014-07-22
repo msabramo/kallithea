@@ -773,7 +773,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
     # action : translated str, callback(extractor), icon
     action_map = {
     'user_deleted_repo':           (_('[deleted] repository'),
-                                    None, 'icon-trash'),
+                                    None, 'icon-trashcan'),
     'user_created_repo':           (_('[created] repository'),
                                     None, 'icon-plus icon-plus-colored'),
     'user_created_fork':           (_('[created] repository as fork'),
@@ -785,7 +785,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'user_downloaded_archive':      (_('[downloaded] archive from repository'),
                                     get_archive_name, 'icon-download-alt'),
     'admin_deleted_repo':          (_('[delete] repository'),
-                                    None, 'icon-trash'),
+                                    None, 'icon-trashcan'),
     'admin_created_repo':          (_('[created] repository'),
                                     None, 'icon-plus icon-plus-colored'),
     'admin_forked_repo':           (_('[forked] repository'),
