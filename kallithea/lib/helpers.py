@@ -783,7 +783,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'user_updated_repo':           (_('[updated] repository'),
                                     None, 'icon-pencil icon-pencil-colored'),
     'user_downloaded_archive':      (_('[downloaded] archive from repository'),
-                                    get_archive_name, 'icon-download-alt'),
+                                    get_archive_name, 'icon-download-cloud'),
     'admin_deleted_repo':          (_('[delete] repository'),
                                     None, 'icon-trashcan'),
     'admin_created_repo':          (_('[created] repository'),

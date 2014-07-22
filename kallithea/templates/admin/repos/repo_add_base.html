@@ -11,7 +11,7 @@ ${h.form(url('repos'))}
             <div class="input">
                 ${h.text('repo_name',class_="small")}
                 <div style="margin: 6px 0px 0px 0px">
-                    <a id="remote_clone_toggle" href="#"><i class="icon-download-alt"></i> ${_('Import existing repository ?')}</a>
+                    <a id="remote_clone_toggle" href="#"><i class="icon-download-cloud"></i> ${_('Import existing repository ?')}</a>
                 </div>
                 %if not c.authuser.is_admin:
                     ${h.hidden('user_created',True)}
