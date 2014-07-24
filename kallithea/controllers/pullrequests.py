@@ -216,19 +216,22 @@ class PullrequestsController(BaseRepoController):
 
         c.available = []
         c.org_branch_name = c.org_ref_name
+        other_scm_instance = c.other_repo.scm_instance
         if org_scm_instance.alias == 'hg' and c.other_ref_name != 'ancestor':
             if c.org_ref_type != 'branch':
                 c.org_branch_name = org_scm_instance.get_changeset(c.org_ref_name).branch # use ref_type ?
             other_branch_name = c.other_ref_name
             if c.other_ref_type != 'branch':
-                other_branch_name = c.other_repo.scm_instance.get_changeset(c.other_ref_name).branch # use ref_type ?
+                other_branch_name = other_scm_instance.get_changeset(c.other_ref_name).branch # use ref_type ?
             # candidates: descendants of old head that are on the right branch
             #             and not are the old head itself ...
             #             and nothing at all if old head is a descendent of target ref name
-            arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s - (%s&::%s)::',
-                                                revs[0], c.org_branch_name,
-                                                revs[0], revs[0], other_branch_name)
-            c.available = [org_scm_instance.get_changeset(x) for x in arevs]
+            if other_scm_instance._repo.revs('%s&::%s', revs[0], other_branch_name):
+                pass
+            else: # look for children of PR head on source branch in org repo
+                arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
+                                                    revs[0], c.org_branch_name, revs[0])
+                c.available = [org_scm_instance.get_changeset(x) for x in arevs]
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = c.org_repo.get_comments(raw_ids)
