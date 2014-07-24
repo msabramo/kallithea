@@ -107,11 +107,17 @@ class PullrequestsController(BaseRepoController):
                     peerbranches.add(abranch)
 
         selected = None
+        tiprev = repo.tags.get('tip')
+        tipbranch = None
 
         branches = []
         for abranch, branchrev in repo.branches.iteritems():
             n = 'branch:%s:%s' % (abranch, branchrev)
-            branches.append((n, abranch))
+            desc = abranch
+            if branchrev == tiprev:
+                tipbranch = abranch
+                desc = '%s (tip)' % desc
+            branches.append((n, desc))
             if rev == branchrev:
                 selected = n
             if branch == abranch:
@@ -137,9 +143,11 @@ class PullrequestsController(BaseRepoController):
 
         tags = []
         for tag, tagrev in repo.tags.iteritems():
+            if tag == 'tip':
+                continue
             n = 'tag:%s:%s' % (tag, tagrev)
             tags.append((n, tag))
-            if rev == tagrev and tag != 'tip':  # tip is not a real tag - and its branch is better
+            if rev == tagrev:
                 selected = n
 
         # prio 1: rev was selected as existing entry above
@@ -157,8 +165,8 @@ class PullrequestsController(BaseRepoController):
         # prio 4: tip revision
         if not selected:
             if h.is_hg(repo):
-                if 'tip' in repo.tags:
-                    selected = 'tag:tip:%s' % repo.tags['tip']
+                if tipbranch:
+                    selected = 'branch:%s:%s' % (tipbranch, tiprev)
                 else:
                     selected = 'tag:null:0'
                     tags.append((selected, 'null'))
