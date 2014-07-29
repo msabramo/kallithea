@@ -28,30 +28,30 @@ class GitRepositoryTest(unittest.TestCase):
         self.assertRaises(RepositoryError, GitRepository, wrong_repo_path)
 
     def test_git_cmd_injection(self):
-        remote_repo_url = 'https://github.com/codeinn/vcs.git'
-        inject_remote = '%s;%s' % (remote_repo_url, '; echo "Cake";')
+        repo_inject_path = TEST_GIT_REPO + '; echo "Cake";'
         with self.assertRaises(urllib2.URLError):
-            # Should fail because URL will be: https://github.com/codeinn/vcs.git%3B%3B%20echo%20%22Cake%22%3B
-            urlerror_fail_repo = GitRepository(get_new_dir('injection-repo'), src_url=inject_remote, update_after_clone=True, create=True)
+            # Should fail because URL will contain the parts after ; too
+            urlerror_fail_repo = GitRepository(get_new_dir('injection-repo'), src_url=repo_inject_path, update_after_clone=True, create=True)
 
         with self.assertRaises(RepositoryError):
             # Should fail on direct clone call, which as of this writing does not happen outside of class
             clone_fail_repo = GitRepository(get_new_dir('injection-repo'), create=True)
-            clone_fail_repo.clone(inject_remote, update_after_clone=True,)
+            clone_fail_repo.clone(repo_inject_path, update_after_clone=True,)
 
-        successfully_cloned = GitRepository(get_new_dir('injection-repo'), src_url=remote_repo_url, update_after_clone=True, create=True)
+        # Verify correct quoting of evil characters that should work on posix file systems
+        tricky_path = get_new_dir("tricky-path-repo-$'\"`")
+        successfully_cloned = GitRepository(tricky_path, src_url=TEST_GIT_REPO, update_after_clone=True, create=True)
         # Repo should have been created
         self.assertFalse(successfully_cloned._repo.bare)
 
-        with self.assertRaises(RepositoryError):
-            # Should fail because URL will be invalid repo
-            inject_remote_var = '%s;%s' % (remote_repo_url, '; echo $PATH;')
-            successfully_cloned.fetch(inject_remote_var)
+        tricky_path_2 = get_new_dir("tricky-path-2-repo-$'\"`")
+        successfully_cloned2 = GitRepository(tricky_path_2, src_url=tricky_path, bare=True, create=True)
+        # Repo should have been created and thus used correct quoting for clone
+        self.assertTrue(successfully_cloned2._repo.bare)
 
-        with self.assertRaises(RepositoryError):
-            # Should fail because URL will be invalid repo
-            inject_remote_ls = '%s;%s' % (remote_repo_url, '; ls -1 ~;')
-            successfully_cloned.pull(inject_remote_ls)
+        # Should pass because URL has been properly quoted
+        successfully_cloned.pull(tricky_path_2)
+        successfully_cloned2.fetch(tricky_path)
 
     def test_repo_clone(self):
         self.__check_for_existing_repo()

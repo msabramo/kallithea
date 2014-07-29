@@ -660,7 +660,7 @@ class GitRepository(BaseRepository):
             cmd.append('--bare')
         elif not update_after_clone:
             cmd.append('--no-checkout')
-        cmd += ['--', quote(url), self.path]
+        cmd += ['--', quote(url), quote(self.path)]
         cmd = ' '.join(cmd)
         # If error occurs run_git_command raises RepositoryError already
         self.run_git_command(cmd)
