@@ -487,10 +487,7 @@ class DbManage(object):
         real_path = os.path.normpath(os.path.realpath(path))
 
         if real_path != os.path.normpath(path):
-            if not ask_ok(('Path looks like a symlink, Kallithea will store '
-                           'given path as %s ? [y/n]') % (real_path,)):
-                log.error('Canceled by user')
-                sys.exit(-1)
+            log.warning('Using normalized path %s instead of %s' % (real_path, path))
 
         return real_path
 
