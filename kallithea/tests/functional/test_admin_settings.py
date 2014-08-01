@@ -176,4 +176,4 @@ class TestAdminSettingsController(TestController):
                              new_title.decode('utf-8'))
 
             response = response.follow()
-            response.mustcontain("""<div class="branding">- %s</div>""" % new_title)
+            response.mustcontain("""<div class="branding">%s</div>""" % new_title)
