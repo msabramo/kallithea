@@ -76,7 +76,7 @@
               </div>
               <div class="diff-actions">
                 %if c.other_repo.repo_name == c.repo_name:
-                  <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(filenode_path),diff2=c.other_rev,diff1=c.org_rev,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
+                  <a href="${h.url('files_diff_2way_home',repo_name=c.repo_name,f_path=h.safe_unicode(filenode_path),diff1=c.other_rev,diff2=c.org_rev,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
                       <img class="icon" src="${h.url('/images/icons/application_double.png')}"/>
                   </a>
                 %endif
