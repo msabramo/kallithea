@@ -1235,7 +1235,7 @@ def urlify_text(text_, safe=True):
     :param text_:
     """
 
-    url_pat = re.compile(r'''(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'''
+    url_pat = re.compile(r'''(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]'''
                          '''|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)''')
 
     def url_func(match_obj):

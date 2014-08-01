@@ -128,7 +128,7 @@ class MarkupRenderer(object):
             newline = '\n'
             source = newline.join(source.splitlines())
         def urlify_text(text):
-            url_pat = re.compile(r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'
+            url_pat = re.compile(r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]'
                                  '|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)')
 
             def url_func(match_obj):
