@@ -634,8 +634,7 @@ class PullrequestsController(BaseRepoController):
             raise HTTPNotFound
 
         # load compare data into template context
-        enable_comments = not c.pull_request.is_closed()
-        self._load_compare_data(c.pull_request, enable_comments=enable_comments)
+        self._load_compare_data(c.pull_request, enable_comments=True)
 
         # inline comments
         c.inline_cnt = 0
@@ -668,8 +667,6 @@ class PullrequestsController(BaseRepoController):
     @jsonify
     def comment(self, repo_name, pull_request_id):
         pull_request = PullRequest.get_or_404(pull_request_id)
-        if pull_request.is_closed():
-            raise HTTPForbidden()
 
         status = request.POST.get('changeset_status')
         text = request.POST.get('text')
