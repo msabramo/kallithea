@@ -226,12 +226,24 @@ class PullrequestsController(BaseRepoController):
             # candidates: descendants of old head that are on the right branch
             #             and not are the old head itself ...
             #             and nothing at all if old head is a descendent of target ref name
-            if other_scm_instance._repo.revs('%s&::%s', revs[0], other_branch_name):
-                pass
+            if other_scm_instance._repo.revs('present(%s)::&%s', c.cs_ranges[-1].raw_id, other_branch_name):
+                c.update_msg = _('This pull request has already been merged to %s.') % other_branch_name
             else: # look for children of PR head on source branch in org repo
                 arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
                                                     revs[0], c.org_branch_name, revs[0])
-                c.available = [org_scm_instance.get_changeset(x) for x in arevs]
+                if arevs:
+                    if c.pull_request.is_closed():
+                        c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.org_branch_name
+                    else:
+                        c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.org_branch_name
+                    c.available = [org_scm_instance.get_changeset(x) for x in arevs]
+                else:
+                    c.update_msg = _('No changesets found for updating this pull request.')
+
+            if org_scm_instance._repo.revs('head() & not (%s::) & branch(%s)', revs[0], c.org_branch_name):
+                c.update_msg_other = _('Note: Branch %s also contains unrelated changes.') % c.org_branch_name
+            else:
+                c.update_msg_other = _('Branch %s does not contain other changes.') % c.org_branch_name
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = c.org_repo.get_comments(raw_ids)

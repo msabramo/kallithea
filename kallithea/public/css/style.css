@@ -4829,6 +4829,10 @@ span.pr-closed-tag {
     margin: 5px;
 }
 
+#pr-summary .msg-div {
+    margin: 5px 0;
+}
+
 /****
   PERMS
 *****/

@@ -177,9 +177,10 @@ ${self.repo_context_bar('showpullrequest')}
             <div class="label-summary">
               <label>${_('Update')}:</label>
             </div>
-            %if c.available:
-              <div class="input" style="max-height:200px; overflow-y:auto; overflow-x:hidden">
-                ${_("Changesets on %s not included in this pull request:") % c.org_branch_name}
+            <div class="input">
+              <div class="msg-div">${c.update_msg}</div>
+              %if c.available:
+              <div style="max-height:200px; overflow-y:auto; overflow-x:hidden; margin-bottom: 10px">
                 <table class="noborder">
                   %for cnt, cs in enumerate(reversed(c.available)):
                     <tr>
@@ -190,12 +191,12 @@ ${self.repo_context_bar('showpullrequest')}
                   %endfor
                 </table>
               </div>
+              %endif
+              <div class="msg-div">${c.update_msg_other}</div>
+            </div>
+            %if c.available:
               <div class="buttons">
                 ${h.submit('copy_update',_('Create pull request update'),class_="btn btn-small")}
-              </div>
-            %else:
-              <div class="input">
-                ${_("No changesets found for updating this pull request.")}
               </div>
             %endif
           </div>
