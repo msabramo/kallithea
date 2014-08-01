@@ -115,48 +115,40 @@ class MercurialChangeset(BaseChangeset):
                 for child in self._ctx.children() if child.rev() >= 0]
 
     def next(self, branch=None):
-
         if branch and self.branch != branch:
             raise VCSError('Branch option used on changeset not belonging '
                            'to that branch')
 
-        def _next(changeset, branch):
+        cs = self
+        while True:
             try:
-                next_ = changeset.revision + 1
-                next_rev = changeset.repository.revisions[next_]
+                next_ = cs.revision + 1
+                next_rev = cs.repository.revisions[next_]
             except IndexError:
                 raise ChangesetDoesNotExistError
-            cs = changeset.repository.get_changeset(next_rev)
+            cs = cs.repository.get_changeset(next_rev)
 
-            if branch and branch != cs.branch:
-                return _next(cs, branch)
-
-            return cs
-
-        return _next(self, branch)
+            if not branch or branch == cs.branch:
+                return cs
 
     def prev(self, branch=None):
         if branch and self.branch != branch:
             raise VCSError('Branch option used on changeset not belonging '
                            'to that branch')
 
-        def _prev(changeset, branch):
+        cs = self
+        while True:
             try:
-                prev_ = changeset.revision - 1
+                prev_ = cs.revision - 1
                 if prev_ < 0:
                     raise IndexError
-                prev_rev = changeset.repository.revisions[prev_]
+                prev_rev = cs.repository.revisions[prev_]
             except IndexError:
                 raise ChangesetDoesNotExistError
+            cs = cs.repository.get_changeset(prev_rev)
 
-            cs = changeset.repository.get_changeset(prev_rev)
-
-            if branch and branch != cs.branch:
-                return _prev(cs, branch)
-
-            return cs
-
-        return _prev(self, branch)
+            if not branch or branch == cs.branch:
+                return cs
 
     def diff(self, ignore_whitespace=True, context=3):
         return ''.join(self._ctx.diff(git=True,
