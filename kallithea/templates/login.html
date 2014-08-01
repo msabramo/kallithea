@@ -12,12 +12,14 @@
 <div id="header">
     <div id="header-inner" class="title">
         <div id="logo">
+          <a href="${h.url('home')}" style="display: block;">
             <div class="header">
-                <a href="${h.url('home')}" style="display: block;"><img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/></a>
+                <img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/>
             </div>
             %if c.site_name:
              <div class="branding">- ${c.site_name}</div>
             %endif
+          </a>
         </div>
     </div>
 </div>
