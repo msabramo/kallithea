@@ -37,11 +37,11 @@ msgid "(closed)"
 msgstr "(zamknięty)"
 
 #: kallithea/controllers/changeset.py:87
-msgid "Show white space"
+msgid "Show whitespace"
 msgstr "pokazuj spacje"
 
 #: kallithea/controllers/changeset.py:94 kallithea/controllers/changeset.py:101
-msgid "Ignore white space"
+msgid "Ignore whitespace"
 msgstr "Ignoruj pokazywanie spacji"
 
 #: kallithea/controllers/changeset.py:167
@@ -5089,7 +5089,7 @@ msgid "File diff"
 msgstr "Pliki różnic"
 
 #: kallithea/templates/files/diff_2way.html:58
-msgid "ignore white space"
+msgid "ignore whitespace"
 msgstr "ignoruj spacje"
 
 #: kallithea/templates/files/diff_2way.html:59

@@ -37,11 +37,11 @@ msgid "(closed)"
 msgstr "(閉鎖済み)"
 
 #: kallithea/controllers/changeset.py:87
-msgid "Show white space"
+msgid "Show whitespace"
 msgstr "空白を表示"
 
 #: kallithea/controllers/changeset.py:94 kallithea/controllers/changeset.py:101
-msgid "Ignore white space"
+msgid "Ignore whitespace"
 msgstr "空白を無視"
 
 #: kallithea/controllers/changeset.py:167
@@ -5030,7 +5030,7 @@ msgid "File diff"
 msgstr "ファイル差分"
 
 #: kallithea/templates/files/diff_2way.html:58
-msgid "ignore white space"
+msgid "ignore whitespace"
 msgstr "空白を無視"
 
 #: kallithea/templates/files/diff_2way.html:59
