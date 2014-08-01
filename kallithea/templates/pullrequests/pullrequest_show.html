@@ -194,7 +194,7 @@ ${self.repo_context_bar('showpullrequest')}
               %endif
               <div class="msg-div">${c.update_msg_other}</div>
             </div>
-            %if c.available:
+            %if c.available and not c.pull_request.is_closed():
               <div class="buttons">
                 ${h.submit('copy_update',_('Create pull request update'),class_="btn btn-small")}
               </div>

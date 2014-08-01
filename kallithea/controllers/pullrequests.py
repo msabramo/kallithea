@@ -466,6 +466,8 @@ class PullrequestsController(BaseRepoController):
     def copy_update(self, repo_name, pull_request_id):
         old_pull_request = PullRequest.get_or_404(pull_request_id)
         assert old_pull_request.other_repo.repo_name == repo_name
+        if old_pull_request.is_closed():
+            raise HTTPForbidden()
 
         org_repo = RepoModel()._get_repo(old_pull_request.org_repo.repo_name)
         org_ref_type, org_ref_name, org_rev = old_pull_request.org_ref.split(':')
