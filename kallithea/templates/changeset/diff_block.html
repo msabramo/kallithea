@@ -44,6 +44,17 @@
         <div class="code-body">
             <div class="full_f_path" path="${h.safe_unicode(path)}"></div>
             ${diff|n}
+            %if path.rsplit('.')[-1] in ['png', 'gif', 'jpg', 'bmp']:
+              <div class="btn btn-image-diff-show">Show images</div>
+              <div id="${FID}_image-diff" class="btn btn-image-diff-swap" style="display:none">Press to swap images</div>
+              <div>
+                <img id="${FID}_image-diff-img-a" class="img-diff img-diff-swapable" style="display:none"
+                    realsrc="${h.url('files_raw_home',repo_name=c.repo_name,revision=cs1,f_path=path) if change in 'DM' else ''}"
+                /><img id="${FID}_image-diff-img-b" class="img-diff img-diff-swapable" style="display:none"
+                    realsrc="${h.url('files_raw_home',repo_name=c.repo_name,revision=cs2,f_path=path) if change in 'AM' else ''}"
+                />
+              </div>
+            %endif
         </div>
     </div>
 %endfor
@@ -88,7 +99,45 @@
         <div class="code-body">
             <div class="full_f_path" path="${h.safe_unicode(filenode_path)}"></div>
             ${diff|n}
+            %if filenode_path.rsplit('.')[-1] in ['png', 'gif', 'jpg', 'bmp']:
+              <div class="btn btn-image-diff-show">Show images</div>
+              <div id="${h.FID('',filenode_path)}_image-diff" class="btn btn-image-diff-swap" style="display:none">Press to swap images</div>
+              <div>
+                <img id="${h.FID('',filenode_path)}_image-diff-img-a" class="img-diff img-diff-swapable" style="display:none"
+                    realsrc="${h.url('files_raw_home',repo_name=c.repo_name,revision=c.org_rev,f_path=filenode_path) if op in 'DM' else ''}"
+                /><img id="${h.FID('',filenode_path)}_image-diff-img-b" class="img-diff img-diff-swapable" style="display:none"
+                    realsrc="${h.url('files_raw_home',repo_name=c.repo_name,revision=c.other_rev,f_path=filenode_path) if op in 'AM' else ''}"
+                />
+              </div>
+            %endif
         </div>
     </div>
   %endfor
+</%def>
+
+<%def name="diff_block_js()">
+<script type="text/javascript">
+$(document).ready(function(){
+    $('.btn-image-diff-show').click(function(e){
+        $('.btn-image-diff-show').hide();
+        $('.btn-image-diff-swap').show();
+        $('.img-diff-swapable')
+            .each(function(i,e){
+                    $(e).attr('src', $(e).attr('realsrc'));
+                })
+            .show();
+        });
+    
+    $('.btn-image-diff-swap').mousedown(function(e){
+        $('#'+e.currentTarget.id+'-img-a.img-diff-swapable')
+          .before($('#'+e.currentTarget.id+'-img-b.img-diff-swapable'));
+    });
+    var reset = function(e){
+        $('#'+e.currentTarget.id+'-img-a.img-diff-swapable')
+          .after($('#'+e.currentTarget.id+'-img-b.img-diff-swapable'));
+    };
+    $('.btn-image-diff-swap').mouseup(reset);
+    $('.btn-image-diff-swap').mouseleave(reset);
+});
+</script>
 </%def>

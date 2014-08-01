@@ -75,7 +75,8 @@ ${self.repo_context_bar('changelog')}
     </div>
     <%namespace name="comment" file="/changeset/changeset_file_comment.html"/>
     <%namespace name="diff_block" file="/changeset/diff_block.html"/>
-     %for cs in c.cs_ranges:
+    ${diff_block.diff_block_js()}
+    %for cs in c.cs_ranges:
           ##${comment.comment_inline_form(cs)}
           ## diff block
           <div class="h3">
@@ -109,6 +110,6 @@ ${self.repo_context_bar('changelog')}
            </div>
           ${diff_block.diff_block(c.changes[cs.raw_id])}
 
-     %endfor
-    </div>
+    %endfor
+</div>
 </%def>

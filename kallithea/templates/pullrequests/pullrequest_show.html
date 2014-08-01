@@ -307,6 +307,7 @@ ${self.repo_context_bar('showpullrequest')}
 
     ## diff block
     <%namespace name="diff_block" file="/changeset/diff_block.html"/>
+    ${diff_block.diff_block_js()}
     %for fid, change, f, stat in c.files:
       ${diff_block.diff_block_simple([c.changes[fid]])}
     %endfor
