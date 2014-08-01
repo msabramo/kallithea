@@ -555,11 +555,14 @@ class PullrequestsController(BaseRepoController):
     def post(self, repo_name, pull_request_id):
         repo = RepoModel()._get_repo(repo_name)
         pull_request = PullRequest.get_or_404(pull_request_id)
+        old_description = pull_request.description
 
         _form = PullRequestPostForm()().to_python(request.POST)
 
         pull_request.title = _form['pullrequest_title']
         pull_request.description = _form['pullrequest_desc'].strip() or _('No description')
+
+        PullRequestModel().mention_from_description(pull_request, old_description)
 
         Session().commit()
         h.flash(_('Pull request updated'), category='success')

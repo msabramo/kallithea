@@ -1,7 +1,11 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="main.html"/>
 
+%if is_mention:
+<p>${_('Comment from %s on %s changeset %s mentioned you') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:</p>
+%else:
 <p>${_('Comment from %s on %s changeset %s') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:</p>
+%endif
 <p>${body}</p>
 
 %if status_change:

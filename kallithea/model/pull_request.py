@@ -34,9 +34,9 @@ from kallithea.model.meta import Session
 from kallithea.lib import helpers as h
 from kallithea.model import BaseModel
 from kallithea.model.db import PullRequest, PullRequestReviewers, Notification,\
-    ChangesetStatus
+    ChangesetStatus, User
 from kallithea.model.notification import NotificationModel
-from kallithea.lib.utils2 import safe_unicode
+from kallithea.lib.utils2 import extract_mentioned_users, safe_unicode
 
 
 log = logging.getLogger(__name__)
@@ -106,10 +106,14 @@ class PullRequestModel(BaseModel):
             comment,
             pull_request=new
         )
-        self.__add_reviewers(new, reviewers)
+
+        mention_recipients = set(User.get_by_username(username, case_insensitive=True)
+                                 for username in extract_mentioned_users(pr.description))
+        self.__add_reviewers(new, reviewers, mention_recipients)
+
         return new
 
-    def __add_reviewers(self, pr, reviewers):
+    def __add_reviewers(self, pr, reviewers, mention_recipients=None):
         #members
         for member in set(reviewers):
             _usr = self._get_user(member)
@@ -145,11 +149,34 @@ class PullRequestModel(BaseModel):
             'ref': org_ref_name,
             'pr_username': pr.author.username,
             'threading': [pr_url],
+            'is_mention': False,
             }
-        NotificationModel().create(created_by=pr.author, subject=subject, body=body,
-                                   recipients=reviewers,
-                                   type_=Notification.TYPE_PULL_REQUEST,
-                                   email_kwargs=email_kwargs)
+        if reviewers:
+            NotificationModel().create(created_by=pr.author, subject=subject, body=body,
+                                       recipients=reviewers,
+                                       type_=Notification.TYPE_PULL_REQUEST,
+                                       email_kwargs=email_kwargs)
+
+        if mention_recipients:
+            mention_recipients.discard(None)
+            mention_recipients.difference_update(reviewers)
+        if mention_recipients:
+            email_kwargs['is_mention'] = True
+            subject = _('[Mention]') + ' ' + subject
+
+            NotificationModel().create(created_by=pr.author, subject=subject, body=body,
+                                       recipients=mention_recipients,
+                                       type_=Notification.TYPE_PULL_REQUEST,
+                                       email_kwargs=email_kwargs)
+
+    def mention_from_description(self, pr, old_description=''):
+        mention_recipients = set(User.get_by_username(username, case_insensitive=True)
+                                 for username in extract_mentioned_users(pr.description))
+        mention_recipients.difference_update(User.get_by_username(username, case_insensitive=True)
+                                             for username in extract_mentioned_users(old_description))
+
+        log.debug("Mentioning %s" % mention_recipients)
+        self.__add_reviewers(pr, [], mention_recipients)
 
     def update_reviewers(self, pull_request, reviewers_ids):
         reviewers_ids = set(reviewers_ids)

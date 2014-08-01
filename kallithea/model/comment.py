@@ -222,6 +222,7 @@ class ChangesetCommentsModel(BaseModel):
                                 pull_request=pull_request,
                                 status_change=status_change,
                                 closing_pr=closing_pr)
+            email_kwargs['is_mention'] = False
             # create notification objects, and emails
             NotificationModel().create(
                 created_by=user, subject=subj, body=body,
@@ -232,7 +233,7 @@ class ChangesetCommentsModel(BaseModel):
             mention_recipients = set(self._extract_mentions(body))\
                                     .difference(recipients)
             if mention_recipients:
-                email_kwargs.update({'pr_mention': True})
+                email_kwargs['is_mention'] = True
                 subj = _('[Mention]') + ' ' + subj
                 NotificationModel().create(
                     created_by=user, subject=subj, body=body,
