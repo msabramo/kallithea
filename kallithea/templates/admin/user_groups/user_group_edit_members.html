@@ -1,0 +1,17 @@
+<div class="group_members_wrap">
+% if c.group_members_obj:
+  <ul class="group_members">
+  %for user in c.group_members_obj:
+    <li>
+      <div class="group_member">
+        <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(user.email,24)}"/> </div>
+        <div>${h.link_to(user.username, h.url('edit_user',id=user.user_id))}</div>
+        <div>${user.full_name}</div>
+      </div>
+    </li>
+  %endfor
+  </ul>
+  %else:
+    <span class="empty_data">${_('No members yet')}</span>
+  %endif
+</div>

@@ -1,0 +1,140 @@
+## -*- coding: utf-8 -*-
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>${self.title()}</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta name="robots" content="index, nofollow"/>
+        <link rel="icon" href="${h.url('/images/favicon.ico')}" type="image/png" />
+
+        ## CSS ###
+        <%def name="css()">
+            <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.kallithea_version)}"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.kallithea_version)}"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.kallithea_version)}" media="screen"/>
+            <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.kallithea_version)}" media="screen"/>
+            ## EXTRA FOR CSS
+            ${self.css_extra()}
+        </%def>
+
+        <%def name="css_extra()"></%def>
+
+        ${self.css()}
+
+        ## JAVASCRIPT ##
+        <%def name="js()">
+            <script type="text/javascript">
+            //JS translations map
+            var TRANSLATION_MAP = {
+                'Add Another Comment':'${_("Add Another Comment")}',
+                'Stop following this repository':"${_('Stop following this repository')}",
+                'Start following this repository':"${_('Start following this repository')}",
+                'Group':"${_('Group')}",
+                'members':"${_('members')}",
+                'Loading ...':"${_('Loading ...')}",
+                'loading ...':"${_('loading ...')}",
+                'Search truncated': "${_('Search truncated')}",
+                'No matching files': "${_('No matching files')}",
+                'Open New Pull Request': "${_('Open New Pull Request')}",
+                'Open New Pull Request for Selected Changesets':  "${_('Open New Pull Request for Selected Changesets')}",
+                'Show Selected Changesets __S &rarr; __E': "${h.literal(_('Show Selected Changesets __S &rarr; __E'))}",
+                'Show Selected Changeset __S': "${_('Show Selected Changeset __S')}",
+                'Selection Link': "${_('Selection Link')}",
+                'Collapse Diff': "${_('Collapse Diff')}",
+                'Expand Diff': "${_('Expand Diff')}",
+                'Failed to revoke permission': "${_('Failed to revoke permission')}",
+                'Confirm to revoke permission for {0}: {1} ?': "${_('confirm to revoke permission for {0}: {1} ?')}",
+                'enabled': "${_('enabled')}",
+                'disabled': "${_('disabled')}",
+                'Select changeset': "${_('Select changeset')}",
+                'Specify changeset': "${_('Specify changeset')}",
+                'MSG_SORTASC': "${_('Click to sort ascending')}",
+                'MSG_SORTDESC': "${_('Click to sort descending')}",
+                'MSG_EMPTY': "${_('No records found.')}",
+                'MSG_ERROR': "${_('Data error.')}",
+                'MSG_LOADING': "${_('Loading...')}"
+            };
+            var _TM = TRANSLATION_MAP;
+
+            var TOGGLE_FOLLOW_URL  = "${h.url('toggle_following')}";
+
+            var REPO_NAME = "";
+            %if hasattr(c, 'repo_name'):
+                var REPO_NAME = "${c.repo_name}";
+            %endif
+            </script>
+            <script type="text/javascript" src="${h.url('/js/yui.2.9.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/jquery-1.11.1.min.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/bootstrap.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/select2/select2.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/mousetrap.js', ver=c.kallithea_version)}"></script>
+            <!--[if lt IE 9]>
+               <script language="javascript" type="text/javascript" src="${h.url('/js/excanvas.min.js')}"></script>
+            <![endif]-->
+            <script type="text/javascript" src="${h.url('/js/yui.flot.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/native.history.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/pyroutes_map.js', ver=c.kallithea_version)}"></script>
+            <script type="text/javascript" src="${h.url('/js/base.js', ver=c.kallithea_version)}"></script>
+           ## EXTRA FOR JS
+           ${self.js_extra()}
+            <script type="text/javascript">
+            (function(window,undefined){
+                // Prepare
+                var History = window.History; // Note: We are using a capital H instead of a lower h
+                if ( !History.enabled ) {
+                     // History.js is disabled for this browser.
+                     // This is because we can optionally choose to support HTML4 browsers or not.
+                    return false;
+                }
+            })(window);
+
+            $(document).ready(function(){
+              tooltip_activate();
+              show_more_event();
+              show_changeset_tooltip();
+              // routes registration
+              pyroutes.register('home', "${h.url('home')}", []);
+              pyroutes.register('new_gist', "${h.url('new_gist')}", []);
+              pyroutes.register('gists', "${h.url('gists')}", []);
+              pyroutes.register('new_repo', "${h.url('new_repo')}", []);
+
+              pyroutes.register('summary_home', "${h.url('summary_home', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('changelog_home', "${h.url('changelog_home', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('files_home', "${h.url('files_home', repo_name='%(repo_name)s',revision='%(revision)s',f_path='%(f_path)s')}", ['repo_name', 'revision', 'f_path']);
+              pyroutes.register('edit_repo', "${h.url('edit_repo', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('edit_repo_perms', "${h.url('edit_repo_perms', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('pullrequest_home', "${h.url('pullrequest_home', repo_name='%(repo_name)s')}", ['repo_name']);
+
+              pyroutes.register('toggle_following', "${h.url('toggle_following')}");
+              pyroutes.register('changeset_info', "${h.url('changeset_info', repo_name='%(repo_name)s', revision='%(revision)s')}", ['repo_name', 'revision']);
+              pyroutes.register('repo_size', "${h.url('repo_size', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('changeset_comment_preview', "${h.url('changeset_comment_preview', repo_name='%(repo_name)s')}", ['repo_name']);
+              pyroutes.register('repo_refs_data', "${h.url('repo_refs_data', repo_name='%(repo_name)s')}", ['repo_name']);
+           });
+            </script>
+        </%def>
+        <%def name="js_extra()"></%def>
+        ${self.js()}
+        <%def name="head_extra()"></%def>
+        ${self.head_extra()}
+    </head>
+    <body id="body">
+     ## IE hacks
+      <!--[if IE 7]>
+      <script>$(document.body).addClass('ie7')</script>
+      <![endif]-->
+      <!--[if IE 8]>
+      <script>$(document.body).addClass('ie8')</script>
+      <![endif]-->
+      <!--[if IE 9]>
+      <script>$(document.body).addClass('ie9')</script>
+      <![endif]-->
+
+      ${next.body()}
+
+      %if c.ga_code:
+      ${h.literal(c.ga_code)}
+      %endif
+    </body>
+</html>

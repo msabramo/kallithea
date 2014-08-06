@@ -1,0 +1,91 @@
+## -*- coding: utf-8 -*-
+<%inherit file="base/root.html"/>
+
+<%def name="title()">
+    ${_('Log In')}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+
+<div id="header">
+    <div id="header-inner" class="title">
+        <div id="logo">
+          <a href="${h.url('home')}" style="display: block;">
+            <div class="header">
+                <img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/>
+            </div>
+            %if c.site_name:
+             <div class="branding">${c.site_name}</div>
+            %endif
+          </a>
+        </div>
+    </div>
+</div>
+
+<div id="login">
+    <%include file="/base/flash_msg.html"/>
+    <!-- login -->
+    <div class="title withlogo">
+        %if c.site_name:
+            <h5>${_('Log In to %s') % c.site_name}</h5>
+        %else:
+            <h5>${_('Log In')}</h5>
+        %endif
+    </div>
+    <div class="inner">
+        ${h.form(h.url.current(came_from=c.came_from))}
+        <div class="form">
+            <!-- fields -->
+
+            <div class="fields">
+                <div class="field">
+                    <div class="label">
+                        <label for="username">${_('Username')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.text('username',class_='focus large')}
+                    </div>
+
+                </div>
+                <div class="field">
+                    <div class="label">
+                        <label for="password">${_('Password')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.password('password',class_='focus large')}
+                    </div>
+
+                </div>
+                <div class="field">
+                    <div class="checkbox">
+                        <input type="checkbox" id="remember" name="remember" />
+                        <label for="remember">${_('Remember me')}</label>
+                    </div>
+                </div>
+                <div class="buttons">
+                    ${h.submit('sign_in',_('Sign In'),class_="btn")}
+                </div>
+            </div>
+            <!-- end fields -->
+            <!-- links -->
+            <div class="links">
+                ${h.link_to(_('Forgot your password ?'),h.url('reset_password'))}
+                %if h.HasPermissionAny('hg.admin', 'hg.register.auto_activate', 'hg.register.manual_activate')():
+                  /
+                 ${h.link_to(_("Don't have an account ?"),h.url('register'))}
+                %endif
+            </div>
+
+            <!-- end links -->
+        </div>
+        ${h.end_form()}
+        <script type="text/javascript">
+        $(document).ready(function(){
+            $('#username').focus();
+        });
+        </script>
+    </div>
+    <!-- end login -->
+</div>

@@ -1,0 +1,62 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Repositories Administration')}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value=""/> ${h.link_to(_('Admin'),h.url('admin_home'))} &raquo; <span id="repo_count">0</span> ${_('Repositories')}
+</%def>
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+<%def name="main()">
+<div class="box">
+
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+         %if h.HasPermissionAny('hg.admin','hg.create.repository')():
+          <li>
+            <a href="${h.url('new_repo')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_(u'Add Repository')}</a>
+          </li>
+         %endif
+        </ul>
+    </div>
+    <div class="table-grid table yui-skin-sam" id="datatable_list_wrap"></div>
+    <div id="user-paginator" style="padding: 0px 0px 0px 20px"></div>
+
+
+</div>
+<script>
+  var data = ${c.data|n};
+  var fields = [
+    {key:"menu"},
+    {key:"raw_name"},
+    {key:"name"},
+    {key:"desc"},
+    {key:"last_changeset"},
+    {key:"last_rev_raw"},
+    {key:"owner"},
+    {key:"state"},
+    {key:"action"}
+  ];
+  var column_defs = [
+    {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+    {key:"name",label:"${_('Name')}",sortable:true, sortOptions: { sortFunction: nameSort }},
+    {key:"desc",label:"${_('Description')}",sortable:true},
+    {key:"last_changeset",label:"${_('Tip')}",sortable:true, sortOptions: { sortFunction: revisionSort }},
+    {key:"owner",label:"${_('Owner')}",sortable:true},
+    {key:"state",label:"${_('State')}",sortable:true},
+    {key:"action",label:"${_('Action')}",sortable:false}
+  ];
+  var counter = YUD.get('repo_count');
+  var sort_key = "name";
+  YUI_datatable(data, fields, column_defs, counter, sort_key, ${c.visual.admin_grid_items});
+</script>
+
+</%def>

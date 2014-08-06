@@ -1,0 +1,136 @@
+## -*- coding: utf-8 -*-
+<%inherit file="base/root.html"/>
+
+<%def name="title()">
+    ${_('Sign Up')}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+<div id="header">
+    <div id="header-inner" class="title">
+        <div id="logo">
+          <a href="${h.url('home')}" style="display: block;">
+            <div class="header">
+                <img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/>
+            </div>
+            %if c.site_name:
+             <div class="branding">${c.site_name}</div>
+            %endif
+          </a>
+        </div>
+    </div>
+</div>
+
+
+<div id="register">
+    <%include file="/base/flash_msg.html"/>
+    <div class="title withlogo">
+        %if c.site_name:
+            <h5>${_('Sign Up to %s') % c.site_name}</h5>
+        %else:
+            <h5>${_('Sign Up')}</h5>
+        %endif
+    </div>
+    <div class="inner">
+        ${h.form(url('register'))}
+        <div class="form">
+            <!-- fields -->
+            <div class="fields">
+                <div class="field">
+                    <div class="label">
+                        <label for="username">${_('Username')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.text('username',class_="medium")}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="label">
+                        <label for="password">${_('Password')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.password('password',class_="medium",autocomplete="off")}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="label">
+                        <label for="password">${_('Re-enter password')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.password('password_confirmation',class_="medium",autocomplete="off")}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="label">
+                        <label for="firstname">${_('First Name')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.text('firstname',class_="medium")}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="label">
+                        <label for="lastname">${_('Last Name')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.text('lastname',class_="medium")}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="label">
+                        <label for="email">${_('Email')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.text('email',class_="medium")}
+                    </div>
+                </div>
+
+                %if c.captcha_active:
+                <div class="field">
+                    <div class="label">
+                        <label for="email">${_('Captcha')}:</label>
+                    </div>
+                    <div class="input">
+                        ${h.hidden('recaptcha_field')}
+                        <div id="recaptcha"></div>
+                    </div>
+                </div>
+                %endif
+
+                <div class="buttons">
+                    <div class="nohighlight">
+                      ${h.submit('sign_up',_('Sign Up'),class_="btn")}
+                      %if c.auto_active:
+                          <div class="activation_msg">${_('Registered accounts are ready to use and need no further action.')}</div>
+                      %else:
+                          <div class="activation_msg">${_('Please wait for an administrator to activate your account.')}</div>
+                      %endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        ${h.end_form()}
+        %if c.captcha_active:
+        <script type="text/javascript" src="https://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+        %endif
+        <script type="text/javascript">
+        $(document).ready(function(){
+            $('#username').focus();
+
+            %if c.captcha_active:
+            Recaptcha.create("${c.captcha_public_key}", "recaptcha",
+                {
+                  theme: "white"
+                }
+            );
+            %endif
+        });
+        </script>
+    </div>
+ </div>

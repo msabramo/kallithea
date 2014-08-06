@@ -1,0 +1,19 @@
+## -*- coding: utf-8 -*-
+<%inherit file="main.txt"/>
+
+%if is_mention:
+${_('Comment from %s on %s changeset %s mentioned you') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:
+%else:
+${_('Comment from %s on %s changeset %s') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:
+%endif
+${body}
+
+%if status_change:
+${_('The changeset status was changed to')}: ${status_change}
+%endif
+
+${_('URL')}: ${cs_comment_url}
+
+${_('Changeset')}: ${h.short_id(raw_id)}
+${_('Description')}:
+${h.shorter(message, 256)}

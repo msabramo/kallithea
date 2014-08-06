@@ -1,0 +1,132 @@
+#!/bin/sh
+########################################
+#### THIS IS A REDHAT INIT.D SCRIPT ####
+########################################
+
+##################################################
+#
+# Kallithea server startup script
+# Recommended default-startup: 2 3 4 5
+# Recommended default-stop: 0 1 6
+#
+##################################################
+
+
+APP_NAME="kallithea"
+# the location of your app
+# since this is a web app, it should go in /var/www
+APP_PATH="/var/www/$APP_NAME"
+
+CONF_NAME="production.ini"
+
+# write to wherever the PID should be stored, just ensure
+# that the user you run paster as has the appropriate permissions
+# same goes for the log file
+PID_PATH="/var/run/kallithea/pid"
+LOG_PATH="/var/log/kallithea/kallithea.log"
+
+# replace this with the path to the virtual environment you
+# made for Kallithea
+PYTHON_PATH="/opt/python_virtualenvironments/kallithea-venv"
+
+RUN_AS="kallithea"
+
+DAEMON="$PYTHON_PATH/bin/paster"
+
+DAEMON_OPTS="serve --daemon \
+    --user=$RUN_AS \
+    --group=$RUN_AS \
+    --pid-file=$PID_PATH \
+    --log-file=$LOG_PATH $APP_PATH/$CONF_NAME"
+
+DESC="kallithea-server"
+LOCK_FILE="/var/lock/subsys/$APP_NAME"
+
+# source CentOS init functions
+. /etc/init.d/functions
+
+RETVAL=0
+
+remove_pid () {
+  rm -f ${PID_PATH}
+  rmdir `dirname ${PID_PATH}`
+}
+
+ensure_pid_dir () {
+  PID_DIR=`dirname ${PID_PATH}`
+  if [ ! -d ${PID_DIR} ] ; then
+    mkdir -p ${PID_DIR}
+    chown -R ${RUN_AS}:${RUN_AS} ${PID_DIR}
+    chmod 755 ${PID_DIR}
+  fi
+}
+
+start_kallithea () {
+    ensure_pid_dir
+    PYTHON_EGG_CACHE="/tmp" daemon --pidfile $PID_PATH \
+        --user $RUN_AS "$DAEMON $DAEMON_OPTS"
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch $LOCK_FILE
+    return $RETVAL
+}
+
+stop_kallithea () {
+    if [ -e $LOCK_FILE ]; then
+      killproc -p $PID_PATH
+      RETVAL=$?
+      rm -f $LOCK_FILE
+      rm -f $PID_PATH
+    else
+      RETVAL=1
+    fi
+    return $RETVAL
+}
+
+status_kallithea() {
+  if [ -e $LOCK_FILE ]; then
+    # exit with non-zero to indicate failure
+    RETVAL=1
+  else
+    RETVAL=0
+  fi
+  return $RETVAL
+}
+
+restart_kallithea () {
+    stop_kallithea
+    start_kallithea
+    RETVAL=$?
+}
+
+case "$1" in
+  start)
+    echo -n $"Starting $DESC: "
+    start_kallithea
+    echo
+    ;;
+  stop)
+    echo -n $"Stopping $DESC: "
+    stop_kallithea
+    echo
+    ;;
+  status)
+    status_kallithea
+    RETVAL=$?
+    if [ ! $RETVAL -eq 0 ]; then
+      echo "Kallithea server is running..."
+    else
+      echo "Kallithea server is stopped."
+    fi
+    ;;
+  restart)
+    echo -n $"Restarting $DESC: "
+    restart_kallithea
+    echo
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|restart|status}"
+    RETVAL=1
+    ;;
+esac
+
+exit $RETVAL

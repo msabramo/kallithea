@@ -1,0 +1,17 @@
+%if h.is_hg(c.db_repo_scm_instance):
+# ${c.db_repo_scm_instance.alias.upper()} changeset patch
+# User ${c.changeset.author |n}
+# Date ${c.changeset.date}
+# Node ID ${c.changeset.raw_id}
+${c.parent_tmpl}
+${c.changeset.message |n}
+
+%elif h.is_git(c.db_repo_scm_instance):
+From ${c.changeset.raw_id} ${c.changeset.date}
+From: ${c.changeset.author |n}
+Date: ${c.changeset.date}
+Subject: [PATCH] ${c.changeset.message |n}
+---
+
+%endif
+${c.diff|n}

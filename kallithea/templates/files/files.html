@@ -1,0 +1,257 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title(*args)">
+    ${_('%s Files') % c.repo_name}
+    %if hasattr(c,'file'):
+        &middot; ${h.safe_unicode(c.file.path) or '\\'}
+    %endif
+
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Files')}
+    %if c.file:
+        @ ${h.show_id(c.changeset)}
+    %endif
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('files', c.revision)}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+            <li style="color:white">
+              ${_("Branch filter:")} ${h.select('branch_selector',c.changeset.raw_id,c.revision_options)}
+            </li>
+        </ul>
+    </div>
+    <div class="table">
+        <div id="files_data">
+            <%include file='files_ypjax.html'/>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+var CACHE = {};
+var CACHE_EXPIRE = 5*60*1000; //cache for 5*60s
+//used to construct links from the search list
+var url_base = '${h.url("files_home",repo_name=c.repo_name,revision='__REV__',f_path='__FPATH__')}';
+//send the nodelist request to this url
+var node_list_url = '${h.url("files_nodelist_home",repo_name=c.repo_name,revision='__REV__',f_path='__FPATH__')}';
+// send the node history requst to this url
+var node_history_url = '${h.url("files_history_home",repo_name=c.repo_name,revision='__REV__',f_path='__FPATH__')}';
+
+## new pyroutes URLs
+pyroutes.register('files_nodelist_home', "${h.url('files_nodelist_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
+pyroutes.register('files_history_home', "${h.url('files_history_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
+pyroutes.register('files_authors_home', "${h.url('files_authors_home', repo_name=c.repo_name,revision='%(revision)s',f_path='%(f_path)s')}", ['revision', 'f_path']);
+
+var ypjax_links = function(){
+    $('.ypjax-link').click(function(e){
+
+        //don't do ypjax on middle click
+        if(e.which == 2 || !History.enabled){
+            return true;
+        }
+
+        var el = e.currentTarget;
+        var url = el.href;
+
+        var _base_url = '${h.url("files_home",repo_name=c.repo_name,revision='',f_path='')}';
+        _base_url = _base_url.replace('//','/')
+
+        //extract rev and the f_path from url.
+        parts = url.split(_base_url)
+        if(parts.length != 2){
+            return false;
+        }
+
+        var parts2 = parts[1].split('/');
+        var rev = parts2.shift(); // pop the first element which is the revision
+        var f_path = parts2.join('/');
+
+        //page title make this consistent with title() mako function on top
+        var title = "${_('%s Files') % c.repo_name}" + " &middot; " + (f_path || '\\') + " &middot; " + "${c.site_name}";
+
+        var _node_list_url = node_list_url.replace('__REV__',rev).replace('__FPATH__', f_path);
+        var _url_base = url_base.replace('__REV__',rev);
+
+        // Change our States and save some data for handling events
+        var data = {url:url,title:title, url_base:_url_base,
+                    node_list_url:_node_list_url, rev:rev, f_path:f_path};
+        History.pushState(data, title, url);
+
+        //now we're sure that we can do ypjax things
+        e.preventDefault();
+        return false;
+    });
+}
+
+// callbacks needed to process the pjax filebrowser
+var callbacks = function(State){
+    ypjax_links();
+    tooltip_activate();
+
+    if(State !== undefined){
+        //inistially loaded stuff
+        var _f_path = State.data.f_path;
+        var _rev = State.data.rev;
+
+        fileBrowserListeners(State.url, State.data.node_list_url, State.data.url_base);
+        // Inform Google Analytics of the change
+        if ( typeof window.pageTracker !== 'undefined' ) {
+            window.pageTracker._trackPageview(State.url);
+        }
+    }
+
+    function highlight_lines(lines){
+        for(pos in lines){
+          $('#L'+lines[pos]).css('background-color','#FFFFBE');
+        }
+    }
+    page_highlights = location.href.substring(location.href.indexOf('#')+1).split('L');
+    if (page_highlights.length == 2){
+       highlight_ranges  = page_highlights[1].split(",");
+
+       var h_lines = [];
+       for (pos in highlight_ranges){
+            var _range = highlight_ranges[pos].split('-');
+            if(_range.length == 2){
+                var start = parseInt(_range[0]);
+                var end = parseInt(_range[1]);
+                if (start < end){
+                    for(var i=start;i<=end;i++){
+                        h_lines.push(i);
+                    }
+                }
+            }
+            else{
+                h_lines.push(parseInt(highlight_ranges[pos]));
+            }
+      }
+      highlight_lines(h_lines);
+      $('#L'+h_lines[0]).each(function(){
+          this.scrollIntoView();
+      });
+    }
+
+    // select code link event
+    $('#hlcode').mouseup(getSelectionLink);
+
+    // history select field
+    var cache = {}
+    $("#diff1").select2({
+        placeholder: _TM['Select changeset'],
+        dropdownAutoWidth: true,
+        query: function(query){
+          var key = 'cache';
+          var cached = cache[key] ;
+          if(cached) {
+            var data = {results: []};
+            //filter results
+            $.each(cached.results, function(){
+                var section = this.text;
+                var children = [];
+                $.each(this.children, function(){
+                    if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                        children.push({'id': this.id, 'text': this.text})
+                    }
+                })
+                data.results.push({'text': section, 'children': children})
+            });
+            query.callback(data);
+          }else{
+              $.ajax({
+                url: pyroutes.url('files_history_home', {'revision': _rev, 'f_path': _f_path}),
+                data: {},
+                dataType: 'json',
+                type: 'GET',
+                success: function(data) {
+                  cache[key] = data;
+                  query.callback({results: data.results});
+                }
+              })
+          }
+        }
+    });
+    $('#show_authors').on('click', function(){
+        $.ajax({
+            url: pyroutes.url('files_authors_home', {'revision': _rev, 'f_path': _f_path}),
+            success: function(data) {
+                $('#file_authors').html(data);
+                $('#file_authors').show();
+                tooltip_activate()
+            }
+        })
+    })
+}
+
+$(document).ready(function(){
+    ypjax_links();
+    var $files_data = $('#files_data');
+    //Bind to StateChange Event
+    History.Adapter.bind(window,'statechange',function(){
+        var State = History.getState();
+        cache_key = State.url;
+        //check if we have this request in cache maybe ?
+        var _cache_obj = CACHE[cache_key];
+        var _cur_time = new Date().getTime();
+        // get from cache if it's there and not yet expired !
+        if(_cache_obj !== undefined && _cache_obj[0] > _cur_time){
+            $files_data.html(_cache_obj[1]);
+            $files_data.css('opacity','1.0');
+            //callbacks after ypjax call
+            callbacks(State);
+        }
+        else{
+            asynchtml(State.url, $files_data, function(){
+                    callbacks(State);
+                    var expire_on = new Date().getTime() + CACHE_EXPIRE;
+                    CACHE[cache_key] = [expire_on, $files_data.html()];
+                });
+        }
+    });
+
+    // init the search filter
+    var _State = {
+       url: "${h.url.current()}",
+       data: {
+         node_list_url: node_list_url.replace('__REV__',"${c.changeset.raw_id}").replace('__FPATH__', "${h.safe_unicode(c.file.path)}"),
+         url_base: url_base.replace('__REV__',"${c.changeset.raw_id}"),
+         rev:"${c.changeset.raw_id}",
+         f_path: "${h.safe_unicode(c.file.path)}"
+       }
+    }
+    fileBrowserListeners(_State.url, _State.data.node_list_url, _State.data.url_base);
+
+    // change branch filter
+    $("#branch_selector").select2({
+        dropdownAutoWidth: true,
+        minimumInputLength: 1
+        });
+
+    $("#branch_selector").change(function(e){
+        var selected = e.currentTarget.options[e.currentTarget.selectedIndex].value;
+        if(selected && selected != "${c.changeset.raw_id}"){
+            window.location = pyroutes.url('files_home', {'repo_name': "${h.safe_unicode(c.repo_name)}", 'revision': selected, 'f_path': "${h.safe_unicode(c.file.path)}"});
+            $("#browserblock").hide();
+        } else {
+            $("#branch_selector").val("${c.changeset.raw_id}");
+        }
+    });
+
+});
+
+</script>
+
+</%def>

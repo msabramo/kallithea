@@ -1,0 +1,187 @@
+<%page args="parent,group_name=''" />
+    <div class="box">
+        <!-- box / title -->
+        <div class="title">
+            <h5>
+            <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value=""/> ${parent.breadcrumbs()} <span id="repo_count">0</span> ${_('repositories')}
+            </h5>
+            %if c.authuser.username != 'default':
+              <ul class="links">
+                <li>
+                <%
+                    gr_name = c.group.group_name if c.group else None
+                    # create repositories with write permission on group is set to true
+                    create_on_write = h.HasPermissionAny('hg.create.write_on_repogroup.true')()
+                    group_admin = h.HasRepoGroupPermissionAny('group.admin')(gr_name, 'can write into group index page')
+                    group_write = h.HasRepoGroupPermissionAny('group.write')(gr_name, 'can write into group index page')
+                %>
+                %if h.HasPermissionAny('hg.admin','hg.create.repository')() or (group_admin or (group_write and create_on_write)):
+                  %if c.group:
+                        <a href="${h.url('new_repo',parent_group=c.group.group_id)}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_('Add Repository')}</a>
+                        %if h.HasPermissionAny('hg.admin')() or h.HasRepoGroupPermissionAny('group.admin')(c.group.group_name):
+                            <a href="${h.url('new_repos_group', parent_group=c.group.group_id)}" class="btn btn-small"><i class="icon-plus"></i> ${_(u'Add Repository Group')}</a>
+                        %endif
+                  %else:
+                    <a href="${h.url('new_repo')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_('Add Repository')}</a>
+                    %if h.HasPermissionAny('hg.admin')():
+                        <a href="${h.url('new_repos_group')}" class="btn btn-small"><i class="icon-plus"></i> ${_(u'Add Repository Group')}</a>
+                    %endif
+                  %endif
+                %endif
+                %if c.group and h.HasRepoGroupPermissionAny('group.admin')(c.group.group_name):
+                    <a href="${h.url('edit_repo_group',group_name=c.group.group_name)}" title="${_('You have admin right to this group, and can edit it')}" class="btn btn-small"><i class="icon-pencil"></i> ${_('Edit Repository Group')}</a>
+                %endif
+                </li>
+              </ul>
+            %endif
+        </div>
+        <!-- end box / title -->
+        <div class="table">
+           % if c.groups:
+            <div id='groups_list_wrap' class="yui-skin-sam">
+              <table id="groups_list">
+                  <thead>
+                      <tr>
+                          <th class="left"><a href="#">${_('Group Name')}</a></th>
+                          <th class="left"><a href="#">${_('Description')}</a></th>
+                          ##<th class="left"><a href="#">${_('Number of Repositories')}</a></th>
+                      </tr>
+                  </thead>
+
+                  ## REPO GROUPS
+                  % for gr in c.groups:
+                    <tr>
+                        <td>
+                            <div style="white-space: nowrap">
+                                <a href="${url('repos_group_home',group_name=gr.group_name)}"><i class="icon-folder-close"></i> ${gr.name}</a>
+                            </div>
+                        </td>
+                        %if c.visual.stylify_metatags:
+                            <td>${h.urlify_text(h.desc_stylize(gr.group_description))}</td>
+                        %else:
+                            <td>${gr.group_description}</td>
+                        %endif
+                        ## this is commented out since for multi nested repos can be HEAVY!
+                        ## in number of executed queries during traversing uncomment at will
+                        ##<td><b>${gr.repositories_recursive_count}</b></td>
+                    </tr>
+                  % endfor
+              </table>
+            </div>
+            <div id="group-user-paginator" style="padding: 0px 0px 0px 0px"></div>
+            <div style="height: 20px"></div>
+            % endif
+            <div id="welcome" style="display:none;text-align:center">
+                <h1><a href="${h.url('home')}">${c.site_name} ${c.kallithea_version}</a></h1>
+            </div>
+            <%cnt=0%>
+            <%namespace name="dt" file="/data_table/_dt_elements.html"/>
+            <div class="yui-skin-sam" id="repos_list_wrap"></div>
+            <div id="user-paginator" style="padding: 0px 0px 0px 0px"></div>
+        </div>
+    </div>
+
+      <script>
+        var data = ${c.data|n};
+        var myDataSource = new YAHOO.util.DataSource(data);
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+
+        myDataSource.responseSchema = {
+            resultsList: "records",
+            fields: [
+               {key:"menu"},
+               {key:"raw_name"},
+               {key:"name"},
+               {key:"desc"},
+               {key:"last_change"},
+               {key:"last_changeset"},
+               {key:"last_rev_raw"},
+               {key:"owner"},
+               {key:"atom"}
+            ]
+         };
+        myDataSource.doBeforeCallback = function(req,raw,res,cb) {
+            // This is the filter function
+            var data     = res.results || [],
+                filtered = [],
+                i,l;
+
+            if (req) {
+                req = req.toLowerCase();
+                for (i = 0; i<data.length; i++) {
+                    var pos = data[i].raw_name.toLowerCase().indexOf(req, ${len(group_name)})
+                    if (pos != -1) {
+                        filtered.push(data[i]);
+                    }
+                }
+                res.results = filtered;
+            }
+            YUD.get('repo_count').innerHTML = res.results.length;
+            return res;
+        }
+
+        // main table sorting
+        var myColumnDefs = [
+            {key:"menu",label:"",sortable:false,className:"quick_repo_menu hidden"},
+            {key:"name",label:"${_('Name')}",sortable:true,
+                sortOptions: { sortFunction: nameSort }},
+            {key:"desc",label:"${_('Description')}",sortable:true},
+            {key:"last_change",label:"${_('Last Change')}",sortable:true,
+                sortOptions: { sortFunction: ageSort }},
+            {key:"last_changeset",label:"${_('Tip')}",sortable:true,
+                sortOptions: { sortFunction: revisionSort }},
+            {key:"owner",label:"${_('Owner')}",sortable:true},
+            {key:"atom",label:"",sortable:false}
+        ];
+
+        var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,{
+          sortedBy:{key:"name",dir:"asc"},
+          paginator: YUI_paginator(${c.visual.dashboard_items},['user-paginator']),
+
+          MSG_SORTASC:"${_('Click to sort ascending')}",
+          MSG_SORTDESC:"${_('Click to sort descending')}",
+          MSG_EMPTY:"${_('No repositories found.')}",
+          MSG_ERROR:"${_('Data error.')}",
+          MSG_LOADING:"${_('Loading...')}"
+        }
+        );
+        myDataTable.subscribe('postRenderEvent',function(oArgs) {
+            tooltip_activate();
+            quick_repo_menu();
+        });
+
+        var filterTimeout = null;
+
+        updateFilter = function () {
+            // Reset timeout
+            filterTimeout = null;
+
+            // Reset sort
+            var state = myDataTable.getState();
+            state.sortedBy = {key:'name', dir:YAHOO.widget.DataTable.CLASS_ASC};
+
+            // Get filtered data
+            myDataSource.sendRequest(YUD.get('q_filter').value,{
+                success : myDataTable.onDataReturnInitializeTable,
+                failure : myDataTable.onDataReturnInitializeTable,
+                scope   : myDataTable,
+                argument: state
+            });
+
+        };
+        $('#q_filter').click(function(){
+            if(!$('#q_filter').hasClass('loaded')){
+                //TODO: load here full list later to do search within groups
+                $('#q_filter').addClass('loaded');
+            }
+        });
+
+        $('#q_filter').keyup(function(){
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(updateFilter,600);
+        });
+
+        if($('#q_filter').val()) {
+            updateFilter();
+        }
+      </script>

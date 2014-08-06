@@ -1,0 +1,71 @@
+## -*- coding: utf-8 -*-
+##
+## See also repo_settings.html
+##
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Repository Settings') % c.repo_info.repo_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Settings')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('options')}
+<div class="box" style="overflow:auto">
+    <!--<div class="title">-->
+        <!--${self.breadcrumbs()}-->
+    <!--</div>-->
+
+    ##main
+    <div style="width: 150px; float:left">
+        <ul class="nav nav-pills nav-stacked">
+          <!--<li>-->
+           <!--<div class="gravatar_box" style="height: 26px">-->
+             <!--<div class="gravatar" style="float: left">-->
+                <!--<i class="icon-group" style="font-size: 26px"></i>-->
+             <!--</div>-->
+               <!--<div style="margin:10px 0px 10px 0px; color:#5f5f5f; float:left">-->
+                <!--<strong>${'repo-info'}</strong>-->
+               <!--</div>-->
+           <!--</div>-->
+          <!--</li>-->
+          <li class="${'active' if c.active=='settings' else ''}">
+              <a href="${h.url('edit_repo', repo_name=c.repo_name)}">${_('Settings')}</a>
+          </li>
+          <li class="${'active' if c.active=='permissions' else ''}">
+              <a href="${h.url('edit_repo_perms', repo_name=c.repo_name)}">${_('Permissions')}</a>
+          </li>
+          <li class="${'active' if c.active=='advanced' else ''}">
+              <a href="${h.url('edit_repo_advanced', repo_name=c.repo_name)}">${_('Advanced')}</a>
+          </li>
+          <li class="${'active' if c.active=='fields' else ''}">
+              <a href="${h.url('edit_repo_fields', repo_name=c.repo_name)}">${_('Extra Fields')}</a>
+          </li>
+          <li class="${'active' if c.active=='caches' else ''}">
+              <a href="${h.url('edit_repo_caches', repo_name=c.repo_name)}">${_('Caches')}</a>
+          </li>
+          <li class="${'active' if c.active=='remote' else ''}">
+              <a href="${h.url('edit_repo_remote', repo_name=c.repo_name)}">${_('Remote')}</a>
+          </li>
+          <li class="${'active' if c.active=='statistics' else ''}">
+              <a href="${h.url('edit_repo_statistics', repo_name=c.repo_name)}">${_('Statistics')}</a>
+          </li>
+        </ul>
+    </div>
+
+    <div style="width:750px; float:left; padding: 10px 0px 0px 20px;margin: 0px 0px 0px 10px; border-left: 1px solid #DDDDDD">
+        <%include file="/admin/repos/repo_edit_${c.active}.html"/>
+    </div>
+</div>
+
+</%def>
