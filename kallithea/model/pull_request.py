@@ -108,7 +108,7 @@ class PullRequestModel(BaseModel):
         )
 
         mention_recipients = set(User.get_by_username(username, case_insensitive=True)
-                                 for username in extract_mentioned_users(pr.description))
+                                 for username in extract_mentioned_users(new.description))
         self.__add_reviewers(new, reviewers, mention_recipients)
 
         return new
