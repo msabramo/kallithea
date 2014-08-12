@@ -5086,8 +5086,9 @@ table.code-difftable .code td {
 table.code-difftable .code pre {
     margin: 0;
     padding: 0;
-    height: 17px;
+    min-height: 17px;
     line-height: 17px;
+    white-space: pre-wrap;
 }
 
 .add-bubble {
