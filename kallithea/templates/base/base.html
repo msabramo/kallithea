@@ -314,7 +314,7 @@
 
       <div class="user-menu">
         <div id="quick_login">
-          %if c.authuser.username == 'default':
+          %if c.authuser.username == 'default' or c.authuser.user_id is None:
             <h4>${_('Login to your account')}</h4>
             ${h.form(h.url('login_home',came_from=h.url.current()))}
             <div class="form">
