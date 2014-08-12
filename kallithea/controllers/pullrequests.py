@@ -114,7 +114,7 @@ class PullrequestsController(BaseRepoController):
             desc = abranch
             if branchrev == tiprev:
                 tipbranch = abranch
-                desc = '%s (tip)' % desc
+                desc = '%s (current tip)' % desc
             branches.append((n, desc))
             if rev == branchrev:
                 selected = n
