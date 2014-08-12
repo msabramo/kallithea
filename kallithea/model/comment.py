@@ -81,9 +81,10 @@ class ChangesetCommentsModel(BaseModel):
             cs = repo.scm_instance.get_changeset(revision)
             desc = "%s" % (cs.short_id)
 
-            revision_url = h.canonical_url('changeset_home',
-                repo_name=repo.repo_name,
-                revision=revision)
+            threading = ['%s-rev-%s@%s' % (repo.repo_name, revision, h.canonical_hostname())]
+            if line_no: # TODO: url to file _and_ line number
+                threading.append('%s-rev-%s-line-%s@%s' % (repo.repo_name, revision, line_no,
+                                                           h.canonical_hostname()))
             comment_url = h.canonical_url('changeset_home',
                 repo_name=repo.repo_name,
                 revision=revision,
@@ -112,16 +113,20 @@ class ChangesetCommentsModel(BaseModel):
                 'short_id': h.short_id(revision),
                 'branch': cs.branch,
                 'comment_username': user.username,
-                'threading': [revision_url, comment_url], # TODO: url to line number
+                'threading': threading,
             }
         #pull request
         elif pull_request:
             notification_type = Notification.TYPE_PULL_REQUEST_COMMENT
             desc = comment.pull_request.title
             _org_ref_type, org_ref_name, _org_rev = comment.pull_request.org_ref.split(':')
-            pr_url = h.canonical_url('pullrequest_show',
-                repo_name=pull_request.other_repo.repo_name,
-                pull_request_id=pull_request.pull_request_id)
+            threading = ['%s-pr-%s@%s' % (pull_request.other_repo.repo_name,
+                                          pull_request.pull_request_id,
+                                          h.canonical_hostname())]
+            if line_no: # TODO: url to file _and_ line number
+                threading.append('%s-pr-%s-line-%s@%s' % (pull_request.other_repo.repo_name,
+                                                          pull_request.pull_request_id, line_no,
+                                                          h.canonical_hostname()))
             comment_url = h.canonical_url('pullrequest_show',
                 repo_name=pull_request.other_repo.repo_name,
                 pull_request_id=pull_request.pull_request_id,
@@ -155,7 +160,7 @@ class ChangesetCommentsModel(BaseModel):
                 'repo_name': pull_request.other_repo.repo_name,
                 'ref': org_ref_name,
                 'comment_username': user.username,
-                'threading': [pr_url, comment_url], # TODO: url to line number
+                'threading': threading,
             }
 
         return subj, body, recipients, notification_type, email_kwargs

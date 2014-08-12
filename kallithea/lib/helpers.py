@@ -79,6 +79,16 @@ def canonical_url(*args, **kargs):
         kargs['qualified'] = True
     return url(*args, **kargs)
 
+def canonical_hostname():
+    '''Return canonical hostname of system'''
+    from kallithea import CONFIG
+    try:
+        parts = CONFIG.get('canonical_url', '').split('://', 1)
+        return parts[1].split('/', 1)[0]
+    except IndexError:
+        parts = url('home', qualified=True).split('://', 1)
+        return parts[1].split('/', 1)[0]
+
 def html_escape(text, html_escape_table=None):
     """Produce entities within text."""
     if not html_escape_table:
