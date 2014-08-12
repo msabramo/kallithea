@@ -310,7 +310,7 @@ class UsersController(BaseController):
 
         lifetime = safe_int(request.POST.get('lifetime'), -1)
         description = request.POST.get('description')
-        new_api_key = ApiKeyModel().create(c.user.user_id, description, lifetime)
+        ApiKeyModel().create(c.user.user_id, description, lifetime)
         Session().commit()
         h.flash(_("Api key successfully created"), category='success')
         return redirect(url('edit_user_api_keys', id=c.user.user_id))

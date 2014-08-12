@@ -74,7 +74,6 @@ def get_logger(cls):
 @dbsession
 def whoosh_index(repo_location, full_index):
     from kallithea.lib.indexers.daemon import WhooshIndexingDaemon
-    log = get_logger(whoosh_index)
     DBS = get_session()
 
     index_location = config['index_dir']
@@ -263,7 +262,6 @@ def send_email(recipients, subject, body='', html_body='', headers=None):
     :param html_body: html version of body
     """
     log = get_logger(send_email)
-    DBS = get_session()
     assert isinstance(recipients, list), recipients
 
     email_config = config
@@ -427,7 +425,7 @@ def create_repo_fork(form_data, cur_user):
     try:
         fork_of = RepoModel(DBS)._get_repo(form_data.get('fork_parent_id'))
 
-        fork_repo = RepoModel(DBS)._create_repo(
+        RepoModel(DBS)._create_repo(
             repo_name=repo_name_full,
             repo_type=repo_type,
             description=form_data['description'],
@@ -443,7 +441,7 @@ def create_repo_fork(form_data, cur_user):
                       fork_of.repo_name, '', DBS)
         DBS.commit()
 
-        update_after_clone = form_data['update_after_clone']
+        update_after_clone = form_data['update_after_clone'] # FIXME - unused!
         source_repo_path = os.path.join(base_path, fork_of.repo_name)
 
         # now create this repo on Filesystem

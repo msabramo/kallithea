@@ -160,7 +160,6 @@ def main(argv):
         print '  where DBSTRING is the value of sqlalchemy.db1.url from the .ini,'
         print '  NEW defaults to "kallithea", OLD is by default detected from the db"'
         raise SystemExit(0)
-    db = argv[1]
     new = 'kallithea'
     if len(argv) > 2:
         new = argv[2]

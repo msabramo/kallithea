@@ -552,7 +552,7 @@ class PullrequestsController(BaseRepoController):
             return redirect(url('pullrequest_show', repo_name=repo_name,
                                 pull_request_id=pull_request_id))
 
-        comm = ChangesetCommentsModel().create(
+        ChangesetCommentsModel().create(
             text=_('Closed, replaced by %s .') % url('pullrequest_show',
                                                    repo_name=old_pull_request.other_repo.repo_name,
                                                    pull_request_id=pull_request.pull_request_id,

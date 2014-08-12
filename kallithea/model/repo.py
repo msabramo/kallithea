@@ -553,7 +553,6 @@ class RepoModel(BaseModel):
                 raise AttachedForksError()
 
             old_repo_dict = repo.get_dict()
-            owner = repo.user
             try:
                 self.sa.delete(repo)
                 if fs_remove:

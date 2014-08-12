@@ -337,7 +337,7 @@ class MercurialRepository(BaseRepository):
 
         # now check if it's a proper hg repo
         try:
-            repo_id = httppeer(repoui or ui.ui(), url).lookup('tip')
+            httppeer(repoui or ui.ui(), url).lookup('tip')
         except Exception, e:
             raise urllib2.URLError(
                 "url [%s] does not look like an hg repo org_exc: %s"

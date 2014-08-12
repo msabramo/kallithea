@@ -331,7 +331,6 @@ class RepoGroupsController(BaseController):
         c.group_repos = c.group.repositories.all()
 
         #overwrite our cached list with current filter
-        gr_filter = c.group_repos
         c.repo_cnt = 0
 
         groups = RepoGroup.query().order_by(RepoGroup.group_name)\

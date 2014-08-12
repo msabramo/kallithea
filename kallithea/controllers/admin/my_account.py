@@ -248,8 +248,7 @@ class MyAccountController(BaseController):
     def my_account_api_keys_add(self):
         lifetime = safe_int(request.POST.get('lifetime'), -1)
         description = request.POST.get('description')
-        new_api_key = ApiKeyModel().create(self.authuser.user_id,
-                                           description, lifetime)
+        ApiKeyModel().create(self.authuser.user_id, description, lifetime)
         Session().commit()
         h.flash(_("Api key successfully created"), category='success')
         return redirect(url('my_account_api_keys'))

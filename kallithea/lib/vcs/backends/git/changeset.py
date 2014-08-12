@@ -187,7 +187,7 @@ class GitChangeset(BaseChangeset):
         """
         Returns list of children changesets.
         """
-        rev_filter = _git_path = settings.GIT_REV_FILTER
+        rev_filter = settings.GIT_REV_FILTER
         so, se = self.repository.run_git_command(
             "rev-list %s --children" % (rev_filter)
         )

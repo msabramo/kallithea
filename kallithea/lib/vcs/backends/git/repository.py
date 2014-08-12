@@ -260,7 +260,7 @@ class GitRepository(BaseRepository):
         except KeyError:
             return []
 
-        rev_filter = _git_path = settings.GIT_REV_FILTER
+        rev_filter = settings.GIT_REV_FILTER
         cmd = 'rev-list %s --reverse --date-order' % (rev_filter)
         try:
             so, se = self.run_git_command(cmd)
@@ -556,7 +556,7 @@ class GitRepository(BaseRepository):
             cmd_template += ' $branch_name'
             cmd_params['branch_name'] = branch_name
         else:
-            rev_filter = _git_path = settings.GIT_REV_FILTER
+            rev_filter = settings.GIT_REV_FILTER
             cmd_template += ' %s' % (rev_filter)
 
         cmd = string.Template(cmd_template).safe_substitute(**cmd_params)

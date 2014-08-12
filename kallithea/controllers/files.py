@@ -132,7 +132,7 @@ class FilesController(BaseRepoController):
         # redirect to given revision from form if given
         post_revision = request.POST.get('at_rev', None)
         if post_revision:
-            cs = self.__get_cs(post_revision)
+            cs = self.__get_cs(post_revision) # FIXME - unused!
 
         c.revision = revision
         c.changeset = self.__get_cs(revision)
@@ -772,9 +772,8 @@ class FilesController(BaseRepoController):
         changesets_group = ([], _("Changesets"))
         branches_group = ([], _("Branches"))
         tags_group = ([], _("Tags"))
-        _hg = cs.repository.alias == 'hg'
         for chs in changesets:
-            #_branch = '(%s)' % chs.branch if _hg else ''
+            #_branch = '(%s)' % chs.branch if (cs.repository.alias == 'hg') else ''
             _branch = chs.branch
             n_desc = '%s (%s)' % (h.show_id(chs), _branch)
             changesets_group[0].append((chs.raw_id, n_desc,))
