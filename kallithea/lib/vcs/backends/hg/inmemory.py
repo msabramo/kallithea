@@ -53,7 +53,7 @@ class MercurialInMemoryChangeset(BaseInMemoryChangeset):
             # check if this path is added
             for node in self.added:
                 if node.path == path:
-                    return memfilectx(path=node.path,
+                    return memfilectx(_repo, path=node.path,
                         data=(node.content.encode('utf8')
                               if not node.is_binary else node.content),
                         islink=False,
@@ -63,7 +63,7 @@ class MercurialInMemoryChangeset(BaseInMemoryChangeset):
             # or changed
             for node in self.changed:
                 if node.path == path:
-                    return memfilectx(path=node.path,
+                    return memfilectx(_repo, path=node.path,
                         data=(node.content.encode('utf8')
                               if not node.is_binary else node.content),
                         islink=False,
