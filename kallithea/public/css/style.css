@@ -5132,6 +5132,14 @@ div.comment:target>.comment-wrapp {
     max-width: 45%;
     height: auto;
     margin: 5px;
+    /* http://lea.verou.me/demos/css3-patterns.html */
+    background-image:
+        linear-gradient(45deg, #888 25%, transparent 25%, transparent),
+        linear-gradient(-45deg, #888 25%, transparent 25%, transparent),
+        linear-gradient(45deg, transparent 75%, #888 75%),
+        linear-gradient(-45deg, transparent 75%, #888 75%);
+    background-size: 10px 10px;
+    background-color: #999;
 }
 
 .img-preview {
