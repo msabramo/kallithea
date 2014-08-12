@@ -241,8 +241,10 @@ class PullrequestsController(BaseRepoController):
                 else:
                     c.update_msg = _('No changesets found for updating this pull request.')
 
-            if org_scm_instance._repo.revs('head() & not (%s::) & branch(%s)', revs[0], c.org_branch_name):
-                c.update_msg_other = _('Note: Branch %s also contains unrelated changes.') % c.org_branch_name
+            revs = org_scm_instance._repo.revs('head() & not (%s::) & branch(%s) & !closed()', revs[0], c.org_branch_name)
+            if revs:
+                c.update_msg_other = _('Note: Branch %s also contains unrelated changes, such as %s.') % (c.org_branch_name,
+                    h.short_id(org_scm_instance.get_changeset((max(revs))).raw_id))
             else:
                 c.update_msg_other = _('Branch %s does not contain other changes.') % c.org_branch_name
 
