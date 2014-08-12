@@ -30,7 +30,7 @@ import traceback
 import formencode
 import re
 
-from webob.exc import HTTPNotFound, HTTPForbidden
+from webob.exc import HTTPNotFound, HTTPForbidden, HTTPBadRequest
 
 from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
@@ -408,9 +408,10 @@ class PullrequestsController(BaseRepoController):
             _form = PullRequestForm(repo.repo_id)().to_python(request.POST)
         except formencode.Invalid, errors:
             log.error(traceback.format_exc())
+            log.error(str(errors))
             msg = _('Error creating pull request: %s') % errors.msg
             h.flash(msg, 'error')
-            return redirect(url('pullrequest_home', repo_name=repo_name)) ## would rather just go back to form ...
+            raise HTTPBadRequest
 
         # heads up: org and other might seem backward here ...
         org_repo_name = _form['org_repo']
