@@ -81,16 +81,13 @@ class ChangesetCommentsModel(BaseModel):
             cs = repo.scm_instance.get_changeset(revision)
             desc = "%s" % (cs.short_id)
 
-            revision_url = h.url('changeset_home',
+            revision_url = h.canonical_url('changeset_home',
+                repo_name=repo.repo_name,
+                revision=revision)
+            comment_url = h.canonical_url('changeset_home',
                 repo_name=repo.repo_name,
                 revision=revision,
-                qualified=True,)
-            comment_url = h.url('changeset_home',
-                repo_name=repo.repo_name,
-                revision=revision,
-                anchor='comment-%s' % comment.comment_id,
-                qualified=True,
-            )
+                anchor='comment-%s' % comment.comment_id)
             subj = safe_unicode(
                 h.link_to('Re changeset: %(desc)s %(line)s' % \
                           {'desc': desc, 'line': line},
@@ -107,8 +104,7 @@ class ChangesetCommentsModel(BaseModel):
             email_kwargs = {
                 'status_change': status_change,
                 'cs_comment_user': h.person(user),
-                'cs_target_repo': h.url('summary_home', repo_name=repo.repo_name,
-                                        qualified=True),
+                'cs_target_repo': h.canonical_url('summary_home', repo_name=repo.repo_name),
                 'cs_comment_url': comment_url,
                 'raw_id': revision,
                 'message': cs.message,
@@ -123,16 +119,13 @@ class ChangesetCommentsModel(BaseModel):
             notification_type = Notification.TYPE_PULL_REQUEST_COMMENT
             desc = comment.pull_request.title
             _org_ref_type, org_ref_name, _org_rev = comment.pull_request.org_ref.split(':')
-            pr_url = h.url('pullrequest_show',
+            pr_url = h.canonical_url('pullrequest_show',
+                repo_name=pull_request.other_repo.repo_name,
+                pull_request_id=pull_request.pull_request_id)
+            comment_url = h.canonical_url('pullrequest_show',
                 repo_name=pull_request.other_repo.repo_name,
                 pull_request_id=pull_request.pull_request_id,
-                qualified=True,)
-            comment_url = h.url('pullrequest_show',
-                repo_name=pull_request.other_repo.repo_name,
-                pull_request_id=pull_request.pull_request_id,
-                anchor='comment-%s' % comment.comment_id,
-                qualified=True,
-            )
+                anchor='comment-%s' % comment.comment_id)
             subj = safe_unicode(
                 h.link_to('Re pull request #%(pr_id)s: %(desc)s %(line)s' % \
                           {'desc': desc,
@@ -157,9 +150,8 @@ class ChangesetCommentsModel(BaseModel):
                 'closing_pr': closing_pr,
                 'pr_comment_url': comment_url,
                 'pr_comment_user': h.person(user),
-                'pr_target_repo': h.url('summary_home',
-                                   repo_name=pull_request.other_repo.repo_name,
-                                   qualified=True),
+                'pr_target_repo': h.canonical_url('summary_home',
+                                   repo_name=pull_request.other_repo.repo_name),
                 'repo_name': pull_request.other_repo.repo_name,
                 'ref': org_ref_name,
                 'comment_username': user.username,

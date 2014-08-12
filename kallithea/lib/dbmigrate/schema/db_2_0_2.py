@@ -1140,10 +1140,10 @@ class Repository(Base, BaseModel):
         return self.updated_on
 
     def clone_url(self, **override):
-        from pylons import url
+        import kallithea.lib.helpers as h
         from urlparse import urlparse
         import urllib
-        parsed_url = urlparse(url('home', qualified=True))
+        parsed_url = urlparse(h.canonical_url('home'))
         default_clone_uri = '%(scheme)s://%(user)s%(pass)s%(netloc)s%(prefix)s%(path)s'
         decoded_path = safe_unicode(urllib.unquote(parsed_url.path))
         args = {
@@ -2297,8 +2297,8 @@ class Gist(Base, BaseModel):
         if alias_url:
             return alias_url.replace('{gistid}', self.gist_access_id)
 
-        from pylons import url
-        return url('gist', gist_id=self.gist_access_id, qualified=True)
+        import kallithea.lib.helpers as h
+        return h.canonical_url('gist', gist_id=self.gist_access_id)
 
     @classmethod
     def base_path(cls):

@@ -936,10 +936,10 @@ class Repository(Base, BaseModel):
         return self.updated_on
 
     def clone_url(self, **override):
-        from pylons import url
+        import kallithea.lib.helpers as h
         from urlparse import urlparse
         import urllib
-        parsed_url = urlparse(url('home', qualified=True))
+        parsed_url = urlparse(h.canonical_url('home'))
         default_clone_uri = '%(scheme)s://%(user)s%(pass)s%(netloc)s%(prefix)s%(path)s'
         decoded_path = safe_unicode(urllib.unquote(parsed_url.path))
         args = {

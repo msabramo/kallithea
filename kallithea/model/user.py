@@ -28,7 +28,6 @@ Original author and date, and relevant copyright and licensing information is be
 
 import logging
 import traceback
-from pylons import url
 from pylons.i18n.translation import _
 
 from sqlalchemy.exc import DatabaseError
@@ -184,6 +183,7 @@ class UserModel(BaseModel):
 
     def create_registration(self, form_data):
         from kallithea.model.notification import NotificationModel
+        import kallithea.lib.helpers as h
 
         try:
             form_data['admin'] = False
@@ -202,7 +202,7 @@ class UserModel(BaseModel):
                     '- Full Name: %s\n'
                     '- Email: %s\n')
             body = body % (new_user.username, new_user.full_name, new_user.email)
-            edit_url = url('edit_user', id=new_user.user_id, qualified=True)
+            edit_url = h.canonical_url('edit_user', id=new_user.user_id)
             email_kwargs = {'registered_user_url': edit_url, 'new_username': new_user.username}
             NotificationModel().create(created_by=new_user, subject=subject,
                                        body=body, recipients=None,
@@ -287,13 +287,14 @@ class UserModel(BaseModel):
     def reset_password_link(self, data):
         from kallithea.lib.celerylib import tasks, run_task
         from kallithea.model.notification import EmailNotificationModel
+        import kallithea.lib.helpers as h
+
         user_email = data['email']
         try:
             user = User.get_by_email(user_email)
             if user:
                 log.debug('password reset user found %s' % user)
-                link = url('reset_password_confirmation', key=user.api_key,
-                           qualified=True)
+                link = h.canonical_url('reset_password_confirmation', key=user.api_key)
                 reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
                 body = EmailNotificationModel().get_email_tmpl(reg_type,
                                                                user=user.short_contact,

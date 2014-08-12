@@ -110,11 +110,11 @@ class JournalController(BaseController):
     def _atom_feed(self, repos, public=True):
         journal = self._get_journal_data(repos)
         if public:
-            _link = url('public_journal_atom', qualified=True)
+            _link = h.canonical_url('public_journal_atom')
             _desc = '%s %s %s' % (c.site_name, _('public journal'),
                                   'atom feed')
         else:
-            _link = url('journal_atom', qualified=True)
+            _link = h.canonical_url('journal_atom')
             _desc = '%s %s %s' % (c.site_name, _('journal'), 'atom feed')
 
         feed = Atom1Feed(title=_desc,
@@ -136,13 +136,12 @@ class JournalController(BaseController):
             desc = action_extra()
             _url = None
             if entry.repository is not None:
-                _url = url('changelog_home',
-                           repo_name=entry.repository.repo_name,
-                           qualified=True)
+                _url = h.canonical_url('changelog_home',
+                           repo_name=entry.repository.repo_name)
 
             feed.add_item(title=title,
                           pubdate=entry.action_date,
-                          link=_url or url('', qualified=True),
+                          link=_url or h.canonical_url(''),
                           author_email=user.email,
                           author_name=user.full_contact,
                           description=desc)
@@ -153,11 +152,11 @@ class JournalController(BaseController):
     def _rss_feed(self, repos, public=True):
         journal = self._get_journal_data(repos)
         if public:
-            _link = url('public_journal_atom', qualified=True)
+            _link = h.canonical_url('public_journal_atom')
             _desc = '%s %s %s' % (c.site_name, _('public journal'),
                                   'rss feed')
         else:
-            _link = url('journal_atom', qualified=True)
+            _link = h.canonical_url('journal_atom')
             _desc = '%s %s %s' % (c.site_name, _('journal'), 'rss feed')
 
         feed = Rss201rev2Feed(title=_desc,
@@ -179,13 +178,12 @@ class JournalController(BaseController):
             desc = action_extra()
             _url = None
             if entry.repository is not None:
-                _url = url('changelog_home',
-                           repo_name=entry.repository.repo_name,
-                           qualified=True)
+                _url = h.canonical_url('changelog_home',
+                           repo_name=entry.repository.repo_name)
 
             feed.add_item(title=title,
                           pubdate=entry.action_date,
-                          link=_url or url('', qualified=True),
+                          link=_url or h.canonical_url(''),
                           author_email=user.email,
                           author_name=user.full_contact,
                           description=desc)

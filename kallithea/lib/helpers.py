@@ -67,6 +67,18 @@ from kallithea.model.db import URL_SEP, Permission
 log = logging.getLogger(__name__)
 
 
+def canonical_url(*args, **kargs):
+    '''Like url(x, qualified=True), but returns url that not only is qualified
+    but also canonical, as configured in canonical_url'''
+    from kallithea import CONFIG
+    try:
+        parts = CONFIG.get('canonical_url', '').split('://', 1)
+        kargs['host'] = parts[1].split('/', 1)[0]
+        kargs['protocol'] = parts[0]
+    except IndexError:
+        kargs['qualified'] = True
+    return url(*args, **kargs)
+
 def html_escape(text, html_escape_table=None):
     """Produce entities within text."""
     if not html_escape_table:

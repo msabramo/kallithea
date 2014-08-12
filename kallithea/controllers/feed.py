@@ -28,7 +28,7 @@ Original author and date, and relevant copyright and licensing information is be
 
 import logging
 
-from pylons import url, response, tmpl_context as c
+from pylons import response, tmpl_context as c
 from pylons.i18n.translation import _
 
 from beaker.cache import cache_region, region_invalidate
@@ -102,8 +102,8 @@ class FeedController(BaseRepoController):
             desc_msg.append('tag: %s<br/>' % tag)
         diff_processor, changes = self.__changes(cs)
         # rev link
-        _url = url('changeset_home', repo_name=c.db_repo.repo_name,
-                   revision=cs.raw_id, qualified=True)
+        _url = h.canonical_url('changeset_home', repo_name=c.db_repo.repo_name,
+                   revision=cs.raw_id)
         desc_msg.append('changeset: <a href="%s">%s</a>' % (_url, cs.raw_id[:8]))
 
         desc_msg.append('<pre>')
@@ -123,8 +123,7 @@ class FeedController(BaseRepoController):
         def _get_feed_from_cache(key, kind):
             feed = Atom1Feed(
                  title=self.title % repo_name,
-                 link=url('summary_home', repo_name=repo_name,
-                          qualified=True),
+                 link=h.canonical_url('summary_home', repo_name=repo_name),
                  description=self.description % repo_name,
                  language=self.language,
                  ttl=self.ttl
@@ -132,8 +131,8 @@ class FeedController(BaseRepoController):
 
             for cs in reversed(list(c.db_repo_scm_instance[-self.feed_nr:])):
                 feed.add_item(title=self._get_title(cs),
-                              link=url('changeset_home', repo_name=repo_name,
-                                       revision=cs.raw_id, qualified=True),
+                              link=h.canonical_url('changeset_home', repo_name=repo_name,
+                                       revision=cs.raw_id),
                               author_name=cs.author,
                               description=''.join(self.__get_desc(cs)),
                               pubdate=cs.date,
@@ -155,8 +154,7 @@ class FeedController(BaseRepoController):
         def _get_feed_from_cache(key, kind):
             feed = Rss201rev2Feed(
                 title=self.title % repo_name,
-                link=url('summary_home', repo_name=repo_name,
-                         qualified=True),
+                link=h.canonical_url('summary_home', repo_name=repo_name),
                 description=self.description % repo_name,
                 language=self.language,
                 ttl=self.ttl
@@ -164,8 +162,8 @@ class FeedController(BaseRepoController):
 
             for cs in reversed(list(c.db_repo_scm_instance[-self.feed_nr:])):
                 feed.add_item(title=self._get_title(cs),
-                              link=url('changeset_home', repo_name=repo_name,
-                                       revision=cs.raw_id, qualified=True),
+                              link=h.canonical_url('changeset_home', repo_name=repo_name,
+                                       revision=cs.raw_id),
                               author_name=cs.author,
                               description=''.join(self.__get_desc(cs)),
                               pubdate=cs.date,

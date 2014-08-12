@@ -497,8 +497,8 @@ class PullrequestsController(BaseRepoController):
         lost = old_revisions.difference(revisions)
 
         infos = ['','', 'This is an update of %s "%s".' %
-                 (url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
-                      pull_request_id=pull_request_id, qualified=True),
+                 (h.canonical_url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
+                      pull_request_id=pull_request_id),
                   old_pull_request.title)]
 
         if lost:
@@ -517,11 +517,11 @@ class PullrequestsController(BaseRepoController):
 
             if ancestor_rev == other_rev:
                 infos.append(_("Ancestor didn't change - show diff since previous version: %s .") %
-                             url('compare_url',
+                             h.canonical_url('compare_url',
                                  repo_name=org_repo.repo_name, # other_repo is always same as repo_name
                                  org_ref_type='rev', org_ref_name=h.short_id(org_rev), # use old org_rev as base
                                  other_ref_type='rev', other_ref_name=h.short_id(new_org_rev),
-                                 qualified=True)) # note: linear diff, merge or not doesn't matter
+                                 )) # note: linear diff, merge or not doesn't matter
             else:
                 infos.append(_('This pull request uses another merge ancestor than the previous version and they are not directly comparable.'))
         else:
@@ -559,10 +559,9 @@ class PullrequestsController(BaseRepoController):
                                 pull_request_id=pull_request_id))
 
         ChangesetCommentsModel().create(
-            text=_('Closed, replaced by %s .') % url('pullrequest_show',
+            text=_('Closed, replaced by %s .') % h.canonical_url('pullrequest_show',
                                                    repo_name=old_pull_request.other_repo.repo_name,
-                                                   pull_request_id=pull_request.pull_request_id,
-                                                   qualified=True),
+                                                   pull_request_id=pull_request.pull_request_id),
             repo=old_pull_request.other_repo.repo_id,
             user=c.authuser.user_id,
             pull_request=pull_request_id,

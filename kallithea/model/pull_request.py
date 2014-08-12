@@ -124,9 +124,8 @@ class PullRequestModel(BaseModel):
                          for x in map(pr.org_repo.get_changeset, pr.revisions)]
 
         #notification to reviewers
-        pr_url = h.url('pullrequest_show', repo_name=pr.other_repo.repo_name,
-                       pull_request_id=pr.pull_request_id,
-                       qualified=True)
+        pr_url = h.canonical_url('pullrequest_show', repo_name=pr.other_repo.repo_name,
+                       pull_request_id=pr.pull_request_id)
         subject = safe_unicode(
             h.link_to(
               _('%(user)s wants you to review pull request #%(pr_id)s: %(pr_title)s') % \
@@ -140,8 +139,7 @@ class PullRequestModel(BaseModel):
         email_kwargs = {
             'pr_title': pr.title,
             'pr_user_created': h.person(pr.author),
-            'pr_repo_url': h.url('summary_home', repo_name=pr.other_repo.repo_name,
-                                 qualified=True,),
+            'pr_repo_url': h.canonical_url('summary_home', repo_name=pr.other_repo.repo_name),
             'pr_url': pr_url,
             'pr_revisions': revision_data,
             'repo_name': pr.other_repo.repo_name,
