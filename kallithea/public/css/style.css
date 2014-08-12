@@ -4932,8 +4932,8 @@ div.diffblock .code-header.banner {
     border-bottom: 1px solid #CCCCCC;
     background: #EEEEEE;
     height: 14px;
-    margin: 0px 95px 0px 95px;
-    padding: 3px 3px 11px 3px;
+    margin: 0;
+    padding: 3px 100px 11px 100px;
 }
 
 div.diffblock .code-header-title {
@@ -4957,8 +4957,7 @@ div.diffblock .code-header div {
 
 div.diffblock .parents {
     float: left;
-    height: 26px;
-    width: 100px;
+    min-height: 26px;
     font-size: 10px;
     font-weight: 400;
     vertical-align: middle;
@@ -4969,8 +4968,7 @@ div.diffblock .parents {
 
 div.diffblock .children {
     float: right;
-    height: 26px;
-    width: 100px;
+    min-height: 26px;
     font-size: 10px;
     font-weight: 400;
     vertical-align: middle;
