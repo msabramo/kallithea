@@ -451,6 +451,7 @@ class MercurialRepository(BaseRepository):
         """
         Returns revision number for the given reference.
         """
+        ref_name = safe_str(ref_name)
         # lookup up the exact node id
         _revset_predicates = {
                 'branch': 'branch',
@@ -458,9 +459,10 @@ class MercurialRepository(BaseRepository):
                 'tag': 'tag',
                 'rev': 'id',
             }
-        rev_spec = "max(%s(%%s))" % _revset_predicates[ref_type]
+        # avoid expensive branch(x) iteration over whole repo
+        rev_spec = "%%s & %s(%%s)" % _revset_predicates[ref_type]
         try:
-            revs = self._repo.revs(rev_spec, safe_str(ref_name))
+            revs = self._repo.revs(rev_spec, ref_name, ref_name)
         except (LookupError, ):
             msg = ("Ambiguous identifier %s:%s for %s" % (ref_type, ref_name, self.name))
             raise ChangesetDoesNotExistError(msg)
