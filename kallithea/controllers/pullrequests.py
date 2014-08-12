@@ -184,6 +184,9 @@ class PullrequestsController(BaseRepoController):
         return [g for g in groups if g[0]], selected
 
     def _get_is_allowed_change_status(self, pull_request):
+        if pull_request.is_closed():
+            return False
+
         owner = self.authuser.user_id == pull_request.user_id
         reviewer = self.authuser.user_id in [x.user_id for x in
                                                    pull_request.reviewers]
