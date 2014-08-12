@@ -213,18 +213,18 @@ class BaseVCSController(object):
     def _get_ip_addr(self, environ):
         return _get_ip_addr(environ)
 
-    def _check_ssl(self, environ, start_response):
+    def _check_ssl(self, environ):
         """
         Checks the SSL check flag and returns False if SSL is not present
         and required True otherwise
         """
-        org_proto = environ['wsgi._org_proto']
         #check if we have SSL required  ! if not it's a bad request !
-        require_ssl = str2bool(Ui.get_by_key('push_ssl').ui_value)
-        if require_ssl and org_proto == 'http':
-            log.debug('proto is %s and SSL is required BAD REQUEST !'
-                      % org_proto)
-            return False
+        if str2bool(Ui.get_by_key('push_ssl').ui_value):
+            org_proto = environ.get('wsgi._org_proto', environ['wsgi.url_scheme'])
+            if org_proto != 'https':
+                log.debug('proto is %s and SSL is required BAD REQUEST !'
+                          % org_proto)
+                return False
         return True
 
     def _check_locking_state(self, environ, action, repo, user_id):

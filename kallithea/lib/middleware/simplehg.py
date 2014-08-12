@@ -71,7 +71,7 @@ class SimpleHg(BaseVCSController):
     def _handle_request(self, environ, start_response):
         if not is_mercurial(environ):
             return self.application(environ, start_response)
-        if not self._check_ssl(environ, start_response):
+        if not self._check_ssl(environ):
             return HTTPNotAcceptable('SSL REQUIRED !')(environ, start_response)
 
         ip_addr = self._get_ip_addr(environ)

@@ -514,13 +514,15 @@ In order to start using celery run::
 HTTPS support
 -------------
 
-There are two ways to enable https:
+Kallithea will by default generate URLs based on the WSGI environment.
 
-- Set HTTP_X_URL_SCHEME in your http server headers, than Kallithea will
-  recognize this headers and make proper https redirections
-- Alternatively, change the `force_https = true` flag in the ini configuration
-  to force using https, no headers are needed than to enable https
+Alternatively, you can use some special configuration settings to control
+directly which scheme/protocol Kallithea will use when generating URLs:
 
+- With `https_fixup = true`, the scheme will be taken from the HTTP_X_URL_SCHEME,
+  HTTP_X_FORWARDED_SCHEME or HTTP_X_FORWARDED_PROTO HTTP header (default 'http').
+- With `force_https = true` the default will be 'https'.
+- With `use_htsts = true`, it will set Strict-Transport-Security when using https.
 
 Nginx virtual host example
 --------------------------
