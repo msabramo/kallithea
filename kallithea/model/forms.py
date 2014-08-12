@@ -490,7 +490,7 @@ def PullRequestForm(repo_id):
         org_ref = v.UnicodeString(strip=True, required=True)
         other_repo = v.UnicodeString(strip=True, required=True)
         other_ref = v.UnicodeString(strip=True, required=True)
-        review_members = v.UniqueList()()
+        review_members = v.Set()
 
         pullrequest_title = v.UnicodeString(strip=True, required=True)
         pullrequest_desc = v.UnicodeString(strip=True, required=False)
