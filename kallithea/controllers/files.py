@@ -739,10 +739,10 @@ class FilesController(BaseRepoController):
             else:
                 c.changeset_2 = EmptyChangeset(repo=c.db_repo_scm_instance)
                 node2 = FileNode(f_path, '', changeset=c.changeset_2)
-        except (RepositoryError, NodeError):
-            log.error(traceback.format_exc())
-            return redirect(url('files_home', repo_name=c.repo_name,
-                                f_path=f_path))
+        except ChangesetDoesNotExistError as e:
+            msg = _('Such revision does not exist for this repository')
+            h.flash(msg, category='error')
+            raise HTTPNotFound()
         c.node1 = node1
         c.node2 = node2
         c.cs1 = c.changeset_1
