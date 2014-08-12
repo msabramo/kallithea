@@ -73,10 +73,10 @@ def M(self, key, state=None, **kwargs):
     return self.message(key, state, **kwargs)
 
 
-def UniqueList():
-    class _UniqueList(formencode.FancyValidator):
+def UniqueListFromString():
+    class _UniqueListFromString(formencode.FancyValidator):
         """
-        Unique List !
+        Split value on ',' and make unique while preserving order
         """
         messages = dict(
             empty=_('Value cannot be an empty list'),
@@ -84,33 +84,13 @@ def UniqueList():
         )
 
         def _to_python(self, value, state):
-            def make_unique(value):
-                seen = []
-                return [c for c in value if not (c in seen or seen.append(c))]
-
-            if isinstance(value, list):
-                return make_unique(value)
-            elif isinstance(value, set):
-                return make_unique(list(value))
-            elif isinstance(value, tuple):
-                return make_unique(list(value))
-            elif value is None:
-                return []
-            else:
-                return [value]
-
+            value = aslist(value, ',')
+            seen = set()
+            return [c for c in value if not (c in seen or seen.add(c))]
+    
         def empty_value(self, value):
             return []
 
-    return _UniqueList
-
-
-def UniqueListFromString():
-    class _UniqueListFromString(UniqueList()):
-        def _to_python(self, value, state):
-            if isinstance(value, basestring):
-                value = aslist(value, ',')
-            return super(_UniqueListFromString, self)._to_python(value, state)
     return _UniqueListFromString
 
 
