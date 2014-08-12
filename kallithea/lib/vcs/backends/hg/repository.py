@@ -16,9 +16,7 @@ import urllib2
 import logging
 import datetime
 
-
 from kallithea.lib.vcs.backends.base import BaseRepository, CollectionGenerator
-from kallithea.lib.vcs.conf import settings
 
 from kallithea.lib.vcs.exceptions import (
     BranchDoesNotExistError, ChangesetDoesNotExistError, EmptyRepositoryError,

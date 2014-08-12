@@ -36,7 +36,6 @@ from collections import defaultdict
 from sqlalchemy import *
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, joinedload, class_mapper, validates
-from sqlalchemy.exc import DatabaseError
 from beaker.cache import cache_region, region_invalidate
 from webob.exc import HTTPNotFound
 
@@ -49,7 +48,6 @@ from kallithea.lib.vcs.utils.lazy import LazyProperty
 
 from kallithea.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
     safe_unicode, remove_suffix, remove_prefix
-from kallithea.lib.compat import json
 from kallithea.lib.caching_query import FromCache
 
 from kallithea.model.meta import Base, Session

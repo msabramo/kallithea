@@ -28,12 +28,10 @@ Original author and date, and relevant copyright and licensing information is be
 import traceback
 import calendar
 import logging
-import urllib
 from time import mktime
 from datetime import timedelta, date
-from urlparse import urlparse
 
-from pylons import tmpl_context as c, request, url, config
+from pylons import tmpl_context as c, request
 from pylons.i18n.translation import _
 from webob.exc import HTTPBadRequest
 
@@ -45,7 +43,7 @@ from kallithea.lib.vcs.exceptions import ChangesetError, EmptyRepositoryError, \
 from kallithea.config.conf import ALL_READMES, ALL_EXTS, LANGUAGES_EXTENSIONS_MAP
 from kallithea.model.db import Statistics, CacheInvalidation, User
 from kallithea.lib.utils import jsonify
-from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.utils2 import safe_str
 from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
     NotAnonymous
 from kallithea.lib.base import BaseRepoController, render

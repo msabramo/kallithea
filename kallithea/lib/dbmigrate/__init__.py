@@ -26,8 +26,6 @@ Original author and date, and relevant copyright and licensing information is be
 """
 
 import logging
-from sqlalchemy import engine_from_config
-
 
 from kallithea.lib.utils import BasePasterCommand, Command, add_cache
 from kallithea.lib.db_manage import DbManage

@@ -1,20 +1,13 @@
 import logging
-import datetime
 
 from sqlalchemy import *
-from sqlalchemy.exc import DatabaseError
-from sqlalchemy.orm import relation, backref, class_mapper, joinedload
-from sqlalchemy.orm.session import Session
-from sqlalchemy.ext.declarative import declarative_base
 
 from kallithea import EXTERN_TYPE_INTERNAL
 from kallithea.lib.dbmigrate.migrate import *
 from kallithea.lib.dbmigrate.migrate.changeset import *
-from kallithea.lib.utils2 import str2bool
 
-from kallithea.model.meta import Base
 from kallithea.model import meta
-from kallithea.lib.dbmigrate.versions import _reset_base, notify
+from kallithea.lib.dbmigrate.versions import _reset_base
 
 log = logging.getLogger(__name__)
 

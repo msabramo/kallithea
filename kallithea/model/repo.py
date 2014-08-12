@@ -39,7 +39,7 @@ from kallithea.lib.compat import json
 from kallithea.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
     remove_prefix, obfuscate_url_pw, get_current_authuser
 from kallithea.lib.caching_query import FromCache
-from kallithea.lib.hooks import log_create_repository, log_delete_repository
+from kallithea.lib.hooks import log_delete_repository
 
 from kallithea.model import BaseModel
 from kallithea.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \

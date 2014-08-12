@@ -28,10 +28,9 @@ Original author and date, and relevant copyright and licensing information is be
 import logging
 import traceback
 import formencode
-from pylons import response
 
 from formencode import htmlfill
-from pylons import request, session, tmpl_context as c, url, config
+from pylons import request, tmpl_context as c, url, config
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 from sqlalchemy.sql.expression import func
@@ -53,7 +52,7 @@ from kallithea.model.user import UserModel
 from kallithea.model.meta import Session
 from kallithea.lib.utils import action_logger
 from kallithea.lib.compat import json
-from kallithea.lib.utils2 import datetime_to_time, str2bool, safe_int
+from kallithea.lib.utils2 import datetime_to_time, safe_int
 
 log = logging.getLogger(__name__)
 

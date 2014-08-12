@@ -34,7 +34,6 @@ import logging
 
 from kallithea.lib.utils import BasePasterCommand
 from string import strip
-from shutil import rmtree
 from kallithea.model.repo import RepoModel
 from kallithea.lib.utils import BasePasterCommand, load_rcextensions
 

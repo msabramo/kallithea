@@ -1,5 +1,3 @@
-import datetime
-
 from kallithea.tests import *
 from kallithea.model.gist import GistModel
 from kallithea.model.meta import Session

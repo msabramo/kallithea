@@ -18,7 +18,6 @@ Script for rebranding of database to and from what Kallithea expects
 Works on databases from v1.7.2 to v2.2.5
 """
 
-import os
 import sys
 from sqlalchemy import *
 import sqlalchemy.orm

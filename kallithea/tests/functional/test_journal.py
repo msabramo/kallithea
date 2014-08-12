@@ -1,6 +1,4 @@
 from kallithea.tests import *
-from kallithea.model.db import UserFollowing, User, Repository
-from kallithea.lib.helpers import get_token
 import datetime
 
 

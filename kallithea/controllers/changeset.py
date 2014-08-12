@@ -31,7 +31,7 @@ import traceback
 from collections import defaultdict
 from webob.exc import HTTPForbidden, HTTPBadRequest, HTTPNotFound
 
-from pylons import tmpl_context as c, url, request, response
+from pylons import tmpl_context as c, request, response
 from pylons.i18n.translation import _
 from pylons.controllers.util import redirect
 from kallithea.lib.utils import jsonify
@@ -55,7 +55,7 @@ from kallithea.model.repo import RepoModel
 from kallithea.lib.diffs import LimitedDiffContainer
 from kallithea.lib.exceptions import StatusChangeOnClosedPullRequestError
 from kallithea.lib.vcs.backends.base import EmptyChangeset
-from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.utils2 import safe_unicode
 from kallithea.lib.graphmod import graph_data
 
 log = logging.getLogger(__name__)

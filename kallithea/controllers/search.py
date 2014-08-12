@@ -33,7 +33,7 @@ from pylons import request, config, tmpl_context as c
 
 from whoosh.index import open_dir, EmptyIndexError
 from whoosh.qparser import QueryParser, QueryParserError
-from whoosh.query import Phrase, Wildcard, Term, Prefix
+from whoosh.query import Phrase, Prefix
 from webhelpers.util import update_params
 
 from kallithea.lib.auth import LoginRequired

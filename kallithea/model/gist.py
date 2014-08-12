@@ -32,11 +32,9 @@ import logging
 import traceback
 import shutil
 
-from pylons.i18n.translation import _
 from kallithea.lib.utils2 import safe_unicode, unique_id, safe_int, \
     time_to_datetime, safe_str, AttributeDict
 from kallithea.lib.compat import json
-from kallithea.lib import helpers as h
 from kallithea.model import BaseModel
 from kallithea.model.db import Gist
 from kallithea.model.repo import RepoModel

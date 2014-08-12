@@ -31,8 +31,8 @@ import traceback
 import formencode
 from formencode import htmlfill
 
-from pylons import request, session, tmpl_context as c, url
-from pylons.controllers.util import abort, redirect
+from pylons import request, tmpl_context as c, url
+from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
 from kallithea.lib import helpers as h
@@ -41,7 +41,7 @@ from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator,\
 from kallithea.lib.base import BaseController, render
 from kallithea.model.forms import DefaultPermissionsForm
 from kallithea.model.permission import PermissionModel
-from kallithea.model.db import User, UserIpMap, Permission
+from kallithea.model.db import User, UserIpMap
 from kallithea.model.meta import Session
 
 log = logging.getLogger(__name__)

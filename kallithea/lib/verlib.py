@@ -3,7 +3,6 @@
 discussion at PyCon 2009.
 """
 
-import sys
 import re
 
 class IrrationalVersionError(Exception):

@@ -1,8 +1,7 @@
-import time
 from kallithea.tests import *
 from kallithea.tests.fixture import Fixture
 from kallithea.model.meta import Session
-from kallithea.model.db import User, Repository
+from kallithea.model.db import Repository
 from kallithea.model.repo import RepoModel
 from kallithea.model.repo_group import RepoGroupModel
 

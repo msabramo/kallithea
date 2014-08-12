@@ -1,5 +1,5 @@
 from kallithea.tests import *
-from kallithea.model.db import ChangesetComment, Notification, User, \
+from kallithea.model.db import ChangesetComment, Notification, \
     UserNotification
 from kallithea.model.meta import Session
 

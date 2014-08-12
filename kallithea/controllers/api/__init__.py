@@ -28,7 +28,6 @@ Original author and date, and relevant copyright and licensing information is be
 import inspect
 import logging
 import types
-import urllib
 import traceback
 import time
 

@@ -42,9 +42,6 @@ from os.path import join as jn
 
 from tempfile import _RandomNameSequence
 
-from paste.deploy import loadapp
-from paste.script.appinstall import SetupCommand
-
 import pylons
 import pylons.test
 from pylons import config, url
@@ -57,10 +54,9 @@ from nose.plugins.skip import SkipTest
 
 from kallithea.lib.compat import unittest
 from kallithea import is_windows
-from kallithea.model.meta import Session
 from kallithea.model.db import User
 from kallithea.tests.nose_parametrized import parameterized
-from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.utils2 import safe_str
 
 
 os.environ['TZ'] = 'UTC'
@@ -140,6 +136,7 @@ HG_REMOTE_REPO = jn(TESTS_TMP_PATH, HG_REPO)
 ldap_lib_installed = False
 try:
     import ldap
+    ldap.API_VERSION
     ldap_lib_installed = True
 except ImportError:
     # means that python-ldap is not installed

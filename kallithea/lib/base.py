@@ -57,7 +57,6 @@ from kallithea.model import meta
 from kallithea.model.db import Repository, Ui, User, Setting
 from kallithea.model.notification import NotificationModel
 from kallithea.model.scm import ScmModel
-from kallithea.model.meta import Session
 from kallithea.model.pull_request import PullRequestModel
 
 log = logging.getLogger(__name__)

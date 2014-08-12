@@ -1,6 +1,5 @@
 from sqlalchemy import *
-from sqlalchemy.exc import DatabaseError
-from sqlalchemy.orm import relation, backref, class_mapper
+from sqlalchemy.orm import relation, class_mapper
 from sqlalchemy.orm.session import Session
 from kallithea.model.meta import Base
 

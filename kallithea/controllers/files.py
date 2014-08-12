@@ -60,7 +60,7 @@ from kallithea.model.db import Repository
 from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
 from webob.exc import HTTPNotFound
-from kallithea.lib.exceptions import NonRelativePathError, IMCCommitError
+from kallithea.lib.exceptions import NonRelativePathError
 
 
 log = logging.getLogger(__name__)

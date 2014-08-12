@@ -33,7 +33,6 @@ from formencode import htmlfill
 from pylons import tmpl_context as c, request, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
-from webob.exc import HTTPNotFound, HTTPInternalServerError
 
 import kallithea.lib.helpers as h
 
@@ -47,7 +46,6 @@ from kallithea.model.repo import RepoModel
 from kallithea.model.forms import RepoForkForm
 from kallithea.model.scm import ScmModel, RepoGroupList
 from kallithea.lib.utils2 import safe_int
-from kallithea.lib.utils import jsonify
 
 log = logging.getLogger(__name__)
 

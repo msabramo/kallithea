@@ -37,7 +37,6 @@ from tempfile import _RandomNameSequence
 from subprocess import Popen, PIPE
 
 from paste.deploy import appconfig
-from pylons import config
 from sqlalchemy import engine_from_config
 
 from kallithea.lib.utils import add_cache
@@ -46,7 +45,7 @@ from kallithea.model import meta
 from kallithea.model.db import User, Repository
 from kallithea.lib.auth import get_crypt_password
 
-from kallithea.tests import TESTS_TMP_PATH, NEW_HG_REPO, HG_REPO
+from kallithea.tests import TESTS_TMP_PATH, HG_REPO
 from kallithea.config.environment import load_environment
 
 rel_path = dn(dn(dn(dn(os.path.abspath(__file__)))))

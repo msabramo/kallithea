@@ -36,8 +36,6 @@ from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
 from pylons.i18n.translation import _, ungettext
 
-from sqlalchemy.exc import IntegrityError
-
 import kallithea
 from kallithea.lib import helpers as h
 from kallithea.lib.compat import json
@@ -52,7 +50,7 @@ from kallithea.model.forms import RepoGroupForm, RepoGroupPermsForm
 from kallithea.model.meta import Session
 from kallithea.model.repo import RepoModel
 from webob.exc import HTTPInternalServerError, HTTPNotFound
-from kallithea.lib.utils2 import str2bool, safe_int
+from kallithea.lib.utils2 import safe_int
 from sqlalchemy.sql.expression import func
 
 

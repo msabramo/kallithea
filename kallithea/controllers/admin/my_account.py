@@ -25,12 +25,11 @@ Original author and date, and relevant copyright and licensing information is be
 :license: GPLv3, see LICENSE.md for more details.
 """
 
-import time
 import logging
 import traceback
 import formencode
 
-from sqlalchemy import func, or_
+from sqlalchemy import func
 from formencode import htmlfill
 from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
@@ -42,7 +41,7 @@ from kallithea.lib.auth import LoginRequired, NotAnonymous, AuthUser
 from kallithea.lib.base import BaseController, render
 from kallithea.lib.utils2 import generate_api_key, safe_int
 from kallithea.lib.compat import json
-from kallithea.model.db import Repository, PullRequest, PullRequestReviewers, \
+from kallithea.model.db import Repository, \
     UserEmailMap, UserApiKeys, User, UserFollowing
 from kallithea.model.forms import UserForm, PasswordChangeForm
 from kallithea.model.user import UserModel

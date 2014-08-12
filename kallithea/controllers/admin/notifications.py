@@ -29,8 +29,8 @@ import logging
 import traceback
 
 from pylons import request
-from pylons import tmpl_context as c, url
-from pylons.controllers.util import redirect, abort
+from pylons import tmpl_context as c
+from pylons.controllers.util import abort
 from webob.exc import HTTPBadRequest
 
 from kallithea.model.db import Notification

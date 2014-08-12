@@ -20,14 +20,12 @@ available to Controllers. This module is available to both as 'h'.
 import random
 import hashlib
 import StringIO
-import urllib
 import math
 import logging
 import re
 import urlparse
 import textwrap
 
-from datetime import datetime
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight as code_highlight
 from pylons import url

@@ -33,8 +33,6 @@ from pylons.i18n.translation import _
 from webob.exc import HTTPBadRequest
 from sqlalchemy.sql.expression import func
 
-import kallithea
-from kallithea.lib import helpers as h
 from kallithea.lib.utils import jsonify, conditional_cache
 from kallithea.lib.compat import json
 from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator

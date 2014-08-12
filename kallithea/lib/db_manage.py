@@ -32,7 +32,6 @@ import time
 import uuid
 import logging
 from os.path import dirname as dn, join as jn
-import datetime
 
 from kallithea import __dbversion__, __py_version__, EXTERN_TYPE_INTERNAL, DB_MIGRATIONS
 from kallithea.model.user import UserModel
@@ -48,7 +47,6 @@ from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.meta import Session, Base
 from kallithea.model.repo import RepoModel
 from kallithea.model.permission import PermissionModel
-from kallithea.model.user_group import UserGroupModel
 
 
 log = logging.getLogger(__name__)

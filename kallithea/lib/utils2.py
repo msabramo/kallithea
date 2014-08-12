@@ -324,7 +324,6 @@ def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
     else:
         import time
         from sqlalchemy import event
-        from sqlalchemy.engine import Engine
 
         log = logging.getLogger('sqlalchemy.engine')
         BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = xrange(30, 38)

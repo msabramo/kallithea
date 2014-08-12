@@ -26,7 +26,6 @@ Original author and date, and relevant copyright and licensing information is be
 """
 
 import logging
-import traceback
 
 from pylons.i18n.translation import _
 from sqlalchemy.util.compat import defaultdict
@@ -34,7 +33,7 @@ from sqlalchemy.util.compat import defaultdict
 from kallithea.lib.utils2 import extract_mentioned_users, safe_unicode
 from kallithea.lib import helpers as h
 from kallithea.model import BaseModel
-from kallithea.model.db import ChangesetComment, User, Repository, \
+from kallithea.model.db import ChangesetComment, User, \
     Notification, PullRequest
 from kallithea.model.notification import NotificationModel
 from kallithea.model.meta import Session

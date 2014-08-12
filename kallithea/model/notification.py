@@ -26,8 +26,6 @@ Original author and date, and relevant copyright and licensing information is be
 :license: GPLv3, see LICENSE.md for more details.
 """
 
-
-import os
 import logging
 import traceback
 

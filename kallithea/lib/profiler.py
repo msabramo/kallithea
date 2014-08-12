@@ -1,6 +1,5 @@
 from __future__ import with_statement
 
-import gc
 import objgraph
 import cProfile
 import pstats

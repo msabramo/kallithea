@@ -30,8 +30,8 @@ import traceback
 import formencode
 
 from formencode import htmlfill
-from pylons import request, session, tmpl_context as c, url, config
-from pylons.controllers.util import abort, redirect
+from pylons import request, tmpl_context as c, url, config
+from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
 from sqlalchemy.orm import joinedload
@@ -42,7 +42,7 @@ import kallithea
 from kallithea.lib import helpers as h
 from kallithea.lib.exceptions import UserGroupsAssignedException,\
     RepoGroupAssignmentError
-from kallithea.lib.utils2 import safe_unicode, str2bool, safe_int
+from kallithea.lib.utils2 import safe_unicode, safe_int
 from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator,\
     HasUserGroupPermissionAnyDecorator, HasPermissionAnyDecorator
 from kallithea.lib.base import BaseController, render

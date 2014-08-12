@@ -58,7 +58,6 @@ from kallithea.lib.utils import get_repo_slug, get_repo_group_slug, \
     get_user_group_slug, conditional_cache
 from kallithea.lib.caching_query import FromCache
 
-from beaker.cache import cache_region
 
 log = logging.getLogger(__name__)
 

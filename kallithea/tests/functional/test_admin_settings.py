@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from kallithea.lib.auth import get_crypt_password, check_password
-from kallithea.model.db import User, Setting, Repository, Ui
+from kallithea.model.db import Setting, Ui
 from kallithea.tests import *
 from kallithea.tests.fixture import Fixture
-from kallithea.lib import helpers as h
-from kallithea.model.user import UserModel
-from kallithea.model.scm import ScmModel
-from kallithea.model.meta import Session
 
 fixture = Fixture()
 

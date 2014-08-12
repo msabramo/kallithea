@@ -36,7 +36,6 @@ from collections import defaultdict
 from sqlalchemy import *
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, joinedload, class_mapper, validates
-from sqlalchemy.exc import DatabaseError
 from beaker.cache import cache_region, region_invalidate
 from webob.exc import HTTPNotFound
 

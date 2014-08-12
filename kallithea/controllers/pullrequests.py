@@ -31,8 +31,6 @@ import formencode
 import re
 
 from webob.exc import HTTPNotFound, HTTPForbidden
-from collections import defaultdict
-from itertools import groupby
 
 from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
@@ -58,7 +56,7 @@ from kallithea.model.comment import ChangesetCommentsModel
 from kallithea.model.changeset_status import ChangesetStatusModel
 from kallithea.model.forms import PullRequestForm, PullRequestPostForm
 from kallithea.lib.utils2 import safe_int
-from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
+from kallithea.controllers.changeset import _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
 from kallithea.controllers.compare import CompareController
 from kallithea.lib.graphmod import graph_data

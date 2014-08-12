@@ -28,14 +28,12 @@ import logging
 import formencode.htmlfill
 import traceback
 
-from pylons import request, response, session, tmpl_context as c, url
-from pylons.controllers.util import abort, redirect
+from pylons import request, tmpl_context as c, url
+from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
-from sqlalchemy.exc import DatabaseError
-
 from kallithea.lib import helpers as h
-from kallithea.lib.compat import json, formatted_json
+from kallithea.lib.compat import formatted_json
 from kallithea.lib.base import BaseController, render
 from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator
 from kallithea.lib import auth_modules

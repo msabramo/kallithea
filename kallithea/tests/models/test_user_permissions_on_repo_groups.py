@@ -2,7 +2,7 @@ import functools
 from kallithea.tests import *
 
 from kallithea.model.repo_group import RepoGroupModel
-from kallithea.model.db import RepoGroup, Repository, User
+from kallithea.model.db import RepoGroup, User
 
 from kallithea.model.meta import Session
 from nose.tools import with_setup

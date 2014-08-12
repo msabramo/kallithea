@@ -11,7 +11,6 @@ from kallithea.model.user import UserModel
 from kallithea.tests import *
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.repo import RepoModel
-from kallithea.model.scm import ScmModel
 from kallithea.model.meta import Session
 from kallithea.tests.fixture import Fixture, error_function
 

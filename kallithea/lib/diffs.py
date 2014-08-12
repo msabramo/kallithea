@@ -37,7 +37,7 @@ from kallithea.lib.vcs.exceptions import VCSError
 from kallithea.lib.vcs.nodes import FileNode, SubModuleNode
 from kallithea.lib.vcs.backends.base import EmptyChangeset
 from kallithea.lib.helpers import escape
-from kallithea.lib.utils2 import safe_unicode, safe_str
+from kallithea.lib.utils2 import safe_unicode
 
 log = logging.getLogger(__name__)
 

@@ -29,10 +29,9 @@ import time
 import logging
 import traceback
 import formencode
-from formencode import htmlfill
 
 from pylons import request, response, tmpl_context as c, url
-from pylons.controllers.util import abort, redirect
+from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
 from kallithea.model.forms import GistForm
@@ -43,7 +42,7 @@ from kallithea.lib import helpers as h
 from kallithea.lib.base import BaseController, render
 from kallithea.lib.auth import LoginRequired, NotAnonymous
 from kallithea.lib.utils import jsonify
-from kallithea.lib.utils2 import safe_str, safe_int, time_to_datetime
+from kallithea.lib.utils2 import safe_int, time_to_datetime
 from kallithea.lib.helpers import Page
 from webob.exc import HTTPNotFound, HTTPForbidden
 from sqlalchemy.sql.expression import or_

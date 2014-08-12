@@ -37,13 +37,9 @@ from time import mktime
 from operator import itemgetter
 from string import lower
 
-from pylons import config, url
-from pylons.i18n.translation import _
+from pylons import config
 
-from kallithea.lib.vcs import get_backend
-
-from kallithea import CELERY_ON, CELERY_EAGER
-from kallithea.lib.utils2 import safe_str
+from kallithea import CELERY_ON
 from kallithea.lib.celerylib import run_task, locked_task, dbsession, \
     str2bool, __get_lockkey, LockHeld, DaemonLock, get_session
 from kallithea.lib.helpers import person
@@ -53,7 +49,6 @@ from kallithea.lib.compat import json, OrderedDict
 from kallithea.lib.hooks import log_create_repository
 
 from kallithea.model.db import Statistics, Repository, User
-from kallithea.model.scm import ScmModel
 
 
 add_cache(config)  # pragma: no cover

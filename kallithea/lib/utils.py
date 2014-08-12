@@ -46,9 +46,6 @@ from beaker.cache import _cache_decorate
 
 from kallithea import BRAND
 
-from kallithea.lib.vcs import get_backend
-from kallithea.lib.vcs.backends.base import BaseChangeset
-from kallithea.lib.vcs.utils.lazy import LazyProperty
 from kallithea.lib.vcs.utils.hgcompat import ui, config
 from kallithea.lib.vcs.utils.helpers import get_scm
 from kallithea.lib.vcs.exceptions import VCSError
@@ -62,7 +59,6 @@ from kallithea.model.meta import Session
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.lib.utils2 import safe_str, safe_unicode, get_current_authuser
 from kallithea.lib.vcs.utils.fakemod import create_module
-from kallithea.model.user_group import UserGroupModel
 
 log = logging.getLogger(__name__)
 

@@ -35,7 +35,7 @@ from whoosh.qparser.dateparse import DateParserPlugin
 from whoosh import query
 from sqlalchemy.sql.expression import or_, and_, func
 
-from kallithea.model.db import UserLog, User
+from kallithea.model.db import UserLog
 from kallithea.lib.auth import LoginRequired, HasPermissionAllDecorator
 from kallithea.lib.base import BaseController, render
 from kallithea.lib.utils2 import safe_int, remove_prefix, remove_suffix

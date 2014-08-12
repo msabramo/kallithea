@@ -26,12 +26,10 @@ Original author and date, and relevant copyright and licensing information is be
 """
 
 
-import os
-import sys
 import socket
 import traceback
 import logging
-from os.path import dirname as dn, join as jn
+from os.path import join as jn
 from pylons import config
 
 from hashlib import md5
@@ -43,11 +41,9 @@ from kallithea.lib.utils2 import str2bool, safe_str
 from kallithea.lib.pidlock import DaemonLock, LockHeld
 from kallithea.model import init_model
 from kallithea.model import meta
-from kallithea.model.db import Statistics, Repository, User
 
 from sqlalchemy import engine_from_config
 
-from celery.messaging import establish_connection
 
 log = logging.getLogger(__name__)
 

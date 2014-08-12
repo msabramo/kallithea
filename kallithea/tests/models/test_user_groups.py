@@ -1,5 +1,3 @@
-import os
-from sqlalchemy.exc import IntegrityError
 from kallithea.model.db import User
 
 from kallithea.tests import *

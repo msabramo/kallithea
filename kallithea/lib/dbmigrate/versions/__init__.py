@@ -26,10 +26,7 @@ Original author and date, and relevant copyright and licensing information is be
 """
 
 from sqlalchemy import *
-from sqlalchemy.exc import DatabaseError
-from sqlalchemy.orm import relation, backref, class_mapper, joinedload
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
 from kallithea.lib.dbmigrate.migrate import *
 from kallithea.lib.dbmigrate.migrate.changeset import *
 

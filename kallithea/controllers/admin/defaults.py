@@ -30,8 +30,8 @@ import traceback
 import formencode
 from formencode import htmlfill
 
-from pylons import request, session, tmpl_context as c, url
-from pylons.controllers.util import abort, redirect
+from pylons import request, tmpl_context as c, url
+from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
 from kallithea.lib import helpers as h

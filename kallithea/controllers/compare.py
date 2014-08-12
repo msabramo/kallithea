@@ -28,15 +28,13 @@ Original author and date, and relevant copyright and licensing information is be
 
 
 import logging
-import traceback
 import re
 
-from webob.exc import HTTPNotFound, HTTPBadRequest
-from pylons import request, response, session, tmpl_context as c, url
-from pylons.controllers.util import abort, redirect
+from webob.exc import HTTPBadRequest
+from pylons import request, tmpl_context as c, url
+from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
-from kallithea.lib.vcs.utils import safe_str
 from kallithea.lib.vcs.utils.hgcompat import unionrepo
 from kallithea.lib import helpers as h
 from kallithea.lib.base import BaseRepoController, render
@@ -44,7 +42,7 @@ from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator
 from kallithea.lib import diffs
 from kallithea.model.db import Repository
 from kallithea.lib.diffs import LimitedDiffContainer
-from kallithea.controllers.changeset import anchor_url, _ignorews_url,\
+from kallithea.controllers.changeset import _ignorews_url,\
     _context_url, get_line_ctx, get_ignore_ws
 from kallithea.lib.graphmod import graph_data
 from kallithea.lib.compat import json

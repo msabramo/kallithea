@@ -30,7 +30,7 @@ import cgi
 import logging
 import paste.fileapp
 
-from pylons import tmpl_context as c, request, config, url
+from pylons import tmpl_context as c, request, config
 from pylons.i18n.translation import _
 from pylons.middleware import  media_path
 

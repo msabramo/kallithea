@@ -1,11 +1,6 @@
 import logging
-import datetime
 
 from sqlalchemy import *
-from sqlalchemy.exc import DatabaseError
-from sqlalchemy.orm import relation, backref, class_mapper
-from sqlalchemy.orm.session import Session
-from kallithea.model.meta import Base
 
 from kallithea.lib.dbmigrate.migrate import *
 from kallithea.lib.dbmigrate.migrate.changeset import *

@@ -3,7 +3,6 @@ import datetime
 import posixpath
 import stat
 from dulwich import objects
-from dulwich.repo import Repo
 from kallithea.lib.vcs.backends.base import BaseInMemoryChangeset
 from kallithea.lib.vcs.exceptions import RepositoryError
 from kallithea.lib.vcs.utils import safe_str

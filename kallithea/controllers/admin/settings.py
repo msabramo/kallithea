@@ -25,7 +25,6 @@ Original author and date, and relevant copyright and licensing information is be
 :license: GPLv3, see LICENSE.md for more details.
 """
 
-import time
 import logging
 import traceback
 import formencode
@@ -47,8 +46,7 @@ from kallithea.model.forms import ApplicationSettingsForm, \
 from kallithea.model.scm import ScmModel
 from kallithea.model.notification import EmailNotificationModel
 from kallithea.model.meta import Session
-from kallithea.lib.utils2 import str2bool, safe_unicode, safe_str
-from kallithea.lib.compat import json
+from kallithea.lib.utils2 import str2bool, safe_unicode
 log = logging.getLogger(__name__)
 
 
