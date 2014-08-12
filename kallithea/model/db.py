@@ -51,7 +51,7 @@ from kallithea.lib.vcs.backends.base import EmptyChangeset
 
 from kallithea.lib.utils2 import str2bool, safe_str, get_changeset_safe, \
     safe_unicode, remove_prefix, time_to_datetime, aslist, Optional, safe_int, \
-    get_clone_url
+    get_clone_url, urlreadable
 from kallithea.lib.compat import json
 from kallithea.lib.caching_query import FromCache
 
@@ -2306,6 +2306,19 @@ class PullRequest(Base, BaseModel):
             revisions=self.revisions
         )
 
+    def url(self, **kwargs):
+        canonical = kwargs.pop('canonical', None)
+        import kallithea.lib.helpers as h
+        s = '/' + self.title
+        b = self.org_ref_parts[1]
+        if b not in s and b != self.other_ref_parts[1]:
+            s = '/_%s_%s' % (b, s)
+        kwargs['extra'] = urlreadable(s)
+        if canonical:
+            return h.canonical_url('pullrequest_show', repo_name=self.other_repo.repo_name,
+                                   pull_request_id=self.pull_request_id, **kwargs)
+        return h.url('pullrequest_show', repo_name=self.other_repo.repo_name,
+                     pull_request_id=self.pull_request_id, **kwargs)
 
 class PullRequestReviewers(Base, BaseModel):
     __tablename__ = 'pull_request_reviewers'

@@ -124,8 +124,7 @@ class PullRequestModel(BaseModel):
                          for x in map(pr.org_repo.get_changeset, pr.revisions)]
 
         #notification to reviewers
-        pr_url = h.canonical_url('pullrequest_show', repo_name=pr.other_repo.repo_name,
-                       pull_request_id=pr.pull_request_id)
+        pr_url = pr.url(canonical=True)
         threading = [h.canonical_url('pullrequest_show', repo_name=pr.other_repo.repo_name,
                                      pull_request_id=pr.pull_request_id)]
         subject = safe_unicode(

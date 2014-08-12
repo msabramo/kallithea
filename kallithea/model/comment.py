@@ -127,9 +127,7 @@ class ChangesetCommentsModel(BaseModel):
                 threading.append('%s-pr-%s-line-%s@%s' % (pull_request.other_repo.repo_name,
                                                           pull_request.pull_request_id, line_no,
                                                           h.canonical_hostname()))
-            comment_url = h.canonical_url('pullrequest_show',
-                repo_name=pull_request.other_repo.repo_name,
-                pull_request_id=pull_request.pull_request_id,
+            comment_url = pull_request.url(canonical=True,
                 anchor='comment-%s' % comment.comment_id)
             subj = safe_unicode(
                 h.link_to('Re pull request #%(pr_id)s: %(desc)s %(line)s' % \

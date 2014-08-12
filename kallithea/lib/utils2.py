@@ -756,3 +756,6 @@ class Optional(object):
         if isinstance(val, cls):
             return val.getval()
         return val
+
+def urlreadable(s, _cleanstringsub=re.compile('[^-a-zA-Z0-9./]+').sub):
+    return _cleanstringsub('_', safe_str(s)).rstrip('_')

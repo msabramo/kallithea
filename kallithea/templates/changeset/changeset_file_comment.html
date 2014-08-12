@@ -20,10 +20,10 @@
          %if co.pull_request:
             %if co.status_change:
               ${_('Status change from pull request')}
-              <a href="${h.url('pullrequest_show',repo_name=co.pull_request.other_repo.repo_name,pull_request_id=co.pull_request.pull_request_id)}">"${co.pull_request.title or _("No title")}"</a>:
+              <a href="${co.pull_request.url()}">"${co.pull_request.title or _("No title")}"</a>:
             %else:
               ${_('Comment from pull request')}
-              <a href="${h.url('pullrequest_show',repo_name=co.pull_request.other_repo.repo_name,pull_request_id=co.pull_request.pull_request_id)}">"${co.pull_request.title or _("No title")}"</a>
+              <a href="${co.pull_request.url()}">"${co.pull_request.title or _("No title")}"</a>
             %endif
          %else:
             %if co.status_change:

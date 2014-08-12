@@ -460,8 +460,7 @@ class PullrequestsController(BaseRepoController):
             log.error(traceback.format_exc())
             return redirect(url('pullrequest_home', repo_name=repo_name))
 
-        return redirect(url('pullrequest_show', repo_name=other_repo_name,
-                            pull_request_id=pull_request.pull_request_id))
+        return redirect(pull_request.url())
 
     @LoginRequired()
     @NotAnonymous()
@@ -639,7 +638,7 @@ class PullrequestsController(BaseRepoController):
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
-    def show(self, repo_name, pull_request_id):
+    def show(self, repo_name, pull_request_id, extra=None):
         repo_model = RepoModel()
         c.users_array = repo_model.get_users_js()
         c.user_groups_array = repo_model.get_user_groups_js()

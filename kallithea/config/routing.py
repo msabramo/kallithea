@@ -699,7 +699,7 @@ def make_map(config):
                                                        method=["POST"]))
 
     rmap.connect('pullrequest_show',
-                 '/{repo_name:.*?}/pull-request/{pull_request_id}',
+                 '/{repo_name:.*?}/pull-request/{pull_request_id:\\d+}{extra:(/.*)?}', extra='',
                  controller='pullrequests',
                  action='show', conditions=dict(function=check_repo,
                                                 method=["GET"]))
