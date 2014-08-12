@@ -102,9 +102,9 @@
               <div id="${h.FID('',filenode_path)}_image-diff" class="btn btn-image-diff-swap" style="display:none">Press to swap images</div>
               <div>
                 <img id="${h.FID('',filenode_path)}_image-diff-img-a" class="img-diff img-diff-swapable" style="display:none"
-                    realsrc="${h.url('files_raw_home',repo_name=c.repo_name,revision=c.org_rev,f_path=filenode_path) if op in 'DM' else ''}"
+                    realsrc="${h.url('files_raw_home',repo_name=c.other_repo.repo_name,revision=c.other_rev,f_path=filenode_path) if op in 'DM' else ''}"
                 /><img id="${h.FID('',filenode_path)}_image-diff-img-b" class="img-diff img-diff-swapable" style="display:none"
-                    realsrc="${h.url('files_raw_home',repo_name=c.repo_name,revision=c.other_rev,f_path=filenode_path) if op in 'AM' else ''}"
+                    realsrc="${h.url('files_raw_home',repo_name=c.org_repo.repo_name,revision=c.org_rev,f_path=filenode_path) if op in 'AM' else ''}"
                 />
               </div>
             %endif
