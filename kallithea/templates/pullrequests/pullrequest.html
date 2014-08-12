@@ -167,6 +167,14 @@ ${self.repo_context_bar('showpullrequest')}
       addReviewMember(_data.user.user_id, _data.user.firstname,
                       _data.user.lastname, _data.user.username,
                       _data.user.gravatar_link);
+
+      // (re)populate the select2 thingie
+      $("#other_ref").select2({
+          dropdownAutoWidth: true,
+      });
+      $("#other_ref").on("change", function(e){
+          loadPreview();
+      });
   }
 
   var loadPreview = function(){
@@ -228,13 +236,6 @@ ${self.repo_context_bar('showpullrequest')}
       });
       $("#other_repo").on("change", function(e){
           otherrepoChanged();
-          loadPreview();
-      });
-
-      $("#other_ref").select2({
-          dropdownAutoWidth: true,
-      });
-      $("#other_ref").on("change", function(e){
           loadPreview();
       });
 
