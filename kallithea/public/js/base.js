@@ -1502,7 +1502,7 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
         '         <input type="hidden" value="{2}" name="review_members" />\n'+
         '         <div class="reviewer_member_remove action_button" onclick="removeReviewMember({2})">\n'+
         '             <i class="icon-remove-sign" style="color: #FF4444;"></i>\n'+
-        '         </div>\n'+
+        '         </div> *\n'+
         '       </div>\n'+
         '     </li>\n'
         ).format(gravatar_link, displayname, id);
@@ -1518,7 +1518,10 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
 }
 
 var removeReviewMember = function(reviewer_id, repo_name, pull_request_id){
-    $('#reviewer_{0}'.format(reviewer_id)).remove();
+    var $li = $('#reviewer_{0}'.format(reviewer_id));
+    $li.find('div div').css("text-decoration", "line-through");
+    $li.find('input').remove();
+    $li.find('.reviewer_member_remove').remove();
 }
 
 /* handle "Save Changes" of addReviewMember and removeReviewMember on PR */
