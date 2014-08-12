@@ -146,17 +146,21 @@ class WhooshIndexingDaemon(object):
 
     def get_node(self, repo, path, index_rev=None):
         """
-        gets a filenode based on given full path.It operates on string for
-        hg git compatability.
+        gets a filenode based on given full path. It operates on string for
+        hg git compatibility.
 
         :param repo: scm repo instance
         :param path: full path including root location
         :return: FileNode
         """
-        root_path = safe_str(repo.path)+'/'
-        parts = safe_str(path).partition(root_path)
+        # FIXME: paths should be normalized ... or even better: don't include repo.path
+        path = safe_str(path)
+        repo_path = safe_str(repo.path)
+        assert path.startswith(repo_path)
+        assert path[len(repo_path)] in (os.path.sep, os.path.altsep)
+        node_path = path[len(repo_path) + 1:]
         cs = self._get_index_changeset(repo, index_rev=index_rev)
-        node = cs.get_node(parts[-1])
+        node = cs.get_node(node_path)
         return node
 
     def get_node_mtime(self, node):
