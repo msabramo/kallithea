@@ -32,7 +32,6 @@ import os
 import sys
 import logging
 
-from kallithea.lib.utils import BasePasterCommand
 from string import strip
 from kallithea.model.repo import RepoModel
 from kallithea.lib.utils import BasePasterCommand, load_rcextensions

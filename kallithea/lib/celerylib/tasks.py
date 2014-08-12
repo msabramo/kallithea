@@ -53,8 +53,7 @@ from kallithea.model.db import Statistics, Repository, User
 
 add_cache(config)  # pragma: no cover
 
-__all__ = ['whoosh_index', 'get_commits_stats',
-           'reset_user_password', 'send_email']
+__all__ = ['whoosh_index', 'get_commits_stats', 'send_email']
 
 
 def get_logger(cls):

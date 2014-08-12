@@ -328,7 +328,7 @@ def pygmentize_annotation(repo_name, filenode, **kwargs):
         golden_ratio = 0.618033988749895
         h = 0.22717784590367374
 
-        for _ in xrange(n):
+        for _unused in xrange(n):
             h += golden_ratio
             h %= 1
             HSV_tuple = [h, 0.95, 0.95]
@@ -684,8 +684,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
         # just display it, takes less space than displaying
         # "and 1 more revisions"
         if len(revs_ids) == revs_limit + 1:
-            rev = revs[revs_limit]
-            cs_links.append(", " + lnk(rev, repo_name))
+            cs_links.append(", " + lnk(revs[revs_limit], repo_name))
 
         # hidden-by-default ones
         if len(revs_ids) > revs_limit + 1:
@@ -1329,25 +1328,24 @@ def urlify_commit(text_, repository, link_=None):
                     pref = ' '
 
                 issue_id = ''.join(match_obj.groups())
-                tmpl = (
-                '%(pref)s<a class="%(cls)s" href="%(url)s">'
-                '%(issue-prefix)s%(id-repr)s'
-                '</a>'
-                )
-                url = ISSUE_SERVER_LNK.replace('{id}', issue_id)
+                issue_url = ISSUE_SERVER_LNK.replace('{id}', issue_id)
                 if repository:
-                    url = url.replace('{repo}', repository)
+                    issue_url = issue_url.replace('{repo}', repository)
                     repo_name = repository.split(URL_SEP)[-1]
-                    url = url.replace('{repo_name}', repo_name)
+                    issue_url = issue_url.replace('{repo_name}', repo_name)
 
-                return tmpl % {
+                return (
+                    '%(pref)s<a class="%(cls)s" href="%(url)s">'
+                    '%(issue-prefix)s%(id-repr)s'
+                    '</a>'
+                    ) % {
                      'pref': pref,
                      'cls': 'issue-tracker-link',
-                     'url': url,
+                     'url': issue_url,
                      'id-repr': issue_id,
                      'issue-prefix': ISSUE_PREFIX,
                      'serv': ISSUE_SERVER_LNK,
-                }
+                    }
             newtext = URL_PAT.sub(url_func, newtext)
             log.debug('processed prefix:`%s` => %s' % (pattern_index, newtext))
 

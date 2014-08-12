@@ -67,7 +67,7 @@ class JournalController(BaseController):
         for k, g in groupby(journal, lambda x: x.action_as_day):
             user_group = []
             #groupby username if it's a present value, else fallback to journal username
-            for _, g2 in groupby(list(g), lambda x: x.user.username if x.user else x.username):
+            for _unused, g2 in groupby(list(g), lambda x: x.user.username if x.user else x.username):
                 l = list(g2)
                 user_group.append((l[0].user, l))
 

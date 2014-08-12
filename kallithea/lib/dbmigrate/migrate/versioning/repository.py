@@ -63,7 +63,7 @@ class Changeset(dict):
 
     def run(self, *p, **k):
         """Run the changeset scripts"""
-        for version, script in self:
+        for _version, script in self:
             script.run(*p, **k)
 
 
