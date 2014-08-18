@@ -305,6 +305,19 @@ class BaseController(WSGIController):
         c.visual.gravatar_url = rc_config.get('gravatar_url')
 
         c.ga_code = rc_config.get('ga_code')
+        # TODO: replace undocumented backwards compatibility hack with db upgrade and rename ga_code
+        if c.ga_code and '<' not in c.ga_code:
+            c.ga_code = '''<script type="text/javascript">
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', '%s']);
+                _gaq.push(['_trackPageview']);
+
+                (function() {
+                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                    })();
+            </script>''' % c.ga_code
         c.site_name = rc_config.get('title')
         c.clone_uri_tmpl = rc_config.get('clone_uri_tmpl')
 
