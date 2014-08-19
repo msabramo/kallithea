@@ -573,6 +573,8 @@ class PullrequestsController(BaseRepoController):
         c.available = []
         c.cs_branch_name = c.cs_ref_name
         other_scm_instance = c.a_repo.scm_instance
+        c.update_msg = ""
+        c.update_msg_other = ""
         if org_scm_instance.alias == 'hg' and c.a_ref_name != 'ancestor':
             if c.cs_ref_type != 'branch':
                 c.cs_branch_name = org_scm_instance.get_changeset(c.cs_ref_name).branch # use ref_type ?
@@ -602,6 +604,8 @@ class PullrequestsController(BaseRepoController):
                     h.short_id(org_scm_instance.get_changeset((max(revs))).raw_id))
             else:
                 c.update_msg_other = _('Branch %s does not contain other changes.') % c.cs_branch_name
+        elif org_scm_instance.alias == 'git':
+            c.update_msg = _("Git pull requests don't support updates yet.")
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = c.cs_repo.get_comments(raw_ids)
