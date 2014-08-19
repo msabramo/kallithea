@@ -532,7 +532,7 @@ class PullrequestsController(BaseRepoController):
             Session().commit()
             h.flash(_('Successfully deleted pull request'),
                     category='success')
-            return redirect(url('my_account_pullrequests'))
+            return redirect(url('my_pullrequests'))
         raise HTTPForbidden()
 
     @LoginRequired()
