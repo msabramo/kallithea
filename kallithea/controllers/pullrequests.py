@@ -554,8 +554,7 @@ class PullrequestsController(BaseRepoController):
             h.flash(_('Error occurred while creating pull request'),
                     category='error')
             log.error(traceback.format_exc())
-            return redirect(url('pullrequest_show', repo_name=repo_name,
-                                pull_request_id=pull_request_id))
+            return redirect(old_pull_request.url())
 
         ChangesetCommentsModel().create(
             text=_('Closed, replaced by %s .') % h.canonical_url('pullrequest_show',
@@ -571,8 +570,7 @@ class PullrequestsController(BaseRepoController):
         h.flash(_('Pull request update created'),
                 category='success')
 
-        return redirect(url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
-                            pull_request_id=pull_request.pull_request_id))
+        return redirect(pull_request.url())
 
     # pullrequest_post for PR editing
     @LoginRequired()
@@ -594,8 +592,7 @@ class PullrequestsController(BaseRepoController):
         Session().commit()
         h.flash(_('Pull request updated'), category='success')
 
-        return redirect(url('pullrequest_show', repo_name=repo.repo_name,
-                            pull_request_id=pull_request_id))
+        return redirect(pull_request.url())
 
     # pullrequest_update for updating reviewer list
     @LoginRequired()
@@ -733,8 +730,7 @@ class PullrequestsController(BaseRepoController):
         Session().commit()
 
         if not request.environ.get('HTTP_X_PARTIAL_XHR'):
-            return redirect(h.url('pullrequest_show', repo_name=repo_name,
-                                  pull_request_id=pull_request_id))
+            return redirect(pull_request.url())
 
         data = {
            'target_id': h.safeid(h.safe_unicode(request.POST.get('f_path'))),

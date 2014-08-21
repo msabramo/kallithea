@@ -2311,7 +2311,7 @@ class PullRequest(Base, BaseModel):
         import kallithea.lib.helpers as h
         s = '/' + self.title
         b = self.org_ref_parts[1]
-        if b not in s and b != self.other_ref_parts[1]:
+        if b != self.other_ref_parts[1]:
             s = '/_%s_%s' % (b, s)
         kwargs['extra'] = urlreadable(s)
         if canonical:
