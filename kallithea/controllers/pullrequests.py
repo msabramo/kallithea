@@ -512,17 +512,17 @@ class PullrequestsController(BaseRepoController):
             for r in reversed(revisions):
                 if r in new_revisions:
                     desc = org_repo.get_changeset(r).message.split('\n')[0]
-                    infos.append('  %s "%s"' % (h.short_id(r), desc))
+                    infos.append('  %s %s' % (h.short_id(r), h.shorter(desc, 80)))
 
             if ancestor_rev == other_rev:
-                infos.append(_("Ancestor didn't change - show diff since previous version: %s .") %
-                             h.canonical_url('compare_url',
+                infos.append(_("Ancestor didn't change - show diff since previous version:"))
+                infos.append(h.canonical_url('compare_url',
                                  repo_name=org_repo.repo_name, # other_repo is always same as repo_name
                                  org_ref_type='rev', org_ref_name=h.short_id(org_rev), # use old org_rev as base
                                  other_ref_type='rev', other_ref_name=h.short_id(new_org_rev),
                                  )) # note: linear diff, merge or not doesn't matter
             else:
-                infos.append(_('This pull request uses another merge ancestor than the previous version and they are not directly comparable.'))
+                infos.append(_('This pull request is based on another %s revision and there is no simple diff.') % other_ref_name)
         else:
            infos.append(_('No changes found on %s %s since previous version.') % (org_ref_type, org_ref_name))
            # TODO: fail?
