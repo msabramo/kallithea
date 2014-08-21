@@ -688,6 +688,11 @@ def make_map(config):
                  action='index', conditions=dict(function=check_repo,
                                                  method=["GET"]))
 
+    rmap.connect('pullrequest_repo_info',
+                 '/{repo_name:.*?}/pull-request-repo-info',
+                 controller='pullrequests', action='repo_info',
+                 conditions=dict(function=check_repo, method=["GET"]))
+
     rmap.connect('pullrequest',
                  '/{repo_name:.*?}/pull-request/new', controller='pullrequests',
                  action='create', conditions=dict(function=check_repo,

@@ -245,9 +245,9 @@ class PullrequestsController(BaseRepoController):
                                    'repository.admin')
     def index(self):
         org_repo = c.db_repo
-
+        org_scm_instance = org_repo.scm_instance
         try:
-            org_repo.scm_instance.get_changeset()
+            org_scm_instance.get_changeset()
         except EmptyRepositoryError, e:
             h.flash(h.literal(_('There are no changesets yet')),
                     category='warning')
@@ -259,47 +259,47 @@ class PullrequestsController(BaseRepoController):
         #other_rev = request.POST.get('rev_start')
         branch = request.GET.get('branch')
 
-        c.org_repos = []
-        c.org_repos.append((org_repo.repo_name, org_repo.repo_name))
+        c.org_repos = [(org_repo.repo_name, org_repo.repo_name)]
         c.default_org_repo = org_repo.repo_name
-        c.org_refs, c.default_org_ref = self._get_repo_refs(org_repo.scm_instance, rev=org_rev, branch=branch)
-
-        c.other_repos = []
-        other_repos_info = {}
-
-        def add_other_repo(repo, branch_rev=None):
-            if repo.repo_name in other_repos_info: # shouldn't happen
-                return
-            c.other_repos.append((repo.repo_name, repo.repo_name))
-            other_refs, selected_other_ref = self._get_repo_refs(repo.scm_instance, branch_rev=branch_rev)
-            other_repos_info[repo.repo_name] = {
-                'user': dict(user_id=repo.user.user_id,
-                             username=repo.user.username,
-                             firstname=repo.user.firstname,
-                             lastname=repo.user.lastname,
-                             gravatar_link=h.gravatar_url(repo.user.email, 14)),
-                'description': repo.description.split('\n', 1)[0],
-                'revs': h.select('other_ref', selected_other_ref, other_refs, class_='refs')
-            }
+        c.org_refs, c.default_org_ref = self._get_repo_refs(org_scm_instance, rev=org_rev, branch=branch)
 
         # add org repo to other so we can open pull request against peer branches on itself
-        add_other_repo(org_repo, branch_rev=org_rev)
-        c.default_other_repo = org_repo.repo_name
+        c.other_repos = [(org_repo.repo_name, '%s (self)' % org_repo.repo_name)]
+
+        # add parent of this fork also and select it
+        if org_repo.parent:
+            c.other_repos.append((org_repo.parent.repo_name, '%s (parent)' % org_repo.parent.repo_name))
+            c.other_repo = org_repo.parent
+            c.other_refs, c.default_other_ref = self._get_repo_refs(org_repo.parent.scm_instance)
+        else:
+            c.other_repo = org_repo
+            c.other_refs, c.default_other_ref = self._get_repo_refs(org_scm_instance) # without rev and branch
 
         # gather forks and add to this list ... even though it is rare to
         # request forks to pull from their parent
         for fork in org_repo.forks:
-            add_other_repo(fork)
-
-        # add parents of this fork also, but only if it's not empty
-        if org_repo.parent and org_repo.parent.scm_instance.revisions:
-            add_other_repo(org_repo.parent)
-            c.default_other_repo = org_repo.parent.repo_name
-
-        c.default_other_repo_info = other_repos_info[c.default_other_repo]
-        c.other_repos_info = json.dumps(other_repos_info)
+            c.other_repos.append((fork.repo_name, fork.repo_name))
 
         return render('/pullrequests/pullrequest.html')
+
+    @LoginRequired()
+    @NotAnonymous()
+    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
+                                   'repository.admin')
+    @jsonify
+    def repo_info(self, repo_name):
+        repo = RepoModel()._get_repo(repo_name)
+        refs, selected_ref = self._get_repo_refs(repo.scm_instance)
+        return {
+            'description': repo.description.split('\n', 1)[0],
+            'selected_ref': selected_ref,
+            'refs': refs,
+            'user': dict(user_id=repo.user.user_id,
+                         username=repo.user.username,
+                         firstname=repo.user.firstname,
+                         lastname=repo.user.lastname,
+                         gravatar_link=h.gravatar_url(repo.user.email, 14)),
+            }
 
     @LoginRequired()
     @NotAnonymous()
