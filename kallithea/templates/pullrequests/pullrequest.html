@@ -56,7 +56,7 @@ ${self.repo_context_bar('showpullrequest')}
                             <b>${_('Origin repository')}:</b> <span id="org_repo_desc">${c.db_repo.description.split('\n')[0]}</span>
                             </div>
                             <div>
-                            ${h.select('org_repo','',c.org_repos,class_='refs')}:${h.select('org_ref',c.default_org_ref,c.org_refs,class_='refs')}
+                            ${h.select('org_repo','',c.cs_repos,class_='refs')}:${h.select('org_ref',c.default_cs_ref,c.cs_refs,class_='refs')}
                             </div>
                             <div style="padding:5px 3px 3px 3px;">
                             <b>${_('Revision')}:</b> <span id="org_rev_span">-</span>
@@ -69,10 +69,10 @@ ${self.repo_context_bar('showpullrequest')}
                         <div>
                             ## filled with JS
                             <div style="padding:5px 3px 3px 3px;">
-                            <b>${_('Destination repository')}:</b> <span id="other_repo_desc">${c.other_repo.description.split('\n')[0]}</span>
+                            <b>${_('Destination repository')}:</b> <span id="other_repo_desc">${c.a_repo.description.split('\n')[0]}</span>
                             </div>
                             <div>
-                            ${h.select('other_repo',c.other_repo.repo_name,c.other_repos,class_='refs')}:${h.select('other_ref',c.default_other_ref,c.other_refs,class_='refs')}
+                            ${h.select('other_repo',c.a_repo.repo_name,c.a_repos,class_='refs')}:${h.select('other_ref',c.default_a_ref,c.a_refs,class_='refs')}
                             </div>
                             <div style="padding:5px 3px 3px 3px;">
                             <b>${_('Revision')}:</b> <span id="other_rev_span">-</span>
@@ -99,7 +99,7 @@ ${self.repo_context_bar('showpullrequest')}
               ## members goes here !
               <div>
                 <ul id="review_members" class="group_members">
-                %for member in [c.other_repo.user]:
+                %for member in [c.a_repo.user]:
                   <li id="reviewer_${member.user_id}">
                     <div class="reviewers_member">
                       <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email, 14)}"/> </div>

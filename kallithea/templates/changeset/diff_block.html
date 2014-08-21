@@ -78,20 +78,20 @@
                   ## TODO: link to ancestor and head of other instead of exactly other
                   %if op == 'A':
                     ${_('Added')}
-                    <a class="spantag" href="${h.url('files_home', repo_name=c.org_repo.repo_name, f_path=filenode_path, revision=c.org_rev)}">${h.short_id(c.org_ref_name) if c.org_ref_type=='rev' else c.org_ref_name}</a>
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.cs_repo.repo_name, f_path=filenode_path, revision=c.cs_rev)}">${h.short_id(c.cs_ref_name) if c.cs_ref_type=='rev' else c.cs_ref_name}</a>
                   %elif op == 'M':
-                    <a class="spantag" href="${h.url('files_home', repo_name=c.org_repo.repo_name, f_path=filenode_path, revision=c.org_rev)}">${h.short_id(c.org_ref_name) if c.org_ref_type=='rev' else c.org_ref_name}</a>
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.cs_repo.repo_name, f_path=filenode_path, revision=c.cs_rev)}">${h.short_id(c.cs_ref_name) if c.cs_ref_type=='rev' else c.cs_ref_name}</a>
                     <i class="icon-arrow-right"></i>
-                    <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.other_rev)}">${h.short_id(c.other_ref_name) if c.other_ref_type=='rev' else c.other_ref_name}</a>
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.a_repo.repo_name, f_path=filenode_path, revision=c.a_rev)}">${h.short_id(c.a_ref_name) if c.a_ref_type=='rev' else c.a_ref_name}</a>
                   %elif op == 'D':
                     ${_('Deleted')}
-                    <a class="spantag" href="${h.url('files_home', repo_name=c.other_repo.repo_name, f_path=filenode_path, revision=c.other_rev)}">${h.short_id(c.other_ref_name) if c.other_ref_type=='rev' else c.other_ref_name}</a>
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.a_repo.repo_name, f_path=filenode_path, revision=c.a_rev)}">${h.short_id(c.a_ref_name) if c.a_ref_type=='rev' else c.a_ref_name}</a>
                   %else:
                     ${op}???
                   %endif
               </div>
               <div class="diff-actions">
-                <a href="${h.url('files_diff_2way_home',repo_name=c.org_repo.repo_name,f_path=h.safe_unicode(filenode_path),diff1=c.other_rev,diff2=c.org_rev,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
+                <a href="${h.url('files_diff_2way_home',repo_name=c.cs_repo.repo_name,f_path=h.safe_unicode(filenode_path),diff1=c.a_rev,diff2=c.cs_rev,diff='diff',fulldiff=1)}" class="tooltip" title="${h.tooltip(_('Show full side-by-side diff for this file'))}">
                   <img class="icon" src="${h.url('/images/icons/application_double.png')}"/>
                 </a>
                 ${c.ignorews_url(request.GET)}
@@ -110,11 +110,11 @@
               <div style="font-size: 0">
                 %if op == 'M':
                   <img id="${h.FID('',filenode_path)}_image-diff-img-a" class="img-diff img-diff-swapable" style="display:none"
-                      realsrc="${h.url('files_raw_home',repo_name=c.other_repo.repo_name,revision=c.other_rev,f_path=filenode_path) if op in 'DM' else ''}" />
+                      realsrc="${h.url('files_raw_home',repo_name=c.a_repo.repo_name,revision=c.a_rev,f_path=filenode_path) if op in 'DM' else ''}" />
                 %endif
                 %if op in 'AM':
                   <img id="${h.FID('',filenode_path)}_image-diff-img-b" class="img-diff img-diff-swapable" style="display:none"
-                      realsrc="${h.url('files_raw_home',repo_name=c.org_repo.repo_name,revision=c.org_rev,f_path=filenode_path) if op in 'AM' else ''}" />
+                      realsrc="${h.url('files_raw_home',repo_name=c.cs_repo.repo_name,revision=c.cs_rev,f_path=filenode_path) if op in 'AM' else ''}" />
                 %endif
               </div>
             %endif

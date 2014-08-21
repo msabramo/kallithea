@@ -149,9 +149,9 @@ class CompareController(BaseRepoController):
         c.compare_home = True
         org_repo = c.db_repo.repo_name
         other_repo = request.GET.get('other_repo', org_repo)
-        c.org_repo = Repository.get_by_repo_name(org_repo)
-        c.other_repo = Repository.get_by_repo_name(other_repo)
-        c.org_ref_name = c.other_ref_name = _('Select changeset')
+        c.a_repo = Repository.get_by_repo_name(org_repo)
+        c.cs_repo = Repository.get_by_repo_name(other_repo)
+        c.a_ref_name = c.cs_ref_name = _('Select changeset')
         return render('compare/compare_diff.html')
 
     @LoginRequired()
@@ -210,27 +210,27 @@ class CompareController(BaseRepoController):
             h.flash(msg, category='error')
             return redirect(url('compare_home', repo_name=c.repo_name))
 
-        c.org_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name)
-        c.other_rev = self._get_ref_rev(other_repo, other_ref_type, other_ref_name)
+        c.a_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name)
+        c.cs_rev = self._get_ref_rev(other_repo, other_ref_type, other_ref_name)
 
         c.compare_home = False
-        c.org_repo = org_repo
-        c.other_repo = other_repo
-        c.org_ref_name = org_ref_name
-        c.other_ref_name = other_ref_name
-        c.org_ref_type = org_ref_type
-        c.other_ref_type = other_ref_type
+        c.a_repo = org_repo
+        c.cs_repo = other_repo
+        c.a_ref_name = org_ref_name
+        c.cs_ref_name = other_ref_name
+        c.a_ref_type = org_ref_type
+        c.cs_ref_type = other_ref_type
 
         c.cs_repo = other_repo
         c.cs_ranges, c.cs_ranges_org, c.ancestor = self._get_changesets(
-            org_repo.scm_instance.alias, org_repo.scm_instance, c.org_rev,
-            other_repo.scm_instance, c.other_rev)
+            org_repo.scm_instance.alias, org_repo.scm_instance, c.a_rev,
+            other_repo.scm_instance, c.cs_rev)
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = other_repo.get_comments(raw_ids)
         c.statuses = other_repo.statuses(raw_ids)
 
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
-        c.jsdata = json.dumps(graph_data(c.other_repo.scm_instance, revs))
+        c.jsdata = json.dumps(graph_data(c.cs_repo.scm_instance, revs))
 
         if partial:
             return render('compare/compare_cs.html')
@@ -239,7 +239,7 @@ class CompareController(BaseRepoController):
             # previewing what will be merged.
             # Make the diff on the other repo (which is known to have other_rev)
             log.debug('Using ancestor %s as rev1 instead of %s'
-                      % (c.ancestor, c.org_rev))
+                      % (c.ancestor, c.a_rev))
             rev1 = c.ancestor
             org_repo = other_repo
         else: # comparing tips, not necessarily linearly related
@@ -250,13 +250,13 @@ class CompareController(BaseRepoController):
                 log.error('cannot compare across repos %s and %s', org_repo, other_repo)
                 h.flash(_('Cannot compare repositories without using common ancestor'), category='error')
                 raise HTTPBadRequest
-            rev1 = c.org_rev
+            rev1 = c.a_rev
 
         diff_limit = self.cut_off_limit if not c.fulldiff else None
 
         log.debug('running diff between %s and %s in %s'
-                  % (rev1, c.other_rev, org_repo.scm_instance.path))
-        txtdiff = org_repo.scm_instance.get_diff(rev1=rev1, rev2=c.other_rev,
+                  % (rev1, c.cs_rev, org_repo.scm_instance.path))
+        txtdiff = org_repo.scm_instance.get_diff(rev1=rev1, rev2=c.cs_rev,
                                       ignore_whitespace=ignore_whitespace,
                                       context=line_context)
 

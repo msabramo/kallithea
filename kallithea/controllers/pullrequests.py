@@ -259,26 +259,26 @@ class PullrequestsController(BaseRepoController):
         #other_rev = request.POST.get('rev_start')
         branch = request.GET.get('branch')
 
-        c.org_repos = [(org_repo.repo_name, org_repo.repo_name)]
-        c.default_org_repo = org_repo.repo_name
-        c.org_refs, c.default_org_ref = self._get_repo_refs(org_scm_instance, rev=org_rev, branch=branch)
+        c.cs_repos = [(org_repo.repo_name, org_repo.repo_name)]
+        c.default_cs_repo = org_repo.repo_name
+        c.cs_refs, c.default_cs_ref = self._get_repo_refs(org_scm_instance, rev=org_rev, branch=branch)
 
         # add org repo to other so we can open pull request against peer branches on itself
-        c.other_repos = [(org_repo.repo_name, '%s (self)' % org_repo.repo_name)]
+        c.a_repos = [(org_repo.repo_name, '%s (self)' % org_repo.repo_name)]
 
         # add parent of this fork also and select it
         if org_repo.parent:
-            c.other_repos.append((org_repo.parent.repo_name, '%s (parent)' % org_repo.parent.repo_name))
-            c.other_repo = org_repo.parent
-            c.other_refs, c.default_other_ref = self._get_repo_refs(org_repo.parent.scm_instance)
+            c.a_repos.append((org_repo.parent.repo_name, '%s (parent)' % org_repo.parent.repo_name))
+            c.a_repo = org_repo.parent
+            c.a_refs, c.default_a_ref = self._get_repo_refs(org_repo.parent.scm_instance)
         else:
-            c.other_repo = org_repo
-            c.other_refs, c.default_other_ref = self._get_repo_refs(org_scm_instance) # without rev and branch
+            c.a_repo = org_repo
+            c.a_refs, c.default_a_ref = self._get_repo_refs(org_scm_instance) # without rev and branch
 
         # gather forks and add to this list ... even though it is rare to
         # request forks to pull from their parent
         for fork in org_repo.forks:
-            c.other_repos.append((fork.repo_name, fork.repo_name))
+            c.a_repos.append((fork.repo_name, fork.repo_name))
 
         return render('/pullrequests/pullrequest.html')
 
@@ -553,32 +553,32 @@ class PullrequestsController(BaseRepoController):
             raise HTTPNotFound
 
         # load compare data into template context
-        c.org_repo = c.pull_request.org_repo
-        (c.org_ref_type,
-         c.org_ref_name,
-         c.org_rev) = c.pull_request.org_ref.split(':')
+        c.cs_repo = c.pull_request.org_repo
+        (c.cs_ref_type,
+         c.cs_ref_name,
+         c.cs_rev) = c.pull_request.org_ref.split(':')
 
-        c.other_repo = c.pull_request.other_repo
-        (c.other_ref_type,
-         c.other_ref_name,
-         c.other_rev) = c.pull_request.other_ref.split(':') # other_rev is ancestor
+        c.a_repo = c.pull_request.other_repo
+        (c.a_ref_type,
+         c.a_ref_name,
+         c.a_rev) = c.pull_request.other_ref.split(':') # other_rev is ancestor
 
-        org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
-        c.cs_repo = c.org_repo
+        org_scm_instance = c.cs_repo.scm_instance # property with expensive cache invalidation check!!!
+        c.cs_repo = c.cs_repo
         c.cs_ranges = [org_scm_instance.get_changeset(x) for x in c.pull_request.revisions]
         c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
         c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
 
         c.available = []
-        c.org_branch_name = c.org_ref_name
-        other_scm_instance = c.other_repo.scm_instance
-        if org_scm_instance.alias == 'hg' and c.other_ref_name != 'ancestor':
-            if c.org_ref_type != 'branch':
-                c.org_branch_name = org_scm_instance.get_changeset(c.org_ref_name).branch # use ref_type ?
-            other_branch_name = c.other_ref_name
-            if c.other_ref_type != 'branch':
-                other_branch_name = other_scm_instance.get_changeset(c.other_ref_name).branch # use ref_type ?
+        c.cs_branch_name = c.cs_ref_name
+        other_scm_instance = c.a_repo.scm_instance
+        if org_scm_instance.alias == 'hg' and c.a_ref_name != 'ancestor':
+            if c.cs_ref_type != 'branch':
+                c.cs_branch_name = org_scm_instance.get_changeset(c.cs_ref_name).branch # use ref_type ?
+            other_branch_name = c.a_ref_name
+            if c.a_ref_type != 'branch':
+                other_branch_name = other_scm_instance.get_changeset(c.a_ref_name).branch # use ref_type ?
             # candidates: descendants of old head that are on the right branch
             #             and not are the old head itself ...
             #             and nothing at all if old head is a descendent of target ref name
@@ -586,26 +586,26 @@ class PullrequestsController(BaseRepoController):
                 c.update_msg = _('This pull request has already been merged to %s.') % other_branch_name
             else: # look for children of PR head on source branch in org repo
                 arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
-                                                    revs[0], c.org_branch_name, revs[0])
+                                                    revs[0], c.cs_branch_name, revs[0])
                 if arevs:
                     if c.pull_request.is_closed():
-                        c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.org_branch_name
+                        c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.cs_branch_name
                     else:
-                        c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.org_branch_name
+                        c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.cs_branch_name
                     c.available = [org_scm_instance.get_changeset(x) for x in arevs]
                 else:
                     c.update_msg = _('No changesets found for updating this pull request.')
 
-            revs = org_scm_instance._repo.revs('head() & not (%s::) & branch(%s) & !closed()', revs[0], c.org_branch_name)
+            revs = org_scm_instance._repo.revs('head() & not (%s::) & branch(%s) & !closed()', revs[0], c.cs_branch_name)
             if revs:
-                c.update_msg_other = _('Note: Branch %s also contains unrelated changes, such as %s.') % (c.org_branch_name,
+                c.update_msg_other = _('Note: Branch %s also contains unrelated changes, such as %s.') % (c.cs_branch_name,
                     h.short_id(org_scm_instance.get_changeset((max(revs))).raw_id))
             else:
-                c.update_msg_other = _('Branch %s does not contain other changes.') % c.org_branch_name
+                c.update_msg_other = _('Branch %s does not contain other changes.') % c.cs_branch_name
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
-        c.cs_comments = c.org_repo.get_comments(raw_ids)
-        c.statuses = c.org_repo.statuses(raw_ids)
+        c.cs_comments = c.cs_repo.get_comments(raw_ids)
+        c.statuses = c.cs_repo.statuses(raw_ids)
 
         ignore_whitespace = request.GET.get('ignorews') == '1'
         line_context = request.GET.get('context', 3)
@@ -616,8 +616,8 @@ class PullrequestsController(BaseRepoController):
 
         # we swap org/other ref since we run a simple diff on one repo
         log.debug('running diff between %s and %s in %s'
-                  % (c.other_rev, c.org_rev, org_scm_instance.path))
-        txtdiff = org_scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev),
+                  % (c.a_rev, c.cs_rev, org_scm_instance.path))
+        txtdiff = org_scm_instance.get_diff(rev1=safe_str(c.a_rev), rev2=safe_str(c.cs_rev),
                                       ignore_whitespace=ignore_whitespace,
                                       context=line_context)
 

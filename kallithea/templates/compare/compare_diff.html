@@ -5,7 +5,7 @@
     %if c.compare_home:
         ${_('%s Compare') % c.repo_name}
     %else:
-        ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.org_repo.repo_name, c.org_ref_name)} &gt; ${'%s@%s' % (c.other_repo.repo_name, c.other_ref_name)}
+        ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.a_repo.repo_name, c.a_ref_name)} &gt; ${'%s@%s' % (c.cs_repo.repo_name, c.cs_ref_name)}
     %endif
     %if c.site_name:
         &middot; ${c.site_name}
@@ -97,9 +97,9 @@ ${self.repo_context_bar('changelog')}
    $(document).ready(function(){
     var cache = {}
     $("#compare_org").select2({
-        placeholder: "${'%s@%s' % (c.org_repo.repo_name, c.org_ref_name)}",
+        placeholder: "${'%s@%s' % (c.a_repo.repo_name, c.a_ref_name)}",
         formatSelection: function(obj){
-            return '{0}@{1}'.format("${c.org_repo.repo_name}", obj.text)
+            return '{0}@{1}'.format("${c.a_repo.repo_name}", obj.text)
         },
         dropdownAutoWidth: true,
         query: function(query){
@@ -124,7 +124,7 @@ ${self.repo_context_bar('changelog')}
             query.callback(data);
           }else{
               $.ajax({
-                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.org_repo.repo_name}'}),
+                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.a_repo.repo_name}'}),
                 data: {},
                 dataType: 'json',
                 type: 'GET',
@@ -137,10 +137,10 @@ ${self.repo_context_bar('changelog')}
         },
     });
     $("#compare_other").select2({
-        placeholder: "${'%s@%s' % (c.other_repo.repo_name, c.other_ref_name)}",
+        placeholder: "${'%s@%s' % (c.cs_repo.repo_name, c.cs_ref_name)}",
         dropdownAutoWidth: true,
         formatSelection: function(obj){
-            return '{0}@{1}'.format("${c.other_repo.repo_name}", obj.text)
+            return '{0}@{1}'.format("${c.cs_repo.repo_name}", obj.text)
         },
         query: function(query){
           var key = 'cache2';
@@ -164,7 +164,7 @@ ${self.repo_context_bar('changelog')}
             query.callback(data);
           }else{
               $.ajax({
-                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.other_repo.repo_name}'}),
+                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.cs_repo.repo_name}'}),
                 data: {},
                 dataType: 'json',
                 type: 'GET',
@@ -197,7 +197,7 @@ ${self.repo_context_bar('changelog')}
             return;
         }
 
-        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='__other_ref_type__',org_ref_name='__org__',other_ref_type='__org_ref_type__',other_ref_name='__other__', other_repo=c.other_repo.repo_name)}";
+        var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='__other_ref_type__',org_ref_name='__org__',other_ref_type='__org_ref_type__',other_ref_name='__other__', other_repo=c.cs_repo.repo_name)}";
         var u = compare_url.replace('__other_ref_type__',org.type)
                            .replace('__org__',org.text)
                            .replace('__org_ref_type__',other.type)
