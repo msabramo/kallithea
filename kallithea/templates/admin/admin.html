@@ -38,9 +38,9 @@
 <script>
 $(document).ready(function() {
   $('#j_filter').click(function(){
-    var jfilter = $('#j_filter');
-    if(jfilter.hasClass('initial')){
-        jfilter.val('');
+    var $jfilter = $('#j_filter');
+    if($jfilter.hasClass('initial')){
+        $jfilter.val('');
     }
   });
   var fix_j_filter_width = function(len){
