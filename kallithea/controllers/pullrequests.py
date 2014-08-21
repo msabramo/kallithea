@@ -192,103 +192,6 @@ class PullrequestsController(BaseRepoController):
                                                    pull_request.reviewers]
         return self.authuser.admin or owner or reviewer
 
-    def _load_compare_data(self, pull_request, enable_comments=True):
-        """
-        Load context data needed for generating compare diff
-
-        :param pull_request:
-        """
-        c.org_repo = pull_request.org_repo
-        (c.org_ref_type,
-         c.org_ref_name,
-         c.org_rev) = pull_request.org_ref.split(':')
-
-        c.other_repo = pull_request.other_repo
-        (c.other_ref_type,
-         c.other_ref_name,
-         c.other_rev) = pull_request.other_ref.split(':') # other_rev is ancestor
-
-        org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
-        c.cs_repo = c.org_repo
-        c.cs_ranges = [org_scm_instance.get_changeset(x) for x in pull_request.revisions]
-        c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
-        revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
-        c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
-
-        c.available = []
-        c.org_branch_name = c.org_ref_name
-        other_scm_instance = c.other_repo.scm_instance
-        if org_scm_instance.alias == 'hg' and c.other_ref_name != 'ancestor':
-            if c.org_ref_type != 'branch':
-                c.org_branch_name = org_scm_instance.get_changeset(c.org_ref_name).branch # use ref_type ?
-            other_branch_name = c.other_ref_name
-            if c.other_ref_type != 'branch':
-                other_branch_name = other_scm_instance.get_changeset(c.other_ref_name).branch # use ref_type ?
-            # candidates: descendants of old head that are on the right branch
-            #             and not are the old head itself ...
-            #             and nothing at all if old head is a descendent of target ref name
-            if other_scm_instance._repo.revs('present(%s)::&%s', c.cs_ranges[-1].raw_id, other_branch_name):
-                c.update_msg = _('This pull request has already been merged to %s.') % other_branch_name
-            else: # look for children of PR head on source branch in org repo
-                arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
-                                                    revs[0], c.org_branch_name, revs[0])
-                if arevs:
-                    if c.pull_request.is_closed():
-                        c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.org_branch_name
-                    else:
-                        c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.org_branch_name
-                    c.available = [org_scm_instance.get_changeset(x) for x in arevs]
-                else:
-                    c.update_msg = _('No changesets found for updating this pull request.')
-
-            revs = org_scm_instance._repo.revs('head() & not (%s::) & branch(%s) & !closed()', revs[0], c.org_branch_name)
-            if revs:
-                c.update_msg_other = _('Note: Branch %s also contains unrelated changes, such as %s.') % (c.org_branch_name,
-                    h.short_id(org_scm_instance.get_changeset((max(revs))).raw_id))
-            else:
-                c.update_msg_other = _('Branch %s does not contain other changes.') % c.org_branch_name
-
-        raw_ids = [x.raw_id for x in c.cs_ranges]
-        c.cs_comments = c.org_repo.get_comments(raw_ids)
-        c.statuses = c.org_repo.statuses(raw_ids)
-
-        ignore_whitespace = request.GET.get('ignorews') == '1'
-        line_context = request.GET.get('context', 3)
-        c.ignorews_url = _ignorews_url
-        c.context_url = _context_url
-        c.fulldiff = request.GET.get('fulldiff')
-        diff_limit = self.cut_off_limit if not c.fulldiff else None
-
-        # we swap org/other ref since we run a simple diff on one repo
-        log.debug('running diff between %s and %s in %s'
-                  % (c.other_rev, c.org_rev, org_scm_instance.path))
-        txtdiff = org_scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev),
-                                      ignore_whitespace=ignore_whitespace,
-                                      context=line_context)
-
-        diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
-                                             diff_limit=diff_limit)
-        _parsed = diff_processor.prepare()
-
-        c.limited_diff = False
-        if isinstance(_parsed, LimitedDiffContainer):
-            c.limited_diff = True
-
-        c.files = []
-        c.changes = {}
-        c.lines_added = 0
-        c.lines_deleted = 0
-
-        for f in _parsed:
-            st = f['stats']
-            c.lines_added += st['added']
-            c.lines_deleted += st['deleted']
-            fid = h.FID('', f['filename'])
-            c.files.append([fid, f['operation'], f['filename'], f['stats']])
-            htmldiff = diff_processor.as_html(enable_comments=enable_comments,
-                                              parsed_lines=[f])
-            c.changes[fid] = [f['operation'], f['filename'], htmldiff]
-
     @LoginRequired()
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
@@ -650,7 +553,96 @@ class PullrequestsController(BaseRepoController):
             raise HTTPNotFound
 
         # load compare data into template context
-        self._load_compare_data(c.pull_request, enable_comments=True)
+        c.org_repo = c.pull_request.org_repo
+        (c.org_ref_type,
+         c.org_ref_name,
+         c.org_rev) = c.pull_request.org_ref.split(':')
+
+        c.other_repo = c.pull_request.other_repo
+        (c.other_ref_type,
+         c.other_ref_name,
+         c.other_rev) = c.pull_request.other_ref.split(':') # other_rev is ancestor
+
+        org_scm_instance = c.org_repo.scm_instance # property with expensive cache invalidation check!!!
+        c.cs_repo = c.org_repo
+        c.cs_ranges = [org_scm_instance.get_changeset(x) for x in c.pull_request.revisions]
+        c.cs_ranges_org = None # not stored and not important and moving target - could be calculated ...
+        revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
+        c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
+
+        c.available = []
+        c.org_branch_name = c.org_ref_name
+        other_scm_instance = c.other_repo.scm_instance
+        if org_scm_instance.alias == 'hg' and c.other_ref_name != 'ancestor':
+            if c.org_ref_type != 'branch':
+                c.org_branch_name = org_scm_instance.get_changeset(c.org_ref_name).branch # use ref_type ?
+            other_branch_name = c.other_ref_name
+            if c.other_ref_type != 'branch':
+                other_branch_name = other_scm_instance.get_changeset(c.other_ref_name).branch # use ref_type ?
+            # candidates: descendants of old head that are on the right branch
+            #             and not are the old head itself ...
+            #             and nothing at all if old head is a descendent of target ref name
+            if other_scm_instance._repo.revs('present(%s)::&%s', c.cs_ranges[-1].raw_id, other_branch_name):
+                c.update_msg = _('This pull request has already been merged to %s.') % other_branch_name
+            else: # look for children of PR head on source branch in org repo
+                arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
+                                                    revs[0], c.org_branch_name, revs[0])
+                if arevs:
+                    if c.pull_request.is_closed():
+                        c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.org_branch_name
+                    else:
+                        c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.org_branch_name
+                    c.available = [org_scm_instance.get_changeset(x) for x in arevs]
+                else:
+                    c.update_msg = _('No changesets found for updating this pull request.')
+
+            revs = org_scm_instance._repo.revs('head() & not (%s::) & branch(%s) & !closed()', revs[0], c.org_branch_name)
+            if revs:
+                c.update_msg_other = _('Note: Branch %s also contains unrelated changes, such as %s.') % (c.org_branch_name,
+                    h.short_id(org_scm_instance.get_changeset((max(revs))).raw_id))
+            else:
+                c.update_msg_other = _('Branch %s does not contain other changes.') % c.org_branch_name
+
+        raw_ids = [x.raw_id for x in c.cs_ranges]
+        c.cs_comments = c.org_repo.get_comments(raw_ids)
+        c.statuses = c.org_repo.statuses(raw_ids)
+
+        ignore_whitespace = request.GET.get('ignorews') == '1'
+        line_context = request.GET.get('context', 3)
+        c.ignorews_url = _ignorews_url
+        c.context_url = _context_url
+        c.fulldiff = request.GET.get('fulldiff')
+        diff_limit = self.cut_off_limit if not c.fulldiff else None
+
+        # we swap org/other ref since we run a simple diff on one repo
+        log.debug('running diff between %s and %s in %s'
+                  % (c.other_rev, c.org_rev, org_scm_instance.path))
+        txtdiff = org_scm_instance.get_diff(rev1=safe_str(c.other_rev), rev2=safe_str(c.org_rev),
+                                      ignore_whitespace=ignore_whitespace,
+                                      context=line_context)
+
+        diff_processor = diffs.DiffProcessor(txtdiff or '', format='gitdiff',
+                                             diff_limit=diff_limit)
+        _parsed = diff_processor.prepare()
+
+        c.limited_diff = False
+        if isinstance(_parsed, LimitedDiffContainer):
+            c.limited_diff = True
+
+        c.files = []
+        c.changes = {}
+        c.lines_added = 0
+        c.lines_deleted = 0
+
+        for f in _parsed:
+            st = f['stats']
+            c.lines_added += st['added']
+            c.lines_deleted += st['deleted']
+            fid = h.FID('', f['filename'])
+            c.files.append([fid, f['operation'], f['filename'], f['stats']])
+            htmldiff = diff_processor.as_html(enable_comments=True,
+                                              parsed_lines=[f])
+            c.changes[fid] = [f['operation'], f['filename'], htmldiff]
 
         # inline comments
         c.inline_cnt = 0
