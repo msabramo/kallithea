@@ -221,40 +221,40 @@ summary = lambda n:{False:'summary-short'}.get(n)
 %endif
 
 <script type="text/javascript">
-var $clone_url = $('#clone_url');
-var $clone_url_id = $('#clone_url_id');
-var $clone_by_name = $('#clone_by_name');
-var $clone_by_id = $('#clone_by_id');
-$clone_url.click(function(e){
-    if($clone_url.hasClass('selected')){
-        return ;
-    }else{
-        $clone_url.addClass('selected');
-        $clone_url.select();
-    }
-});
-
-$clone_by_name.click(function(e){
-    // show url by name and hide name button
-    $clone_url.show();
-    $clone_by_name.hide();
-
-    // hide url by id and show name button
-    $clone_by_id.show();
-    $clone_url_id.hide();
-});
-
-$clone_by_id.click(function(e){
-    // show url by id and hide id button
-    $clone_by_id.hide();
-    $clone_url_id.show();
-
-    // hide url by name and show id button
-    $clone_by_name.show();
-    $clone_url.hide();
-});
-
 $(document).ready(function(){
+    var $clone_url = $('#clone_url');
+    var $clone_url_id = $('#clone_url_id');
+    var $clone_by_name = $('#clone_by_name');
+    var $clone_by_id = $('#clone_by_id');
+    $clone_url.click(function(e){
+        if($clone_url.hasClass('selected')){
+            return ;
+        }else{
+            $clone_url.addClass('selected');
+            $clone_url.select();
+        }
+    });
+
+    $clone_by_name.click(function(e){
+        // show url by name and hide name button
+        $clone_url.show();
+        $clone_by_name.hide();
+
+        // hide url by id and show name button
+        $clone_by_id.show();
+        $clone_url_id.hide();
+    });
+
+    $clone_by_id.click(function(e){
+        // show url by id and hide id button
+        $clone_by_id.hide();
+        $clone_url_id.show();
+
+        // hide url by name and show id button
+        $clone_by_name.show();
+        $clone_url.hide();
+    });
+
     var cache = {}
     $("#download_options").select2({
         placeholder: _TM['Select changeset'],
@@ -320,77 +320,79 @@ $(document).ready(function(){
 
 %if c.show_stats:
 <script type="text/javascript">
-var data = ${c.trending_languages|n};
-var total = 0;
-var no_data = true;
-var tbl = document.createElement('table');
-tbl.setAttribute('class','trending_language_tbl');
-var cnt = 0;
-for (var i=0;i<data.length;i++){
-    total+= data[i][1].count;
-}
-for (var i=0;i<data.length;i++){
-    cnt += 1;
-    no_data = false;
-
-    var hide = cnt>2;
-    var tr = document.createElement('tr');
-    if (hide){
-        tr.setAttribute('style','display:none');
-        tr.setAttribute('class','stats_hidden');
+$(document).ready(function(){
+    var data = ${c.trending_languages|n};
+    var total = 0;
+    var no_data = true;
+    var tbl = document.createElement('table');
+    tbl.setAttribute('class','trending_language_tbl');
+    var cnt = 0;
+    for (var i=0;i<data.length;i++){
+        total+= data[i][1].count;
     }
-    var k = data[i][0];
-    var obj = data[i][1];
-    var percentage = Math.round((obj.count/total*100),2);
+    for (var i=0;i<data.length;i++){
+        cnt += 1;
+        no_data = false;
 
-    var td1 = document.createElement('td');
-    td1.width = 150;
-    var trending_language_label = document.createElement('div');
-    trending_language_label.innerHTML = obj.desc+" ("+k+")";
-    td1.appendChild(trending_language_label);
+        var hide = cnt>2;
+        var tr = document.createElement('tr');
+        if (hide){
+            tr.setAttribute('style','display:none');
+            tr.setAttribute('class','stats_hidden');
+        }
+        var k = data[i][0];
+        var obj = data[i][1];
+        var percentage = Math.round((obj.count/total*100),2);
 
-    var td2 = document.createElement('td');
-    td2.setAttribute('style','padding-right:14px !important');
-    var trending_language = document.createElement('div');
-    var nr_files = obj.count+" ${_('files')}";
+        var td1 = document.createElement('td');
+        td1.width = 150;
+        var trending_language_label = document.createElement('div');
+        trending_language_label.innerHTML = obj.desc+" ("+k+")";
+        td1.appendChild(trending_language_label);
 
-    trending_language.title = k+" "+nr_files;
+        var td2 = document.createElement('td');
+        td2.setAttribute('style','padding-right:14px !important');
+        var trending_language = document.createElement('div');
+        var nr_files = obj.count+" ${_('files')}";
 
-    if (percentage>22){
-        trending_language.innerHTML = "<b style='font-size:0.8em'>"+percentage+"% "+nr_files+ "</b>";
+        trending_language.title = k+" "+nr_files;
+
+        if (percentage>22){
+            trending_language.innerHTML = "<b style='font-size:0.8em'>"+percentage+"% "+nr_files+ "</b>";
+        }
+        else{
+            trending_language.innerHTML = "<b style='font-size:0.8em'>"+percentage+"%</b>";
+        }
+
+        trending_language.setAttribute("class", 'trending_language top-right-rounded-corner bottom-right-rounded-corner');
+        trending_language.style.width=percentage+"%";
+        td2.appendChild(trending_language);
+
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tbl.appendChild(tr);
+        if(cnt == 3){
+            var show_more = document.createElement('tr');
+            var td = document.createElement('td');
+            lnk = document.createElement('a');
+
+            lnk.href='#';
+            lnk.innerHTML = "${_('Show more')}";
+            lnk.id='code_stats_show_more';
+            td.appendChild(lnk);
+
+            show_more.appendChild(td);
+            show_more.appendChild(document.createElement('td'));
+            tbl.appendChild(show_more);
+        }
+
     }
-    else{
-        trending_language.innerHTML = "<b style='font-size:0.8em'>"+percentage+"%</b>";
-    }
 
-    trending_language.setAttribute("class", 'trending_language top-right-rounded-corner bottom-right-rounded-corner');
-    trending_language.style.width=percentage+"%";
-    td2.appendChild(trending_language);
-
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tbl.appendChild(tr);
-    if(cnt == 3){
-        var show_more = document.createElement('tr');
-        var td = document.createElement('td');
-        lnk = document.createElement('a');
-
-        lnk.href='#';
-        lnk.innerHTML = "${_('Show more')}";
-        lnk.id='code_stats_show_more';
-        td.appendChild(lnk);
-
-        show_more.appendChild(td);
-        show_more.appendChild(document.createElement('td'));
-        tbl.appendChild(show_more);
-    }
-
-}
-
-$('#lang_stats').appendChild(tbl);
-$('#code_status_show_more').click(function(){
-    $('.stats_hidden').show();
-    $('#code_status_show_more').hide();
+    $('#lang_stats').appendChild(tbl);
+    $('#code_status_show_more').click(function(){
+        $('.stats_hidden').show();
+        $('#code_status_show_more').hide();
+    });
 });
 </script>
 %endif
