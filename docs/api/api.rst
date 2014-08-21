@@ -222,8 +222,8 @@ OUTPUT::
     error :  null
 
 
-show_ip
--------
+get_ip
+------
 
 Shows IP address as seen from Kallithea server, together with all
 defined IP addresses for given user.
@@ -234,7 +234,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "show_ip"
+    method :  "get_ip"
     args :    {
                 "userid" : "<user_id or username>",
               }
@@ -457,8 +457,8 @@ OUTPUT::
     error:  null
 
 
-get_users_group
----------------
+get_user_group
+--------------
 
 Gets an existing user group. This command can be executed only using api_key
 belonging to user with admin rights.
@@ -468,9 +468,9 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "get_users_group"
+    method :  "get_user_group"
     args :    {
-                "usersgroupid" : "<user group id or name>"
+                "usergroupid" : "<user group id or name>"
               }
 
 OUTPUT::
@@ -501,8 +501,8 @@ OUTPUT::
     error : null
 
 
-get_users_groups
-----------------
+get_user_groups
+---------------
 
 Lists all existing user groups. This command can be executed only using
 api_key belonging to user with admin rights.
@@ -512,7 +512,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "get_users_groups"
+    method :  "get_user_groups"
     args :    { }
 
 OUTPUT::
@@ -529,8 +529,8 @@ OUTPUT::
     error : null
 
 
-create_users_group
-------------------
+create_user_group
+-----------------
 
 Creates new user group. This command can be executed only using api_key
 belonging to user with admin rights
@@ -540,7 +540,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "create_users_group"
+    method :  "create_user_group"
     args:     {
                 "group_name": "<groupname>",
                 "owner" :     "<onwer_name_or_id = Optional(=apiuser)>",
@@ -561,8 +561,8 @@ OUTPUT::
     error:  null
 
 
-add_user_to_users_group
------------------------
+add_user_to_user_group
+----------------------
 
 Adds a user to a user group. If user exists in that group success will be
 `false`. This command can be executed only using api_key
@@ -573,7 +573,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "add_user_users_group"
+    method :  "add_user_user_group"
     args:     {
                 "usersgroupid" : "<user group id or name>",
                 "userid" : "<user_id or username>",
@@ -590,8 +590,8 @@ OUTPUT::
     error:  null
 
 
-remove_user_from_users_group
-----------------------------
+remove_user_from_user_group
+---------------------------
 
 Removes a user from a user group. If user is not in given group success will
 be `false`. This command can be executed only
@@ -602,7 +602,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "remove_user_from_users_group"
+    method :  "remove_user_from_user_group"
     args:     {
                 "usersgroupid" : "<user group id or name>",
                 "userid" : "<user_id or username>",
@@ -957,8 +957,8 @@ OUTPUT::
     error:  null
 
 
-grant_users_group_permission
-----------------------------
+grant_user_group_permission
+---------------------------
 
 Grant permission for user group on given repository, or update
 existing one if found. This command can be executed only using
@@ -969,7 +969,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method :  "grant_users_group_permission"
+    method :  "grant_user_group_permission"
     args:     {
                 "repoid" : "<reponame or repo_id>"
                 "usersgroupid" : "<user group id or name>"
@@ -986,8 +986,8 @@ OUTPUT::
     error:  null
 
 
-revoke_users_group_permission
------------------------------
+revoke_user_group_permission
+----------------------------
 
 Revoke permission for user group on given repository.This command can be
 executed only using api_key belonging to user with admin rights.
@@ -996,7 +996,7 @@ INPUT::
 
     id : <id_for_response>
     api_key : "<api_key>"
-    method  : "revoke_users_group_permission"
+    method  : "revoke_user_group_permission"
     args:     {
                 "repoid" : "<reponame or repo_id>"
                 "usersgroupid" : "<user group id or name>"
