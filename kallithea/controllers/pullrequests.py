@@ -687,17 +687,16 @@ class PullrequestsController(BaseRepoController):
     def comment(self, repo_name, pull_request_id):
         pull_request = PullRequest.get_or_404(pull_request_id)
 
-        status = request.POST.get('changeset_status')
-        text = request.POST.get('text')
-        close_pr = request.POST.get('save_close')
-
+        status = 0
+        close_pr = False
         allowed_to_change_status = self._get_is_allowed_change_status(pull_request)
-        if status and allowed_to_change_status:
-            _def = (_('Status change -> %s')
-                            % ChangesetStatus.get_status_lbl(status))
-            if close_pr:
-                _def = _('Closing with') + ' ' + _def
-            text = text or _def
+        if allowed_to_change_status:
+            status = request.POST.get('changeset_status')
+            close_pr = request.POST.get('save_close')
+        text = request.POST.get('text', '').strip() or _('No comments.')
+        if close_pr:
+            text = _('Closing.') + '\n' + text
+
         comm = ChangesetCommentsModel().create(
             text=text,
             repo=c.db_repo.repo_id,

@@ -349,10 +349,7 @@ class ChangesetController(BaseRepoController):
     @jsonify
     def comment(self, repo_name, revision):
         status = request.POST.get('changeset_status')
-        text = request.POST.get('text')
-        if status:
-            text = text or (_('Status change -> %s')
-                            % ChangesetStatus.get_status_lbl(status))
+        text = request.POST.get('text', '').strip() or _('No comments.')
 
         c.co = comm = ChangesetCommentsModel().create(
             text=text,
