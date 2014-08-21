@@ -158,7 +158,7 @@ class PullrequestsController(BaseRepoController):
 
         # prio 3: most recent peer branch
         if peers and not selected:
-            selected = peers[0][0][0]
+            selected = peers[0][0]
 
         # prio 4: tip revision
         if not selected:
