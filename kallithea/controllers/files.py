@@ -189,6 +189,15 @@ class FilesController(BaseRepoController):
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
             return render('files/files_ypjax.html')
 
+        # TODO: tags and bookmarks?
+        c.revision_options = [(c.changeset.raw_id, 
+                              _('%s at %s') % (c.changeset.branch, h.short_id(c.changeset.raw_id)))] + \
+            [(n, b) for b, n in c.db_repo_scm_instance.branches.items()]
+        if c.db_repo_scm_instance.closed_branches:
+            prefix = _('(closed)') + ' '
+            c.revision_options += [('-', '-')] + \
+                [(n, prefix + b) for b, n in c.db_repo_scm_instance.closed_branches.items()]
+
         return render('files/files.html')
 
     @LoginRequired()

@@ -73,7 +73,7 @@ class TestFilesController(TestController):
                                     revision='97e8b885c04894463c51898e14387d80c30ed1ee',
                                     f_path='/'))
 
-        response.mustcontain("""<a href="#">Branch: git</a>""")
+        response.mustcontain("""<option selected="selected" value="97e8b885c04894463c51898e14387d80c30ed1ee">git at 97e8b885c048</option>""")
 
     def test_index_paging(self):
         self.log_user()
@@ -105,7 +105,7 @@ Improved test to clone into uniq repository.
 removed extra unicode conversion in diff.</div>
 """)
 
-        response.mustcontain("""<a href="#">Branch: default</a>""")
+        response.mustcontain("""<option selected="selected" value="8911406ad776fdd3d0b9932a2e89677e57405a48">default at 8911406ad776</option>""")
 
     def test_file_source_history(self):
         self.log_user()

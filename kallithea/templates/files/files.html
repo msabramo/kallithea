@@ -29,8 +29,8 @@ ${self.repo_context_bar('files', c.revision)}
     <div class="title">
         ${self.breadcrumbs()}
         <ul class="links">
-            <li>
-              <span><a href="#">${_('Branch')}: ${c.changeset.branch}</a></span>
+            <li style="color:white">
+              ${_("Branch filter:")} ${h.select('branch_selector',c.changeset.raw_id,c.revision_options)}
             </li>
         </ul>
     </div>
@@ -239,6 +239,23 @@ $(document).ready(function(){
        }
     }
     fileBrowserListeners(_State.url, _State.data.node_list_url, _State.data.url_base);
+
+    // change branch filter
+    $("#branch_selector").select2({
+        dropdownAutoWidth: true,
+        minimumInputLength: 1,
+        });
+
+    $("#branch_selector").change(function(e){
+        var selected = e.currentTarget.options[e.currentTarget.selectedIndex].value;
+        if(selected && selected != "${c.changeset.raw_id}"){
+            window.location = pyroutes.url('files_home', {'repo_name': "${h.safe_unicode(c.repo_name)}", 'revision': selected, 'f_path': "${h.safe_unicode(c.file.path)}"});
+            $("#browserblock").hide();
+        } else {
+            $("#branch_selector").val("${c.changeset.raw_id}");
+        }
+    });
+
 });
 
 </script>
