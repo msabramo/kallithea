@@ -49,7 +49,7 @@ $(document).ready(function() {
   $('#j_filter').keyup(function () {
     fix_j_filter_width($('#j_filter').val().length);
   });
-  $('filter_form').submit(function (e) {
+  $('#filter_form').submit(function (e) {
       e.preventDefault();
       var val = $('#j_filter').val();
       window.location = "${url.current(filter='__FILTER__')}".replace('__FILTER__',val);
