@@ -215,13 +215,12 @@ class CompareController(BaseRepoController):
 
         c.compare_home = False
         c.a_repo = org_repo
-        c.cs_repo = other_repo
         c.a_ref_name = org_ref_name
-        c.cs_ref_name = other_ref_name
         c.a_ref_type = org_ref_type
+        c.cs_repo = other_repo
+        c.cs_ref_name = other_ref_name
         c.cs_ref_type = other_ref_type
 
-        c.cs_repo = other_repo
         c.cs_ranges, c.cs_ranges_org, c.ancestor = self._get_changesets(
             org_repo.scm_instance.alias, org_repo.scm_instance, c.a_rev,
             other_repo.scm_instance, c.cs_rev)

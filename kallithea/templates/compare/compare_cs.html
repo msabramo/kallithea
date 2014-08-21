@@ -83,7 +83,7 @@
         ${_('is')}
         <a href="${c.swap_url}">${_('%s changesets') % (len(c.cs_ranges_org))}</a>
         ${_('behind')}
-        ${h.link_to_ref(c.a_repo.repo_name, c.a_ref_type, c.a_ref_name, c.a_rev)}
+        ${h.link_to_ref(c.a_repo.repo_name, c.a_ref_type, c.a_ref_name)}
       </div>
     %endif
   %endif
