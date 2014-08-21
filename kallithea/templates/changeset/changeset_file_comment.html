@@ -148,7 +148,7 @@
             <div class="comment-help">
                 ${(_('Comments parsed using %s syntax with %s support.') % (('<a href="%s">RST</a>' % h.url('rst_help')),
                   '<span style="color:#577632" class="tooltip" title="%s">@mention</span>' %
-                  _('Use @username inside this text to send notification to this Kallithea user')))|n}
+                  _('Use @username inside this text to send notification to another local user.')))|n}
             </div>
             <div class="mentions-container" id="mentions_container"></div>
             ${h.textarea('text', class_="comment-block-ta")}
