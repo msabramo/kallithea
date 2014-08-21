@@ -29,6 +29,10 @@ function BranchRenderer(canvas_id, content_id) {
 	
 	if (!document.createElement("canvas").getContext)
 		this.canvas = window.G_vmlCanvasManager.initElement(this.canvas);
+	if (!this.canvas) { // canvas creation did for some reason fail - fail silently
+		this.render = function(data,canvasWidth) {};
+		return;
+	}
 	this.ctx = this.canvas.getContext('2d');
 	this.ctx.strokeStyle = 'rgb(0, 0, 0)';
 	this.ctx.fillStyle = 'rgb(0, 0, 0)';
