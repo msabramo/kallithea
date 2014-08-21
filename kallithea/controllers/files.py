@@ -94,7 +94,6 @@ class FilesController(BaseRepoController):
                     category='warning')
             raise HTTPNotFound()
         except(ChangesetDoesNotExistError, LookupError), e:
-            log.error(traceback.format_exc())
             msg = _('Such revision does not exist for this repository')
             h.flash(msg, category='error')
             raise HTTPNotFound()
@@ -115,7 +114,6 @@ class FilesController(BaseRepoController):
             if file_node.is_dir():
                 raise RepositoryError('given path is a directory')
         except(ChangesetDoesNotExistError,), e:
-            log.error(traceback.format_exc())
             msg = _('Such revision does not exist for this repository')
             h.flash(msg, category='error')
             raise HTTPNotFound()

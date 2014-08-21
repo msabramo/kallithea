@@ -463,10 +463,10 @@ class MercurialRepository(BaseRepository):
         rev_spec = "%%s & %s(%%s)" % _revset_predicates[ref_type]
         try:
             revs = self._repo.revs(rev_spec, ref_name, ref_name)
-        except (LookupError, ):
+        except LookupError:
             msg = ("Ambiguous identifier %s:%s for %s" % (ref_type, ref_name, self.name))
             raise ChangesetDoesNotExistError(msg)
-        except (IndexError, ValueError, RepoLookupError, TypeError):
+        except RepoLookupError:
             msg = ("Revision %s:%s does not exist for %s" % (ref_type, ref_name, self.name))
             raise ChangesetDoesNotExistError(msg)
         if revs:
