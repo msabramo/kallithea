@@ -26,6 +26,6 @@
 
 <div class="notification-paginator">
   <div class="pagination-wh pagination-left">
-  ${c.pullrequests_pager.pager('$link_previous ~2~ $link_next')}
+  ${c.pullrequests_pager.pager('$link_previous ~2~ $link_next', **request.GET.mixed())}
   </div>
 </div>
