@@ -368,7 +368,7 @@ appropriately configured.
 Authentication by container or reverse-proxy
 --------------------------------------------
 
-Starting with version 1.3, Kallithea supports delegating the authentication
+Kallithea supports delegating the authentication
 of users to its WSGI container, or to a reverse-proxy server through which all
 clients access the application.
 
@@ -383,6 +383,7 @@ administrator can then modify it using Kallithea's admin interface.
 It's also possible for an administrator to create accounts and configure their
 permissions before the user logs in for the first time.
 
+
 Container-based authentication
 ''''''''''''''''''''''''''''''
 
@@ -392,11 +393,6 @@ the ``REMOTE_USER`` server variable provided by the WSGI container.
 After setting up your container (see `Apache's WSGI config`_), you'd need
 to configure it to require authentication on the location configured for
 Kallithea.
-
-In order for Kallithea to start using the provided username, you should set the
-following in the [app:main] section of your .ini file::
-
-    container_auth_enabled = true
 
 
 Proxy pass-through authentication
@@ -432,10 +428,6 @@ reverse-proxy setup with basic auth::
       RequestHeader set X-Forwarded-User %{RU}e
     </Location>
 
-In order for Kallithea to start using the forwarded username, you should set
-the following in the [app:main] section of your .ini file::
-
-    proxypass_auth_enabled = true
 
 .. note::
    If you enable proxy pass-through authentication, make sure your server is

@@ -175,9 +175,6 @@ use_htsts = false
 <%text>## number of commits stats will parse on each iteration</%text>
 commit_parse_limit = 25
 
-<%text>## use gravatar service to display avatars</%text>
-use_gravatar = true
-
 <%text>## path to git executable</%text>
 git_path = git
 
@@ -212,34 +209,9 @@ api_access_controllers_whitelist =
 #    FilesController:raw,
 #    FilesController:archivefile
 
-<%text>## alternative_gravatar_url allows you to use your own avatar server application</%text>
-<%text>## the following parts of the URL will be replaced</%text>
-<%text>## {email}        user email</%text>
-<%text>## {md5email}     md5 hash of the user email (like at gravatar.com)</%text>
-<%text>## {size}         size of the image that is expected from the server application</%text>
-<%text>## {scheme}       http/https from Kallithea server</%text>
-<%text>## {netloc}       network location from Kallithea server</%text>
-#alternative_gravatar_url = http://myavatarserver.com/getbyemail/{email}/{size}
-#alternative_gravatar_url = http://myavatarserver.com/getbymd5/{md5email}?s={size}
-
-
-<%text>## container auth options</%text>
-container_auth_enabled = false
-proxypass_auth_enabled = false
-
 <%text>## default encoding used to convert from and to unicode</%text>
 <%text>## can be also a comma seperated list of encoding in case of mixed encodings</%text>
 default_encoding = utf8
-
-<%text>## overwrite schema of clone url</%text>
-<%text>## available vars:</%text>
-<%text>## scheme - http/https</%text>
-<%text>## user - current user</%text>
-<%text>## pass - password</%text>
-<%text>## netloc - network location</%text>
-<%text>## path - usually repo_name</%text>
-
-#clone_uri = {scheme}://{user}{pass}{netloc}{path}
 
 <%text>## issue tracker for Kallithea (leave blank to disable, absent for default)</%text>
 #bugtracker = https://bitbucket.org/conservancy/kallithea/issues
