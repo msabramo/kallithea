@@ -1064,7 +1064,8 @@ tbody .yui-dt-editable { cursor: pointer }
 #content div.box div.h6 {
     clear: both;
     overflow: hidden;
-    margin: 8px 20px 5px;
+    margin: 8px 20px 3px;
+    padding-bottom: 2px;
 }
 
 #content div.box p {
