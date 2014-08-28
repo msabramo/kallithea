@@ -71,8 +71,6 @@ i[class^='icon-'] {
     position: relative;
     overflow: visible;
     background-color: #577632;
-    border-top: 1px solid #517da8;
-    border-bottom: 1px solid #003162;
     padding: 0 5px;
     min-height: 36px;
 }
