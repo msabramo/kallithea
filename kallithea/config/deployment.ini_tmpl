@@ -186,7 +186,7 @@ rss_include_diff = false
 
 ## options for showing and identifying changesets
 show_sha_length = 12
-show_revision_number = true
+show_revision_number = false
 
 ## gist URL alias, used to create nicer urls for gist. This should be an
 ## url that does rewrites to _admin/gists/<gistid>.

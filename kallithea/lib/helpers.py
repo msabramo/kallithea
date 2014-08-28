@@ -458,7 +458,7 @@ def show_id(cs):
     """
     from kallithea import CONFIG
     def_len = safe_int(CONFIG.get('show_sha_length', 12))
-    show_rev = str2bool(CONFIG.get('show_revision_number', True))
+    show_rev = str2bool(CONFIG.get('show_revision_number', False))
 
     raw_id = cs.raw_id[:def_len]
     if show_rev:

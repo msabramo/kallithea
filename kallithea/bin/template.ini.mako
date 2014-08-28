@@ -189,7 +189,7 @@ rss_include_diff = false
 
 <%text>## options for showing and identifying changesets</%text>
 show_sha_length = 12
-show_revision_number = true
+show_revision_number = false
 
 <%text>## gist URL alias, used to create nicer urls for gist. This should be an</%text>
 <%text>## url that does rewrites to _admin/gists/<gistid>.</%text>
