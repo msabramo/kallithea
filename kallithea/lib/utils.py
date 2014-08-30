@@ -803,6 +803,9 @@ def check_git_version():
     from kallithea.lib.vcs.conf import settings
     from distutils.version import StrictVersion
 
+    if 'git' not in BACKENDS:
+        return None
+
     stdout, stderr = GitRepository._run_git_command('--version', _bare=True,
                                                     _safe=True)
 
