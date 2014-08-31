@@ -27,11 +27,11 @@ class GitChangeset(BaseChangeset):
     def __init__(self, repository, revision):
         self._stat_modes = {}
         self.repository = repository
-
+        revision = safe_str(revision)
         try:
-            commit = self.repository._repo[str(revision)]
+            commit = self.repository._repo[revision]
             if isinstance(commit, objects.Tag):
-                revision = commit.object[1]
+                revision = safe_str(commit.object[1])
                 commit = self.repository._repo.get_object(commit.object[1])
         except KeyError:
             raise RepositoryError("Cannot get object with id %s" % revision)
