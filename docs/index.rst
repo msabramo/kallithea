@@ -12,6 +12,7 @@ Users Guide
 
    installation
    installation_win
+   installation_iis
    setup
    upgrade
 
