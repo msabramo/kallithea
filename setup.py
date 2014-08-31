@@ -49,7 +49,6 @@ requirements = [
     "celery>=2.2.5,<2.3",
     "babel>=0.9.6,<=1.3",
     "python-dateutil>=1.5.0,<2.0.0",
-    "dulwich>=0.9.3,<=0.9.7",
     "markdown==2.2.1",
     "docutils>=0.8.1,<=0.11",
     "simplejson==2.5.2",
@@ -73,6 +72,11 @@ else:
     requirements.append("py-bcrypt>=0.3.0,<=0.4")
     requirements.append("mercurial>=2.8.2,<3.2")
 
+if sys.version_info < (2, 7):
+    # Dulwich 0.9.6 and later do not support Python2.6.
+    requirements.append("dulwich>=0.9.3,<=0.9.5")
+else:
+    requirements.append("dulwich>=0.9.3,<=0.9.7")
 
 dependency_links = [
 ]
