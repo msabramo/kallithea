@@ -129,7 +129,7 @@
         %if c.db_repo.private:
           <i class="icon-lock"></i>
         %else:
-          <i class="icon-unlock-alt"></i>
+          <i class="icon-lock-open-alt"></i>
         %endif
         ${h.repo_link(c.db_repo.groups_and_repo)}
 
@@ -388,7 +388,7 @@
                     tmpl += '<i class="icon-lock" style="color: #e85634;"></i> ';
                 }
                 else if(visual_show_public_icon){
-                    tmpl += '<i class="icon-unlock-alt"></i> ';
+                    tmpl += '<i class="icon-lock-open-alt"></i> ';
                 }
                 tmpl += '</span>';
             }

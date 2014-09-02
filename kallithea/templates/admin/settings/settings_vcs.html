@@ -88,7 +88,7 @@ ${h.form(url('admin_settings'), method='post')}
         $(document).ready(function(){
             $('#path_unlock').on('click', function(e){
                 $('#path_unlock_icon').removeClass('icon-lock');
-                $('#path_unlock_icon').addClass('icon-unlock');
+                $('#path_unlock_icon').addClass('icon-lock-open-alt');
                 $('#paths_root_path').removeAttr('readonly');
                 $('#paths_root_path').removeClass('disabled');
             })
