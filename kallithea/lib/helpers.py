@@ -588,7 +588,7 @@ def boolicon(value):
     """
 
     if value:
-        return HTML.tag('i', class_="icon-ok-sign")
+        return HTML.tag('i', class_="icon-ok")
     else:
         return HTML.tag('i', class_="icon-minus-circled")
 
@@ -805,7 +805,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'user_commented_pull_request': (_('[commented] on pull request for'),
                                     get_pull_request, 'icon-comment icon-comment-colored'),
     'user_closed_pull_request':    (_('[closed] pull request for'),
-                                    get_pull_request, 'icon-check'),
+                                    get_pull_request, 'icon-ok'),
     'push':                        (_('[pushed] into'),
                                     get_cs_links, 'icon-arrow-up'),
     'push_local':                  (_('[committed via Kallithea] into repository'),
