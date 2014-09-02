@@ -81,9 +81,7 @@ class UsersController(BaseController):
         _tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         template = _tmpl_lookup.get_template('data_table/_dt_elements.html')
 
-        grav_tmpl = lambda user_email, size: (
-                template.get_def("user_gravatar")
-                .render(user_email, size, _=_, h=h, c=c))
+        grav_tmpl = '<div class="gravatar">%s</div>'
 
         username = lambda user_id, username: (
                 template.get_def("user_name")
@@ -95,7 +93,7 @@ class UsersController(BaseController):
 
         for user in c.users_list:
             users_data.append({
-                "gravatar": grav_tmpl(user.email, 20),
+                "gravatar": grav_tmpl % h.gravatar(user.email, size=20),
                 "raw_name": user.username,
                 "username": username(user.user_id, user.username),
                 "firstname": user.name,
