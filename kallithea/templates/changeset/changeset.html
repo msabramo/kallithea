@@ -40,7 +40,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
 
             <div class="children">
                 <div id="child_link" class="changeset_hash">
-                    <a href="#">${_('child rev.')}</a> <i style="color:#036185" class="icon-chevron-right"></i>
+                    <a href="#">${_('child rev.')}</a> <i style="color:#036185" class="icon-right-open"></i>
                 </div>
             </div>
 
@@ -230,12 +230,12 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                           $('#child_link').addClass('disabled');
                           $('#child_link').addClass('double');
                           var _html = '';
-                          _html +='<a title="__title__" href="__url__">__rev__</a> <i style="color:#036185" class="icon-chevron-right"></i>'
+                          _html +='<a title="__title__" href="__url__">__rev__</a> <i style="color:#036185" class="icon-right-open"></i>'
                                   .replace('__rev__','r{0}:{1}'.format(data.results[0].revision, data.results[0].raw_id.substr(0,6)))
                                   .replace('__title__', data.results[0].message)
                                   .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[0].raw_id}));
                           _html +='<br/>'
-                          _html +='<a title="__title__" href="__url__">__rev__</a> <i style="color:#036185" class="icon-chevron-right"></i>'
+                          _html +='<a title="__title__" href="__url__">__rev__</a> <i style="color:#036185" class="icon-right-open"></i>'
                                   .replace('__rev__','r{0}:{1}'.format(data.results[1].revision, data.results[1].raw_id.substr(0,6)))
                                   .replace('__title__', data.results[1].message)
                                   .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[1].raw_id}));
