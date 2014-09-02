@@ -1741,7 +1741,6 @@ div.form div.fields div.field div.button {
 
 #summary-menu-stats a.followers { background-image: url('../images/icons/heart.png')}
 #summary-menu-stats a.forks { background-image: url('../images/icons/arrow_divide.png')}
-#summary-menu-stats a.feed { background-image: url('../images/icons/rss_16.png')}
 #summary-menu-stats a.repo-size { background-image: url('../images/icons/server.png')}
 
 #summary-menu-stats a {
@@ -3354,22 +3353,6 @@ table.code-browser .submodule-dir {
     padding-left: 20px;
     padding-top: 0px;
     text-align: left;
-}
-
-.rss_icon {
-    background: url("../images/icons/rss_16.png") no-repeat scroll 3px;
-    padding-left: 20px;
-    padding-top: 4px;
-    text-align: left;
-    font-size: 8px
-}
-
-.atom_icon {
-    background: url("../images/icons/rss_16.png") no-repeat scroll 3px;
-    padding-left: 20px;
-    padding-top: 4px;
-    text-align: left;
-    font-size: 8px
 }
 
 .archive_icon {
@@ -5226,4 +5209,8 @@ div.prev-next-comment div.next-comment {
 
 .repo-switcher-dropdown .select2-result-label span.repo-icons {
     margin-left: -12px;
+}
+
+.icon-only-links i {
+    color: white;
 }

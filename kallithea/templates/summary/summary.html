@@ -167,9 +167,9 @@ summary = lambda n:{False:'summary-short'}.get(n)
 
             <li>
             %if c.authuser.username != 'default':
-              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
+              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}"><i class="icon-rss-squared"></i> ${_('Feed')}</a>
             %else:
-              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
+              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name)}"><i class="icon-rss-squared"></i> ${_('Feed')}</a>
             %endif
             </li>
 
