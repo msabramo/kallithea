@@ -877,6 +877,10 @@ def gravatar(email_address, cls='', size=30, ssl_enabled=True):
     # stylesheet) because we using this to generate a high-res (retina) size
     tmpl = """<img alt="gravatar" class="{cls}" style="width: {size}px; height: {size}px" src="{src}"/>"""
 
+    # if src is empty then there was no gravatar, so we use a font icon
+    if not src:
+        tmpl = """<i class="icon-user {cls}" style="font-size: {size}px;"></i>"""
+
     tmpl = tmpl.format(cls=cls, size=size, src=src)
     return literal(tmpl)
 
@@ -895,9 +899,7 @@ def gravatar_url(email_address, size=30, ssl_enabled=True):
         email_address = safe_str(email_address)
 
     if not _use_gravatar or not email_address or email_address == _def:
-        # pick best matching size to one given in size param
-        f = lambda a, l: min(l, key=lambda x: abs(x - a))
-        return url("/images/user%s.png" % f(size, [14, 16, 20, 24, 30]))
+        return ""
 
     if _use_gravatar:
         _md5 = lambda s: hashlib.md5(s).hexdigest()

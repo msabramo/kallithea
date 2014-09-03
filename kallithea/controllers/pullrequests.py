@@ -298,7 +298,8 @@ class PullrequestsController(BaseRepoController):
                          username=repo.user.username,
                          firstname=repo.user.firstname,
                          lastname=repo.user.lastname,
-                         gravatar_link=h.gravatar_url(repo.user.email, 14)),
+                         gravatar_link=h.gravatar_url(repo.user.email, 28),
+                         gravatar_size=14),
             }
 
     @LoginRequired()

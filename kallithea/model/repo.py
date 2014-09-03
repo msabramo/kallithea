@@ -141,7 +141,8 @@ class RepoModel(BaseModel):
                 'fname': u.name,
                 'lname': u.lastname,
                 'nname': u.username,
-                'gravatar_lnk': h.gravatar_url(u.email, 14)
+                'gravatar_lnk': h.gravatar_url(u.email, size=28),
+                'gravatar_size': 14,
             } for u in users]
         )
 

@@ -1153,13 +1153,13 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
     // DataScheme for members
     var memberDS = new YAHOO.util.FunctionDataSource(matchAll);
     memberDS.responseSchema = {
-        fields: ["id", "fname", "lname", "nname", "grname", "grmembers", "gravatar_lnk"]
+        fields: ["id", "fname", "lname", "nname", "grname", "grmembers", "gravatar_lnk", "gravatar_size"]
     };
 
     // DataScheme for owner
     var ownerDS = new YAHOO.util.FunctionDataSource(matchUsers);
     ownerDS.responseSchema = {
-        fields: ["id", "fname", "lname", "nname", "gravatar_lnk"]
+        fields: ["id", "fname", "lname", "nname", "gravatar_lnk", "gravatar_size"]
     };
 
     // Instantiate AutoComplete for perms
@@ -1189,12 +1189,16 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
     // Custom formatter to highlight the matching letters
     var custom_formatter = function (oResultData, sQuery, sResultMatch) {
             var query = sQuery.toLowerCase();
-            var _gravatar = function(res, em, group){
-                if (group !== undefined){
-                    em = '/images/icons/group.png'
+            var _gravatar = function(res, em, size, group){
+                var elem = '<img alt="gravatar" class="perm-gravatar-ac" style="width: {0}px; height: {0}px" src="{1}"/>'.format(size, em);
+                if (!em) {
+                    elem = '<i class="icon-user perm-gravatar-ac" style="font-size: {0}px;"></i>'.format(size);
                 }
-                var tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
-                return tmpl.format(em,res)
+                if (group !== undefined){
+                    elem = '<i class="perm-gravatar-ac icon-users"></i>'
+                }
+                var tmpl = '<div class="ac-container-wrap">{0}{1}</div>'
+                return tmpl.format(elem,res)
             }
             // group
             if (oResultData.grname != undefined) {
@@ -1206,9 +1210,9 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
                 var grsuffix = " ({0}  {1})".format(grmembers, _TM['members']);
 
                 if (grnameMatchIndex > -1) {
-                    return _gravatar(grprefix + highlightMatch(grname, query, grnameMatchIndex) + grsuffix,null,true);
+                    return _gravatar(grprefix + highlightMatch(grname, query, grnameMatchIndex) + grsuffix,null,null,true);
                 }
-                return _gravatar(grprefix + oResultData.grname + grsuffix, null,true);
+                return _gravatar(grprefix + oResultData.grname + grsuffix, null, null, true);
             // Users
             } else if (oResultData.nname != undefined) {
                 var fname = oResultData.fname || "";
@@ -1239,7 +1243,7 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
                     displaynname = nname ? "(" + nname + ")" : "";
                 }
 
-                return _gravatar(displayfname + " " + displaylname + " " + displaynname, oResultData.gravatar_lnk);
+                return _gravatar(displayfname + " " + displaylname + " " + displaynname, oResultData.gravatar_lnk, oResultData.gravatar_size);
             } else {
                 return '';
             }
@@ -1315,7 +1319,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
     var ownerDS = new YAHOO.util.FunctionDataSource(matchUsers);
 
     ownerDS.responseSchema = {
-        fields: ["id", "fname", "lname", "nname", "gravatar_lnk"]
+        fields: ["id", "fname", "lname", "nname", "gravatar_lnk", "gravatar_size"]
     };
 
     // Instantiate AutoComplete for mentions
@@ -1343,12 +1347,16 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
             }
 
             var query = sQuery.toLowerCase();
-            var _gravatar = function(res, em, group){
-                if (group !== undefined){
-                    em = '/images/icons/group.png'
+            var _gravatar = function(res, em, size, group){
+                var elem = '<img alt="gravatar" class="perm-gravatar-ac" style="width: {0}px; height: {0}px" src="{1}"/>'.format(size, em);
+                if (!em) {
+                    elem = '<i class="icon-user perm-gravatar-ac" style="font-size: {0}px;"></i>'.format(size);
                 }
-                var tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
-                return tmpl.format(em,res)
+                if (group !== undefined){
+                    elem = '<i class="perm-gravatar-ac icon-users"></i>'
+                }
+                var tmpl = '<div class="ac-container-wrap">{0}{1}</div>'
+                return tmpl.format(elem,res)
             }
             if (oResultData.nname != undefined) {
                 var fname = oResultData.fname || "";
@@ -1379,7 +1387,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
                     displaynname = nname ? "(" + nname + ")" : "";
                 }
 
-                return _gravatar(displayfname + " " + displaylname + " " + displaynname, oResultData.gravatar_lnk);
+                return _gravatar(displayfname + " " + displaylname + " " + displaynname, oResultData.gravatar_lnk, oResultData.gravatar_size);
             } else {
                 return '';
             }
@@ -1458,15 +1466,18 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
         });
 }
 
-var addReviewMember = function(id,fname,lname,nname,gravatar_link){
+var addReviewMember = function(id,fname,lname,nname,gravatar_link,gravatar_size){
     var displayname = "{0} {1} ({2})".format(fname, lname, nname);
+    var gravatarelm = '<img alt="gravatar" style="width: {0}px; height: {0}px" src="{1}"/>'.format(gravatar_size, gravatar_link);
+    if (!gravatar_link)
+        gravatarelm = '<i class="icon-user" style="font-size: {0}px;"></i>'.format(gravatar_size);
     var element = (
         '     <li id="reviewer_{2}">\n'+
         '       <div class="reviewers_member">\n'+
         '           <div class="reviewer_status tooltip" title="not_reviewed">\n'+
         '             <i class="icon-circle changeset-status-not_reviewed"></i>\n'+
         '           </div>\n'+
-        '         <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="{0}"/> </div>\n'+
+        '         <div class="reviewer_gravatar gravatar">{0}</div>\n'+
         '         <div style="float:left;">{1}</div>\n'+
         '         <input type="hidden" value="{2}" name="review_members" />\n'+
         '         <div class="reviewer_member_remove action_button" onclick="removeReviewMember({2})">\n'+
@@ -1474,7 +1485,7 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
         '         </div> (add not saved)\n'+
         '       </div>\n'+
         '     </li>\n'
-        ).format(gravatar_link, displayname, id);
+        ).format(gravatarelm, displayname, id);
     // check if we don't have this ID already in
     var ids = [];
     $('#review_members').find('li').each(function() {
@@ -1545,7 +1556,7 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
     var ownerDS = new YAHOO.util.FunctionDataSource(matchUsers);
 
     ownerDS.responseSchema = {
-        fields: ["id", "fname", "lname", "nname", "gravatar_lnk"]
+        fields: ["id", "fname", "lname", "nname", "gravatar_lnk", "gravatar_size"]
     };
 
     // Instantiate AutoComplete for mentions
@@ -1573,12 +1584,16 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
             }
 
             var query = sQuery.toLowerCase();
-            var _gravatar = function(res, em, group){
-                if (group !== undefined){
-                    em = '/images/icons/group.png'
+            var _gravatar = function(res, em, size, group){
+                var elem = '<img alt="gravatar" class="perm-gravatar-ac" style="width: {0}px; height: {0}px" src="{1}"/>'.format(size, em);
+                if (!em) {
+                    elem = '<i class="icon-user perm-gravatar-ac" style="font-size: {0}px;"></i>'.format(size);
                 }
-                var tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
-                return tmpl.format(em,res)
+                if (group !== undefined){
+                    elem = '<i class="perm-gravatar-ac icon-users"></i>'
+                }
+                var tmpl = '<div class="ac-container-wrap">{0}{1}</div>'
+                return tmpl.format(elem,res)
             }
             if (oResultData.nname != undefined) {
                 var fname = oResultData.fname || "";
@@ -1609,7 +1624,7 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
                     displaynname = nname ? "(" + nname + ")" : "";
                 }
 
-                return _gravatar(displayfname + " " + displaylname + " " + displaynname, oResultData.gravatar_lnk);
+                return _gravatar(displayfname + " " + displaylname + " " + displaynname, oResultData.gravatar_lnk, oResultData.gravatar_size);
             } else {
                 return '';
             }
@@ -1628,7 +1643,7 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
             //fill the autocomplete with value
             if (oData.nname != undefined) {
                 addReviewMember(oData.id, oData.fname, oData.lname, oData.nname,
-                                oData.gravatar_lnk);
+                                oData.gravatar_lnk, oData.gravatar_size);
                 myAC.dataSource.cache.push(oData.id);
                 $('#user').val('');
             }

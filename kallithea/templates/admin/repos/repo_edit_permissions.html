@@ -56,7 +56,7 @@ ${h.form(url('edit_repo_perms_update', repo_name=c.repo_name), method='put')}
                         <td>${h.radio('g_perm_%s' % g2p.users_group.users_group_name,'repository.write')}</td>
                         <td>${h.radio('g_perm_%s' % g2p.users_group.users_group_name,'repository.admin')}</td>
                         <td style="white-space: nowrap;">
-                            <img class="perm-gravatar" src="${h.url('/images/icons/group.png')}"/>
+                            <i class="icon-users"></i>
                             %if h.HasPermissionAny('hg.admin')():
                              <a href="${h.url('edit_users_group',id=g2p.users_group.users_group_id)}">${g2p.users_group.users_group_name}</a>
                             %else:
