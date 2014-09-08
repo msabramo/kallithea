@@ -384,8 +384,8 @@ function ypjax(url,container,s_call,args){
             $container.html(o.responseText);
             $container.css('opacity','1.0');
             //execute the given original callback
-            if (s_call !== undefined){
-                s_call(o);
+            if (s_call !== undefined && s_call){
+                s_call();
             }
         }
     })()

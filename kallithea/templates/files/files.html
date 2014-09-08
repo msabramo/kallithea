@@ -199,6 +199,7 @@ var callbacks = function(State){
 $(document).ready(function(){
     ypjax_links();
     var container = 'files_data';
+    var $files_data = $('#files_data');
     //Bind to StateChange Event
     History.Adapter.bind(window,'statechange',function(){
         var State = History.getState();
@@ -215,15 +216,11 @@ $(document).ready(function(){
             callbacks(State);
         }
         else{
-          ypjax(State.url,container,function(o){
-              //callbacks after ypjax call
-              callbacks(State);
-              if (o !== undefined){
-                //store our request in cache
-                var _expire_on = new Date().getTime()+CACHE_EXPIRE;
-              CACHE[cache_key] = [_expire_on, o.responseText];
-            }
-          });
+            ypjax(State.url, container, function(){
+                    callbacks(State);
+                    var expire_on = new Date().getTime() + CACHE_EXPIRE;
+                    CACHE[cache_key] = [expire_on, $files_data.html()];
+                });
         }
     });
 
