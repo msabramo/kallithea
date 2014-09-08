@@ -436,7 +436,7 @@ class BaseRepoController(BaseController):
                                     c.repo_name, self.authuser.user_id)
 
     @staticmethod
-    def _get_ref_rev(repo, ref_type, ref_name):
+    def _get_ref_rev(repo, ref_type, ref_name, returnempty=False):
         """
         Safe way to get changeset. If error occurs show error.
         """
@@ -444,6 +444,8 @@ class BaseRepoController(BaseController):
         try:
             return repo.scm_instance.get_ref_revision(ref_type, ref_name)
         except EmptyRepositoryError as e:
+            if returnempty:
+                return repo.scm_instance.EMPTY_CHANGESET
             h.flash(h.literal(_('There are no changesets yet')),
                     category='error')
             raise webob.exc.HTTPNotFound()

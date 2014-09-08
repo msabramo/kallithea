@@ -210,7 +210,8 @@ class CompareController(BaseRepoController):
             h.flash(msg, category='error')
             return redirect(url('compare_home', repo_name=c.repo_name))
 
-        c.a_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name)
+        c.a_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name,
+            returnempty=True)
         c.cs_rev = self._get_ref_rev(other_repo, other_ref_type, other_ref_name)
 
         c.compare_home = False

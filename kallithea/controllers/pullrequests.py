@@ -580,7 +580,10 @@ class PullrequestsController(BaseRepoController):
                 c.cs_branch_name = org_scm_instance.get_changeset(c.cs_ref_name).branch # use ref_type ?
             other_branch_name = c.a_ref_name
             if c.a_ref_type != 'branch':
-                other_branch_name = other_scm_instance.get_changeset(c.a_ref_name).branch # use ref_type ?
+                try:
+                    other_branch_name = other_scm_instance.get_changeset(c.a_ref_name).branch # use ref_type ?
+                except EmptyRepositoryError:
+                    other_branch_name = 'null' # not a branch name ... but close enough
             # candidates: descendants of old head that are on the right branch
             #             and not are the old head itself ...
             #             and nothing at all if old head is a descendent of target ref name
