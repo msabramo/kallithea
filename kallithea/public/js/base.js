@@ -366,10 +366,9 @@ var _toQueryString = function(o) {
  *  o.responseText
  *  o.responseXML
  *  o.argument
- * @param f_call: failure callback
  * @param args arguments
  */
-function ypjax(url,container,s_call,f_call,args){
+function ypjax(url,container,s_call,args){
     var method='GET';
     if(args===undefined){
         args=null;
