@@ -8,6 +8,8 @@ from kallithea.lib.dbmigrate.migrate.changeset import *
 from kallithea.model import meta
 from kallithea.lib.dbmigrate.versions import _reset_base, notify
 
+from kallithea.lib.utils2 import str2bool
+
 log = logging.getLogger(__name__)
 
 
