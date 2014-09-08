@@ -217,7 +217,6 @@ ${self.repo_context_bar('showpullrequest')}
           url = url.replace(k,rev_data[k]);
       }
 
-      YUD.get('pull_request_overview').innerHTML = "${_('Loading ...')}";
       ypjax(url,'pull_request_overview', function(o){
           var jsdata = eval('('+YUD.get('jsdata').innerHTML+')');
           var r = new BranchRenderer('graph_canvas', 'graph_content_pr');

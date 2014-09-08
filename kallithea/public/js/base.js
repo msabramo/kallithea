@@ -368,12 +368,13 @@ var _toQueryString = function(o) {
  *  o.argument
  * @param args arguments
  */
-function ypjax(url,container,s_call,args){
+function ypjax(url, container, s_call, args){
     var method='GET';
     if(args===undefined){
         args=null;
     }
-    $container = $('#' + container);
+    var $target = $('#' + container);
+    $target.html(_TM['Loading ...']).css('opacity','0.3');
 
     // Set special header for partial ajax == HTTP_X_PARTIAL_XHR
     YUC.initHeader('X-PARTIAL-XHR',true);
@@ -381,21 +382,18 @@ function ypjax(url,container,s_call,args){
     // wrapper of passed callback
     var s_wrapper = (function(o){
         return function(o){
-            $container.html(o.responseText);
-            $container.css('opacity','1.0');
+            $target.html(o.responseText).css('opacity','1.0');
             //execute the given original callback
             if (s_call !== undefined && s_call){
                 s_call();
             }
         }
     })()
-    $container.css('opacity','0.3');
-    YUC.asyncRequest(method,url,{
-        success:s_wrapper,
-        failure:function(o){
+    YUC.asyncRequest(method, url, {
+        success: s_wrapper,
+        failure: function(o){
             console.log('ypjax failure: '+o);
-            $container.html('<span class="error_red">ERROR: {0}</span>'.format(o.status));
-            $container.css('opacity','1.0');
+            $target.html('<span class="error_red">ERROR: {0}</span>'.format(o.status)).css('opacity','1.0');
         },
         cache:false
     },args);
