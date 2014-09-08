@@ -249,21 +249,6 @@ DIFF_FIXTURES = {
                   CHMOD_FILENODE: 'modified file chmod 100755 => 100644',
                   MOD_FILENODE: 'modified file'}}),
     ]
-#     'large_diff.diff': [
-#         ('.hgignore', 'A', {'deleted': 0, 'binary': False, 'added': 3, 'ops': {1: 'new file 100644'}}),
-#         ('MANIFEST.in', 'A', {'deleted': 0, 'binary': False, 'added': 3, 'ops': {1: 'new file 100644'}}),
-#         ('README.txt', 'A', {'deleted': 0, 'binary': False, 'added': 19, 'ops': {1: 'new file 100644'}}),
-#         ('development.ini', 'A', {'deleted': 0, 'binary': False, 'added': 116, 'ops': {1: 'new file 100644'}}),
-#         ('docs/index.txt', 'A', {'deleted': 0, 'binary': False, 'added': 19, 'ops': {1: 'new file 100644'}}),
-#         ('ez_setup.py', 'A', {'deleted': 0, 'binary': False, 'added': 276, 'ops': {1: 'new file 100644'}}),
-#         ('hgapp.py', 'A', {'deleted': 0, 'binary': False, 'added': 26, 'ops': {1: 'new file 100644'}}),
-#         ('hgwebdir.config', 'A', {'deleted': 0, 'binary': False, 'added': 21, 'ops': {1: 'new file 100644'}}),
-#         ('pylons_app.egg-info/PKG-INFO', 'A', {'deleted': 0, 'binary': False, 'added': 10, 'ops': {1: 'new file 100644'}}),
-#         ('pylons_app.egg-info/SOURCES.txt', 'A', {'deleted': 0, 'binary': False, 'added': 33, 'ops': {1: 'new file 100644'}}),
-#         ('pylons_app.egg-info/dependency_links.txt', 'A', {'deleted': 0, 'binary': False, 'added': 1, 'ops': {1: 'new file 100644'}}),
-#         #TODO:
-#     ],
-
 }
 
 
