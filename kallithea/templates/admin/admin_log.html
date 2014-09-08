@@ -39,7 +39,8 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    $('#user_log').on('click','.pager_link',function(e){
+    var $user_log = $('#user_log');
+    $user_log.on('click','.pager_link',function(e){
       ypjax(e.target.href,"user_log",function(){
         show_more_event();
         tooltip_activate();

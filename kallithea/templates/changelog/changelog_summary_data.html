@@ -70,7 +70,8 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    $('#shortlog_data').on('click','.pager_link',function(e){
+    var $shortlog_data = $('#shortlog_data');
+    $shortlog_data.on('click','.pager_link',function(e){
       ypjax(e.target.href,"shortlog_data",function(){tooltip_activate();});
       e.preventDefault();
     });

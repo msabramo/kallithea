@@ -198,7 +198,6 @@ var callbacks = function(State){
 
 $(document).ready(function(){
     ypjax_links();
-    var container = 'files_data';
     var $files_data = $('#files_data');
     //Bind to StateChange Event
     History.Adapter.bind(window,'statechange',function(){
@@ -209,9 +208,8 @@ $(document).ready(function(){
         var _cur_time = new Date().getTime();
         // get from cache if it's there and not yet expired !
         if(_cache_obj !== undefined && _cache_obj[0] > _cur_time){
-            YUD.get(container).innerHTML=_cache_obj[1];
-            YUD.setStyle(container,'opacity','1.0');
-
+            $files_data.html(_cache_obj[1]);
+            $files_data.css('opacity','1.0');
             //callbacks after ypjax call
             callbacks(State);
         }

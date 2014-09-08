@@ -26,7 +26,8 @@
   <div class="pagination-wh pagination-left">
   <script type="text/javascript">
   $(document).ready(function(){
-      $('#forks').on('click','.pager_link',function(e){
+      var $forks = $('#forks');
+      $forks.on('click','.pager_link',function(e){
           ypjax(e.target.href,"forks",function(){
               show_more_event();
               tooltip_activate();

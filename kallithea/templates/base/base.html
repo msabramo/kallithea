@@ -208,9 +208,10 @@
   </div>
   <script type="text/javascript">
       YUE.on('branch_tag_switcher_2','mouseover',function(){
-         var loaded = YUD.hasClass('branch_tag_switcher_2','loaded');
+         var $branch_tag_switcher_2 = $('#branch_tag_switcher_2');
+         var loaded = $branch_tag_switcher_2.hasClass('loaded');
          if(!loaded){
-             YUD.addClass('branch_tag_switcher_2','loaded');
+             $branch_tag_switcher_2.addClass('loaded');
              ypjax("${h.url('branch_tag_switcher',repo_name=c.repo_name)}",'switch_to_list_2');
          }
          return false;
