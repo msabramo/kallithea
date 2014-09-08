@@ -118,6 +118,8 @@ function BranchRenderer(canvas_id, content_id) {
 							break;
 						}
 					}
+					if (nextdata[0][0] == end) // this is a root - not a dead end
+						dead_end = false;
 				}
 
 				if (dead_end) {
