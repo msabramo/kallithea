@@ -473,10 +473,8 @@ class DiffProcessor(object):
                 'stats':            stats,
             })
 
-        sorter = lambda info: {'A': 0, 'M': 1, 'D': 2}.get(info['operation'])
-
         if not inline_diff:
-            return diff_container(sorted(_files, key=sorter))
+            return diff_container(_files)
 
         # highlight inline changes
         for diff_data in _files:
@@ -494,7 +492,7 @@ class DiffProcessor(object):
                 except StopIteration:
                     pass
 
-        return diff_container(sorted(_files, key=sorter))
+        return diff_container(_files)
 
     def _parse_udiff(self, inline_diff=True):
         raise NotImplementedError()
