@@ -84,8 +84,10 @@ function BranchRenderer(canvas_id, content_id) {
 		for (var i=0; i < data.length; ++i) {
 
 			var row = document.getElementById("chg_"+idx);
-			if (row == null)
+			if (row == null) {
+				console.log("error: row chg_"+idx+" not found");
 				continue;
+			}
 			var	next = document.getElementById("chg_"+(idx+1));
 			var extra = 0;
 			
@@ -111,7 +113,6 @@ function BranchRenderer(canvas_id, content_id) {
 				if (next != null) {
 					nextdata = data[i+1];
 					next_l = nextdata[1];
-					found = false;
 					for (var k=0; k < next_l.length; ++k) {
 						if (next_l[k][0] == end) {
 							dead_end = false;
