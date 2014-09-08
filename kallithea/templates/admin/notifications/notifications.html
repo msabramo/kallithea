@@ -52,7 +52,7 @@ var run = function(){
 run();
 $('#mark_all_read').click(function(){
     var url = "${h.url('notifications_mark_all_read', **request.GET.mixed())}";
-    ypjax(url,'notification_data',function(){run()});
+    asynchtml(url, $('#notification_data'), function(){run();});
 });
 
 var current_filter = "${c.current_filter}";

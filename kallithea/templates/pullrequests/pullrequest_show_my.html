@@ -34,7 +34,7 @@ var show_pullrequests = function(e){
     if ($('#show_closed').prop('checked')) {
         var url = pyroutes.url('my_pullrequests_data', {'pr_show_closed': '1'});
     }
-    ypjax(url, 'pullrequests_container', function(){
+    asynchtml(url, $('#pullrequests_container'), function(){
         // new #show_closed has just been loaded
         $('#show_closed').change(function (e) {
             show_pullrequests(e);

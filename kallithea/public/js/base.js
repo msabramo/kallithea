@@ -353,51 +353,33 @@ var _toQueryString = function(o) {
 };
 
 /**
- * Partial Ajax Implementation
+ * Load HTML into DOM using Ajax
  *
- * @param url: defines url to make partial request
- * @param container: defines id of container to input partial result
- * @param s_call: success callback function that takes o as arg
- *  o.tId
- *  o.status
- *  o.statusText
- *  o.getResponseHeader[ ]
- *  o.getAllResponseHeaders
- *  o.responseText
- *  o.responseXML
- *  o.argument
- * @param args arguments
+ * @param $target: load html async and place it (or an error message) here
+ * @param success: success callback function
+ * @param args: query parameters to pass to url
  */
-function ypjax(url, container, s_call, args){
-    var method='GET';
+function asynchtml(url, $target, success, args){
     if(args===undefined){
         args=null;
     }
-    var $target = $('#' + container);
     $target.html(_TM['Loading ...']).css('opacity','0.3');
 
-    // Set special header for partial ajax == HTTP_X_PARTIAL_XHR
-    YUC.initHeader('X-PARTIAL-XHR',true);
-
-    // wrapper of passed callback
-    var s_wrapper = (function(o){
-        return function(o){
-            $target.html(o.responseText).css('opacity','1.0');
-            //execute the given original callback
-            if (s_call !== undefined && s_call){
-                s_call();
-            }
-        }
-    })()
-    YUC.asyncRequest(method, url, {
-        success: s_wrapper,
-        failure: function(o){
-            console.log('ypjax failure: '+o);
-            $target.html('<span class="error_red">ERROR: {0}</span>'.format(o.status)).css('opacity','1.0');
-        },
-        cache:false
-    },args);
-
+    $.ajax({url: url, data: args, headers: {'X-PARTIAL-XHR': '1'}, cache: false, dataType: 'html'})
+        .done(function(html) {
+                $target.html(html);
+                $target.css('opacity','1.0');
+                //execute the given original callback
+                if (success !== undefined && success) {
+                    success();
+                }
+            })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+                console.log('Ajax failure: ' + textStatus);
+                $target.html('<span class="error_red">ERROR: {0}</span>'.format(textStatus));
+                $target.css('opacity','1.0');
+            })
+        ;
 };
 
 var ajaxGET = function(url,success) {

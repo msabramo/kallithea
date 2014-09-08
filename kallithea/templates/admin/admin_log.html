@@ -41,14 +41,14 @@
   $(document).ready(function(){
     var $user_log = $('#user_log');
     $user_log.on('click','.pager_link',function(e){
-      ypjax(e.target.href,"user_log",function(){
+      asynchtml(e.target.href, $user_log, function(){
         show_more_event();
         tooltip_activate();
         show_changeset_tooltip();
       });
       e.preventDefault();
     });
-    $('#user_log').on('click','.show_more',function(e){
+    $user_log.on('click','.show_more',function(e){
       var el = e.target;
       $('#'+el.id.substring(1)).show();
       $(el.parentNode).hide();

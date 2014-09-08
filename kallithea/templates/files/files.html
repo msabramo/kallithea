@@ -214,7 +214,7 @@ $(document).ready(function(){
             callbacks(State);
         }
         else{
-            ypjax(State.url, container, function(){
+            asynchtml(State.url, $files_data, function(){
                     callbacks(State);
                     var expire_on = new Date().getTime() + CACHE_EXPIRE;
                     CACHE[cache_key] = [expire_on, $files_data.html()];

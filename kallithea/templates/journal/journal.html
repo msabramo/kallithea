@@ -93,7 +93,7 @@
     fix_j_filter_width($('#j_filter').val().length);
 
     $('#refresh').click(function(e){
-        ypjax("${h.url.current(filter=c.search_term)}","journal",function(){
+        asynchtml("${h.url.current(filter=c.search_term)}", $("#journal"), function(){
             show_more_event();
             tooltip_activate();
             show_changeset_tooltip();

@@ -28,7 +28,7 @@
   $(document).ready(function(){
       var $forks = $('#forks');
       $forks.on('click','.pager_link',function(e){
-          ypjax(e.target.href,"forks",function(){
+          asynchtml(e.target.href, $forks, function(){
               show_more_event();
               tooltip_activate();
               show_changeset_tooltip();

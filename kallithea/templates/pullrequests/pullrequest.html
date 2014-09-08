@@ -217,8 +217,8 @@ ${self.repo_context_bar('showpullrequest')}
           url = url.replace(k,rev_data[k]);
       }
 
-      ypjax(url,'pull_request_overview', function(o){
-          var jsdata = eval('('+YUD.get('jsdata').innerHTML+')');
+      asynchtml(url, $('#pull_request_overview'), function(o){
+          var jsdata = eval('('+YUD.get('jsdata').innerHTML+')'); // TODO: just get json
           var r = new BranchRenderer('graph_canvas', 'graph_content_pr');
           r.render(jsdata,100);
       });

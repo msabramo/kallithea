@@ -72,7 +72,7 @@
   $(document).ready(function(){
     var $shortlog_data = $('#shortlog_data');
     $shortlog_data.on('click','.pager_link',function(e){
-      ypjax(e.target.href,"shortlog_data",function(){tooltip_activate();});
+      asynchtml(e.target.href, $shortlog_data, function(){tooltip_activate();});
       e.preventDefault();
     });
   });
