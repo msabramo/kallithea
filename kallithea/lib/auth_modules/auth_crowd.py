@@ -236,7 +236,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
         }
 
         # set an admin if we're in admin_groups of crowd
-        for group in settings["admin_groups"]:
+        for group in settings["admin_groups"].split(","):
             if group in user_attrs["groups"]:
                 user_attrs["admin"] = True
         log.debug("Final crowd user object: \n%s" % (formatted_json(user_attrs)))
