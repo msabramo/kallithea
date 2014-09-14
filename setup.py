@@ -180,5 +180,6 @@ setup(
     make-index=kallithea.lib.paster_commands.make_index:Command
     upgrade-db=kallithea.lib.dbmigrate:UpgradeDb
     celeryd=kallithea.lib.celerypylons.commands:CeleryDaemonCommand
+    install-iis=kallithea.lib.paster_commands.install_iis:Command
     """,
 )

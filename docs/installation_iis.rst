@@ -44,50 +44,24 @@ to run on the website and consequently, Kallithea will not be able to run.
 ISAPI Handler
 .............
 
-The ISAPI handler needs to be generated from a custom file. Imagining that the
-Kallithea installation is in ``c:\inetpub\kallithea``, we would have a file in
-the same directory called, e.g. ``dispatch.py`` with the following contents::
+The ISAPI handler can be generated using::
 
-    import sys
+    paster install-iis my.ini --root=/
 
-    if hasattr(sys, "isapidllhandle"):
-        import win32traceutil
+This will generate a ``dispatch.py`` file in the current directory that contains
+the necessary components to finalize an installation into IIS. Once this file
+has been generated, it is necessary to run the following command due to the way
+that ISAPI-WSGI is made::
 
-    import isapi_wsgi
+    python dispatch.py install
 
-    def __ExtensionFactory__():
-        from paste.deploy import loadapp
-        from paste.script.util.logging_config import fileConfig
-        fileConfig('c:\\inetpub\\kallithea\\production.ini')
-        application = loadapp('config:c:\\inetpub\\kallithea\\production.ini')
-
-        def app(environ, start_response):
-            user = environ.get('REMOTE_USER', None)
-            if user is not None:
-                os.environ['REMOTE_USER'] = user
-            return application(environ, start_response)
-
-        return isapi_wsgi.ISAPIThreadPoolHandler(app)
-
-    if __name__=='__main__':
-        from isapi.install import *
-        params = ISAPIParameters()
-        sm = [ScriptMapParams(Extension="*", Flags=0)]
-        vd = VirtualDirParameters(Name="/",
-                                  Description = "ISAPI-WSGI Echo Test",
-                                  ScriptMaps = sm,
-                                  ScriptMapUpdate = "replace")
-        params.VirtualDirs = [vd]
-        HandleCommandLine(params)
-
-This script has two parts: First, when run directly using Python, it will
-install a script map ISAPI handler into the root application of the default
-website, and secondly it will be called from the ISAPI handler when invoked
-from the website.
+This accomplishes two things: generating an ISAPI compliant DLL file,
+``_dispatch.dll``, and installing a script map handler into IIS for the
+``--root`` specified above pointing to ``_dispatch.dll``.
 
 The ISAPI handler is registered to all file extensions, so it will automatically
-be the one handling all requests to the website. When the website starts the
-ISAPI handler, it will start a thread pool managed wrapper around the paster
+be the one handling all requests to the specified root. When the website starts
+the ISAPI handler, it will start a thread pool managed wrapper around the paster
 middleware WSGI handler that Kallithea runs within and each HTTP request to the
 site will be processed through this logic henceforth.
 
