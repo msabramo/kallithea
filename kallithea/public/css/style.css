@@ -1014,6 +1014,20 @@ tbody .yui-dt-editable { cursor: pointer }
     text-decoration: none;
 }
 
+#content div.box div.title ul.links.nav-tabs li a {
+    float: left;
+    color: #fff;
+    margin: 0;
+    padding: 11px 10px 11px 10px;
+}
+
+#content div.box div.title ul.links.icon-only-links li a {
+    float: left;
+    color: #fff;
+    margin: 0;
+    padding: 11px 10px 11px 10px;
+}
+
 #content div.box h1, #content div.box h2, #content div.box h3, #content div.box h4, #content div.box h5, #content div.box h6,
 #content div.box div.h1, #content div.box div.h2, #content div.box div.h3, #content div.box div.h4, #content div.box div.h5, #content div.box div.h6 {
     clear: both;
