@@ -3706,18 +3706,6 @@ input.btn {
     padding: 0px 4px;
 }
 
-.btn.clone {
-    padding: 5px 2px 6px 1px;
-    margin: 0px 0px 3px -4px;
-    -webkit-border-radius: 0px 4px 4px 0px !important;
-    -khtml-border-radius: 0px 4px 4px 0px !important;
-    border-radius: 0px 4px 4px 0px !important;
-    width: 100px;
-    text-align: center;
-    display: inline-block;
-    position: relative;
-    top: -2px;
-}
 .btn:focus {
     outline: none;
 }
