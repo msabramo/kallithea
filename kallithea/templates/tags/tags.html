@@ -32,6 +32,7 @@ ${self.repo_context_bar('switch-to')}
         <%include file='tags_data.html'/>
     </div>
 </div>
+
 <script type="text/javascript">
 $('#compare_tags').click(function(e){
     e.preventDefault();
@@ -76,14 +77,14 @@ myDataSource.responseSchema = {
 };
 
 var myDataTable = new YAHOO.widget.DataTable("table_wrap", myColumnDefs, myDataSource,
-        {
+    {
          sortedBy:{key:"name",dir:"asc"},
          MSG_SORTASC:"${_('Click to sort ascending')}",
          MSG_SORTDESC:"${_('Click to sort descending')}",
          MSG_EMPTY:"${_('No records found.')}",
          MSG_ERROR:"${_('Data error.')}",
          MSG_LOADING:"${_('Loading...')}"
-        }
+    }
 );
 myDataTable.subscribe('postRenderEvent',function(oArgs) {
     tooltip_activate();
@@ -94,4 +95,5 @@ myDataTable.subscribe('postRenderEvent',function(oArgs) {
 });
 
 </script>
+
 </%def>

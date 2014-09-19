@@ -26,7 +26,7 @@ ${self.repo_context_bar('switch-to')}
     </div>
     <!-- end box / title -->
     %if c.repo_bookmarks:
-    <div class="info_box" id="compare_bookmarks" style="clear: both;padding: 10px 19px;text-align: right;"><a href="#" class="btn btn-mini">${_('Compare Bookmarks')}</a></div>
+    <div class="info_box" id="compare_bookmarks" style="clear: both;padding: 10px 19px;text-align: right;"><a href="#" class="btn btn-small">${_('Compare Bookmarks')}</a></div>
     %endif
     <div class="table">
         <%include file='bookmarks_data.html'/>
@@ -34,10 +34,10 @@ ${self.repo_context_bar('switch-to')}
 </div>
 
 <script type="text/javascript">
-YUE.on('compare_bookmarks','click',function(e){
-    YUE.preventDefault(e);
-    var org = YUQ('input[name=compare_org]:checked')[0];
-    var other = YUQ('input[name=compare_other]:checked')[0];
+$('#compare_bookmarks','click',function(e){
+    e.preventDefault();
+    var org = $('input[name=compare_org]:checked')[0];
+    var other = $('input[name=compare_other]:checked')[0];
 
     if(org && other){
         var compare_url = "${h.url('compare_url',repo_name=c.repo_name,org_ref_type='book',org_ref_name='__ORG__',other_ref_type='book',other_ref_name='__OTHER__')}";
@@ -46,6 +46,7 @@ YUE.on('compare_bookmarks','click',function(e){
         window.location=u;
     }
 });
+
 // main table sorting
 var myColumnDefs = [
     {key:"name",label:"${_('Name')}",sortable:true,
@@ -94,6 +95,5 @@ myDataTable.subscribe('postRenderEvent',function(oArgs) {
 });
 
 </script>
-
 
 </%def>
