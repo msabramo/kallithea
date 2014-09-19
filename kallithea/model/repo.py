@@ -379,8 +379,8 @@ class RepoModel(BaseModel):
                      enable_locking=False, enable_downloads=False,
                      copy_group_permissions=False, state=Repository.STATE_PENDING):
         """
-        Create repository inside database with PENDING state, this should be
-        only executed by create() repo. With exception of importing existing repos
+        Create repository inside database with PENDING state. This should only be
+        executed by create() repo, with exception of importing existing repos.
 
         """
         from kallithea.model.scm import ScmModel
@@ -681,9 +681,8 @@ class RepoModel(BaseModel):
     def _create_filesystem_repo(self, repo_name, repo_type, repo_group,
                                 clone_uri=None, repo_store_location=None):
         """
-        makes repository on filesystem. It's group aware means it'll create
-        a repository within a group, and alter the paths accordingly of
-        group location
+        Makes repository on filesystem. Operation is group aware, meaning that it will create
+        a repository within a group, and alter the paths accordingly to the group location.
 
         :param repo_name:
         :param alias:

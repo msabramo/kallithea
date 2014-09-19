@@ -80,8 +80,7 @@ class RepoTemp(object):
 
 class CachedRepoList(object):
     """
-    Cached repo list, uses in-memory cache after initialization, that is
-    super fast
+    Cached repo list. Uses super-fast in-memory cache after initialization.
     """
 
     def __init__(self, db_repo_list, repos_path, order_by=None, perm_set=None):
@@ -580,8 +579,7 @@ class ScmModel(BaseModel):
 
     def get_nodes(self, repo_name, revision, root_path='/', flat=True):
         """
-        recursive walk in root dir and return a set of all path in that dir
-        based on repository walk function
+        Recursively walk root dir and return a set of all paths found.
 
         :param repo_name: name of repository
         :param revision: revision for which to list nodes
@@ -611,7 +609,7 @@ class ScmModel(BaseModel):
     def create_nodes(self, user, repo, message, nodes, parent_cs=None,
                      author=None, trigger_push_hook=True):
         """
-        Commits given multiple nodes into repo
+        Commits specified nodes to repo.
 
         :param user: Kallithea User object or user_id, the commiter
         :param repo: Kallithea Repository object
@@ -736,7 +734,7 @@ class ScmModel(BaseModel):
     def delete_nodes(self, user, repo, message, nodes, parent_cs=None,
                      author=None, trigger_push_hook=True):
         """
-        Deletes given multiple nodes into repo
+        Deletes specified nodes from repo.
 
         :param user: Kallithea User object or user_id, the commiter
         :param repo: Kallithea Repository object

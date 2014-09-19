@@ -1074,7 +1074,7 @@ class Repository(Base, BaseModel):
     @classmethod
     def base_path(cls):
         """
-        Returns base path when all repos are stored
+        Returns base path where all repos are stored
 
         :param cls:
         """
@@ -2466,7 +2466,7 @@ class Gist(Base, BaseModel):
     @classmethod
     def base_path(cls):
         """
-        Returns base path when all gists are stored
+        Returns base path where all gists are stored
 
         :param cls:
         """

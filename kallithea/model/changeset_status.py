@@ -129,7 +129,7 @@ class ChangesetStatusModel(BaseModel):
                    pull_request=None, dont_allow_on_closed_pull_request=False):
         """
         Creates new status for changeset or updates the old ones bumping their
-        version, leaving the current status at
+        version, leaving the current status at the value of 'status'.
 
         :param repo:
         :param status:

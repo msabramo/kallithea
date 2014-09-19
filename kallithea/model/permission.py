@@ -59,8 +59,9 @@ class PermissionModel(BaseModel):
 
     def create_default_permissions(self, user, force=False):
         """
-        Creates only missing default permissions for user, if force is set it
-        resets the default permissions for that user
+        Create missing default permissions for user. If force is set, the default
+        permissions for the user are reset, otherwise only missing permissions are
+        created.
 
         :param user:
         """
@@ -86,8 +87,8 @@ class PermissionModel(BaseModel):
                 self.sa.delete(perm)
             self.sa.commit()
             defined_perms_groups = []
-        # for every default permission that needs to be created, we check if
-        # it's group is already defined, if it's not we create default perm
+        # For every default permission that needs to be created, we check if
+        # its group is already defined. If it's not, we create default permission.
         for perm_name in DEFAULT_PERMS:
             gr = _get_group(perm_name)
             if gr not in defined_perms_groups:
