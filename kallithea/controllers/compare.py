@@ -63,9 +63,9 @@ class CompareController(BaseRepoController):
         ... and the other way
         ... and the ancestor that would be used for merge
 
-        :param org_repo: repo object, that is most likely the orginal repo we forked from
+        :param org_repo: repo object, that is most likely the original repo we forked from
         :param org_rev: the revision we want our compare to be made
-        :param other_repo: repo object, mostl likely the fork of org_repo. It hass
+        :param other_repo: repo object, most likely the fork of org_repo. It has
             all changesets that we need to obtain
         :param other_rev: revision we want out compare to be made on other_repo
         """

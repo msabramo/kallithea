@@ -303,7 +303,7 @@ class ScmModel(BaseModel):
 
     def get_repos(self, all_repos=None, sort_key=None, simple=False):
         """
-        Get all repos from db and for each repo create it's
+        Get all repos from db and for each repo create its
         backend instance and fill that backed with information from database
 
         :param all_repos: list of repository names as strings
@@ -586,7 +586,7 @@ class ScmModel(BaseModel):
         :param repo_name: name of repository
         :param revision: revision for which to list nodes
         :param root_path: root path to list
-        :param flat: return as a list, if False returns a dict with decription
+        :param flat: return as a list, if False returns a dict with description
 
         """
         _files = list()
@@ -755,7 +755,7 @@ class ScmModel(BaseModel):
         processed_nodes = []
         for f_path in nodes:
             f_path = self._sanitize_path(f_path)
-            # content can be empty but for compatabilty it allows same dicts
+            # content can be empty but for compatibility it allows same dicts
             # structure as add_nodes
             content = nodes[f_path].get('content')
             processed_nodes.append((f_path, content))

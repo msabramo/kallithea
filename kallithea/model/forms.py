@@ -160,7 +160,7 @@ def RepoGroupForm(edit=False, old_data={}, available_groups=[],
 
         if edit:
             #FIXME: do a special check that we cannot move a group to one of
-            #it's children
+            #its children
             pass
         group_parent_id = All(v.CanCreateGroup(can_create_in_root),
                               v.OneOf(available_groups, hideList=False,

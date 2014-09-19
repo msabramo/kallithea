@@ -348,7 +348,7 @@ class UserModel(BaseModel):
         """
         Fetches auth_user by user_id,or api_key if present.
         Fills auth_user attributes with those taken from database.
-        Additionally set's is_authenitated if lookup fails
+        Additionally sets is_authenitated if lookup fails
         present in database
 
         :param auth_user: instance of user to set attributes
