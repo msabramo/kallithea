@@ -261,16 +261,6 @@ ul#context-actions {
     border-left: 1px solid rgba(0,0,0,0.1);
 }
 
-#context-pages li.current {
-    background: #535353; /* Old browsers */
-    background: -moz-linear-gradient(top, #5d5d5d 0%, #484848 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#5d5d5d), color-stop(100%,#484848)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #5d5d5d 0%, #484848 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #5d5d5d 0%, #484848 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #5d5d5d 0%, #484848 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #5d5d5d 0%, #484848 100%); /* W3C */
-}
-
 #content #context-pages .icon {
     margin-right: 5px;
 }
