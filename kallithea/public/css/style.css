@@ -2966,6 +2966,7 @@ div.browserblock .browser-branch {
 div.browserblock .browser-branch label {
     color: #4A4A4A;
     vertical-align: text-top;
+    padding-right: 2px;
 }
 
 div.browserblock .browser-header span {
