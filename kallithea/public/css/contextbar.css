@@ -79,6 +79,7 @@ i[class^='icon-'] {
 
 #content #context-bar h2 {
     display: inline-block;
+    color: #FFF;
 }
 
 #header #header-inner #quick a,
