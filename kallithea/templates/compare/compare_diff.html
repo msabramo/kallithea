@@ -31,7 +31,7 @@ ${self.repo_context_bar('changelog')}
         <div id="body" class="diffblock">
             <div class="code-header">
                 <div>
-                    ${h.hidden('compare_org')} <i class="icon-ellipsis-horizontal" style="color: #999; vertical-align: -12px; padding: 0px 0px 0px 2px"></i> ${h.hidden('compare_other')}
+                    ${h.hidden('compare_org')} <i class="icon-arrow-right"></i> ${h.hidden('compare_other')}
                     %if not c.compare_home:
                         <a class="btn btn-small" href="${c.swap_url}"><i class="icon-refresh"></i> ${_('Swap')}</a>
                     %endif
