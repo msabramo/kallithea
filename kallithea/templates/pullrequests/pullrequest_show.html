@@ -37,7 +37,7 @@ ${self.repo_context_bar('showpullrequest')}
             <label>${_('Description')}:</label>
             %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.author.user_id == c.authuser.user_id):
             <div style="margin: 5px">
-              <a class="btn btn-mini" onclick="YUD.setStyle('pr-edit-form','display','');YUD.setStyle(YUD.getElementsByClassName('pr-not-edit'),'display','none')">${_("Edit")}</a>
+              <a class="btn btn-small" onclick="YUD.setStyle('pr-edit-form','display','');YUD.setStyle(YUD.getElementsByClassName('pr-not-edit'),'display','none')">${_("Edit")}</a>
             </div>
             %endif
           </div>
@@ -238,7 +238,7 @@ ${self.repo_context_bar('showpullrequest')}
                <div id="reviewers_container"></div>
             </div>
             <div style="padding:0px 10px">
-             <span id="update_pull_request" class="btn btn-mini">${_('Save Changes')}</span>
+             <span id="update_pull_request" class="btn btn-small">${_('Save Changes')}</span>
             </div>
             %endif
           </div>
