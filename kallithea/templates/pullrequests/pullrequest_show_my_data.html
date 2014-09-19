@@ -1,5 +1,5 @@
-${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('Show closed pull requests too'))}
-<div class="pullrequests_section_head">${_('Opened by me')}</div>
+${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('Show closed pull requests (in addition to open pull requests)'))}
+<div class="pullrequests_section_head">${_('Pull Requests Created by Me')}</div>
 <ul>
   %if c.my_pull_requests:
     %for pull_request in c.my_pull_requests:
@@ -13,7 +13,7 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
             <a href="${pull_request.url()}">
               ${pull_request.title or _("(no title)")}
             </a>
-            ${_('opened on %s from') % (h.fmt_date(pull_request.created_on))}
+            ${_('created on %s from') % (h.fmt_date(pull_request.created_on))}
             <% org_ref_name=pull_request.org_ref.rsplit(':', 2)[-2] %>
             <a href="${h.url('summary_home', repo_name=pull_request.org_repo.repo_name, anchor=org_ref_name)}">
               ${pull_request.org_repo.repo_name}#${org_ref_name}
@@ -32,7 +32,7 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
   %endif
 </ul>
 
-<div class="pullrequests_section_head" style="clear:both">${_('I participate in')}</div>
+<div class="pullrequests_section_head" style="clear:both">${_('Pull Requests I Participate In')}</div>
 <ul>
   %if c.participate_in_pull_requests:
     %for pull_request in c.participate_in_pull_requests:
@@ -51,7 +51,7 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
             <a href="${h.url('summary_home', repo_name=pull_request.org_repo.repo_name, anchor=org_ref_name)}">
               ${pull_request.org_repo.repo_name}#${org_ref_name}
             </a>
-            ${_('opened on %s') % (h.fmt_date(pull_request.created_on))}
+            ${_('created on %s') % (h.fmt_date(pull_request.created_on))}
             %if pull_request.is_closed():
               (${_('Closed')})
             %endif

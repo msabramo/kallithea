@@ -92,9 +92,9 @@ class TestSearchController(TestController):
                                  'type': 'commit'})
 
         response.mustcontain('2 results')
-        #HG
+        # Hg
         response.mustcontain('3803844fdbd3b711175fc3da9bdacfcd6d29a6fb')
-        #GIT
+        # Git
         response.mustcontain('ff7ca51e58c505fec0dd2491de52c622bb7a806b')
 
     def test_search_author(self):

@@ -190,9 +190,9 @@ summary = lambda n:{False:'summary-short'}.get(n)
     <div class="title">
         <div class="breadcrumbs">
         %if c.repo_changesets:
-            ${h.link_to(_('Latest changes'),h.url('changelog_home',repo_name=c.repo_name))}
+            ${h.link_to(_('Latest Changes'),h.url('changelog_home',repo_name=c.repo_name))}
         %else:
-            ${_('Quick start')}
+            ${_('Quick Start')}
          %endif
         </div>
     </div>

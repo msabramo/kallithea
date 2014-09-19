@@ -5,7 +5,7 @@
 ##
 <%def name="diff_block(change)">
 <div class="diff-collapse">
-    <span target="${'diff-container-%s' % (id(change))}" class="diff-collapse-button">&uarr; ${_('Collapse diff')} &uarr;</span>
+    <span target="${'diff-container-%s' % (id(change))}" class="diff-collapse-button">&uarr; ${_('Collapse Diff')} &uarr;</span>
 </div>
 <div class="diff-container" id="${'diff-container-%s' % (id(change))}">
 %for FID,(cs1, cs2, change, path, diff, stats) in change.iteritems():

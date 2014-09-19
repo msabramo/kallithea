@@ -40,11 +40,11 @@
            </div>
           </li>
           <li class="${'active' if c.active=='profile' else ''}"><a href="${h.url('edit_user', id=c.user.user_id)}">${_('Profile')}</a></li>
-          <li class="${'active' if c.active=='api_keys' else ''}"><a href="${h.url('edit_user_api_keys', id=c.user.user_id)}">${_('API keys')}</a></li>
+          <li class="${'active' if c.active=='api_keys' else ''}"><a href="${h.url('edit_user_api_keys', id=c.user.user_id)}">${_('API Keys')}</a></li>
           <li class="${'active' if c.active=='advanced' else ''}"><a href="${h.url('edit_user_advanced', id=c.user.user_id)}">${_('Advanced')}</a></li>
-          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('edit_user_perms', id=c.user.user_id)}">${_('Default permissions')}</a></li>
+          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('edit_user_perms', id=c.user.user_id)}">${_('Default Permissions')}</a></li>
           <li class="${'active' if c.active=='emails' else ''}"><a href="${h.url('edit_user_emails', id=c.user.user_id)}">${_('Emails')}</a></li>
-          <li class="${'active' if c.active=='ips' else ''}"><a href="${h.url('edit_user_ips', id=c.user.user_id)}">${_('Ip whitelist')}</a></li>
+          <li class="${'active' if c.active=='ips' else ''}"><a href="${h.url('edit_user_ips', id=c.user.user_id)}">${_('IP Whitelist')}</a></li>
         </ul>
     </div>
 

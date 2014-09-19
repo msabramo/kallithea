@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Settings administration')}
+    ${_('Settings Administration')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -38,12 +38,12 @@
            </div>
           </li>
           <li class="${'active' if c.active=='vcs' else ''}"><a href="${h.url('admin_settings')}">${_('VCS')}</a></li>
-          <li class="${'active' if c.active=='mapping' else ''}"><a href="${h.url('admin_settings_mapping')}">${_('Remap and rescan')}</a></li>
+          <li class="${'active' if c.active=='mapping' else ''}"><a href="${h.url('admin_settings_mapping')}">${_('Remap and Rescan')}</a></li>
           <li class="${'active' if c.active=='global' else ''}"><a href="${h.url('admin_settings_global')}">${_('Global')}</a></li>
           <li class="${'active' if c.active=='visual' else ''}"><a href="${h.url('admin_settings_visual')}">${_('Visual')}</a></li>
           <li class="${'active' if c.active=='email' else ''}"><a href="${h.url('admin_settings_email')}">${_('Email')}</a></li>
           <li class="${'active' if c.active=='hooks' else ''}"><a href="${h.url('admin_settings_hooks')}">${_('Hooks')}</a></li>
-          <li class="${'active' if c.active=='search' else ''}"><a href="${h.url('admin_settings_search')}">${_('Full text search')}</a></li>
+          <li class="${'active' if c.active=='search' else ''}"><a href="${h.url('admin_settings_search')}">${_('Full Text Search')}</a></li>
           <li class="${'active' if c.active=='system' else ''}"><a href="${h.url('admin_settings_system')}">${_('System Info')}</a></li>
         </ul>
     </div>

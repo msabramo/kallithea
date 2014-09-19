@@ -3,9 +3,9 @@
 
 <%def name="title()">
     %if c.show_private:
-        ${_('Private Gists for user %s') % c.authuser.username}
+        ${_('Private Gists for User %s') % c.authuser.username}
     %elif c.show_public:
-        ${_('Public Gists for user %s') % c.authuser.username}
+        ${_('Public Gists for User %s') % c.authuser.username}
     %else:
         ${_('Public Gists')}
     %endif
@@ -16,9 +16,9 @@
 
 <%def name="breadcrumbs_links()">
     %if c.show_private:
-        ${_('Private Gists for user %s') % c.authuser.username}
+        ${_('Private Gists for User %s') % c.authuser.username}
     %elif c.show_public:
-        ${_('Public Gists for user %s') % c.authuser.username}
+        ${_('Public Gists for User %s') % c.authuser.username}
     %else:
         ${_('Public Gists')}
     %endif

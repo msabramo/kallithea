@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('My account')} ${c.authuser.username}
+    ${_('My Account')} ${c.authuser.username}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -37,11 +37,11 @@
           </li>
           <li class="${'active' if c.active=='profile' else ''}"><a href="${h.url('my_account')}">${_('Profile')}</a></li>
           <li class="${'active' if c.active=='password' else ''}"><a href="${h.url('my_account_password')}">${_('Password')}</a></li>
-          <li class="${'active' if c.active=='api_keys' else ''}"><a href="${h.url('my_account_api_keys')}">${_('API keys')}</a></li>
+          <li class="${'active' if c.active=='api_keys' else ''}"><a href="${h.url('my_account_api_keys')}">${_('API Keys')}</a></li>
           <li class="${'active' if c.active=='emails' else ''}"><a href="${h.url('my_account_emails')}">${_('My Emails')}</a></li>
           <li class="${'active' if c.active=='repos' else ''}"><a href="${h.url('my_account_repos')}">${_('My Repositories')}</a></li>
           <li class="${'active' if c.active=='watched' else ''}"><a href="${h.url('my_account_watched')}">${_('Watched')}</a></li>
-          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('my_account_perms')}">${_('My permissions')}</a></li>
+          <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('my_account_perms')}">${_('My Permissions')}</a></li>
         </ul>
     </div>
 

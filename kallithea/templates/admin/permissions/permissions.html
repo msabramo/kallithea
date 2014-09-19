@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Permissions administration')}
+    ${_('Permissions Administration')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -39,7 +39,7 @@
            </div>
           </li>
           <li class="${'active' if c.active=='globals' else ''}"><a href="${h.url('admin_permissions')}">${_('Global')}</a></li>
-          <li class="${'active' if c.active=='ips' else ''}"><a href="${h.url('admin_permissions_ips')}">${_('IP whitelist')}</a></li>
+          <li class="${'active' if c.active=='ips' else ''}"><a href="${h.url('admin_permissions_ips')}">${_('IP Whitelist')}</a></li>
           <li class="${'active' if c.active=='perms' else ''}"><a href="${h.url('admin_permissions_perms')}">${_('Overview')}</a></li>
         </ul>
     </div>

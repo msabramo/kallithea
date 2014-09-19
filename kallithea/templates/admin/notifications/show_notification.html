@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Show notification')} ${c.authuser.username}
+    ${_('Show Notification')} ${c.authuser.username}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -11,7 +11,7 @@
 <%def name="breadcrumbs_links()">
     ${h.link_to(_('Notifications'),h.url('notifications'))}
     &raquo;
-    ${_('Show notification')}
+    ${_('Show Notification')}
 </%def>
 
 <%def name="page_nav()">

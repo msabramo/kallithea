@@ -253,7 +253,7 @@ issue_prefix = #
 instance_id =
 
 <%text>## alternative return HTTP header for failed authentication. Default HTTP</%text>
-<%text>## response is 401 HTTPUnauthorized. Currently HG clients have troubles with</%text>
+<%text>## response is 401 HTTPUnauthorized. Currently Mercurial clients have trouble with</%text>
 <%text>## handling that. Set this variable to 403 to return HTTPForbidden</%text>
 auth_ret_code =
 

@@ -5,7 +5,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('%s repository settings') % c.repo_info.repo_name}
+    ${_('%s Repository Settings') % c.repo_info.repo_name}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -49,7 +49,7 @@ ${self.repo_context_bar('options')}
               <a href="${h.url('edit_repo_advanced', repo_name=c.repo_name)}">${_('Advanced')}</a>
           </li>
           <li class="${'active' if c.active=='fields' else ''}">
-              <a href="${h.url('edit_repo_fields', repo_name=c.repo_name)}">${_('Extra fields')}</a>
+              <a href="${h.url('edit_repo_fields', repo_name=c.repo_name)}">${_('Extra Fields')}</a>
           </li>
           <li class="${'active' if c.active=='caches' else ''}">
               <a href="${h.url('edit_repo_caches', repo_name=c.repo_name)}">${_('Caches')}</a>

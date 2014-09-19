@@ -186,9 +186,9 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                         } else {
                             YUD.setStyle('open_new_pr','display','');
                             if(checked_checkboxes.length>0){
-                                YUD.get('open_new_pr').innerHTML = _TM['Open new pull request for selected changesets'];
+                                YUD.get('open_new_pr').innerHTML = _TM['Open New Pull Request for Selected Changesets'];
                             }else{
-                                YUD.get('open_new_pr').innerHTML = _TM['Open new pull request'];
+                                YUD.get('open_new_pr').innerHTML = _TM['Open New Pull Request'];
                             }
                         }
                     }
@@ -200,8 +200,8 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                                                                   'revision': rev_start+'...'+rev_end});
 
                         var link = (rev_start == rev_end)
-                            ? _TM['Show selected changeset __S']
-                            : _TM['Show selected changesets __S &rarr; __E'];
+                            ? _TM['Show Selected Changeset __S']
+                            : _TM['Show Selected Changesets __S &rarr; __E'];
 
                         link = link.replace('__S',rev_start.substr(0,6));
                         link = link.replace('__E',rev_end.substr(0,6));

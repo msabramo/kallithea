@@ -8,11 +8,11 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                 </div>
                 <div class="input">
                     ${h.text('repo_name',class_="medium")}
-                    <span class="help-block">${_('Non-changeable id')}: `_${c.repo_info.repo_id}` <span><a id="show_more_clone_id" href="#">${_('what is that ?')}</a></span></span>
+                    <span class="help-block">${_('Non-changeable id')}: `_${c.repo_info.repo_id}` <span><a id="show_more_clone_id" href="#">${_('What is that?')}</a></span></span>
                     <span id="clone_id" class="help-block" style="display: none">
                         ${_('URL by id')}: `${c.repo_info.clone_url(with_id=True)}` </br>
                         ${_('''In case this repository is renamed or moved into another group the repository url changes.
-                               Using above url guarantees that this repository will allways be accessible under such url.
+                               Using the above url guarantees that this repository will allways be accessible under such url.
                                Usefull for CI systems, or any other cases that you need to hardcode the url into 3rd party service.''')}</span>
                 </div>
            </div>
@@ -43,7 +43,7 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                 </div>
                 <div class="input">
                     ${h.select('repo_group','',c.repo_groups,class_="medium")}
-                    <span class="help-block">${_('Optional select a group to put this repository into.')}</span>
+                    <span class="help-block">${_('Optionally select a group to put this repository into.')}</span>
                 </div>
             </div>
             <div class="field">

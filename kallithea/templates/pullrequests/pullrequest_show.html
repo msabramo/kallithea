@@ -196,7 +196,7 @@ ${self.repo_context_bar('showpullrequest')}
             </div>
             %if c.available and not c.pull_request.is_closed():
               <div class="buttons">
-                ${h.submit('copy_update',_('Create pull request update'),class_="btn btn-small")}
+                ${h.submit('copy_update',_('Create Pull Request Update'),class_="btn btn-small")}
               </div>
             %endif
           </div>
@@ -206,7 +206,7 @@ ${self.repo_context_bar('showpullrequest')}
     </div>
     ## REVIEWERS
     <div style="float:left; border-left:1px dashed #eee">
-       <div class="pr-details-title">${_('Pull request reviewers')}</div>
+       <div class="pr-details-title">${_('Pull Request Reviewers')}</div>
         <div id="reviewers" style="padding:0px 0px 5px 10px">
           ## members goes here !
           <div>
@@ -251,7 +251,7 @@ ${self.repo_context_bar('showpullrequest')}
       <div class="table" style="float:left;clear:none">
           <div class="diffblock">
               <div style="padding:5px">
-                ${_('Compare view')}
+                ${_('Compare View')}
               </div>
           </div>
           <div id="changeset_compare_view_content">

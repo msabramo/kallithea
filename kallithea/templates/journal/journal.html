@@ -11,8 +11,8 @@
     <form id="filter_form">
     <input class="q_filter_box ${'' if c.search_term else 'initial'}" id="j_filter" size="15" type="text" name="filter" value="${c.search_term or _('quick filter...')}"/>
     <span class="tooltip" title="${h.tooltip(h.journal_filter_help())}">?</span>
-    <input type='submit' value="${_('filter')}" class="btn btn-small" style="padding:0px 2px 0px 2px;margin:0px"/>
-    ${_('journal')} - ${ungettext('%s entry', '%s entries', c.journal_pager.item_count) % (c.journal_pager.item_count)}
+    <input type='submit' value="${_('Filter')}" class="btn btn-small" style="padding:0px 2px 0px 2px;margin:0px"/>
+    ${_('Journal')} - ${ungettext('%s Entry', '%s Entries', c.journal_pager.item_count) % (c.journal_pager.item_count)}
     </form>
     ${h.end_form()}
     </h5>
@@ -54,7 +54,7 @@
                     <a id="show_watched" href="#watched"><i class="icon-eye-open"></i> ${_('Watched')}</a>
                 </li>
                 <li id="show_my_li">
-                    <a id="show_my" href="#my"><i class="icon-archive"></i> ${_('My repos')}</a>
+                    <a id="show_my" href="#my"><i class="icon-archive"></i> ${_('My Repos')}</a>
                </li>
             </ul>
         </div>

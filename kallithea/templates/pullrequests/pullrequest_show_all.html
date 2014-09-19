@@ -9,9 +9,9 @@
 
 <%def name="breadcrumbs_links()">
 %if c.from_:
-    ${_('Pull requests from %s') % c.repo_name}
+    ${_("Pull Requests from %s'") % c.repo_name}
 %else:
-    ${_('Pull requests to %s') % c.repo_name}
+    ${_("Pull Requests to '%s'") % c.repo_name}
 %endif
 </%def>
 
@@ -30,14 +30,14 @@ ${self.repo_context_bar('showpullrequest')}
           <li>
              %if c.authuser.username != 'default':
               <span>
-                  <a id="open_new_pr" class="btn btn-small btn-success" href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-plus"></i> ${_('Open new pull request')}</a>
+                  <a id="open_new_pr" class="btn btn-small btn-success" href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-plus"></i> ${_('Open New Pull Request')}</a>
               </span>
              %endif
               <span>
                 %if c.from_:
-                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed)}"><i class="icon-loop-2"></i> ${_('Show pull requests to %s') % c.repo_name}</a>
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed)}"><i class="icon-loop-2"></i> ${_('Show Pull Requests to %s') % c.repo_name}</a>
                 %else:
-                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1)}"><i class="icon-loop-2"></i> ${_('Show pull requests from %s') % c.repo_name}</a>
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1)}"><i class="icon-loop-2"></i> ${_("Show Pull Requests from '%s'") % c.repo_name}</a>
                 %endif
               </span>
           </li>
@@ -47,9 +47,9 @@ ${self.repo_context_bar('showpullrequest')}
     <div style="margin: 0 20px">
         <div>
         %if c.closed:
-            ${h.link_to(_('Hide closed pull requests'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_))}
+            ${h.link_to(_('Hide closed pull requests (only show open pull requests)'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_))}
         %else:
-            ${h.link_to(_('Show closed pull requests too'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_,closed=1))}
+            ${h.link_to(_('Show closed pull requests (in addition to open pull requests)'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_,closed=1))}
         %endif
         </div>
     </div>

@@ -10,19 +10,19 @@ ${h.form(url('admin_settings_mapping'), method='post')}
                         ${h.checkbox('destroy',True)}
                         <label for="destroy">${_('Destroy old data')}</label>
                     </div>
-                    <span class="help-block">${_('In case a repository was deleted from filesystem and it still exists in the database check this option to scan obsolete data in database and remove it.')}</span>
+                    <span class="help-block">${_('Check this option to remove references to repositories that no longer exist in on the filesystem.')}</span>
 
                     <div class="checkbox">
                         ${h.checkbox('invalidate',True)}
                         <label for="invalidate"> ${_('Invalidate cache for all repositories')}</label>
                     </div>
-                    <span class="help-block">${_('Each cache data for repositories will be cleaned with this option selected. Use this to reload data and clear cache keys.')}</span>
+                    <span class="help-block">${_('Check this to reload data and clear cache keys for all repositories.')}</span>
 
                     <div class="checkbox">
                         ${h.checkbox('hooks',True)}
-                        <label for="hooks"> ${_('Install GIT hooks')} </label>
+                        <label for="hooks"> ${_('Install Git hooks')} </label>
                     </div>
-                    <span class="help-block">${_('Verify if Kallitheas GIT hooks are installed for each repository. Current hooks will be updated to latest version')}</span>
+                    <span class="help-block">${_("Verify if Kallithea's Git hooks are installed for each repository. Current hooks will be updated to the latest version.")}</span>
                 </div>
 
                 </div>

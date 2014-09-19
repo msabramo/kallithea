@@ -15,7 +15,7 @@
 kallithea.lib.middleware.simplehg
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-SimpleHG middleware for handling mercurial protocol request
+SimpleHg middleware for handling mercurial protocol request
 (push/clone etc.). It's implemented with basic auth function
 
 This file was forked by the Kallithea project in July 2014.
@@ -60,7 +60,7 @@ def is_mercurial(environ):
     else:
         ishg_path = False
 
-    log.debug('pathinfo: %s detected as HG %s' % (
+    log.debug('pathinfo: %s detected as Mercurial %s' % (
         path_info, ishg_path)
     )
     return ishg_path
@@ -202,7 +202,7 @@ class SimpleHg(BaseVCSController):
         self.__inject_extras(repo_path, baseui, extras)
 
         try:
-            log.info('%s action on HG repo "%s" by "%s" from %s' %
+            log.info('%s action on Mercurial repo "%s" by "%s" from %s' %
                      (action, str_repo_name, safe_str(username), ip_addr))
             app = self.__make_app(repo_path, baseui, extras)
             return app(environ, start_response)

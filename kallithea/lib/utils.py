@@ -825,7 +825,7 @@ def check_git_version():
         to_old_git = True
 
     if 'git' in BACKENDS:
-        log.debug('GIT executable: "%s" version detected: %s'
+        log.debug('Git executable: "%s" version detected: %s'
                   % (settings.GIT_EXECUTABLE_PATH, stdout))
         if stderr:
             log.warning('Unable to detect git version, org error was: %r' % stderr)

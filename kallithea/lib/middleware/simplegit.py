@@ -55,7 +55,7 @@ GIT_PROTO_PAT = re.compile(r'^/(.+)/(info/refs|git-upload-pack|git-receive-pack)
 def is_git(environ):
     path_info = environ['PATH_INFO']
     isgit_path = GIT_PROTO_PAT.match(path_info)
-    log.debug('pathinfo: %s detected as GIT %s' % (
+    log.debug('pathinfo: %s detected as Git %s' % (
         path_info, isgit_path is not None)
     )
     return isgit_path
@@ -200,7 +200,7 @@ class SimpleGit(BaseVCSController):
 
         try:
             self._handle_githooks(repo_name, action, baseui, environ)
-            log.info('%s action on GIT repo "%s" by "%s" from %s' %
+            log.info('%s action on Git repo "%s" by "%s" from %s' %
                      (action, str_repo_name, safe_str(username), ip_addr))
             app = self.__make_app(repo_name, repo_path, extras)
             return app(environ, start_response)

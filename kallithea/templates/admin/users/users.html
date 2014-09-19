@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Users administration')}
+    ${_('Users Administration')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -10,7 +10,7 @@
 
 <%def name="breadcrumbs_links()">
     <input class="q_filter_box" id="q_filter" size="15" type="text" name="filter" placeholder="${_('quick filter...')}" value=""/>
-    ${h.link_to(_('Admin'),h.url('admin_home'))} &raquo; <span id="user_count">0</span> ${_('users')}
+    ${h.link_to(_('Admin'),h.url('admin_home'))} &raquo; <span id="user_count">0</span> ${_('Users')}
 </%def>
 
 <%def name="page_nav()">
@@ -51,12 +51,12 @@
   var column_defs = [
     {key:"gravatar",label:"",sortable:false},
     {key:"username",label:"${_('Username')}",sortable:true},
-    {key:"firstname",label:"${_('Firstname')}",sortable:true},
-    {key:"lastname",label:"${_('Lastname')}",sortable:true},
-    {key:"last_login",label:"${_('Last login')}",sortable:true, sortOptions: { sortFunction: lastLoginSort }},
+    {key:"firstname",label:"${_('First Name')}",sortable:true},
+    {key:"lastname",label:"${_('Last Name')}",sortable:true},
+    {key:"last_login",label:"${_('Last Login')}",sortable:true, sortOptions: { sortFunction: lastLoginSort }},
     {key:"active",label:"${_('Active')}",sortable:true},
     {key:"admin",label:"${_('Admin')}",sortable:true},
-    {key:"extern_type",label:"${_('Auth type')}",sortable:true},
+    {key:"extern_type",label:"${_('Auth Type')}",sortable:true},
     {key:"action",label:"${_('Action')}",sortable:false}
   ];
   var counter = YUD.get('user_count');

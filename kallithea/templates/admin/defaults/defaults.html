@@ -2,7 +2,7 @@
 <%inherit file="/base/base.html"/>
 
 <%def name="title()">
-    ${_('Repositories defaults')}
+    ${_('Repository Defaults')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
@@ -25,7 +25,7 @@
         ${self.breadcrumbs()}
     </div>
 
-    <h3>${_('Repositories defaults')}</h3>
+    <h3>${_('Repository Defaults')}</h3>
 
     ${h.form(url('default', id='defaults'),method='put')}
     <div class="form">

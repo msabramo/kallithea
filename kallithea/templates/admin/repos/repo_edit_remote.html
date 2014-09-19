@@ -5,12 +5,12 @@
 ${h.form(url('edit_repo_remote', repo_name=c.repo_name), method='put')}
 <div class="form">
    <div class="fields">
-       ${h.submit('remote_pull_%s' % c.repo_info.repo_name,_('Pull changes from remote location'),class_="btn btn-small",onclick="return confirm('"+_('Confirm to pull changes from remote side')+"');")}
+       ${h.submit('remote_pull_%s' % c.repo_info.repo_name,_('Pull Changes from Remote Location'),class_="btn btn-small",onclick="return confirm('"+_('Confirm to pull changes from remote side.')+"');")}
    </div>
 </div>
 ${h.end_form()}
 %else:
   <div style="font-size: 20px">
-    ${_('This repository does not have any remote url set')}
+    ${_('This repository does not have a remote url set.')}
   </div>
 %endif

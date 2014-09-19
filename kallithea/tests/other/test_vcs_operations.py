@@ -155,7 +155,7 @@ def set_anonymous_access(enable=True):
 
 
 def _check_proper_git_push(stdout, stderr):
-    #WTF GIT stderr is output ?!
+    #WTF Git stderr is output ?!
     assert 'fatal' not in stderr
     assert 'rejected' not in stderr
     assert 'Pushing to' in stderr
@@ -427,7 +427,7 @@ class TestVCSOperations(BaseTestCase):
         err = 'Repository `%s` locked by user `%s`' % (GIT_REPO, TEST_USER_ADMIN_LOGIN)
         assert err in stderr
 
-        #TODO: fix this somehow later on GIT, GIT is stupid and even if we throw
+        #TODO: fix this somehow later on Git, Git is stupid and even if we throw
         #back 423 to it, it makes ANOTHER request and we fail there with 405 :/
 
         msg = ("""abort: HTTP Error 423: Repository `%s` locked by user `%s`"""
@@ -459,7 +459,7 @@ class TestVCSOperations(BaseTestCase):
         r = Repository.get_by_repo_name(HG_REPO)
         assert r.locked == [None, None]
 
-    #TODO: fix me ! somehow during tests hooks don't get called on GIT
+    #TODO: fix me ! somehow during tests hooks don't get called on Git
     def test_push_unlocks_repository_git(self):
         # enable locking
         r = Repository.get_by_repo_name(GIT_REPO)

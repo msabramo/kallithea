@@ -141,7 +141,7 @@ class SearchController(BaseRepoController):
                               'Please run whoosh indexer')
             except (Exception):
                 log.error(traceback.format_exc())
-                c.runtime = _('An error occurred during this search operation')
+                c.runtime = _('An error occurred during search operation.')
 
         # Return a rendered template
         return render('/search/search.html')

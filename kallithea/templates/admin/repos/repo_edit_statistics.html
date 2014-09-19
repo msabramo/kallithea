@@ -7,7 +7,7 @@ ${h.form(url('edit_repo_statistics', repo_name=c.repo_info.repo_name), method='p
             <li>${_('Processed progress')}: ${c.stats_percentage}%</li>
         </ul>
        </div>
-        ${h.submit('reset_stats_%s' % c.repo_info.repo_name,_('Reset statistics'),class_="btn btn-small",onclick="return confirm('"+_('Confirm to remove current statistics')+"');")}
+        ${h.submit('reset_stats_%s' % c.repo_info.repo_name,_('Reset Statistics'),class_="btn btn-small",onclick="return confirm('"+_('Confirm to remove current statistics.')+"');")}
    </div>
 </div>
 ${h.end_form()}

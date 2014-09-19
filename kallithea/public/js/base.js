@@ -773,7 +773,7 @@ var _placeAddButton = function($line_tr){
         $tr = $tr.next();
     }
     $tr.find('.add-comment').remove();
-    var label = TRANSLATION_MAP['Add another comment'];
+    var label = TRANSLATION_MAP['Add Another Comment'];
     var $html_el = $('<div class="add-comment"><span class="btn btn-mini">{0}</span></div>'.format(label));
     $html_el.click(function(e) {
         injectInlineForm($line_tr);
@@ -2168,11 +2168,11 @@ $(document).ready(function(){
         var $target = $('#' + $button.attr('target'));
         if($target.hasClass('hidden')){
             $target.removeClass('hidden');
-            $button.html("&uarr; {0} &uarr;".format(_TM['Collapse diff']));
+            $button.html("&uarr; {0} &uarr;".format(_TM['Collapse Diff']));
         }
         else if(!$target.hasClass('hidden')){
             $target.addClass('hidden');
-            $button.html("&darr; {0} &darr;".format(_TM['Expand diff']));
+            $button.html("&darr; {0} &darr;".format(_TM['Expand Diff']));
         }
     });
 });

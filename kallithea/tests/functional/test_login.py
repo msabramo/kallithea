@@ -59,7 +59,7 @@ class TestLoginController(TestController):
         response = response.follow()
 
         self.assertEqual(response.status, '200 OK')
-        response.mustcontain('Users administration')
+        response.mustcontain('Users Administration')
 
     @parameterized.expand([
           ('data:text/html,<script>window.alert("xss")</script>',),

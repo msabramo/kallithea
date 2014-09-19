@@ -1,4 +1,4 @@
-<h4>${_('Built in Mercurial hooks - read only')}</h4>
+<h4>${_('Built-in Mercurial Hooks (Read-Only)')}</h4>
 <div class="form">
     <div class="fields">
       % for hook in c.hooks:
@@ -16,7 +16,7 @@
 </div>
 
 % if c.visual.allow_custom_hooks_settings:
-<h4>${_('Custom hooks')}</h4>
+<h4>${_('Custom Hooks')}</h4>
 ${h.form(url('admin_settings_hooks'), method='post')}
 <div class="form">
     <div class="fields">

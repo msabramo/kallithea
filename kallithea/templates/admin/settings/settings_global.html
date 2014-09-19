@@ -48,12 +48,12 @@ ${h.form(url('admin_settings_global'), method='post')}
                 </div>
                 <div class="input">
                     ${h.text('captcha_private_key',size=60)}
-                    <span class="help-block">${_('Private key for reCaptcha system. Setting this value will enable captcha on registration')}</span>
+                    <span class="help-block">${_('Private key for reCaptcha system. Setting this value will enable captcha on registration.')}</span>
                 </div>
             </div>
 
             <div class="buttons">
-                ${h.submit('save',_('Save settings'),class_="btn")}
+                ${h.submit('save',_('Save Settings'),class_="btn")}
                 ${h.reset('reset',_('Reset'),class_="btn")}
            </div>
         </div>

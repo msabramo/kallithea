@@ -10,7 +10,7 @@ ${h.form(url('admin_settings'), method='post')}
                         ${h.checkbox('web_push_ssl', 'True')}
                         <label for="web_push_ssl">${_('Require SSL for vcs operations')}</label>
                     </div>
-                    <span class="help-block">${_('Activate to set Kallithea to require SSL for pushing or pulling. If SSL certificate is missing it will return a HTTP Error 406: Not Acceptable.')}</span>
+                    <span class="help-block">${_('Activate to require SSL both pushing and pulling. If SSL certificate is missing, it will return a HTTP Error 406: Not Acceptable.')}</span>
                 </div>
              </div>
 
@@ -39,7 +39,7 @@ ${h.form(url('admin_settings'), method='post')}
              </div>
              <div class="field">
                 <div class="label label-checkbox">
-                    <label>${_('Mercurial Extensions')}:</label>
+                    <label>${_('Mercurial extensions')}:</label>
                 </div>
                 <div class="checkboxes">
                     <div class="checkbox">
@@ -50,18 +50,18 @@ ${h.form(url('admin_settings'), method='post')}
                         ${h.checkbox('extensions_hgsubversion','True')}
                         <label for="extensions_hgsubversion">${_('Enable hgsubversion extension')}</label>
                     </div>
-                    <span class="help-block">${_('Requires hgsubversion library to be installed. Allows cloning remote SVN repositories and migrates them to Mercurial type.')}</span>
+                    <span class="help-block">${_('Requires hgsubversion library to be installed. Enables cloning of remote Subversion repositories while converting them to Mercurial.')}</span>
                     ##<div class="checkbox">
                     ##    ${h.checkbox('extensions_hggit','True')}
                     ##    <label for="extensions_hggit">${_('Enable hg-git extension')}</label>
                     ##</div>
-                    ##<span class="help-block">${_('Requires hg-git library to be installed. Allows cloning remote git repositories and migrates them to Mercurial type.')}</span>
+                    ##<span class="help-block">${_('Requires hg-git library to be installed. Enables cloning of remote Git repositories while converting them to Mercurial.')}</span>
                 </div>
             </div>
             %if c.visual.allow_repo_location_change:
             <div class="field">
                 <div class="label">
-                    <label for="paths_root_path">${_('Repositories location')}:</label>
+                    <label for="paths_root_path">${_('Location of repositories')}:</label>
                 </div>
                 <div class="input">
                     ${h.text('paths_root_path',size=60,readonly="readonly", class_="disabled")}
@@ -69,7 +69,7 @@ ${h.form(url('admin_settings'), method='post')}
                             title="${h.tooltip(_('Click to unlock. You must restart Kallithea in order to make this setting take effect.'))}">
                         <div class="btn btn-small"><i id="path_unlock_icon" class="icon-lock"></i></div>
                     </span>
-                    <span class="help-block">${_('Filesystem location where repositories should be stored. After changing this value a restart and rescan of the repository folder are required.')}</span>
+                    <span class="help-block">${_('Filesystem location where repositories are stored. After changing this value, a restart and rescan of the repository folder are both required.')}</span>
                 </div>
             </div>
             %else:
@@ -77,7 +77,7 @@ ${h.form(url('admin_settings'), method='post')}
             ${h.hidden('paths_root_path',size=30,readonly="readonly", class_="disabled")}
             %endif
             <div class="buttons">
-                ${h.submit('save',_('Save settings'),class_="btn")}
+                ${h.submit('save',_('Save Settings'),class_="btn")}
                 ${h.reset('reset',_('Reset'),class_="btn")}
            </div>
         </div>

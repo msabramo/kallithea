@@ -4,8 +4,8 @@
     (_('Kallithea version'), h.literal('%s <b><span style="color:#036185; text-decoration: underline;cursor: pointer" id="check_for_update" >%s</span></b>' % (c.kallithea_version, _('check for updates'))), ''),
     (_('Python version'), c.py_version, ''),
     (_('Platform'), c.platform, ''),
-    (_('GIT version'), c.git_version, ''),
-    (_('GIT path'), c.ini.get('git_path'), ''),
+    (_('Git version'), c.git_version, ''),
+    (_('Git path'), c.ini.get('git_path'), ''),
     (_('Upgrade info endpoint'), h.literal('%s <br/><span style="color:#999999">%s.</span>' % (c.update_url, _('Note: please make sure this server can access this url'))), '')
  ]
 %>
@@ -19,7 +19,7 @@
 %endfor
 </dl>
 
-<h4>${_('Python packages')}</h4>
+<h4>${_('Python Packages')}</h4>
 <table class="table" style="margin:0px 0px 0px 0px">
   <colgroup>
       <col style="width:180px">

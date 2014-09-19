@@ -1,4 +1,4 @@
-<h3>${_('Fork of')}</h3>
+<h3>${_('Parent')}</h3>
 ${h.form(url('edit_repo_advanced_fork', repo_name=c.repo_info.repo_name), method='put')}
 <div class="form">
    <div class="fields">
@@ -7,7 +7,7 @@ ${h.form(url('edit_repo_advanced_fork', repo_name=c.repo_info.repo_name), method
    </div>
        <div class="field" style="border:none;color:#888">
        <ul>
-            <li>${_('''Manually set this repository as a fork of another from the list''')}</li>
+            <li>${_('''Manually set this repository as a fork of another from the list.''')}</li>
        </ul>
        </div>
 </div>
@@ -21,7 +21,7 @@ ${h.end_form()}
     })
 </script>
 
-<h3>${_('Public journal visibility')}</h3>
+<h3>${_('Public Journal Visibility')}</h3>
 ${h.form(url('edit_repo_advanced_journal', repo_name=c.repo_info.repo_name), method='put')}
 <div class="form">
   ${h.hidden('auth_token',str(h.get_token()))}
@@ -34,43 +34,43 @@ ${h.form(url('edit_repo_advanced_journal', repo_name=c.repo_info.repo_name), met
   %else:
     <button class="btn btn-small" type="submit">
         <i class="icon-plus"></i>
-        ${_('Add to public journal')}
+        ${_('Add to Public Journal')}
     </button>
   %endif
   </div>
  <div class="field" style="border:none;color:#888">
  <ul>
-      <li>${_('All actions made on this repository will be accessible to everyone in public journal')}</li>
+      <li>${_('All actions done in this repository will be visible to everyone in the public journal.')}</li>
  </ul>
  </div>
 </div>
 ${h.end_form()}
 
-<h3>${_('Change locking')}</h3>
+<h3>${_('Change Locking')}</h3>
 ${h.form(url('edit_repo_advanced_locking', repo_name=c.repo_info.repo_name), method='put')}
 <div class="form">
    <div class="fields">
       %if c.repo_info.locked[0]:
         ${h.hidden('set_unlock', '1')}
         <button class="btn btn-small" type="submit"
-                onclick="return confirm('${_('Confirm to unlock repository')}');">
+                onclick="return confirm('${_('Confirm to unlock repository.')}');">
             <i class="icon-unlock"></i>
-            ${_('Unlock repository')}
+            ${_('Unlock Repository')}
         </button>
        ${'Locked by %s on %s' % (h.person_by_id(c.repo_info.locked[0]),h.fmt_date(h.time_to_datetime(c.repo_info.locked[1])))}
       %else:
         ${h.hidden('set_lock', '1')}
         <button class="btn btn-small" type="submit"
-                onclick="return confirm('${_('Confirm to lock repository')}');">
+                onclick="return confirm('${_('Confirm to lock repository.')}');">
             <i class="icon-lock"></i>
-            ${_('Lock repository')}
+            ${_('Lock Repository')}
         </button>
         ${_('Repository is not locked')}
       %endif
    </div>
    <div class="field" style="border:none;color:#888">
    <ul>
-        <li>${_('Force locking on repository. Works only when anonymous access is disabled. Trigering a pull locks repository by user who pulled, only the same user can unlock by doing a push')}
+        <li>${_('Force locking on the repository. Works only when anonymous access is disabled. Triggering a pull locks the repository.  The user who is pulling locks the repository; only the user who pulled and locked it can unlock it by doing a push.')}
         </li>
    </ul>
    </div>
@@ -82,16 +82,16 @@ ${h.form(url('repo', repo_name=c.repo_name),method='delete')}
     <button class="btn btn-small btn-danger" type="submit"
             onclick="return confirm('${_('Confirm to delete this repository: %s') % c.repo_name}');">
         <i class="icon-remove-sign"></i>
-        ${_('Delete this repository')}
+        ${_('Delete this Repository')}
     </button>
     %if c.repo_info.forks.count():
-        ${ungettext('this repository has %s fork', 'this repository has %s forks', c.repo_info.forks.count()) % c.repo_info.forks.count()}
+        ${ungettext('This repository has %s fork', 'This repository has %s forks', c.repo_info.forks.count()) % c.repo_info.forks.count()}
         <input type="radio" name="forks" value="detach_forks" checked="checked"/> <label for="forks">${_('Detach forks')}</label>
         <input type="radio" name="forks" value="delete_forks" /> <label for="forks">${_('Delete forks')}</label>
     %endif
     <div class="field" style="border:none;color:#888">
         <ul>
-        <li>${_('This repository will be renamed in a special way in order to be unaccesible for Kallithea and VCS systems. If you need to fully delete it from file system please do it manually')}</li>
+        <li>${_('The deleted repository will be moved away and hidden until the administrator expires it. The administrator can both permanently delete it or restore it.')}</li>
         </ul>
     </div>
 ${h.end_form()}

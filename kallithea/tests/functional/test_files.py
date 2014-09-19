@@ -315,7 +315,7 @@ removed extra unicode conversion in diff.</div>
         )
         response.mustcontain("vcs/web/simplevcs/views/repository.py")
 
-    #HG - ADD FILE
+    # Hg - ADD FILE
     def test_add_file_view_hg(self):
         self.log_user()
         response = self.app.get(url('files_add_home',
@@ -388,7 +388,7 @@ removed extra unicode conversion in diff.</div>
         finally:
             fixture.destroy_repo(repo.repo_name)
 
-    ##GIT - ADD FILE
+    # Git - add file
     def test_add_file_view_git(self):
         self.log_user()
         response = self.app.get(url('files_add_home',
@@ -460,7 +460,7 @@ removed extra unicode conversion in diff.</div>
         finally:
             fixture.destroy_repo(repo.repo_name)
 
-    #HG - EDIT
+    # Hg - EDIT
     def test_edit_file_view_hg(self):
         self.log_user()
         response = self.app.get(url('files_edit_home',
@@ -531,7 +531,7 @@ removed extra unicode conversion in diff.</div>
         finally:
             fixture.destroy_repo(repo.repo_name)
 
-    #GIT - EDIT
+    # Git - edit
     def test_edit_file_view_git(self):
         self.log_user()
         response = self.app.get(url('files_edit_home',
@@ -602,7 +602,7 @@ removed extra unicode conversion in diff.</div>
         finally:
             fixture.destroy_repo(repo.repo_name)
 
-    # HG - delete
+    # Hg - delete
     def test_delete_file_view_hg(self):
         self.log_user()
         response = self.app.get(url('files_delete_home',
@@ -672,7 +672,7 @@ removed extra unicode conversion in diff.</div>
         finally:
             fixture.destroy_repo(repo.repo_name)
 
-    # GIT - delete
+    # Git - delete
     def test_delete_file_view_git(self):
         self.log_user()
         response = self.app.get(url('files_delete_home',

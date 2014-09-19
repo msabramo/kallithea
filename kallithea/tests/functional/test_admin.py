@@ -52,7 +52,7 @@ class TestAdminController(TestController):
     def test_index(self):
         self.log_user()
         response = self.app.get(url(controller='admin/admin', action='index'))
-        response.mustcontain('Admin journal')
+        response.mustcontain('Admin Journal')
 
     def test_filter_all_entries(self):
         self.log_user()

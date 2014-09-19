@@ -27,8 +27,8 @@ ${h.form(url('admin_settings_visual'), method='post')}
                 <div class="field">
                     <div class="input">
                         ${h.text('gravatar_url', size=80)}
-                        <span class="help-block">${_('''Gravatar url allows you to use other avatar server application.
-                                                        Following variables of the URL will be replaced accordingly.
+                        <span class="help-block">${_('''Gravatar url allows you to use another avatar server application.
+                                                        The following variables of the url will be replaced accordingly.
                                                         {scheme}    'http' or 'https' sent from running Kallithea server,
                                                         {email}     user email,
                                                         {md5email}  md5 hash of the user email (like at gravatar.com),
@@ -39,7 +39,8 @@ ${h.form(url('admin_settings_visual'), method='post')}
                 <div class="field">
                     <div class="input">
                         ${h.text('clone_uri_tmpl', size=80)}
-                        <span class="help-block">${_('''Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}', available vars:
+                        <span class="help-block">${_('''Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}'.
+                                                        The following variables are available:
                                                         {scheme} 'http' or 'https' sent from running Kallithea server,
                                                         {user}   current user username,
                                                         {netloc} network location/server host of running Kallithea server,
@@ -82,7 +83,7 @@ ${h.form(url('admin_settings_visual'), method='post')}
                         ${h.checkbox('show_private_icon','True')}
                         <label for="show_private_icon">${_('Show private repo icon on repositories')}</label>
                     </div>
-                    <span class="help-block">${_('Show public/private icons next to repositories names.')}</span>
+                    <span class="help-block">${_('Show public/private icons next to repository names.')}</span>
                  </div>
              </div>
 
@@ -107,12 +108,12 @@ ${h.form(url('admin_settings_visual'), method='post')}
                             <li>[see =&gt; URI] <span class="metatag" tag="see">see =&gt; <a href="#">URI</a> </span></li>
                         </ul>
                     </div>
-                    <span class="help-block">${_('Parses meta tags from repository description field and turns them into colored tags.')}</span>
+                    <span class="help-block">${_('Parses meta tags from the repository description field and turns them into colored tags.')}</span>
                  </div>
              </div>
 
              <div class="buttons">
-                 ${h.submit('save',_('Save settings'),class_="btn")}
+                 ${h.submit('save',_('Save Settings'),class_="btn")}
                  ${h.reset('reset',_('Reset'),class_="btn")}
              </div>
 
