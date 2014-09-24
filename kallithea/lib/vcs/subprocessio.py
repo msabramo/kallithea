@@ -375,14 +375,20 @@ class SubprocessIOChunker(object):
             except Exception:
                 pass
             bg_out.stop()
+            out = ''.join(bg_out)
             bg_err.stop()
-            err = '%s' % ''.join(bg_err)
-            if err:
+            err = ''.join(bg_err)
+            if (err.strip() == 'fatal: The remote end hung up unexpectedly' and
+                out.startswith('0034shallow ')):
+                # hack inspired by https://github.com/schacon/grack/pull/7
+                bg_out = iter([out])
+                _p = None
+            elif err:
                 raise EnvironmentError(
                     "Subprocess exited due to an error:\n" + err)
-            raise EnvironmentError(
-                "Subprocess exited with non 0 ret code:%s" % _returncode)
-
+            else:
+                raise EnvironmentError(
+                    "Subprocess exited with non 0 ret code:%s" % _returncode)
         self.process = _p
         self.output = bg_out
         self.error = bg_err
@@ -392,7 +398,7 @@ class SubprocessIOChunker(object):
         return self
 
     def next(self):
-        if self.process.poll():
+        if self.process and self.process.poll():
             err = '%s' % ''.join(self.error)
             raise EnvironmentError("Subprocess exited due to an error:\n" + err)
         return self.output.next()
