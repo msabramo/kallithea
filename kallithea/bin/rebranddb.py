@@ -70,6 +70,9 @@ def do_migrate(db, old, new):
         except KeyError, e:
             print 'Not renaming settings:', e
 
+    old_auth_name = 'internal' if old == 'kallithea' else old
+    new_auth_name = 'internal' if new == 'kallithea' else new
+
     # using this API because ... dunno ... it is simple and works
     conn = metadata.bind.connect()
     trans = conn.begin()
@@ -81,7 +84,7 @@ def do_migrate(db, old, new):
     except AttributeError:
         print 'No extern_name to rename'
     else:
-        t.update().where(t.c.extern_name == old).values(extern_name=new).execute()
+        t.update().where(t.c.extern_name == old_auth_name).values(extern_name=new_auth_name).execute()
 
     print 'Bulk fixing of User extern_type'
     try:
@@ -89,7 +92,7 @@ def do_migrate(db, old, new):
     except AttributeError:
         print 'No extern_type to rename'
     else:
-        t.update().where(t.c.extern_type == old).values(extern_type=new).execute()
+        t.update().where(t.c.extern_type == old_auth_name).values(extern_type=new_auth_name).execute()
 
     trans.commit()
 
@@ -132,8 +135,6 @@ def do_migrate(db, old, new):
     session.commit()
 
     print 'Fixing auth module names'
-    old_auth_name = 'internal' if old == 'kallithea' else old
-    new_auth_name = 'internal' if new == 'kallithea' else new
     for s in session.query(Setting).filter(Setting.app_settings_name == 'auth_plugins').all():
         print '- fixing %s' % s.app_settings_name
         s.app_settings_value = (s.app_settings_value
