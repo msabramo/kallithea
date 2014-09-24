@@ -52,7 +52,7 @@ and licensed under the MIT-permissive license, which is
 
 Additional files from upstream Codemirror are copyrighted by various authors
 and licensed under other permissive licenses.  The sub-directories under
-[.../public/js/mode/](kallithea/public/js/mode) include the copyright and
+[.../public/codemirror](kallithea/public/codemirror) include the copyright and
 license notice and information as they appeared in Codemirror's upstream
 release.
 

@@ -8,13 +8,13 @@
 </%def>
 
 <%def name="js_extra()">
-<script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
+<script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
-<script type="text/javascript" src="${h.url('/js/mode/meta.js')}"></script>
+<script type="text/javascript" src="${h.url('/codemirror/mode/meta.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/meta_ext.js')}"></script>
 </%def>
 <%def name="css_extra()">
-<link rel="stylesheet" type="text/css" href="${h.url('/css/codemirror.css')}"/>
+<link rel="stylesheet" type="text/css" href="${h.url('/codemirror/lib/codemirror.css')}"/>
 </%def>
 
 <%def name="page_nav()">
@@ -80,7 +80,7 @@ ${self.repo_context_bar('files')}
 $(document).ready(function(){
     var reset_url = "${h.url('files_home',repo_name=c.repo_name,revision=c.cs.raw_id,f_path=c.file.path)}";
     var myCodeMirror = initCodeMirror('editor',reset_url);
-    CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
+    CodeMirror.modeURL = "${h.url('/codemirror/mode/%N/%N.js')}";
 
    //inject new modes, based on codeMirrors modeInfo object
     var modes_select = $('#set_mode');

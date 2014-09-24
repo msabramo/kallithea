@@ -9,13 +9,13 @@
 </%def>
 
 <%def name="js_extra()">
-<script type="text/javascript" src="${h.url('/js/codemirror.js')}"></script>
+<script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
-<script type="text/javascript" src="${h.url('/js/mode/meta.js')}"></script>
+<script type="text/javascript" src="${h.url('/codemirror/mode/meta.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/meta_ext.js')}"></script>
 </%def>
 <%def name="css_extra()">
-<link rel="stylesheet" type="text/css" href="${h.url('/css/codemirror.css')}"/>
+<link rel="stylesheet" type="text/css" href="${h.url('/codemirror/lib/codemirror.css')}"/>
 </%def>
 
 <%def name="breadcrumbs_links()">
@@ -89,7 +89,7 @@
                 ## dynamic edit box.
                 <script type="text/javascript">
                 var myCodeMirror = initCodeMirror("editor_${h.FID('f',file.path)}", '');
-                CodeMirror.modeURL = "${h.url('/js/mode/%N/%N.js')}";
+                CodeMirror.modeURL = "${h.url('/codemirror/mode/%N/%N.js')}";
 
                 //inject new modes
                 var $modes_select = $('#mimetype_${h.FID('f',file.path)}');
