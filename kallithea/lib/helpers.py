@@ -496,6 +496,8 @@ def is_hg(repository):
 
 
 def email_or_none(author):
+    if not author:
+        return None
     # extract email from the commit string
     _email = email(author)
     if _email:
