@@ -386,6 +386,7 @@ class SubprocessIOChunker(object):
         self.process = _p
         self.output = bg_out
         self.error = bg_err
+        self.inputstream = inputstream
 
     def __iter__(self):
         return self
@@ -411,6 +412,10 @@ class SubprocessIOChunker(object):
             pass
         try:
             self.error.close()
+        except:
+            pass
+        try:
+            os.close(self.inputstream)
         except:
             pass
 
