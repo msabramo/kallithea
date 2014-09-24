@@ -605,8 +605,8 @@ class FilesController(BaseRepoController):
     def diff(self, repo_name, f_path):
         ignore_whitespace = request.GET.get('ignorews') == '1'
         line_context = request.GET.get('context', 3)
-        diff1 = request.GET.get('diff1', '')
         diff2 = request.GET.get('diff2', '')
+        diff1 = request.GET.get('diff1', '') or diff2
         c.action = request.GET.get('diff')
         c.no_changes = diff1 == diff2
         c.f_path = f_path
