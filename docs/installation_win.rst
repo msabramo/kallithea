@@ -25,7 +25,7 @@ Step1 - Install Visual Studio 2008 Express
 ------------------------------------------
 
 
-Optional: You can also install MingW, but VS2008 installation is easier
+Optional: You can also install MinGW, but VS2008 installation is easier.
 
 Download "Visual C++ 2008 Express Edition with SP1" from:
 http://www.microsoft.com/visualstudio/en-us/products/2008-editions/express
@@ -61,7 +61,7 @@ choose "Visual C++ 2008 Express" when installing.
 Step2 - Install Python
 ----------------------
 
-Install Python 2.x.y (x >= 5) x86 version (32bit). DO NOT USE A 3.x version.
+Install Python 2.x.y (x = 6 or 7) x86 version (32bit). DO NOT USE A 3.x version.
 Download Python 2.x.y from:
 http://www.python.org/download/
 

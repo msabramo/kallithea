@@ -33,7 +33,7 @@ and put all your changes like db connection or server port in there.
 
 After finishing your changes make sure all tests passes ok. You can run
 the testsuite running ``nosetest`` from the project root, or if you use tox
-run tox for python2.5-2.7 with multiple database test. When using `nosetests`
+run tox for python2.6-2.7 with multiple database test. When using `nosetests`
 test.ini file is used and by default it uses sqlite for tests, edit this file
 to change your testing enviroment.
 

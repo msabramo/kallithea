@@ -14,7 +14,7 @@ clients. Minimal version of hg client known working fine with Kallithea is
 Installing Kallithea from PyPI (aka "Cheeseshop")
 -------------------------------------------------
 
-Kallithea requires python version 2.5 or higher.
+Kallithea requires python version 2.6 or higher.
 
 The easiest way to install ``kallithea`` is to run::
 

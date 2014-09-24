@@ -9,7 +9,7 @@ Troubleshooting
 :A: Make sure either to set the `static_files = true` in the .ini file or
    double check the root path for your http setup. It should point to
    for example:
-   /home/my-virtual-python/lib/python2.6/site-packages/kallithea/public
+   /home/my-virtual-python/lib/python2.7/site-packages/kallithea/public
 
 |
 

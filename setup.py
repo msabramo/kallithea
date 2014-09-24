@@ -4,8 +4,8 @@ import os
 import sys
 import platform
 
-if sys.version_info < (2, 5):
-    raise Exception('Kallithea requires python 2.5 or later')
+if sys.version_info < (2, 6):
+    raise Exception('Kallithea requires python 2.6 or 2.7')
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -58,9 +58,6 @@ requirements = [
     "Routes==1.13",
 ]
 
-if sys.version_info < (2, 6):
-    requirements.append("pysqlite")
-
 if sys.version_info < (2, 7):
     requirements.append("importlib==1.0.1")
     requirements.append("unittest2")
@@ -89,7 +86,6 @@ classifiers = [
     'License :: OSI Approved :: GNU General Public License (GPL)',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2.5',
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
     'Topic :: Software Development :: Version Control',
