@@ -1,6 +1,7 @@
 /**
 Kallithea JS Files
 **/
+'use strict';
 
 if (typeof console == "undefined" || typeof console.log == "undefined"){
     console = { log: function() {} }
@@ -99,8 +100,6 @@ if (!Array.prototype.filter)
 {
     Array.prototype.filter = function(fun /*, thisArg */)
     {
-        "use strict";
-
         if (this === void 0 || this === null)
             throw new TypeError();
 
