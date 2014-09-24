@@ -799,7 +799,7 @@ def make_map(config):
                 controller='files', action='diff', revision='tip', f_path='',
                 conditions=dict(function=check_repo))
 
-    rmap.connect('files_diff_2way_home', '/{repo_name:.*?}/diff-2way/{f_path:.*}',
+    rmap.connect('files_diff_2way_home', '/{repo_name:.*?}/diff-2way/{f_path:.+}',
                 controller='files', action='diff_2way', revision='tip', f_path='',
                 conditions=dict(function=check_repo))
 
