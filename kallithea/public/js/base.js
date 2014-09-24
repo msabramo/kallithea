@@ -280,7 +280,7 @@ var pyroutes = (function() {
 
                 var ret = [];
                 //extra params => GET
-                for(param in params){
+                for(var param in params){
                     if (route[1].indexOf(param) == -1){
                         ret.push(encodeURIComponent(param) + "=" + encodeURIComponent(params[param]));
                     }
@@ -297,14 +297,12 @@ var pyroutes = (function() {
             if (typeof(req_params) != 'object') {
                 req_params = [];
             }
-            //fix escape
-            route_tmpl = unescape(route_tmpl);
-            keys = [];
+            var keys = [];
             for (var i=0; i < req_params.length; i++) {
                 keys.push(req_params[i])
             }
             matchlist[route_name] = [
-                route_tmpl,
+                unescape(route_tmpl),
                 keys
             ]
         },
@@ -473,10 +471,10 @@ var _onSuccessFollow = function(target){
 }
 
 var toggleFollowingRepo = function(target, follows_repo_id, token, user_id){
-    args = 'follows_repo_id='+follows_repo_id;
-    args+= '&amp;auth_token='+token;
+    var args = 'follows_repo_id=' + follows_repo_id;
+    args += '&amp;auth_token=' + token;
     if(user_id != undefined){
-        args+="&amp;user_id="+user_id;
+        args +="&amp;user_id=" + user_id;
     }
     $.post(TOGGLE_FOLLOW_URL, args, function(data){
             _onSuccessFollow(target);
@@ -485,7 +483,7 @@ var toggleFollowingRepo = function(target, follows_repo_id, token, user_id){
 };
 
 var showRepoSize = function(target, repo_name, token){
-    var args= 'auth_token='+token;
+    var args = 'auth_token=' + token;
 
     if(!$("#" + target).hasClass('loaded')){
         $("#" + target).html(_TM['Loading ...']);
@@ -649,7 +647,7 @@ var _createInlineForm = function(parent_tr, f_path, line) {
  * The form will be inject after any comments.
  */
 var injectInlineForm = function(tr){
-    $tr = $(tr);
+    var $tr = $(tr);
     if(!$tr.hasClass('line')){
         return
     }
@@ -820,7 +818,7 @@ var _renderInlineComment = function(json_data){
  * Iterates over all the inlines, and places them inside proper blocks of data
  */
 var renderInlineComments = function(file_comments){
-    for (f in file_comments){
+    for (var f in file_comments){
         // holding all comments for a FILE
         var box = file_comments[f];
 
@@ -1040,11 +1038,11 @@ var getSelectionLink = function(e) {
     if (typeof window.getSelection != "undefined") {
         s = window.getSelection();
 
-        from = _getIdentNode(s.anchorNode);
-        till = _getIdentNode(s.focusNode);
+        var from = _getIdentNode(s.anchorNode);
+        var till = _getIdentNode(s.focusNode);
 
-        f_int = parseInt(from.id.replace('L',''));
-        t_int = parseInt(till.id.replace('L',''));
+        var f_int = parseInt(from.id.replace('L',''));
+        var t_int = parseInt(till.id.replace('L',''));
 
         var yoffset = 35;
         var ranges = [parseInt(from.id.replace('L','')), parseInt(till.id.replace('L',''))];
@@ -1064,7 +1062,7 @@ var getSelectionLink = function(e) {
             }
 
             $hl_div.append($('<a>').html(_TM['Selection link']).attr('href', location.href.substring(0, location.href.indexOf('#')) + '#L' + ranges[0] + '-'+ranges[1]));
-            xy = $(till).offset();
+            var xy = $(till).offset();
             $hl_div.css('top', (xy.top + yoffset) + 'px').css('left', xy.left + 'px');
             $hl_div.show();
         }
@@ -1124,7 +1122,7 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
 
             // Match against each name of each contact
             for (; i < l; i++) {
-                contact = myUsers[i];
+                var contact = myUsers[i];
                 if (((contact.fname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.lname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.nname) && ((contact.nname).toLowerCase().indexOf(query) > -1))) {
@@ -1144,7 +1142,7 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
 
             // Match against each name of each contact
             for (; i < l; i++) {
-                matched_group = myGroups[i];
+                var matched_group = myGroups[i];
                 if (matched_group.grname.toLowerCase().indexOf(query) > -1) {
                     matches[matches.length] = matched_group;
                 }
@@ -1154,8 +1152,8 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
 
     //match all
     var matchAll = function (sQuery) {
-            u = matchUsers(sQuery);
-            g = matchGroups(sQuery);
+            var u = matchUsers(sQuery);
+            var g = matchGroups(sQuery);
             return u.concat(g);
         };
 
@@ -1202,7 +1200,7 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
                 if (group !== undefined){
                     em = '/images/icons/group.png'
                 }
-                tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
+                var tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
                 return tmpl.format(em,res)
             }
             // group
@@ -1305,7 +1303,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 
             // Match against each name of each contact
             for (; i < l; i++) {
-                contact = myUsers[i];
+                var contact = myUsers[i];
                 if (((contact.fname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.lname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.nname) && ((contact.nname).toLowerCase().indexOf(query) > -1))) {
@@ -1317,8 +1315,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
 
     //match all
     var matchAll = function (sQuery) {
-            u = matchUsers(sQuery);
-            return u
+            return matchUsers(sQuery);
         };
 
     // DataScheme for owner
@@ -1340,9 +1337,9 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
     // Helper highlight function for the formatter
     var highlightMatch = function (full, snippet, matchindex) {
             return full.substring(0, matchindex)
-            + "<span class='match'>"
-            + full.substr(matchindex, snippet.length)
-            + "</span>" + full.substring(matchindex + snippet.length);
+                + "<span class='match'>"
+                + full.substr(matchindex, snippet.length)
+                + "</span>" + full.substring(matchindex + snippet.length);
         };
 
     // Custom formatter to highlight the matching letters
@@ -1357,7 +1354,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
                 if (group !== undefined){
                     em = '/images/icons/group.png'
                 }
-                tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
+                var tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
                 return tmpl.format(em,res)
             }
             if (oResultData.nname != undefined) {
@@ -1452,7 +1449,7 @@ var MentionsAutoComplete = function (divid, cont, users_list, groups_list) {
         return [null, null];
     };
 
-    $divid = $('#'+divid);
+    var $divid = $('#'+divid);
     $divid.keyup(function(e){
             var currentMessage = $divid.val();
             var currentCaretPosition = $divid[0].selectionStart;
@@ -1536,7 +1533,7 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
 
             // Match against each name of each contact
             for (; i < l; i++) {
-                contact = myUsers[i];
+                var contact = myUsers[i];
                 if (((contact.fname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.lname+"").toLowerCase().indexOf(query) > -1) ||
                      ((contact.nname) && ((contact.nname).toLowerCase().indexOf(query) > -1))) {
@@ -1566,8 +1563,7 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
 
     //match all
     var matchAll = function (sQuery) {
-            u = matchUsers(sQuery);
-            return u
+            return matchUsers(sQuery);
         };
 
     // DataScheme for owner
@@ -1589,9 +1585,9 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
     // Helper highlight function for the formatter
     var highlightMatch = function (full, snippet, matchindex) {
             return full.substring(0, matchindex)
-            + "<span class='match'>"
-            + full.substr(matchindex, snippet.length)
-            + "</span>" + full.substring(matchindex + snippet.length);
+                + "<span class='match'>"
+                + full.substr(matchindex, snippet.length)
+                + "</span>" + full.substring(matchindex + snippet.length);
         };
 
     // Custom formatter to highlight the matching letters
@@ -1606,7 +1602,7 @@ var PullRequestAutoComplete = function (divid, cont, users_list, groups_list) {
                 if (group !== undefined){
                     em = '/images/icons/group.png'
                 }
-                tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
+                var tmpl = '<div class="ac-container-wrap"><img class="perm-gravatar-ac" src="{0}"/>{1}</div>'
                 return tmpl.format(em,res)
             }
             if (oResultData.nname != undefined) {
@@ -1743,12 +1739,12 @@ function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data)
             alert(_TM['Failed to revoke permission'] + ": " + o.status);
         }
     };
-    query_params = {
+    var query_params = {
         '_method': 'delete'
     }
     // put extra data into POST
     if (extra_data !== undefined && (typeof extra_data === 'object')){
-        for(k in extra_data){
+        for(var k in extra_data){
             query_params[k] = extra_data[k];
         }
     }
@@ -2131,7 +2127,7 @@ var YUI_datatable = function(data, fields, columns, countnode, sortkey, rows){
     var filterTimeout = null;
     var $q_filter = $('#q_filter');
 
-    updateFilter  = function () {
+    var updateFilter = function () {
         // Reset timeout
         filterTimeout = null;
 
