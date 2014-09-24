@@ -393,7 +393,7 @@ var ajaxGET = function(url,success) {
             if (o.status != 0) {
                 alert("Ajax GET error: " + o.statusText);
             };
-        },
+        }
     };
 
     var request = YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
@@ -409,7 +409,7 @@ var ajaxPOST = function(url,postData,success) {
         success: success,
         failure: function (o) {
             alert("Ajax POST error: " + o.statusText);
-        },
+        }
     };
     var postData = _toQueryString(postData);
     var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
@@ -989,7 +989,7 @@ var initCodeMirror = function(textarea_id, resetUrl){
             mode: "null",
             lineNumbers: true,
             indentUnit: 4,
-            autofocus: true,
+            autofocus: true
         });
     $('#reset').click(function(e){
             window.location=resetUrl;
@@ -1082,7 +1082,7 @@ var deleteNotification = function(url, notification_id, callbacks){
         },
         failure:function(o){
             alert("deleteNotification failure");
-        },
+        }
     };
     var postData = '_method=delete';
     var sUrl = url.replace('__NOTIFICATION_ID__',notification_id);
@@ -1100,7 +1100,7 @@ var readNotification = function(url, notification_id, callbacks){
         },
         failure:function(o){
             alert("readNotification failure");
-        },
+        }
     };
     var postData = '_method=put';
     var sUrl = url.replace('__NOTIFICATION_ID__',notification_id);
@@ -1282,7 +1282,7 @@ var _MembersAutoComplete = function (divid, cont, users_list, groups_list) {
         memberDS: memberDS,
         ownerDS: ownerDS,
         membersAC: membersAC,
-        ownerAC: ownerAC,
+        ownerAC: ownerAC
     };
 }
 
@@ -1741,7 +1741,7 @@ function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data)
         },
         failure: function (o) {
             alert(_TM['Failed to revoke permission'] + ": " + o.status);
-        },
+        }
     };
     query_params = {
         '_method': 'delete'
@@ -2092,7 +2092,7 @@ var YUI_datatable = function(data, fields, columns, countnode, sortkey, rows){
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "records",
-        fields: fields,
+        fields: fields
         };
     myDataSource.doBeforeCallback = function(req, raw, res, cb) {
         // This is the filter function
@@ -2121,7 +2121,7 @@ var YUI_datatable = function(data, fields, columns, countnode, sortkey, rows){
         MSG_SORTDESC: _TM['MSG_SORTDESC'],
         MSG_EMPTY: _TM['MSG_EMPTY'],
         MSG_ERROR: _TM['MSG_ERROR'],
-        MSG_LOADING: _TM['MSG_LOADING'],
+        MSG_LOADING: _TM['MSG_LOADING']
         });
     myDataTable.subscribe('postRenderEvent',function(oArgs) {
         tooltip_activate();

@@ -138,8 +138,8 @@ function SummaryPlot(from,to,dataset,overview_dataset) {
     var initial_ranges = {
         "xaxis":{
             "from":from,
-            "to":to,
-        },
+            "to":to
+        }
     };
     var dataset = dataset;
     var overview_dataset = [overview_dataset];
@@ -149,31 +149,31 @@ function SummaryPlot(from,to,dataset,overview_dataset) {
     var overviewContainer = YUD.get('overview');
 
     var plot_options = {
-        bars: {show:true,align:'center',lineWidth:4},
-        legend: {show:true, container:"legend_container"},
-        points: {show:true,radius:0,fill:false},
-        yaxis: {tickDecimals:0,},
+        bars: {show:true, align: 'center', lineWidth: 4},
+        legend: {show:true, container: "legend_container"},
+        points: {show:true, radius: 0, fill: false},
+        yaxis: {tickDecimals: 0},
         xaxis: {
             mode: "time",
             timeformat: "%d/%m",
-            min:from,
-            max:to,
+            min: from,
+            max: to
         },
         grid: {
             hoverable: true,
             clickable: true,
-            autoHighlight:true,
+            autoHighlight: true,
             color: "#999"
         },
         //selection: {mode: "x"}
     };
     var overview_options = {
         legend:{show:false},
-        bars: {show:true,barWidth: 2,},
+        bars: {show:true, barWidth: 2},
         shadowSize: 0,
-        xaxis: {mode: "time", timeformat: "%d/%m/%y",},
-        yaxis: {ticks: 3, min: 0,tickDecimals:0,},
-        grid: {color: "#999",},
+        xaxis: {mode: "time", timeformat: "%d/%m/%y"},
+        yaxis: {ticks: 3, min: 0, tickDecimals:0},
+        grid: {color: "#999"},
         selection: {mode: "x"}
     };
 
@@ -186,10 +186,10 @@ function SummaryPlot(from,to,dataset,overview_dataset) {
              "commits":0,
                  "added":0,
                  "changed":0,
-                 "removed":0,
+                 "removed":0
             }],
             "schema":["commits"],
-            "color":'#ffffff',
+            "color":'#ffffff'
         }
     }
 
@@ -305,9 +305,9 @@ function SummaryPlot(from,to,dataset,overview_dataset) {
             xaxis: {
                 min: cur_ranges.xaxis.from,
                 max: cur_ranges.xaxis.to,
-                mode:"time",
-                timeformat: "%d/%m",
-            },
+                mode: "time",
+                timeformat: "%d/%m"
+            }
         });
         if (!new_data){
             new_data = [[0,1]];
@@ -340,8 +340,8 @@ function SummaryPlot(from,to,dataset,overview_dataset) {
                 min: ranges.xaxis.from,
                 max: ranges.xaxis.to,
                 mode:"time",
-                timeformat: "%d/%m",
-            },
+                timeformat: "%d/%m"
+            }
         });
         // do the zooming
         plot = YAHOO.widget.Flot(plotContainer, data, new_options);

@@ -18,7 +18,7 @@ function table_renderer(data){
             {key:"name"},
             {key:"last_changeset"},
             {key:"last_rev_raw"},
-            {key:"action"},
+            {key:"action"}
             ]
         };
     myDataSource.doBeforeCallback = function(req,raw,res,cb) {
@@ -47,7 +47,7 @@ function table_renderer(data){
               sortOptions: { sortFunction: nameSort }},
           {key:"last_changeset",label:"${_('Tip')}",sortable:true,
               sortOptions: { sortFunction: revisionSort }},
-          {key:"action",label:"${_('Action')}",sortable:false},
+          {key:"action",label:"${_('Action')}",sortable:false}
       ];
 
       var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,{
@@ -58,7 +58,7 @@ function table_renderer(data){
         MSG_SORTDESC:"${_('Click to sort descending')}",
         MSG_EMPTY:"${_('No records found.')}",
         MSG_ERROR:"${_('Data error.')}",
-        MSG_LOADING:"${_('Loading...')}",
+        MSG_LOADING:"${_('Loading...')}"
       }
       );
       myDataTable.subscribe('postRenderEvent',function(oArgs) {

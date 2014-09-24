@@ -97,7 +97,7 @@
                {key:"last_changeset"},
                {key:"last_rev_raw"},
                {key:"owner"},
-               {key:"atom"},
+               {key:"atom"}
             ]
          };
         myDataSource.doBeforeCallback = function(req,raw,res,cb) {
@@ -131,7 +131,7 @@
             {key:"last_changeset",label:"${_('Tip')}",sortable:true,
                 sortOptions: { sortFunction: revisionSort }},
             {key:"owner",label:"${_('Owner')}",sortable:true},
-            {key:"atom",label:"",sortable:false},
+            {key:"atom",label:"",sortable:false}
         ];
 
         var myDataTable = new YAHOO.widget.DataTable("repos_list_wrap", myColumnDefs, myDataSource,{
@@ -142,7 +142,7 @@
           MSG_SORTDESC:"${_('Click to sort descending')}",
           MSG_EMPTY:"${_('No repositories found.')}",
           MSG_ERROR:"${_('Data error.')}",
-          MSG_LOADING:"${_('Loading...')}",
+          MSG_LOADING:"${_('Loading...')}"
         }
         );
         myDataTable.subscribe('postRenderEvent',function(oArgs) {

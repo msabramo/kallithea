@@ -177,7 +177,7 @@ ${self.repo_context_bar('showpullrequest')}
 
               // re-populate the select2 thingie
               $("#other_ref").select2({
-                  dropdownAutoWidth: true,
+                  dropdownAutoWidth: true
               });
 
               loadPreview();
@@ -210,7 +210,7 @@ ${self.repo_context_bar('showpullrequest')}
           '__org_repo__': org_repo,
           '__org_ref_name__': org_ref[2],
           '__other_repo__': other_repo,
-          '__other_ref_name__': other_ref[2],
+          '__other_ref_name__': other_ref[2]
       }; // gather the org/other ref and repo here
 
       for (k in rev_data){
@@ -226,26 +226,26 @@ ${self.repo_context_bar('showpullrequest')}
 
   $(document).ready(function(){
       $("#org_repo").select2({
-          dropdownAutoWidth: true,
+          dropdownAutoWidth: true
       });
       ## (org_repo can't change)
 
       $("#org_ref").select2({
-          dropdownAutoWidth: true,
+          dropdownAutoWidth: true
       });
       $("#org_ref").on("change", function(e){
           loadPreview();
       });
 
       $("#other_repo").select2({
-          dropdownAutoWidth: true,
+          dropdownAutoWidth: true
       });
       $("#other_repo").on("change", function(e){
           otherrepoChanged();
       });
 
       $("#other_ref").select2({
-          dropdownAutoWidth: true,
+          dropdownAutoWidth: true
       });
       $("#other_ref").on("change", function(e){
           loadPreview();

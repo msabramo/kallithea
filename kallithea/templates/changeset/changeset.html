@@ -241,7 +241,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                                   .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[1].raw_id}));
                           $('#child_link').html(_html);
                       }
-                    },
+                    }
                   });
               e.preventDefault();
               }
@@ -278,12 +278,11 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
                                   .replace('__url__', pyroutes.url('changeset_home', {'repo_name': '${c.repo_name}','revision': data.results[1].raw_id}));
                           $('#parent_link').html(_html);
                       }
-                    },
+                    }
                   });
               e.preventDefault();
               }
           })
-
       })
 
     </script>

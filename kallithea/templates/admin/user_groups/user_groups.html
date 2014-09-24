@@ -43,16 +43,15 @@
     {key: "members"},
     {key: "active"},
     {key: "owner"},
-    {key: "action"},
-
+    {key: "action"}
   ];
   var column_defs = [
     {key:"group_name",label:"${_('Name')}",sortable:true, sortOptions: { sortFunction: nameSort }},
     {key:"desc",label:"${_('Description')}",sortable:true},
     {key:"members",label:"${_('Members')}",sortable:false},
-    {key:"active",label:"${_('Active')}",sortable:true,},
+    {key:"active",label:"${_('Active')}",sortable:true},
     {key:"owner",label:"${_('Owner')}",sortable:true},
-    {key:"action",label:"${_('Action')}",sortable:false},
+    {key:"action",label:"${_('Action')}",sortable:false}
   ];
   var counter = YUD.get('user_group_count');
   var sort_key = "group_name";

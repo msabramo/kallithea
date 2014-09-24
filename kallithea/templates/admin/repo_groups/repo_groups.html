@@ -43,15 +43,14 @@
     {key: "desc"},
     {key: "repos"},
     {key: "owner"},
-    {key: "action"},
-
+    {key: "action"}
   ];
   var column_defs = [
     {key:"group_name",label:"${_('Name')}",sortable:true, sortOptions: { sortFunction: nameSort }},
     {key:"desc",label:"${_('Description')}",sortable:true},
     {key:"repos",label:"${_('Number of toplevel repositories')}",sortable:true},
     {key:"owner",label:"${_('Owner')}",sortable:true},
-    {key:"action",label:"${_('Action')}",sortable:false},
+    {key:"action",label:"${_('Action')}",sortable:false}
   ];
   var counter = YUD.get('repo_group_count');
   var sort_key = "group_name";

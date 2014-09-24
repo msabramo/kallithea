@@ -67,7 +67,7 @@ function ajaxActionHook(hook_id,field_id) {
         },
         failure: function (o) {
             alert("${_('Failed to remove hook')}");
-        },
+        }
     };
     var postData = '_method=delete&hook_id=' + hook_id;
     var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);

@@ -55,7 +55,7 @@ var myColumnDefs = [
     {key:"author",label:"${_('Author')}",sortable:true},
     {key:"revision",label:"${_('Revision')}",sortable:true,
         sortOptions: { sortFunction: revisionSort }},
-    {key:"compare",label:"${_('Compare')}",sortable:false,},
+    {key:"compare",label:"${_('Compare')}",sortable:false}
 ];
 
 var myDataSource = new YAHOO.util.DataSource(YUD.get("tags_data"));
@@ -71,7 +71,7 @@ myDataSource.responseSchema = {
         {key:"author"},
         {key:"last_rev_raw"},
         {key:"revision"},
-        {key:"compare"},
+        {key:"compare"}
     ]
 };
 
@@ -82,7 +82,7 @@ var myDataTable = new YAHOO.widget.DataTable("table_wrap", myColumnDefs, myDataS
          MSG_SORTDESC:"${_('Click to sort descending')}",
          MSG_EMPTY:"${_('No records found.')}",
          MSG_ERROR:"${_('Data error.')}",
-         MSG_LOADING:"${_('Loading...')}",
+         MSG_LOADING:"${_('Loading...')}"
         }
 );
 myDataTable.subscribe('postRenderEvent',function(oArgs) {

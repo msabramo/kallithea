@@ -1,6 +1,6 @@
 ## -*- coding: utf-8 -*-
 <li>
-    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Branches'),len(c.db_repo_scm_instance.branches.values()),)}</a>
+    <a href="${h.url('branches_home',repo_name=c.repo_name)}" class="childs"><i class="icon-code-fork"></i> ${'%s (%s)' % (_('Branches'),len(c.db_repo_scm_instance.branches.values()))}</a>
     <ul>
     %if c.db_repo_scm_instance.branches.values():
         %for cnt,branch in enumerate(c.db_repo_scm_instance.branches.items()):
@@ -22,7 +22,7 @@
 </li>
 %endif
 <li>
-    <a href="${h.url('tags_home',repo_name=c.repo_name)}" class="childs"><i class="icon-tag"></i> ${'%s (%s)' % (_('Tags'),len(c.db_repo_scm_instance.tags.values()),)}</a>
+    <a href="${h.url('tags_home',repo_name=c.repo_name)}" class="childs"><i class="icon-tag"></i> ${'%s (%s)' % (_('Tags'),len(c.db_repo_scm_instance.tags.values()))}</a>
     <ul>
     %if c.db_repo_scm_instance.tags.values():
         %for cnt,tag in enumerate(c.db_repo_scm_instance.tags.items()):
@@ -35,7 +35,7 @@
 </li>
 %if c.db_repo_scm_instance.alias == 'hg':
 <li>
-    <a href="${h.url('bookmarks_home',repo_name=c.repo_name)}" class="childs"><i class="icon-bookmark"></i> ${'%s (%s)' % (_('Bookmarks'),len(c.db_repo_scm_instance.bookmarks.values()),)}</a>
+    <a href="${h.url('bookmarks_home',repo_name=c.repo_name)}" class="childs"><i class="icon-bookmark"></i> ${'%s (%s)' % (_('Bookmarks'),len(c.db_repo_scm_instance.bookmarks.values()))}</a>
     <ul>
     %if c.db_repo_scm_instance.bookmarks.values():
         %for cnt,book in enumerate(c.db_repo_scm_instance.bookmarks.items()):
