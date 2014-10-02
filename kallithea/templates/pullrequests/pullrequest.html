@@ -148,6 +148,8 @@ ${self.repo_context_bar('showpullrequest')}
 
   var pendingajax = undefined;
   var otherrepoChanged = function(){
+      var $other_ref = $('#other_ref');
+      $other_ref.prop('disabled', true);
       var repo_name = $('#other_repo').val();
       if (pendingajax) {
           pendingajax.abort();
@@ -160,7 +162,6 @@ ${self.repo_context_bar('showpullrequest')}
               $('#other_repo_desc').html(data.description);
 
               // replace options of other_ref with the ones for the current other_repo
-              var $other_ref = $('#other_ref');
               $other_ref.empty();
               for(var i = 0; i < data.refs.length; i++)
               {
@@ -186,6 +187,7 @@ ${self.repo_context_bar('showpullrequest')}
                   dropdownAutoWidth: true
               });
 
+              $other_ref.prop('disabled', false);
               loadPreview();
           });
   };
