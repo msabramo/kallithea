@@ -452,6 +452,8 @@ class MercurialRepository(BaseRepository):
         Returns revision number for the given reference.
         """
         ref_name = safe_str(ref_name)
+        if ref_type == 'rev' and not ref_name.strip('0'):
+            return self.EMPTY_CHANGESET
         # lookup up the exact node id
         _revset_predicates = {
                 'branch': 'branch',
