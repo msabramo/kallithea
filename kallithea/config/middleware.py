@@ -92,7 +92,7 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
             app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
 
     #enable https redirets based on HTTP_X_URL_SCHEME set by proxy
-    if any(asbool(config.get(x)) for x in ['https_fixup', 'force_ssl', 'use_htsts']):
+    if any(asbool(config.get(x)) for x in ['https_fixup', 'force_https', 'use_htsts']):
         app = HttpsFixup(app, config)
 
     # Establish the Registry for this application
