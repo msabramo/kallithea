@@ -471,7 +471,8 @@ div.header img {
     padding: 8px 6px 4px;
 }
 
-#header #header-inner #quick li span.icon img, #header #header-inner #quick li span.icon_short img {
+#header #header-inner #quick li span.icon img,
+#header #header-inner #quick li span.icon_short img {
     vertical-align: middle;
     margin-bottom: 2px;
 }
@@ -500,91 +501,112 @@ div.header img {
     margin: 0px 2px 0px 2px;
 }
 
-#header #header-inner #quick li ul li a.journal, #header #header-inner #quick li ul li a.journal:hover {
+#header #header-inner #quick li ul li a.journal,
+#header #header-inner #quick li ul li a.journal:hover {
     background-image: url("../images/icons/book.png");
 }
 
-#header #header-inner #quick li ul li a.private_repo, #header #header-inner #quick li ul li a.private_repo:hover {
+#header #header-inner #quick li ul li a.private_repo,
+#header #header-inner #quick li ul li a.private_repo:hover {
     background-image: url("../images/icons/private_repo.png")
 }
 
-#header #header-inner #quick li ul li a.public_repo, #header #header-inner #quick li ul li a.public_repo:hover {
+#header #header-inner #quick li ul li a.public_repo,
+#header #header-inner #quick li ul li a.public_repo:hover {
     background-image: url("../images/icons/public_repo.png");
 }
 
-#header #header-inner #quick li ul li a.hg, #header #header-inner #quick li ul li a.hg:hover {
+#header #header-inner #quick li ul li a.hg,
+#header #header-inner #quick li ul li a.hg:hover {
     background-image: url("../images/icons/hgicon.png");
     padding-left: 42px;
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.git, #header #header-inner #quick li ul li a.git:hover {
+#header #header-inner #quick li ul li a.git,
+#header #header-inner #quick li ul li a.git:hover {
     background-image: url("../images/icons/giticon.png");
     padding-left: 42px;
     background-position: 20px 9px;
 }
 
-#header #header-inner #quick li ul li a.repos, #header #header-inner #quick li ul li a.repos:hover {
+#header #header-inner #quick li ul li a.repos,
+#header #header-inner #quick li ul li a.repos:hover {
     background-image: url("../images/icons/database_edit.png");
 }
 
-#header #header-inner #quick li ul li a.repos_groups, #header #header-inner #quick li ul li a.repos_groups:hover {
+#header #header-inner #quick li ul li a.repos_groups,
+#header #header-inner #quick li ul li a.repos_groups:hover {
     background-image: url("../images/icons/database_link.png");
 }
 
-#header #header-inner #quick li ul li a.users, #header #header-inner #quick li ul li a.users:hover {
+#header #header-inner #quick li ul li a.users,
+#header #header-inner #quick li ul li a.users:hover {
     background-image: url("../images/icons/user_edit.png");
 }
 
-#header #header-inner #quick li ul li a.groups, #header #header-inner #quick li ul li a.groups:hover {
+#header #header-inner #quick li ul li a.groups,
+#header #header-inner #quick li ul li a.groups:hover {
     background-image: url("../images/icons/group_edit.png");
 }
 
-#header #header-inner #quick li ul li a.defaults, #header #header-inner #quick li ul li a.defaults:hover {
+#header #header-inner #quick li ul li a.defaults,
+#header #header-inner #quick li ul li a.defaults:hover {
     background-image: url("../images/icons/wrench.png");
 }
 
-#header #header-inner #quick li ul li a.settings, #header #header-inner #quick li ul li a.settings:hover {
+#header #header-inner #quick li ul li a.settings,
+#header #header-inner #quick li ul li a.settings:hover {
     background-image: url("../images/icons/cog.png");
 }
 
-#header #header-inner #quick li ul li a.permissions, #header #header-inner #quick li ul li a.permissions:hover {
+#header #header-inner #quick li ul li a.permissions,
+#header #header-inner #quick li ul li a.permissions:hover {
     background-image: url("../images/icons/key.png");
 }
 
-#header #header-inner #quick li ul li a.ldap, #header #header-inner #quick li ul li a.ldap:hover {
+#header #header-inner #quick li ul li a.ldap,
+#header #header-inner #quick li ul li a.ldap:hover {
     background-image: url("../images/icons/server_key.png");
 }
 
-#header #header-inner #quick li ul li a.fork, #header #header-inner #quick li ul li a.fork:hover {
+#header #header-inner #quick li ul li a.fork,
+#header #header-inner #quick li ul li a.fork:hover {
     background-image: url("../images/icons/arrow_divide.png");
 }
 
-#header #header-inner #quick li ul li a.locking_add, #header #header-inner #quick li ul li a.locking_add:hover {
+#header #header-inner #quick li ul li a.locking_add,
+#header #header-inner #quick li ul li a.locking_add:hover {
     background-image: url("../images/icons/lock_add.png");
 }
 
-#header #header-inner #quick li ul li a.locking_del, #header #header-inner #quick li ul li a.locking_del:hover {
+#header #header-inner #quick li ul li a.locking_del,
+#header #header-inner #quick li ul li a.locking_del:hover {
     background-image: url("../images/icons/lock_delete.png");
 }
 
-#header #header-inner #quick li ul li a.pull_request, #header #header-inner #quick li ul li a.pull_request:hover {
+#header #header-inner #quick li ul li a.pull_request,
+#header #header-inner #quick li ul li a.pull_request:hover {
     background-image: url("../images/icons/arrow_join.png") ;
 }
 
-#header #header-inner #quick li ul li a.compare_request, #header #header-inner #quick li ul li a.compare_request:hover {
+#header #header-inner #quick li ul li a.compare_request,
+#header #header-inner #quick li ul li a.compare_request:hover {
     background-image: url("../images/icons/arrow_inout.png");
 }
 
-#header #header-inner #quick li ul li a.search, #header #header-inner #quick li ul li a.search:hover {
+#header #header-inner #quick li ul li a.search,
+#header #header-inner #quick li ul li a.search:hover {
     background-image: url("../images/icons/search_16.png");
 }
 
-#header #header-inner #quick li ul li a.delete, #header #header-inner #quick li ul li a.delete:hover {
+#header #header-inner #quick li ul li a.delete,
+#header #header-inner #quick li ul li a.delete:hover {
     background-image: url("../images/icons/delete.png");
 }
 
-#header #header-inner #quick li ul li a.branches, #header #header-inner #quick li ul li a.branches:hover {
+#header #header-inner #quick li ul li a.branches,
+#header #header-inner #quick li ul li a.branches:hover {
     background-image: url("../images/icons/arrow_branch.png");
 }
 
@@ -677,10 +699,10 @@ td.quick_repo_menu .menu_items.hidden {
 }
 
 /*
-Copyright (c) 2011, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+    Copyright (c) 2011, Yahoo! Inc. All rights reserved.
+    Code licensed under the BSD License:
+    http://developer.yahoo.com/yui/license.html
+    version: 2.9.0
 */
 .yui-skin-sam .yui-dt-mask {
     position: absolute;
@@ -1028,8 +1050,18 @@ tbody .yui-dt-editable { cursor: pointer }
     padding: 11px 10px 11px 10px;
 }
 
-#content div.box h1, #content div.box h2, #content div.box h3, #content div.box h4, #content div.box h5, #content div.box h6,
-#content div.box div.h1, #content div.box div.h2, #content div.box div.h3, #content div.box div.h4, #content div.box div.h5, #content div.box div.h6 {
+#content div.box h1,
+#content div.box h2,
+#content div.box h3,
+#content div.box h4,
+#content div.box h5,
+#content div.box h6,
+#content div.box div.h1,
+#content div.box div.h2,
+#content div.box div.h3,
+#content div.box div.h4,
+#content div.box div.h5,
+#content div.box div.h6 {
     clear: both;
     overflow: hidden;
     margin: 8px 20px 5px;
@@ -1077,7 +1109,8 @@ tbody .yui-dt-editable { cursor: pointer }
     padding: 4px 0;
 }
 
-#content div.box ul.disc, #content div.box ul.circle {
+#content div.box ul.disc,
+#content div.box ul.circle {
     margin: 10px 24px 10px 38px;
 }
 
@@ -1165,7 +1198,12 @@ tbody .yui-dt-editable { cursor: pointer }
     padding: 0;
 }
 
-#content div.box div.message div.text h1, #content div.box div.message div.text h2, #content div.box div.message div.text h3, #content div.box div.message div.text h4, #content div.box div.message div.text h5, #content div.box div.message div.text h6 {
+#content div.box div.message div.text h1,
+#content div.box div.message div.text h2,
+#content div.box div.message div.text h3,
+#content div.box div.message div.text h4,
+#content div.box div.message div.text h5,
+#content div.box div.message div.text h6 {
     border: none;
     margin: 0;
     padding: 0;
@@ -1308,11 +1346,13 @@ tbody .yui-dt-editable { cursor: pointer }
     padding: 0 0 8px !important;
 }
 
-#content div.box div.form div.fields div.field div.label label, div.label label {
+#content div.box div.form div.fields div.field div.label label,
+div.label label {
     color: #393939;
     font-weight: 700;
 }
-#content div.box div.form div.fields div.field div.label label, div.label-summary label {
+#content div.box div.form div.fields div.field div.label label,
+div.label-summary label {
     color: #393939;
     font-weight: 700;
 }
@@ -1333,7 +1373,8 @@ tbody .yui-dt-editable { cursor: pointer }
     margin: 0 0 0 200px;
 }
 
-#content div.box-left div.form div.fields div.field div.input, #content div.box-right div.form div.fields div.field div.input {
+#content div.box-left div.form div.fields div.field div.input,
+#content div.box-right div.form div.fields div.field div.input {
     margin: 0 0 0 0px;
 }
 
@@ -1425,7 +1466,8 @@ input.disabled {
     padding: 0;
 }
 
-#content div.box-left div.form div.fields div.field div.textarea textarea, #content div.box-right div.form div.fields div.field div.textarea textarea {
+#content div.box-left div.form div.fields div.field div.textarea textarea,
+#content div.box-right div.form div.fields div.field div.textarea textarea {
     width: 100%;
     height: 100px;
 }
@@ -1671,7 +1713,8 @@ div.form div.fields div.field div.button {
     padding: 6px;
 }
 
-#content div.box div.pagination-wh a:hover, #content div.box div.pagination-wh a:active {
+#content div.box div.pagination-wh a:hover,
+#content div.box div.pagination-wh a:active {
     background: #b4b4b4 url("../images/pager_selected.png") repeat-x;
     border-top: 1px solid #ccc;
     border-left: 1px solid #bebebe;
@@ -1914,7 +1957,8 @@ a.metatag[tag="license"]:hover {
     padding-left: 10px;
 }
 
-#footer div#footer-inner .footer-link a, #footer div#footer-inner .footer-link-right a {
+#footer div#footer-inner .footer-link a,
+#footer div#footer-inner .footer-link-right a {
     color: #FFF;
 }
 
@@ -2095,7 +2139,8 @@ a.metatag[tag="license"]:hover {
 #quick_login .unread a:hover {
     background-color: inherit !important;
 }
-#quick_login .email, #quick_login .unread {
+#quick_login .email,
+#quick_login .unread {
     color: #FFFFFF;
     padding: 3px 3px 3px 6px;
 }
@@ -2500,7 +2545,8 @@ BIN_FILENODE = 6
     background-color: #6D99FF;
 }
 
-.cs_files .cs_added, .cs_files .cs_A {
+.cs_files .cs_added,
+.cs_files .cs_A {
     background: url("../images/icons/page_white_add.png") no-repeat scroll
         3px;
     height: 16px;
@@ -2509,7 +2555,8 @@ BIN_FILENODE = 6
     text-align: left;
 }
 
-.cs_files .cs_changed, .cs_files .cs_M {
+.cs_files .cs_changed,
+.cs_files .cs_M {
     background: url("../images/icons/page_white_edit.png") no-repeat scroll
         3px;
     height: 16px;
@@ -2518,7 +2565,8 @@ BIN_FILENODE = 6
     text-align: left;
 }
 
-.cs_files .cs_removed, .cs_files .cs_D {
+.cs_files .cs_removed,
+.cs_files .cs_D {
     background: url("../images/icons/page_white_delete.png") no-repeat
         scroll 3px;
     height: 16px;
@@ -2762,7 +2810,8 @@ BIN_FILENODE = 6
 .changeset-status-container .changeset-status-ico {
     float: left;
 }
-.code-header .changeset-status-container .changeset-status-ico, .container .changeset-status-ico {
+.code-header .changeset-status-container .changeset-status-ico,
+.container .changeset-status-ico {
     float: left;
 }
 
@@ -2803,7 +2852,8 @@ BIN_FILENODE = 6
     padding: 1px;
 }
 
-.right .changes .added, .changed, .removed {
+.right .changes .added,
+.changed, .removed {
     display: block;
     padding: 1px;
     color: #444444;
@@ -2918,7 +2968,10 @@ BIN_FILENODE = 6
     text-decoration: none;
     color: inherit;
 }
-.logbooks .booktag, .logbooks .booktag, .logtags .booktag, .logtags .booktag {
+.logbooks .booktag,
+.logbooks .booktag,
+.logtags .booktag,
+.logtags .booktag {
     padding: 1px 3px 1px 3px;
     background-color: #46A546;
     font-size: 10px;
@@ -2927,12 +2980,17 @@ BIN_FILENODE = 6
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
-.logbooks .booktag, .logbooks .booktag a, .right .logtags .booktag, .logtags .booktag a {
+.logbooks .booktag,
+.logbooks .booktag a,
+.right .logtags .booktag,
+.logtags .booktag a {
     color: #ffffff;
 }
 
-.logbooks .booktag, .logbooks .booktag a:hover,
-.logtags .booktag, .logtags .booktag a:hover,
+.logbooks .booktag,
+.logbooks .booktag a:hover,
+.logtags .booktag,
+.logtags .booktag a:hover,
 .booktag a,
 .booktag a:hover {
     text-decoration: none;
@@ -2992,7 +3050,8 @@ div.browserblock .add_node {
     padding-left: 5px;
 }
 
-div.browserblock .search_activate a:hover, div.browserblock .add_node a:hover {
+div.browserblock .search_activate a:hover,
+div.browserblock .add_node a:hover {
     text-decoration: none !important;
 }
 
@@ -3126,7 +3185,8 @@ table.code-browser .submodule-dir {
     vertical-align: sub;
 }
 
-.info_box input#at_rev, .info_box input#size {
+.info_box input#at_rev,
+.info_box input#size {
     background: #FFF;
     border-top: 1px solid #b3b3b3;
     border-left: 1px solid #b3b3b3;
@@ -3561,7 +3621,8 @@ div#legend_data {
 div#legend_container table {
     border: none !important;
 }
-div#legend_container table, div#legend_choices table {
+div#legend_container table,
+div#legend_choices table {
     width: auto !important;
 }
 
@@ -3820,7 +3881,8 @@ img.icon, .right .merge img {
     vertical-align: bottom;
 }
 
-#header ul#logged-user, #content div.box div.title ul.links,
+#header ul#logged-user,
+#content div.box div.title ul.links,
 #content div.box div.message div.dismiss,
 #content div.box div.traffic div.legend ul {
     float: right;
@@ -3828,8 +3890,10 @@ img.icon, .right .merge img {
     padding: 0;
 }
 
-#header #header-inner #home, #header #header-inner #logo,
-#content div.box ul.left, #content div.box ol.left,
+#header #header-inner #home,
+#header #header-inner #logo,
+#content div.box ul.left,
+#content div.box ol.left,
 div#commit_history,
 div#legend_data, div#legend_container, div#legend_choices {
     float: left;
@@ -3839,12 +3903,19 @@ div#legend_data, div#legend_container, div#legend_choices {
 #header #header-inner #quick li:hover ul ul,
 #header #header-inner #quick li:hover ul ul ul,
 #header #header-inner #quick li:hover ul ul ul ul,
-#content #left #menu ul.closed, #content #left #menu li ul.collapsed, .yui-tt-shadow {
+#content #left #menu ul.closed,
+#content #left #menu li ul.collapsed,
+.yui-tt-shadow {
     display: none;
 }
 
 #header #header-inner #quick li:hover #quick_login,
-#header #header-inner #quick li:hover ul, #header #header-inner #quick li li:hover ul, #header #header-inner #quick li li li:hover ul, #header #header-inner #quick li li li li:hover ul, #content #left #menu ul.opened, #content #left #menu li ul.expanded {
+#header #header-inner #quick li:hover ul,
+#header #header-inner #quick li li:hover ul,
+#header #header-inner #quick li li li:hover ul,
+#header #header-inner #quick li li li li:hover ul,
+#content #left #menu ul.opened,
+#content #left #menu li ul.expanded {
     display: block;
 }
 
@@ -3888,25 +3959,37 @@ div#legend_data, div#legend_container, div#legend_choices {
     padding: 0 10px 10px;
 }
 
-#content div.box ol.lower-roman, #content div.box ol.upper-roman, #content div.box ol.lower-alpha, #content div.box ol.upper-alpha, #content div.box ol.decimal {
+#content div.box ol.lower-roman,
+#content div.box ol.upper-roman,
+#content div.box ol.lower-alpha,
+#content div.box ol.upper-alpha,
+#content div.box ol.decimal {
     margin: 10px 24px 10px 44px;
 }
 
-#content div.box div.form, #content div.box div.table, #content div.box div.traffic {
+#content div.box div.form,
+#content div.box div.table,
+#content div.box div.traffic {
     position: relative;
     clear: both;
     margin: 0;
     padding: 0 20px 10px;
 }
 
-#content div.box div.form div.fields, #login div.form, #login div.form div.fields, #register div.form, #register div.form div.fields {
+#content div.box div.form div.fields,
+#login div.form,
+#login div.form div.fields,
+#register div.form,
+#register div.form div.fields {
     clear: both;
     overflow: hidden;
     margin: 0;
     padding: 0;
 }
 
-#content div.box div.form div.fields div.field div.label span, #login div.form div.fields div.field div.label span, #register div.form div.fields div.field div.label span {
+#content div.box div.form div.fields div.field div.label span,
+#login div.form div.fields div.field div.label span,
+#register div.form div.fields div.field div.label span {
     height: 1%;
     display: block;
     color: #363636;
@@ -3914,7 +3997,9 @@ div#legend_data, div#legend_container, div#legend_choices {
     padding: 2px 0 0;
 }
 
-#content div.box div.form div.fields div.field div.input input.error, #login div.form div.fields div.field div.input input.error, #register div.form div.fields div.field div.input input.error {
+#content div.box div.form div.fields div.field div.input input.error,
+#login div.form div.fields div.field div.input input.error,
+#register div.form div.fields div.field div.input input.error {
     background: #FBE3E4;
     border-top: 1px solid #e1b2b3;
     border-left: 1px solid #e1b2b3;
@@ -3922,7 +4007,9 @@ div#legend_data, div#legend_container, div#legend_choices {
     border-bottom: 1px solid #FBC2C4;
 }
 
-#content div.box div.form div.fields div.field div.input input.success, #login div.form div.fields div.field div.input input.success, #register div.form div.fields div.field div.input input.success {
+#content div.box div.form div.fields div.field div.input input.success,
+#login div.form div.fields div.field div.input input.success,
+#register div.form div.fields div.field div.input input.success {
     background: #E6EFC2;
     border-top: 1px solid #cebb98;
     border-left: 1px solid #cebb98;
@@ -3930,42 +4017,59 @@ div#legend_data, div#legend_container, div#legend_choices {
     border-bottom: 1px solid #c6d880;
 }
 
-#content div.box-left div.form div.fields div.field div.textarea, #content div.box-right div.form div.fields div.field div.textarea, #content div.box div.form div.fields div.field div.select select, #content div.box table th.selected input, #content div.box table td.selected input {
+#content div.box-left div.form div.fields div.field div.textarea,
+#content div.box-right div.form div.fields div.field div.textarea,
+#content div.box div.form div.fields div.field div.select select,
+#content div.box table th.selected input,
+#content div.box table td.selected input {
     margin: 0;
 }
 
-#content div.box-left div.form div.fields div.field div.select, #content div.box-left div.form div.fields div.field div.checkboxes, #content div.box-left div.form div.fields div.field div.radios, #content div.box-right div.form div.fields div.field div.select, #content div.box-right div.form div.fields div.field div.checkboxes, #content div.box-right div.form div.fields div.field div.radios {
+#content div.box-left div.form div.fields div.field div.select,
+#content div.box-left div.form div.fields div.field div.checkboxes,
+#content div.box-left div.form div.fields div.field div.radios,
+#content div.box-right div.form div.fields div.field div.select,
+#content div.box-right div.form div.fields div.field div.checkboxes,
+#content div.box-right div.form div.fields div.field div.radios {
     margin: 0 0 0 0px !important;
     padding: 0;
 }
 
-#content div.box div.form div.fields div.field div.select, #content div.box div.form div.fields div.field div.checkboxes, #content div.box div.form div.fields div.field div.radios {
+#content div.box div.form div.fields div.field div.select,
+#content div.box div.form div.fields div.field div.checkboxes,
+#content div.box div.form div.fields div.field div.radios {
     margin: 0 0 0 200px;
     padding: 0;
 }
 
-#content div.box div.form div.fields div.field div.select a:hover, #content div.box div.form div.fields div.field div.select a.ui-selectmenu:hover, #content div.box div.action a:hover {
+#content div.box div.form div.fields div.field div.select a:hover,
+#content div.box div.form div.fields div.field div.select a.ui-selectmenu:hover,
+#content div.box div.action a:hover {
     color: #000;
     text-decoration: none;
 }
 
-#content div.box div.form div.fields div.field div.select a.ui-selectmenu-focus, #content div.box div.action a.ui-selectmenu-focus {
+#content div.box div.form div.fields div.field div.select a.ui-selectmenu-focus,
+#content div.box div.action a.ui-selectmenu-focus {
     border: 1px solid #666;
 }
 
-#content div.box div.form div.fields div.field div.checkboxes div.checkbox, #content div.box div.form div.fields div.field div.radios div.radio {
+#content div.box div.form div.fields div.field div.checkboxes div.checkbox,
+#content div.box div.form div.fields div.field div.radios div.radio {
     clear: both;
     overflow: hidden;
     margin: 0;
     padding: 8px 0 2px;
 }
 
-#content div.box div.form div.fields div.field div.checkboxes div.checkbox input, #content div.box div.form div.fields div.field div.radios div.radio input {
+#content div.box div.form div.fields div.field div.checkboxes div.checkbox input,
+#content div.box div.form div.fields div.field div.radios div.radio input {
     float: left;
     margin: 0;
 }
 
-#content div.box div.form div.fields div.field div.checkboxes div.checkbox label, #content div.box div.form div.fields div.field div.radios div.radio label {
+#content div.box div.form div.fields div.field div.checkboxes div.checkbox label,
+#content div.box div.form div.fields div.field div.radios div.radio label {
     height: 1%;
     display: block;
     float: left;
@@ -4006,31 +4110,41 @@ input.ui-button:hover {
     border-bottom: 1px solid #afafaf;
 }
 
-div.form div.fields div.field div.highlight, #content div.box div.form div.fields div.buttons div.highlight {
+div.form div.fields div.field div.highlight,
+#content div.box div.form div.fields div.buttons div.highlight {
     display: inline;
 }
 
-#content div.box div.form div.fields div.buttons, div.form div.fields div.buttons {
+#content div.box div.form div.fields div.buttons,
+div.form div.fields div.buttons {
     margin: 10px 0 0 200px;
     padding: 0;
 }
 
-#content div.box-left div.form div.fields div.buttons, #content div.box-right div.form div.fields div.buttons, div.box-left div.form div.fields div.buttons, div.box-right div.form div.fields div.buttons {
+#content div.box-left div.form div.fields div.buttons,
+#content div.box-right div.form div.fields div.buttons,
+div.box-left div.form div.fields div.buttons,
+div.box-right div.form div.fields div.buttons {
     margin: 10px 0 0;
 }
 
-#content div.box table td.user, #content div.box table td.address {
+#content div.box table td.user,
+#content div.box table td.address {
     width: 10%;
     text-align: center;
 }
 
-#content div.box div.action div.button, #login div.form div.fields div.field div.input div.link, #register div.form div.fields div.field div.input div.link {
+#content div.box div.action div.button,
+#login div.form div.fields div.field div.input div.link,
+#register div.form div.fields div.field div.input div.link {
     text-align: right;
     margin: 6px 0 0;
     padding: 0;
 }
 
-#content div.box div.action div.button input.ui-state-hover, #login div.form div.fields div.buttons input.ui-state-hover, #register div.form div.fields div.buttons input.ui-state-hover {
+#content div.box div.action div.button input.ui-state-hover,
+#login div.form div.fields div.buttons input.ui-state-hover,
+#register div.form div.fields div.buttons input.ui-state-hover {
     background: #b4b4b4 url("../images/button_selected.png") repeat-x;
     border-top: 1px solid #ccc;
     border-left: 1px solid #bebebe;
@@ -4041,14 +4155,16 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     padding: 6px 12px;
 }
 
-#content div.box div.pagination div.results, #content div.box div.pagination-wh div.results {
+#content div.box div.pagination div.results,
+#content div.box div.pagination-wh div.results {
     text-align: left;
     float: left;
     margin: 0;
     padding: 0;
 }
 
-#content div.box div.pagination div.results span, #content div.box div.pagination-wh div.results span {
+#content div.box div.pagination div.results span,
+#content div.box div.pagination-wh div.results span {
     height: 1%;
     display: block;
     float: left;
@@ -4063,7 +4179,8 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     padding: 6px 8px;
 }
 
-#content div.box div.pagination ul.pager li.disabled, #content div.box div.pagination-wh a.disabled {
+#content div.box div.pagination ul.pager li.disabled,
+#content div.box div.pagination-wh a.disabled {
     color: #B4B4B4;
     padding: 6px;
 }
@@ -4074,7 +4191,8 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     padding: 0;
 }
 
-#login div.color, #register div.color {
+#login div.color,
+#register div.color {
     clear: both;
     overflow: hidden;
     background: #FFF;
@@ -4082,7 +4200,8 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     padding: 3px 3px 3px 0;
 }
 
-#login div.color a, #register div.color a {
+#login div.color a,
+#register div.color a {
     width: 20px;
     height: 20px;
     display: block;
@@ -4091,20 +4210,23 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     padding: 0;
 }
 
-#login div.title h5, #register div.title h5 {
+#login div.title h5,
+#register div.title h5 {
     color: #fff;
     margin: 10px;
     padding: 0;
 }
 
-#login div.form div.fields div.field, #register div.form div.fields div.field {
+#login div.form div.fields div.field,
+#register div.form div.fields div.field {
     clear: both;
     overflow: hidden;
     margin: 0;
     padding: 0 0 10px;
 }
 
-#login div.form div.fields div.field span.error-message, #register div.form div.fields div.field span.error-message {
+#login div.form div.fields div.field span.error-message,
+#register div.form div.fields div.field span.error-message {
     height: 1%;
     display: block;
     color: red;
@@ -4113,12 +4235,14 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     max-width: 320px;
 }
 
-#login div.form div.fields div.field div.label label, #register div.form div.fields div.field div.label label {
+#login div.form div.fields div.field div.label label,
+#register div.form div.fields div.field div.label label {
     color: #000;
     font-weight: 700;
 }
 
-#login div.form div.fields div.field div.input, #register div.form div.fields div.field div.input {
+#login div.form div.fields div.field div.input,
+#register div.form div.fields div.field div.input {
     float: left;
     margin: 0;
     padding: 0;
@@ -4128,34 +4252,40 @@ div.form div.fields div.field div.highlight, #content div.box div.form div.field
     width: 250px;
 }
 
-#login div.form div.fields div.field div.checkbox, #register div.form div.fields div.field div.checkbox {
+#login div.form div.fields div.field div.checkbox,
+#register div.form div.fields div.field div.checkbox {
     margin: 0 0 0 184px;
     padding: 0;
 }
 
-#login div.form div.fields div.field div.checkbox label, #register div.form div.fields div.field div.checkbox label {
+#login div.form div.fields div.field div.checkbox label,
+#register div.form div.fields div.field div.checkbox label {
     color: #565656;
     font-weight: 700;
 }
 
-#login div.form div.fields div.buttons input, #register div.form div.fields div.buttons input {
+#login div.form div.fields div.buttons input,
+#register div.form div.fields div.buttons input {
     color: #000;
     font-size: 1em;
     font-weight: 700;
     margin: 0;
 }
 
-#changeset_content .container .wrapper, #graph_content .container .wrapper {
+#changeset_content .container .wrapper,
+#graph_content .container .wrapper {
     width: 600px;
 }
 
-#changeset_content .container .date, .ac .match {
+#changeset_content .container .date,
+.ac .match {
     font-weight: 700;
     padding-top: 5px;
     padding-bottom: 5px;
 }
 
-div#legend_container table td, div#legend_choices table td {
+div#legend_container table td,
+div#legend_choices table td {
     border: none !important;
     height: 20px !important;
     padding: 0 !important;
@@ -4249,7 +4379,12 @@ div.readme .readme_box {
     padding: 0 20px 10px;
 }
 
-div.readme .readme_box h1, div.readme .readme_box h2, div.readme .readme_box h3, div.readme .readme_box h4, div.readme .readme_box h5, div.readme .readme_box h6 {
+div.readme .readme_box h1,
+div.readme .readme_box h2,
+div.readme .readme_box h3,
+div.readme .readme_box h4,
+div.readme .readme_box h5,
+div.readme .readme_box h6 {
     border-bottom: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -4261,7 +4396,8 @@ div.readme .readme_box h1:first-child {
     padding-top: .25em !important;
 }
 
-div.readme .readme_box h2, div.readme .readme_box h3 {
+div.readme .readme_box h2,
+div.readme .readme_box h3 {
     margin: 1em 0 !important;
 }
 
@@ -4346,7 +4482,12 @@ div.rst-block {
     padding: 0 20px 10px;
 }
 
-div.rst-block  h1, div.rst-block  h2, div.rst-block  h3, div.rst-block  h4, div.rst-block  h5, div.rst-block  h6 {
+div.rst-block  h1,
+div.rst-block  h2,
+div.rst-block  h3,
+div.rst-block  h4,
+div.rst-block  h5,
+div.rst-block  h6 {
     border-bottom: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -4358,7 +4499,8 @@ div.rst-block  h1:first-child {
     padding-top: .25em !important;
 }
 
-div.rst-block  h2, div.rst-block  h3 {
+div.rst-block  h2,
+div.rst-block  h3 {
     margin: 1em 0 !important;
 }
 
