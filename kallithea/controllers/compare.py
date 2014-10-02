@@ -88,10 +88,14 @@ class CompareController(BaseRepoController):
             else:
                 hgrepo = other_repo._repo
 
-            ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
-            if ancestors:
-                # pick arbitrary ancestor - but there is usually only one
-                ancestor = hgrepo[ancestors[0]].hex()
+            if org_repo.EMPTY_CHANGESET in (org_rev, other_rev):
+                # work around unexpected Mercurial behaviour
+                ancestor = org_repo.EMPTY_CHANGESET
+            else:
+                ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
+                if ancestors:
+                    # FIXME: picks arbitrary ancestor - but there is usually only one
+                    ancestor = hgrepo[ancestors[0]].hex()
 
             other_revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
                                      other_rev, org_rev, org_rev)
