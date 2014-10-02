@@ -146,10 +146,16 @@ ${self.repo_context_bar('showpullrequest')}
 
   pyroutes.register('pullrequest_repo_info', "${url('pullrequest_repo_info',repo_name='%(repo_name)s')}", ['repo_name']);
 
+  var pendingajax = undefined;
   var otherrepoChanged = function(){
       var repo_name = $('#other_repo').val();
-      ajaxGET(pyroutes.url('pullrequest_repo_info', {"repo_name": repo_name}),
+      if (pendingajax) {
+          pendingajax.abort();
+          pendingajax = undefined;
+      }
+      pendingajax = ajaxGET(pyroutes.url('pullrequest_repo_info', {"repo_name": repo_name}),
           function(o){
+              pendingajax = undefined;
               var data = JSON.parse(o.responseText);
               $('#other_repo_desc').html(data.description);
 
@@ -217,7 +223,12 @@ ${self.repo_context_bar('showpullrequest')}
           url = url.replace(k,rev_data[k]);
       }
 
-      asynchtml(url, $('#pull_request_overview'), function(o){
+      if (pendingajax) {
+          pendingajax.abort();
+          pendingajax = undefined;
+      }
+      pendingajax = asynchtml(url, $('#pull_request_overview'), function(o){
+          pendingajax = undefined;
           var jsdata = eval('('+YUD.get('jsdata').innerHTML+')'); // TODO: just get json
           var r = new BranchRenderer('graph_canvas', 'graph_content_pr');
           r.render(jsdata,100);

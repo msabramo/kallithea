@@ -362,7 +362,7 @@ function asynchtml(url, $target, success, args){
     }
     $target.html(_TM['Loading ...']).css('opacity','0.3');
 
-    $.ajax({url: url, data: args, headers: {'X-PARTIAL-XHR': '1'}, cache: false, dataType: 'html'})
+    return $.ajax({url: url, data: args, headers: {'X-PARTIAL-XHR': '1'}, cache: false, dataType: 'html'})
         .done(function(html) {
                 $target.html(html);
                 $target.css('opacity','1.0');
@@ -372,6 +372,8 @@ function asynchtml(url, $target, success, args){
                 }
             })
         .fail(function(jqXHR, textStatus, errorThrown) {
+                if (textStatus == "abort")
+                    return;
                 console.log('Ajax failure: ' + textStatus);
                 $target.html('<span class="error_red">ERROR: {0}</span>'.format(textStatus));
                 $target.css('opacity','1.0');
