@@ -1,10 +1,8 @@
 <h3>${_('Parent')}</h3>
 ${h.form(url('edit_repo_advanced_fork', repo_name=c.repo_info.repo_name), method='put')}
 <div class="form">
-   <div class="fields">
        ${h.select('id_fork_of','',c.repos_list,class_="medium")}
        ${h.submit('set_as_fork_%s' % c.repo_info.repo_name,_('Set'),class_="btn btn-small")}
-   </div>
        <div class="field" style="border:none;color:#888">
        <ul>
             <li>${_('''Manually set this repository as a fork of another from the list.''')}</li>
@@ -49,7 +47,6 @@ ${h.end_form()}
 <h3>${_('Change Locking')}</h3>
 ${h.form(url('edit_repo_advanced_locking', repo_name=c.repo_info.repo_name), method='put')}
 <div class="form">
-   <div class="fields">
       %if c.repo_info.locked[0]:
         ${h.hidden('set_unlock', '1')}
         <button class="btn btn-small" type="submit"
@@ -67,7 +64,6 @@ ${h.form(url('edit_repo_advanced_locking', repo_name=c.repo_info.repo_name), met
         </button>
         ${_('Repository is not locked')}
       %endif
-   </div>
    <div class="field" style="border:none;color:#888">
    <ul>
         <li>${_('Force locking on the repository. Works only when anonymous access is disabled. Triggering a pull locks the repository.  The user who is pulling locks the repository; only the user who pulled and locked it can unlock it by doing a push.')}
@@ -79,6 +75,7 @@ ${h.end_form()}
 
 <h3>${_('Delete')}</h3>
 ${h.form(url('repo', repo_name=c.repo_name),method='delete')}
+<div class="form">
     <button class="btn btn-small btn-danger" type="submit"
             onclick="return confirm('${_('Confirm to delete this repository: %s') % c.repo_name}');">
         <i class="icon-remove-sign"></i>
@@ -94,4 +91,5 @@ ${h.form(url('repo', repo_name=c.repo_name),method='delete')}
         <li>${_('The deleted repository will be moved away and hidden until the administrator expires it. The administrator can both permanently delete it or restore it.')}</li>
         </ul>
     </div>
+</div>
 ${h.end_form()}
