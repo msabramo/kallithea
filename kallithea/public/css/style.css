@@ -488,7 +488,7 @@ div.header img {
     padding-right: 17px;
 }
 
-#header #header-inner #quick ul.repo_switcher li.qfilter_rs  input {
+#header #header-inner #quick ul.repo_switcher li.qfilter_rs input {
     width: 100%;
     border-radius: 10px;
     padding: 2px 7px;
@@ -2735,7 +2735,7 @@ BIN_FILENODE = 6
     margin-right: 0.5em;
 }
 
-#graph_content  .tagcontainer {
+#graph_content .tagcontainer {
     width: 80px;
     position: relative;
     float: right;
@@ -3115,14 +3115,14 @@ table.code-browser .browser-file {
     padding: 2px 0px 0px 2px;
     float: left;
 }
-.diffblock  .diff-menu ul li {
+.diffblock .diff-menu ul li {
     padding: 0px 0px 0px 0px !important;
 }
-.diffblock  .diff-menu ul li a {
+.diffblock .diff-menu ul li a {
     display: block;
     padding: 3px 8px 3px 8px !important;
 }
-.diffblock  .diff-menu ul li a:hover {
+.diffblock .diff-menu ul li a:hover {
     text-decoration: none;
     background-color: #EEEEEE;
 }
@@ -4482,12 +4482,12 @@ div.rst-block {
     padding: 0 20px 10px;
 }
 
-div.rst-block  h1,
-div.rst-block  h2,
-div.rst-block  h3,
-div.rst-block  h4,
-div.rst-block  h5,
-div.rst-block  h6 {
+div.rst-block h1,
+div.rst-block h2,
+div.rst-block h3,
+div.rst-block h4,
+div.rst-block h5,
+div.rst-block h6 {
     border-bottom: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -4495,38 +4495,38 @@ div.rst-block  h6 {
 }
 
 
-div.rst-block  h1:first-child {
+div.rst-block h1:first-child {
     padding-top: .25em !important;
 }
 
-div.rst-block  h2,
-div.rst-block  h3 {
+div.rst-block h2,
+div.rst-block h3 {
     margin: 1em 0 !important;
 }
 
-div.rst-block  h2 {
+div.rst-block h2 {
     margin-top: 1.5em !important;
     border-top: 4px solid #e0e0e0 !important;
     padding-top: .5em !important;
 }
 
-div.rst-block  p {
+div.rst-block p {
     color: black !important;
     margin: 1em 0 !important;
     line-height: 1.5em !important;
 }
 
-div.rst-block  ul {
+div.rst-block ul {
     list-style: disc !important;
     margin: 1em 0 1em 2em !important;
 }
 
-div.rst-block  ol {
+div.rst-block ol {
     list-style: decimal;
     margin: 1em 0 1em 2em !important;
 }
 
-div.rst-block  code {
+div.rst-block code {
     font-size: 12px !important;
     background-color: ghostWhite !important;
     color: #444 !important;
@@ -4534,14 +4534,14 @@ div.rst-block  code {
     border: 1px solid #dedede !important;
 }
 
-div.rst-block  pre code {
+div.rst-block pre code {
     padding: 0 !important;
     font-size: 12px !important;
     background-color: #eee !important;
     border: none !important;
 }
 
-div.rst-block  pre {
+div.rst-block pre {
     margin: 1em 0;
     font-size: 12px;
     background-color: #eee;
