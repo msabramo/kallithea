@@ -172,6 +172,7 @@ setup(
 
     [paste.global_paster_command]
     setup-db=kallithea.lib.paster_commands.setup_db:Command
+    cleanup-repos=kallithea.lib.paster_commands.cleanup:Command
     update-repoinfo=kallithea.lib.paster_commands.update_repoinfo:Command
     make-rcext=kallithea.lib.paster_commands.make_rcextensions:Command
     repo-scan=kallithea.lib.paster_commands.repo_scan:Command
