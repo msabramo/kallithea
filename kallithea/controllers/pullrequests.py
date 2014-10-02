@@ -166,7 +166,7 @@ class PullrequestsController(BaseRepoController):
                 if tipbranch:
                     selected = 'branch:%s:%s' % (tipbranch, tiprev)
                 else:
-                    selected = 'tag:null:0'
+                    selected = 'tag:null:' + repo.EMPTY_CHANGESET
                     tags.append((selected, 'null'))
             else:
                 if 'master' in repo.branches:
