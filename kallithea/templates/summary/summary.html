@@ -160,7 +160,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
 
             %if c.authuser.username != 'default':
             <li class="repo_size">
-              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-database"></i> ${_('Repository Size')}</a>
+              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-ruler"></i> ${_('Repository Size')}</a>
               <span  class="stats-bullet" id="repo_size_2"></span>
             </li>
             %endif
