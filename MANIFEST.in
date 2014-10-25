@@ -15,5 +15,7 @@ recursive-include kallithea/public/css *
 recursive-include kallithea/public/images *
 #js
 recursive-include kallithea/public/js *
+#codemirror
+recursive-include kallithea/public/codemirror *
 #templates
 recursive-include kallithea/templates *
