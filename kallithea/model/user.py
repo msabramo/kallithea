@@ -297,11 +297,16 @@ class UserModel(BaseModel):
                 link = h.canonical_url('reset_password_confirmation', key=user.api_key)
                 reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
                 body = EmailNotificationModel().get_email_tmpl(reg_type,
+                                                               'txt',
+                                                               user=user.short_contact,
+                                                               reset_url=link)
+                html_body = EmailNotificationModel().get_email_tmpl(reg_type,
+                                                               'html',
                                                                user=user.short_contact,
                                                                reset_url=link)
                 log.debug('sending email')
                 run_task(tasks.send_email, [user_email],
-                         _("Password reset link"), body, body)
+                         _("Password reset link"), body, html_body)
                 log.info('send new password mail to %s' % user_email)
             else:
                 log.debug("password reset email %s not found" % user_email)

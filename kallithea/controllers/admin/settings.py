@@ -350,20 +350,23 @@ class SettingsController(BaseController):
         if request.POST:
             test_email = request.POST.get('test_email')
             test_email_subj = 'Kallithea test email'
-            test_email_body = ('Kallithea Email test, '
+            test_body = ('Kallithea Email test, '
                                'Kallithea version: %s' % c.kallithea_version)
             if not test_email:
                 h.flash(_('Please enter email address'), category='error')
                 return redirect(url('admin_settings_email'))
 
+            test_email_txt_body = EmailNotificationModel()\
+                .get_email_tmpl(EmailNotificationModel.TYPE_DEFAULT,
+                                'txt', body=test_body)
             test_email_html_body = EmailNotificationModel()\
                 .get_email_tmpl(EmailNotificationModel.TYPE_DEFAULT,
-                                body=test_email_body)
+                                'html', body=test_body)
 
             recipients = [test_email] if test_email else None
 
             run_task(tasks.send_email, recipients, test_email_subj,
-                     test_email_body, test_email_html_body)
+                     test_email_txt_body, test_email_html_body)
 
             h.flash(_('Send email task created'), category='success')
             return redirect(url('admin_settings_email'))

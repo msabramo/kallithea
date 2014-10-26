@@ -118,7 +118,6 @@ class NotificationModel(BaseModel):
 
         # send email with notification to all other participants
         for rec in rec_objs:
-            email_body = None  # we set body to none, we just send HTML emails
             ## this is passed into template
             kwargs = {'subject': subject,
                       'body': h.rst_w_mentions(body),
@@ -129,11 +128,13 @@ class NotificationModel(BaseModel):
             kwargs.update(email_kwargs)
             email_subject = EmailNotificationModel()\
                                 .get_email_description(type_, **kwargs)
-            email_body_html = EmailNotificationModel()\
-                                .get_email_tmpl(type_, **kwargs)
+            email_txt_body = EmailNotificationModel()\
+                                .get_email_tmpl(type_, 'txt', **kwargs)
+            email_html_body = EmailNotificationModel()\
+                                .get_email_tmpl(type_, 'html', **kwargs)
 
-            run_task(tasks.send_email, [rec.email], email_subject, email_body,
-                     email_body_html, headers)
+            run_task(tasks.send_email, [rec.email], email_subject, email_txt_body,
+                     email_html_body, headers)
 
         return notif
 
@@ -270,12 +271,12 @@ class EmailNotificationModel(BaseModel):
         self._template_root = kallithea.CONFIG['pylons.paths']['templates'][0]
         self._tmpl_lookup = kallithea.CONFIG['pylons.app_globals'].mako_lookup
         self.email_types = {
-            self.TYPE_CHANGESET_COMMENT: 'email_templates/changeset_comment.html',
-            self.TYPE_PASSWORD_RESET: 'email_templates/password_reset.html',
-            self.TYPE_REGISTRATION: 'email_templates/registration.html',
-            self.TYPE_DEFAULT: 'email_templates/default.html',
-            self.TYPE_PULL_REQUEST: 'email_templates/pull_request.html',
-            self.TYPE_PULL_REQUEST_COMMENT: 'email_templates/pull_request_comment.html',
+            self.TYPE_CHANGESET_COMMENT: 'changeset_comment',
+            self.TYPE_PASSWORD_RESET: 'password_reset',
+            self.TYPE_REGISTRATION: 'registration',
+            self.TYPE_DEFAULT: 'default',
+            self.TYPE_PULL_REQUEST: 'pull_request',
+            self.TYPE_PULL_REQUEST_COMMENT: 'pull_request_comment',
         }
         self._subj_map = {
             self.TYPE_CHANGESET_COMMENT: _('Comment on %(repo_name)s changeset %(short_id)s on %(branch)s by %(comment_username)s'),
@@ -302,12 +303,12 @@ class EmailNotificationModel(BaseModel):
             subj += ' (%s)' % (', '.join(l))
         return subj
 
-    def get_email_tmpl(self, type_, **kwargs):
+    def get_email_tmpl(self, type_, content_type, **kwargs):
         """
         return generated template for email based on given type
         """
 
-        base = self.email_types.get(type_, self.email_types[self.TYPE_DEFAULT])
+        base = 'email_templates/' + self.email_types.get(type_, self.email_types[self.TYPE_DEFAULT]) + '.' + content_type
         email_template = self._tmpl_lookup.get_template(base)
         # translator and helpers inject
         _kwargs = {'_': _,
