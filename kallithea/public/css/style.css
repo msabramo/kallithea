@@ -550,11 +550,6 @@ div.header img {
     background-image: url("../images/icons/wrench.png");
 }
 
-#header #header-inner #quick li ul li a.settings,
-#header #header-inner #quick li ul li a.settings:hover {
-    background-image: url("../images/icons/cog.png");
-}
-
 #header #header-inner #quick li ul li a.permissions,
 #header #header-inner #quick li ul li a.permissions:hover {
     background-image: url("../images/icons/key.png");

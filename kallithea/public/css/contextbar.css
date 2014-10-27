@@ -10,7 +10,6 @@ i.icon-bookmark { background-image: url("../images/icons/tag_green.png"); }
 i.icon-code-fork { background-image: url("../images/icons/arrow_branch.png"); }
 i.icon-code-merge { background-image: url("../images/icons/arrow_merge.png"); } /* unused! */
 i.icon-cog { background-image: url("../images/icons/cog_edit.png"); }
-i.icon-cog { background-image: url("../images/icons/cog.png"); }
 i.icon-cogs { background-image: url("../images/icons/table_gear.png"); }
 i.icon-ellipsis-horizontal:after { content: ' ...';}
 i.icon-eye-open { background-image: url("../images/icons/eye.png"); }
