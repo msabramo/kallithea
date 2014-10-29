@@ -22,7 +22,7 @@
         <td style="width:50px">
           %if cs.raw_id in c.statuses:
             <div title="${_('Changeset status: %s') % c.statuses[cs.raw_id][1]}" class="changeset-status-ico">
-                <img height="16" width="16" src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cs.raw_id][0])}" />
+                <i class="icon-circle changeset-status-${c.statuses[cs.raw_id][0]}"></i>
             </div>
           %endif
           %if c.cs_comments.get(cs.raw_id):

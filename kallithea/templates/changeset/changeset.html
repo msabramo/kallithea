@@ -47,7 +47,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
             <div class="code-header banner">
                 <div class="changeset-status-container">
                     %if c.statuses:
-                        <div class="changeset-status-ico"><img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[0])}" /></div>
+                        <div class="changeset-status-ico"><i class="icon-circle changeset-status-${c.statuses[0]}"></i></div>
                         <div title="${_('Changeset status')}" class="changeset-status-lbl">[${h.changeset_status_lbl(c.statuses[0])}]</div>
                     %endif
                 </div>

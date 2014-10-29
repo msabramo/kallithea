@@ -1473,7 +1473,7 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
         '     <li id="reviewer_{2}">\n'+
         '       <div class="reviewers_member">\n'+
         '           <div class="reviewer_status tooltip" title="not_reviewed">\n'+
-        '             <img src="/images/icons/flag_status_not_reviewed.png"/>\n'+
+        '             <i class="icon-circle changeset-status-not_reviewed"></i>\n'+
         '           </div>\n'+
         '         <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="{0}"/> </div>\n'+
         '         <div style="float:left;">{1}</div>\n'+
