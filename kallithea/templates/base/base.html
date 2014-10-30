@@ -256,7 +256,7 @@
             <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All Public Gists')}</a></li>
             %if c.authuser.username != 'default':
               <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My Public Gists')}</a></li>
-              <li><a href="${h.url('gists', private=1)}"><i class="icon-file-text"></i> ${_('My Private Gists')}</a></li>
+              <li><a href="${h.url('gists', private=1)}"><i class="icon-keyhole-circled"></i> ${_('My Private Gists')}</a></li>
             %endif
           </ul>
       </li>
