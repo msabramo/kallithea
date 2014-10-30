@@ -14,7 +14,7 @@
             <td>${field.field_type}</td>
             <td>
               ${h.form(url('delete_repo_fields', repo_name=c.repo_info.repo_name, field_id=field.repo_field_id),method='delete')}
-                  <i class="icon-remove-sign" style="color:#FF4444"></i>
+                  <i class="icon-minus-circled" style="color:#FF4444"></i>
                   ${h.submit('remove_%s' % field.repo_field_id, _('delete'), id="remove_field_%s" % field.repo_field_id,
                   class_="action_button", onclick="return confirm('"+_('Confirm to delete this field: %s') % field.field_key+"');")}
               ${h.end_form()}

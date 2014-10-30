@@ -135,7 +135,7 @@
     </div>
     <div style="float:left" class="grid_delete">
       ${h.form(h.url('repo', repo_name=repo_name),method='delete')}
-        <i class="icon-remove-sign" style="color:#FF4444"></i>
+        <i class="icon-minus-circled" style="color:#FF4444"></i>
         ${h.submit('remove_%s' % repo_name,_('delete'),class_="action_button",
         onclick="return confirm('"+_('Confirm to delete this repository: %s') % repo_name+"');")}
       ${h.end_form()}
@@ -163,7 +163,7 @@
  </div>
  <div style="float:left" class="grid_delete">
   ${h.form(h.url('delete_user', id=user_id),method='delete')}
-    <i class="icon-remove-sign" style="color:#FF4444"></i>
+    <i class="icon-minus-circled" style="color:#FF4444"></i>
     ${h.submit('remove_',_('delete'),id="remove_user_%s" % user_id, class_="action_button",
     onclick="return confirm('"+_('Confirm to delete this user: %s') % username+"');")}
   ${h.end_form()}
@@ -179,7 +179,7 @@
  </div>
  <div style="float:left" class="grid_delete">
     ${h.form(h.url('users_group', id=user_group_id),method='delete')}
-      <i class="icon-remove-sign" style="color:#FF4444"></i>
+      <i class="icon-minus-circled" style="color:#FF4444"></i>
       ${h.submit('remove_',_('delete'),id="remove_group_%s" % user_group_id, class_="action_button",
       onclick="return confirm('"+_('Confirm to delete this user group: %s') % user_group_name+"');")}
     ${h.end_form()}
@@ -195,7 +195,7 @@
  </div>
  <div style="float:left" class="grid_delete">
     ${h.form(h.url('repos_group', group_name=repo_group_name),method='delete')}
-        <i class="icon-remove-sign" style="color:#FF4444"></i>
+        <i class="icon-minus-circled" style="color:#FF4444"></i>
         ${h.submit('remove_%s' % repo_group_name,_('delete'),class_="action_button",
         onclick="return confirm('"+ungettext('Confirm to delete this group: %s with %s repository','Confirm to delete this group: %s with %s repositories',gr_count) % (repo_group_name, gr_count)+"');")}
     ${h.end_form()}

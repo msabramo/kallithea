@@ -21,7 +21,7 @@ ${h.form(h.url('repos_group', group_name=c.repo_group.group_name),method='delete
             onclick="return confirm('${ungettext('Confirm to delete this group: %s with %s repository',
           'Confirm to delete this group: %s with %s repositories',
  c.repo_group.repositories_recursive_count) % (c.repo_group.group_name, c.repo_group.repositories_recursive_count)}');">
-        <i class="icon-remove-sign"></i>
+        <i class="icon-minus-circled"></i>
         ${_('Delete this repository group')}
     </button>
 ${h.end_form()}

@@ -22,7 +22,13 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
               (${_('Closed')})
             %endif
             ${h.form(url('pullrequest_delete', repo_name=pull_request.other_repo.repo_name, pull_request_id=pull_request.pull_request_id),method='delete', style="display:inline-block")}
-              ${h.submit('remove_%s' % pull_request.pull_request_id, '', title=_('Delete Pull Request'),class_="delete_icon action_button",onclick="return confirm('"+_('Confirm to delete this pull request')+"');")}
+            <button class="action_button"
+                    id="remove_${pull_request.pull_request_id}"
+                    name="remove_${pull_request.pull_request_id}"
+                    title="${_('Delete Pull Request')}"
+                    onclick="return confirm('${_('Confirm to delete this pull request')}');">
+              <i class="icon-minus-circled"></i>
+            </button>
             ${h.end_form()}
         </div>
       </li>

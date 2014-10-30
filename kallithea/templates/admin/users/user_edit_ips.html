@@ -18,7 +18,7 @@
             <td>
                 ${h.form(url('edit_user_ips', id=c.user.user_id),method='delete')}
                     ${h.hidden('del_ip_id',ip.ip_id)}
-                    <i class="icon-remove-sign" style="color:#FF4444"></i>
+                    <i class="icon-minus-circled" style="color:#FF4444"></i>
                     ${h.submit('remove_',_('delete'),id="remove_ip_%s" % ip.ip_id,
                     class_="action_button", onclick="return  confirm('"+_('Confirm to delete this ip: %s') % ip.ip_addr+"');")}
                 ${h.end_form()}

@@ -12,11 +12,8 @@ i.icon-git { background-image: url('../images/icons/giticon.png');}
 i.icon-hg { background-image: url('../images/icons/hgicon.png');}
 i.icon-refresh { background-image: url('../images/icons/arrow_refresh.png');}
 i.icon-pencil { background-image: url('../images/icons/application_form_edit.png');}
-i.icon-remove { background-image: url('../images/icons/delete.png');}
-i.icon-remove-sign { background-image: url('../images/icons/delete.png');}
 i.icon-resize-vertical { background-image: url('../images/icons/text_align_left.png');}
 i.icon-ok-sign { background-image: url('../images/icons/tick.png');}
-i.icon-minus-sign { background-image: url('../images/icons/delete.png');}
 i.icon-disabled { background-image: url('../images/icons/shading.png');} /* todo: use instead of minus sign */
 
 i[class^='icon-'] {

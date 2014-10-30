@@ -540,11 +540,6 @@ div.header img {
     background-image: url("../images/icons/arrow_join.png") ;
 }
 
-#header #header-inner #quick li ul li a.delete,
-#header #header-inner #quick li ul li a.delete:hover {
-    background-image: url("../images/icons/delete.png");
-}
-
 .groups_breadcrumbs a {
     color: #fff;
 }
@@ -3296,13 +3291,6 @@ table.code-browser i[class^='icon-'] {
 
 .edit_icon {
     background: url("../images/icons/application_form_edit.png") no-repeat scroll 3px;
-    padding-left: 20px;
-    padding-top: 0px;
-    text-align: left;
-}
-
-.delete_icon {
-    background: url("../images/icons/delete.png") no-repeat scroll 3px;
     padding-left: 20px;
     padding-top: 0px;
     text-align: left;

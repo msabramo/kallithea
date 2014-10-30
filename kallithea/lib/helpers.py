@@ -590,7 +590,7 @@ def boolicon(value):
     if value:
         return HTML.tag('i', class_="icon-ok-sign")
     else:
-        return HTML.tag('i', class_="icon-minus-sign")
+        return HTML.tag('i', class_="icon-minus-circled")
 
 
 def action_parser(user_log, feed=False, parse_cs=False):
