@@ -252,7 +252,7 @@
           <i class="icon-clippy"></i> ${_('Gists')}
         </a>
           <ul class="admin_menu">
-            <li><a href="${h.url('new_gist', public=1)}"><i class="icon-file-alt"></i> ${_('Create New Gist')}</a></li>
+            <li><a href="${h.url('new_gist', public=1)}"><i class="icon-paste"></i> ${_('Create New Gist')}</a></li>
             <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All Public Gists')}</a></li>
             %if c.authuser.username != 'default':
               <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My Public Gists')}</a></li>
