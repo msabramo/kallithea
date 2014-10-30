@@ -127,7 +127,7 @@
 
         ## public/private
         %if c.db_repo.private:
-          <i class="icon-lock"></i>
+          <i class="icon-keyhole-circled"></i>
         %else:
           <i class="icon-globe"></i>
         %endif
@@ -385,10 +385,10 @@
                     tmpl += '<i class="icon-git"></i> ';
                 }
                 if(obj_dict['private']){
-                    tmpl += '<i class="icon-lock" style="color: #e85634;"></i> ';
+                    tmpl += '<i class="icon-keyhole-circled"></i> ';
                 }
                 else if(visual_show_public_icon){
-                    tmpl += '<i class="icon-lock-open-alt"></i> ';
+                    tmpl += '<i class="icon-globe"></i> ';
                 }
                 tmpl += '</span>';
             }
