@@ -21,7 +21,7 @@ class TestHomeController(TestController):
         response.mustcontain(r'href=\"/%s\"' % HG_REPO)
 
         response.mustcontain(r'<i class=\"icon-git\"')
-        response.mustcontain(r'<i class=\"icon-lock-open-alt\"')
+        response.mustcontain(r'<i class=\"icon-globe\"')
 
         response.mustcontain("""fixes issue with having custom format for git-log""")
         response.mustcontain("""/%s/changeset/5f2c6ee195929b0be80749243c18121c9864a3b3""" % GIT_REPO)
