@@ -2998,9 +2998,8 @@ table.code-browser tbody td {
 }
 
 table.code-browser .browser-file {
-    background: url("../images/icons/document_16.png") no-repeat scroll 3px;
     height: 16px;
-    padding-left: 20px;
+    padding-left: 5px;
     text-align: left;
 }
 .diffblock .changeset_header {
@@ -3041,16 +3040,14 @@ table.code-browser .browser-file {
     background-color: #EEEEEE;
 }
 table.code-browser .browser-dir {
-    background: url("../images/icons/folder_16.png") no-repeat scroll 3px;
     height: 16px;
-    padding-left: 20px;
+    padding-left: 5px;
     text-align: left;
 }
 
 table.code-browser .submodule-dir {
-    background: url("../images/icons/disconnect.png") no-repeat scroll 3px;
     height: 16px;
-    padding-left: 20px;
+    padding-left: 5px;
     text-align: left;
 }
 
