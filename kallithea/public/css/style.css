@@ -3051,6 +3051,11 @@ table.code-browser .submodule-dir {
     text-align: left;
 }
 
+/* add some padding to the right of the file, folder, or submodule icon and
+before the text */
+table.code-browser i[class^='icon-'] {
+    padding-right: .3em;
+}
 
 .box .search {
     clear: both;
