@@ -63,11 +63,9 @@ if sys.version_info < (2, 7):
     requirements.append("unittest2")
     requirements.append("argparse")
 
-if is_windows:
-    requirements.append("mercurial>=2.8.2,<3.2")
-else:
+requirements.append("mercurial>=2.8.2,<3.2")
+if not is_windows:
     requirements.append("py-bcrypt>=0.3.0,<=0.4")
-    requirements.append("mercurial>=2.8.2,<3.2")
 
 if sys.version_info < (2, 7):
     # Dulwich 0.9.6 and later do not support Python2.6.
