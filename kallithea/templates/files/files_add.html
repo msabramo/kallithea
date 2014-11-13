@@ -11,7 +11,6 @@
 <script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
 <script type="text/javascript" src="${h.url('/codemirror/mode/meta.js')}"></script>
-<script type="text/javascript" src="${h.url('/js/meta_ext.js')}"></script>
 </%def>
 <%def name="css_extra()">
 <link rel="stylesheet" type="text/css" href="${h.url('/codemirror/lib/codemirror.css')}"/>
@@ -55,7 +54,7 @@ ${self.repo_context_bar('files')}
             <div id="body" class="codeblock">
             <div class="code-header" id="set_mode_header">
                 <label class="commit" for="set_mode">${_('New file mode')}</label>
-                ${h.select('set_mode','plain',[('plain',_('plain'))])}
+                <select id="set_mode" name="set_mode"/>
             </div>
                 <div id="editor_container">
                     <pre id="editor_pre"></pre>
@@ -72,21 +71,47 @@ ${self.repo_context_bar('files')}
             <script type="text/javascript">
             var reset_url = "${h.url('files_home',repo_name=c.repo_name,revision=c.cs.raw_id,f_path=c.f_path)}";
             var myCodeMirror = initCodeMirror('editor',reset_url);
-            CodeMirror.modeURL = "${h.url('/codemirror/mode/%N/%N.js')}";
 
             //inject new modes, based on codeMirrors modeInfo object
             $('#set_mode').each(function(){
                 var modes_select = this;
+                var index = 1;
                 for(var i=0;i<CodeMirror.modeInfo.length;i++){
                     var m = CodeMirror.modeInfo[i];
-                    var opt = new Option(m.name, m.mode);
-                    modes_select.options[i+1] = opt
+                    var opt = new Option(m.name, m.mime);
+                    $(opt).attr('mode', m.mode);
+                    if (m.mime == 'text/plain') {
+                        // default plain text
+                        $(opt).attr('selected', 'selected');
+                        modes_select.options[0] = opt;
+                    } else {
+                        modes_select.options[index++] = opt;
+                    }
                 }
             });
             $('#set_mode').change(function(e){
                 var selected = e.currentTarget;
-                var new_mode = selected.options[selected.selectedIndex].value;
-                setCodeMirrorMode(myCodeMirror, new_mode);
+                var node = selected.options[selected.selectedIndex];
+                var detected_mode = CodeMirror.findModeByMIME(node.value);
+                setCodeMirrorMode(myCodeMirror, detected_mode);
+
+                var filenameInput = $('#filename');
+                var proposed_ext = CodeMirror.findExtensionByMode(detected_mode);
+                var file_data = CodeMirror.getFilenameAndExt(filenameInput.val());
+                var filename = file_data['filename'] || 'filename1';
+                filenameInput.val(filename + '.' + proposed_ext);
+            });
+
+            // on type the new filename set mode
+            $('#filename').keyup(function(e){
+                var file_data = CodeMirror.getFilenameAndExt(this.value);
+                if(file_data['ext'] != null){
+                    var detected_mode = CodeMirror.findModeByExtension(file_data['ext']) || CodeMirror.findModeByMIME('text/plain');
+                    if (detected_mode){
+                        setCodeMirrorMode(myCodeMirror, detected_mode);
+                        $('#set_mode').val(detected_mode.mime);
+                    }
+                }
             });
             </script>
         </div>

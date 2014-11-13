@@ -990,6 +990,8 @@ var initCodeMirror = function(textarea_id, resetUrl){
             indentUnit: 4,
             autofocus: true
         });
+    CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
+
     $('#reset').click(function(e){
             window.location=resetUrl;
         });
@@ -1012,7 +1014,6 @@ var initCodeMirror = function(textarea_id, resetUrl){
 };
 
 var setCodeMirrorMode = function(codeMirrorInstance, mode) {
-    codeMirrorInstance.setOption("mode", mode);
     CodeMirror.autoLoadMode(codeMirrorInstance, mode);
 }
 

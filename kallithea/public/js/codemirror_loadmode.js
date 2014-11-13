@@ -22,7 +22,7 @@
   }
 
   CodeMirror.requireMode = function(mode, cont) {
-    if (typeof mode != "string") mode = mode.name;
+    if (typeof mode != "string") mode = mode.mode;
     if (CodeMirror.modes.hasOwnProperty(mode)) return ensureDeps(mode, cont);
     if (loading.hasOwnProperty(mode)) return loading[mode].push(cont);
 
@@ -48,7 +48,29 @@
       CodeMirror.requireMode(mode, function() {
         instance.setOption("mode", instance.getOption("mode"));
       });
+    instance.setOption("mode", mode.mime);
   };
+
+  CodeMirror.findExtensionByMode = function(modeInfo) {
+    if (modeInfo.ext) {
+      return modeInfo.ext[0];
+    } else if (modeInfo.mode) {
+      return modeInfo.mode;
+    } else {
+      return "txt";
+    }
+  };
+
+  CodeMirror.getFilenameAndExt = function(filename){
+    var parts = filename.split('.');
+
+    if (parts.length > 1){
+        var ext = parts.pop();
+        var filename = parts.join("");
+    }
+    return {"filename": filename, "ext": ext};
+  };
+
 }());
 
 

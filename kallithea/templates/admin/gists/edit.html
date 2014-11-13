@@ -12,7 +12,6 @@
 <script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>
 <script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
 <script type="text/javascript" src="${h.url('/codemirror/mode/meta.js')}"></script>
-<script type="text/javascript" src="${h.url('/js/meta_ext.js')}"></script>
 </%def>
 <%def name="css_extra()">
 <link rel="stylesheet" type="text/css" href="${h.url('/codemirror/lib/codemirror.css')}"/>
@@ -75,10 +74,7 @@
                     <div style="padding: 10px 10px 10px 26px;color:#666666">
                         <input type="hidden" value="${file.path}" name="org_files">
                         <input id="filename_${h.FID('f',file.path)}" name="files" size="30" type="text" value="${file.path}">
-
-                        <select id="mimetype_${h.FID('f',file.path)}" name="mimetypes">
-                            <option selected="selected" value="plain">${_('plain')}</option>
-                        </select>
+                        <select id="mimetype_${h.FID('f',file.path)}" name="mimetypes"/>
                     </div>
                     <div class="editor_container">
                         <pre id="editor_pre"></pre>
@@ -89,17 +85,23 @@
                 ## dynamic edit box.
                 <script type="text/javascript">
                 var myCodeMirror = initCodeMirror("editor_${h.FID('f',file.path)}", '');
-                CodeMirror.modeURL = "${h.url('/codemirror/mode/%N/%N.js')}";
 
                 //inject new modes
                 var $modes_select = $('#mimetype_${h.FID('f',file.path)}');
                 $modes_select.each(function(){
                     var modes_select = this;
+                    var index = 1;
                     for(var i=0;i<CodeMirror.modeInfo.length;i++) {
                         var m = CodeMirror.modeInfo[i];
                         var opt = new Option(m.name, m.mime);
                         $(opt).attr('mode', m.mode);
-                        modes_select.options[i+1] = opt;
+                        if (m.mime == 'text/plain') {
+                            // default plain text
+                            $(opt).attr('selected', 'selected');
+                            modes_select.options[0] = opt;
+                        } else {
+                            modes_select.options[index++] = opt;
+                        }
                     }
                 });
 
@@ -108,38 +110,34 @@
                 $modes_select.change(function(e){
                     var selected = e.currentTarget;
                     var node = selected.options[selected.selectedIndex];
-                    var mimetype = node.value;
-                    var new_mode = $(node).attr('mode');
-                    setCodeMirrorMode(myCodeMirror, new_mode);
+                    var detected_mode = CodeMirror.findModeByMIME(node.value);
+                    setCodeMirrorMode(myCodeMirror, detected_mode);
 
-                    var proposed_ext = getExtFromMimeType(mimetype);
-                    var file_data = getFilenameAndExt($filename.val());
+                    var proposed_ext = CodeMirror.findExtensionByMode(detected_mode);
+                    var file_data = CodeMirror.getFilenameAndExt($filename.val());
                     var filename = file_data['filename'] || 'filename1';
-                    $(filename_selector).val(filename + proposed_ext);
-                })
+                    $filename.val(filename + '.' + proposed_ext);
+                });
 
                 // on type the new filename set mode
                 $filename.keyup(function(e){
-                    var file_data = getFilenameAndExt(this.value);
+                    var file_data = CodeMirror.getFilenameAndExt(this.value);
                     if(file_data['ext'] != null){
-
-                        var mimetype = getMimeTypeFromExt(file_data['ext']);
-                        var detected_mode = detectCodeMirrorMode(this.value, mimetype);
+                        var detected_mode = CodeMirror.findModeByExtension(file_data['ext']) || CodeMirror.findModeByMIME('text/plain');
 
                         if (detected_mode){
                             setCodeMirrorMode(myCodeMirror, detected_mode);
-                            $modes_select.val(mimetype)
+                            $modes_select.val(detected_mode.mime);
                         }
                     }
-                })
+                });
 
                 // set mode on page load
-                var mimetype = getMimeTypeFromExt("${file.extension}");
-                var detected_mode = detectCodeMirrorMode("${file.path}", mimetype);
+                var detected_mode = CodeMirror.findModeByExtension("${file.extension}");
 
                 if (detected_mode){
                     setCodeMirrorMode(myCodeMirror, detected_mode);
-                    modes_select.val(mimetype)
+                    $modes_select.val(detected_mode.mime);
                 }
 
                 </script>
@@ -170,7 +168,7 @@
                       }
                     }
                   })
-              })
+              });
           </script>
         </div>
     </div>
