@@ -43,9 +43,9 @@ Codemirror
 ----------
 
 Kallithea incorporates parts of the Javascript system called
-[Codemirror](http://codemirror.net/), which is primarily:
+[Codemirror](http://codemirror.net/), version 4.7.0, which is primarily:
 
-Copyright &copy; 2013 by Marijn Haverbeke <marijnh@gmail.com>
+Copyright &copy; 2013-2014 by Marijn Haverbeke <marijnh@gmail.com>
 
 and licensed under the MIT-permissive license, which is
 [included in this distribution](MIT-Permissive-License.txt).
