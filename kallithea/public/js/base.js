@@ -1481,7 +1481,7 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link,gravatar_size)
         '         <div style="float:left;">{1}</div>\n'+
         '         <input type="hidden" value="{2}" name="review_members" />\n'+
         '         <div class="reviewer_member_remove action_button" onclick="removeReviewMember({2})">\n'+
-        '             <i class="icon-minus-circled" style="color: #FF4444;"></i>\n'+
+        '             <i class="icon-minus-circled"></i>\n'+
         '         </div> (add not saved)\n'+
         '       </div>\n'+
         '     </li>\n'
