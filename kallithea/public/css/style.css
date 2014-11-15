@@ -2451,30 +2451,21 @@ BIN_FILENODE = 6
 
 .cs_files .cs_added,
 .cs_files .cs_A {
-    background: url("../images/icons/page_white_add.png") no-repeat scroll
-        3px;
     height: 16px;
-    padding-left: 20px;
     margin-top: 7px;
     text-align: left;
 }
 
 .cs_files .cs_changed,
 .cs_files .cs_M {
-    background: url("../images/icons/page_white_edit.png") no-repeat scroll
-        3px;
     height: 16px;
-    padding-left: 20px;
     margin-top: 7px;
     text-align: left;
 }
 
 .cs_files .cs_removed,
 .cs_files .cs_D {
-    background: url("../images/icons/page_white_delete.png") no-repeat
-        scroll 3px;
     height: 16px;
-    padding-left: 20px;
     margin-top: 7px;
     text-align: left;
 }

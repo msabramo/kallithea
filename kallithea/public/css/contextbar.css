@@ -24,6 +24,28 @@ i[class^='icon-'] {
 
 }
 
+/* css classes for diff file status ... it'd be nice if css had a way to
+   inherit from another class but alas, we must make sure this content is the
+   same from the icon font file */
+
+.icon-diff-M:before {
+    font-family: 'kallithea';
+    content: '\e805';
+    color: #d0b44c;
+}
+
+.icon-diff-D:before {
+    font-family: 'kallithea';
+    content: '\e807';
+    color: #bd2c00;
+}
+
+.icon-diff-A:before {
+    font-family: 'kallithea';
+    content: '\e806';
+    color: #6cc644;
+}
+
 #content #context-bar {
     position: relative;
     overflow: visible;

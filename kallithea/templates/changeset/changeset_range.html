@@ -63,6 +63,7 @@ ${self.repo_context_bar('changelog')}
                     %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[cs.raw_id].iteritems():
                         <div class="cs_${change}">
                             <div class="node">
+                                <i class="icon-diff-${change}"></i>
                                 ${h.link_to(h.safe_unicode(path),h.url.current(anchor=FID))}
                             </div>
                             <div class="changes">${h.fancy_file_stats(stats)}</div>

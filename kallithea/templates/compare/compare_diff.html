@@ -68,10 +68,13 @@ ${self.repo_context_bar('changelog')}
                      <span class="empty_data">${_('No files')}</span>
                   %endif
                   %for fid, change, f, stat in c.files:
-                      <div class="cs_${change}">
-                        <div class="node">${h.link_to(h.safe_unicode(f), '#' + fid)}</div>
-                        <div class="changes">${h.fancy_file_stats(stat)}</div>
-                      </div>
+                     <div class="cs_${change}">
+                         <div class="node">
+                             <i class="icon-diff-${change}"></i>
+                             ${h.link_to(h.safe_unicode(f), '#' + fid)}
+                         </div>
+                         <div class="changes">${h.fancy_file_stats(stat)}</div>
+                     </div>
                   %endfor
                 </div>
                 % if c.limited_diff:
