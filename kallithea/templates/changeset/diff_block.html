@@ -86,6 +86,11 @@
                   %elif op == 'D':
                     ${_('Deleted')}
                     <a class="spantag" href="${h.url('files_home', repo_name=c.a_repo.repo_name, f_path=filenode_path, revision=c.a_rev)}">${h.short_id(c.a_ref_name) if c.a_ref_type=='rev' else c.a_ref_name}</a>
+                  %elif op == 'R':
+                    ${_('Renamed')}
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.a_repo.repo_name, f_path=filenode_path, revision=c.a_rev)}">${h.short_id(c.a_ref_name) if c.a_ref_type=='rev' else c.a_ref_name}</a>
+                    <i class="icon-arrow-right"></i>
+                    <a class="spantag" href="${h.url('files_home', repo_name=c.cs_repo.repo_name, f_path=filenode_path, revision=c.cs_rev)}">${h.short_id(c.cs_ref_name) if c.cs_ref_type=='rev' else c.cs_ref_name}</a>
                   %else:
                     ${op}???
                   %endif

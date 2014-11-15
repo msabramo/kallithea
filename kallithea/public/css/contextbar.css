@@ -46,6 +46,12 @@ i[class^='icon-'] {
     color: #6cc644;
 }
 
+.icon-diff-R:before {
+    font-family: 'kallithea';
+    content: '\e81f';
+    color: #677a85;
+}
+
 #content #context-bar {
     position: relative;
     overflow: visible;

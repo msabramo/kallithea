@@ -401,7 +401,7 @@ class DiffProcessor(object):
                 # RENAME
                 if (head['rename_from'] and head['rename_to']
                       and head['rename_from'] != head['rename_to']):
-                    op = 'M'
+                    op = 'R'
                     stats['binary'] = True
                     stats['ops'][RENAMED_FILENODE] = ('file renamed from %s to %s'
                                     % (head['rename_from'], head['rename_to']))

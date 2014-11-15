@@ -2470,6 +2470,13 @@ BIN_FILENODE = 6
     text-align: left;
 }
 
+.cs_files .cs_renamed,
+.cs_files .cs_R {
+    height: 16px;
+    margin-top: 7px;
+    text-align: left;
+}
+
 .table {
     position: relative;
 }
