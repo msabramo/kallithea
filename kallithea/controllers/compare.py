@@ -95,7 +95,11 @@ class CompareController(BaseRepoController):
                 ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
                 if ancestors:
                     # FIXME: picks arbitrary ancestor - but there is usually only one
-                    ancestor = hgrepo[ancestors[0]].hex()
+                    try:
+                        ancestor = hgrepo[ancestors.first()].hex()
+                    except AttributeError:
+                        # removed in hg 3.2
+                        ancestor = hgrepo[ancestors[0]].hex()
 
             other_revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
                                      other_rev, org_rev, org_rev)

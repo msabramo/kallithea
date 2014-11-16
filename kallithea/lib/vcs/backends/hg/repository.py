@@ -454,7 +454,11 @@ class MercurialRepository(BaseRepository):
             msg = ("Revision %s:%s does not exist for %s" % (ref_type, ref_name, self.name))
             raise ChangesetDoesNotExistError(msg)
         if revs:
-            revision = revs[-1]
+            try:
+                revision = revs.last()
+            except AttributeError:
+                # removed in hg 3.2
+                revision = revs[-1]
         else:
             # TODO: just report 'not found'?
             revision = ref_name
@@ -540,7 +544,9 @@ class MercurialRepository(BaseRepository):
         else:
             revisions = self.revisions
 
-        revs = revisions[start_pos:end_pos]
+        # this is very much a hack to turn this into a list; a better solution
+        # would be to get rid of this function entirely and use revsets
+        revs = list(revisions)[start_pos:end_pos]
         if reverse:
             revs = reversed(revs)
 
@@ -551,8 +557,12 @@ class MercurialRepository(BaseRepository):
         Tries to pull changes from external location.
         """
         url = self._get_url(url)
+        other = peer(self._repo, {}, url)
         try:
-            other = peer(self._repo, {}, url)
+            # hg 3.2 moved push / pull to exchange module
+            from mercurial import exchange
+            exchange.pull(self._repo, other, heads=None, force=None)
+        except ImportError:
             self._repo.pull(other, heads=None, force=None)
         except Abort, err:
             # Propagate error but with vcs's type

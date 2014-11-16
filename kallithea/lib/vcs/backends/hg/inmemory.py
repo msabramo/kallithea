@@ -47,8 +47,12 @@ class MercurialInMemoryChangeset(BaseInMemoryChangeset):
 
             # check if this path is removed
             if path in (node.path for node in self.removed):
-                # Raising exception is a way to mark node for removal
-                raise IOError(errno.ENOENT, '%s is deleted' % path)
+                if getattr(memctx, '_returnnoneformissingfiles', False):
+                    return None
+                else:
+                    # (hg < 3.2) Raising exception is the way to mark node for
+                    # removal
+                    raise IOError(errno.ENOENT, '%s is deleted' % path)
 
             # check if this path is added
             for node in self.added:
