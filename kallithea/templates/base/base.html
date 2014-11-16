@@ -296,7 +296,7 @@
     <li>
       <a class="menu_link childs" id="quick_login_link">
           <span class="icon">
-             <img src="${h.gravatar_url(c.authuser.email,20)}" alt="avatar">
+            ${h.gravatar(c.authuser.email, size=20)}
           </span>
           %if c.authuser.username != 'default':
             <span class="menu_link_user">${c.authuser.username}</span>
@@ -349,7 +349,9 @@
             ${h.end_form()}
           %else:
             <div class="links_left">
-                <div class="big_gravatar"><img alt="gravatar" src="${h.gravatar_url(c.authuser.email,48)}" /></div>
+                <div class="big_gravatar">
+                  ${h.gravatar(c.authuser.email, size=48)}
+                </div>
                 <div class="full_name">${c.authuser.full_name_or_username}</div>
                 <div class="email">${c.authuser.email}</div>
             </div>

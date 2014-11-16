@@ -104,7 +104,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                           %endif
                         </td>
                         <td class="author">
-                            <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),16)}"/>
+                            ${h.gravatar(h.email_or_none(cs.author), size=16)}
                             <span title="${cs.author}" class="user">${h.shorter(h.person(cs.author),22)}</span>
                         </td>
                         <td class="hash" style="width:${len(h.show_id(cs))*6.5}px">

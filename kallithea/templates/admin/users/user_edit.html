@@ -32,7 +32,7 @@
           <li>
            <div class="gravatar_box" style="height: 26px">
                <div class="gravatar" style="float: left">
-                   <img alt="gravatar" src="${h.gravatar_url(c.user.email)}"/>
+                 ${h.gravatar(c.user.email, size=26)}
                </div>
                <div class="truncate" style="margin:10px 0px 10px 0px; color:#5f5f5f; float:left; width: 100px">
                 <strong>${c.user.username}</strong>

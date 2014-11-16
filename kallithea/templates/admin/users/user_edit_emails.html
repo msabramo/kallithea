@@ -1,7 +1,7 @@
 <div class="emails_wrap">
   <table class="noborder">
     <tr>
-    <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(c.user.email,16)}"/> </div></td>
+    <td><div class="gravatar">${h.gravatar(c.user.email, size=16)}</div></td>
     <td><div class="email">${c.user.email}</div></td>
     <td>
         <span class="btn btn-mini btn-success disabled">${_('Primary')}</span>
@@ -10,7 +10,7 @@
     %if c.user_email_map:
         %for em in c.user_email_map:
           <tr>
-            <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(em.email,16)}"/> </div></td>
+            <td><div class="gravatar">${h.gravatar(c.user.email, size=16)}</div></td>
             <td><div class="email">${em.email}</div></td>
             <td>
                 ${h.form(url('edit_user_emails', id=c.user.user_id),method='delete')}

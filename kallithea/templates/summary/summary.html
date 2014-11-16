@@ -141,7 +141,7 @@ summary = lambda n:{False:'summary-short'}.get(n)
                <a title="${_('Owner')} ${c.db_repo.user.email}">
                 <i class="icon-user"></i> ${c.db_repo.user.username}
                   <div class="gravatar" style="float: right; margin: 0px 0px 0px 0px" title="${c.db_repo.user.name} ${c.db_repo.user.lastname}">
-                     <img alt="gravatar" src="${h.gravatar_url(c.db_repo.user.email, 18)}"/>
+                    ${h.gravatar(c.db_repo.user.email, size=18)}
                   </div>
               </a>
             </li>

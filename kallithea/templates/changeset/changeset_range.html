@@ -42,7 +42,7 @@ ${self.repo_context_bar('changelog')}
             <table class="compare_view_commits noborder">
             %for cnt,cs in enumerate(c.cs_ranges):
                 <tr>
-                <td><div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),14)}"/></div></td>
+                <td><div class="gravatar">${h.gravatar(h.email_or_none(cs.author), size=14)}</div></td>
                 <td>${h.link_to('r%s:%s' % (cs.revision,h.short_id(cs.raw_id)),h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</td>
                 <td><div class="author">${h.person(cs.author)}</div></td>
                 <td><span class="tooltip" title="${h.age(cs.date)}">${cs.date}</span></td>
@@ -83,7 +83,7 @@ ${self.repo_context_bar('changelog')}
           <div class="h3">
           <a class="tooltip" title="${h.tooltip(cs.message)}" href="${h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a>
              <div class="gravatar">
-                 <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(cs.author),20)}"/>
+               ${h.gravatar(h.email_or_none(cs.author), size=20)}
              </div>
              <div class="right">
               <span class="logtags">

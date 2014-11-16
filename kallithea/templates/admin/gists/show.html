@@ -71,7 +71,7 @@
 
                     <div class="author">
                         <div class="gravatar">
-                            <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.file_changeset.author),16)}"/>
+                          ${h.gravatar(h.email_or_none(c.file_changeset.author), size=16)}
                         </div>
                         <div title="${c.file_changeset.author}" class="user">${h.person(c.file_changeset.author)} - ${_('created')} ${h.age(c.file_changeset.date)}</div>
                     </div>

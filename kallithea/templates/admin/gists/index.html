@@ -47,7 +47,7 @@
           <div class="gist-item" style="padding:10px 20px 10px 15px">
 
             <div class="gravatar">
-               <img alt="gravatar" src="${h.gravatar_url(gist.owner.email,28)}"/>
+              ${h.gravatar(gist.owner.email, size=28)}
             </div>
             <div title="${gist.owner.full_contact}" class="user" style="font-size: 16px">
                 <b>${h.person(gist.owner.full_contact)}</b> /

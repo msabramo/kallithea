@@ -123,7 +123,7 @@
 </%def>
 
 <%def name="user_gravatar(email, size=24)">
-    <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(email, size)}"/> </div>
+    <div class="gravatar">${h.gravatar(email, size=size)}</div>
 </%def>
 
 <%def name="repo_actions(repo_name, super_user=True)">

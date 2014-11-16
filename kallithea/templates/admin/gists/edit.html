@@ -50,7 +50,7 @@
           ${h.form(h.url('edit_gist', gist_id=c.gist.gist_access_id), method='post', id='eform')}
             <div>
                 <div class="gravatar">
-                   <img alt="gravatar" src="${h.gravatar_url(c.authuser.email,32)}"/>
+                  ${h.gravatar(c.authuser.email, size=32)}
                 </div>
                 <input type="hidden" value="${c.file_changeset.raw_id}" name="parent_hash">
                 <textarea style="resize:vertical; width:400px;border: 1px solid #ccc;border-radius: 3px;"

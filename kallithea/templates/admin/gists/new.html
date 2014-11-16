@@ -37,7 +37,7 @@
           ${h.form(h.url('gists'), method='post',id='eform')}
             <div>
                 <div class="gravatar">
-                   <img alt="gravatar" src="${h.gravatar_url(c.authuser.email,32)}"/>
+                  ${h.gravatar(c.authuser.email, size=32)}
                 </div>
                 <textarea style="resize:vertical; width:400px;border: 1px solid #ccc;border-radius: 3px;" id="description" name="description" placeholder="${_('Gist description ...')}"></textarea>
                 <div style="padding:0px 0px 0px 42px">

@@ -4,7 +4,7 @@
     <div>
         <div class="follower_user">
             <div class="gravatar">
-                <img alt="gravatar" src="${h.gravatar_url(f.user.email,24)}"/>
+              ${h.gravatar(f.user.email, size=24)}
             </div>
             <span style="font-size: 20px"> <b>${f.user.username}</b> (${f.user.name} ${f.user.lastname})</span>
         </div>

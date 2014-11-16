@@ -30,7 +30,7 @@ ${h.form(url('edit_repo_perms_update', repo_name=c.repo_name), method='put')}
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'repository.write')}</td>
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'repository.admin')}</td>
                         <td style="white-space: nowrap;">
-                            <img class="perm-gravatar" src="${h.gravatar_url(r2p.user.email,14)}"/>
+                            ${h.gravatar(r2p.user.email, size=14)}
                             %if h.HasPermissionAny('hg.admin')() and r2p.user.username != 'default':
                              <a href="${h.url('edit_user',id=r2p.user.user_id)}">${r2p.user.username}</a>
                             %else:

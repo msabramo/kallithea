@@ -7,7 +7,9 @@
   <div class="comment" id="comment-${co.comment_id}" line="${co.line_no}">
     <div class="comment-wrapp">
       <div class="meta">
-        <div style="float:left"> <img src="${h.gravatar_url(co.author.email, 20)}" /> </div>
+          <div style="float:left">
+               ${h.gravatar(co.author.email, size=20)}
+          </div>
           <div class="user">
               ${co.author.username}
           </div>
