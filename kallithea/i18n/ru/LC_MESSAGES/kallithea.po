@@ -14,18 +14,20 @@
 # zhmylove <zhmylove@narod.ru>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version:  Kallithea\n"
+"Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-02-13 14:34+0000\n"
-"Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
+"PO-Revision-Date: 2014-11-19 13:22+0200\n"
+"Last-Translator: Andrew Shadura <andrew@shadura.me>\n"
 "Language-Team: Russian "
-"(http://www.transifex.com/projects/p/Kallithea/language/ru/)\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"<https://hosted.weblate.org/projects/kallithea/kallithea/ru/>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.1-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
@@ -52,12 +54,12 @@ msgstr "Игнорировать пробелы"
 #: kallithea/controllers/changeset.py:167
 #, python-format
 msgid "increase diff context to %(num)s lines"
-msgstr ""
+msgstr "увеличить контекст до %(num)s строк"
 
 #: kallithea/controllers/changeset.py:209 kallithea/controllers/files.py:98
 #: kallithea/controllers/files.py:121
 msgid "Such revision does not exist for this repository"
-msgstr ""
+msgstr "Нет такой ревизии в этом репозитории"
 
 #: kallithea/controllers/changeset.py:355
 #: kallithea/controllers/pullrequests.py:482
@@ -106,7 +108,7 @@ msgstr "Сервер не может выполнить запрос, из-за 
 #: kallithea/controllers/feed.py:55
 #, python-format
 msgid "Changes on %s repository"
-msgstr "Изменения в репозитарии %s"
+msgstr "Изменения в репозитории %s"
 
 #: kallithea/controllers/feed.py:56
 #, python-format
@@ -126,7 +128,7 @@ msgstr "Изменения оказались слишком большими и
 #: kallithea/controllers/feed.py:93
 #, python-format
 msgid "%s committed on %s"
-msgstr "%s выполнил commit в %s"
+msgstr "%s выполнил коммит в %s"
 
 #: kallithea/controllers/files.py:92
 msgid "Click here to add new file"
@@ -135,7 +137,7 @@ msgstr "Нажмите чтобы добавить новый файл"
 #: kallithea/controllers/files.py:93
 #, python-format
 msgid "There are no files yet. %s"
-msgstr ""
+msgstr "Нет файлов. %s"
 
 #: kallithea/controllers/files.py:301 kallithea/controllers/files.py:361
 #: kallithea/controllers/files.py:428
@@ -146,27 +148,28 @@ msgstr "Репозиторий заблокировал %s в %s"
 #: kallithea/controllers/files.py:313
 msgid "You can only delete files with revision being a valid branch "
 msgstr ""
+"Вы можете удалять файлы только в ревизии, связанной с существующей веткой "
 
 #: kallithea/controllers/files.py:324
 #, python-format
 msgid "Deleted file %s via Kallithea"
-msgstr ""
+msgstr "Файл %s удалён с помощью Kallithea"
 
 #: kallithea/controllers/files.py:346
 #, python-format
 msgid "Successfully deleted file %s"
-msgstr ""
+msgstr "Файл %s удалён"
 
 #: kallithea/controllers/files.py:350 kallithea/controllers/files.py:416
 #: kallithea/controllers/files.py:498
 msgid "Error occurred during commit"
-msgstr "Во время фиксации изменений произошла ошибка"
+msgstr "Во время коммита произошла ошибка"
 
 #: kallithea/controllers/files.py:373
 msgid "You can only edit files with revision being a valid branch "
 msgstr ""
-"Вы можете редактировать файлы только в редакции, связанной с существующей"
-" веткой"
+"Вы можете редактировать файлы только в ревизии, связанной с существующей "
+"веткой "
 
 #: kallithea/controllers/files.py:387
 #, python-format
@@ -207,7 +210,7 @@ msgstr "Возможность скачивать отключена"
 #: kallithea/controllers/files.py:535
 #, python-format
 msgid "Unknown revision %s"
-msgstr "Неизвестная версия %s"
+msgstr "Неизвестная ревизия %s"
 
 #: kallithea/controllers/files.py:537
 msgid "Empty repository"
@@ -245,7 +248,7 @@ msgstr "Произошла ошибка во время создания фор�
 
 #: kallithea/controllers/home.py:86
 msgid "Groups"
-msgstr ""
+msgstr "Группы"
 
 #: kallithea/controllers/home.py:91
 #: kallithea/templates/admin/repo_groups/repo_group_edit_perms.html:106
@@ -285,7 +288,7 @@ msgstr "журнал"
 
 #: kallithea/controllers/login.py:187 kallithea/controllers/login.py:232
 msgid "bad captcha"
-msgstr ""
+msgstr "неверная капча"
 
 #: kallithea/controllers/login.py:193
 msgid "You have successfully registered into Kallithea"
@@ -299,7 +302,7 @@ msgstr "Ссылка для сброса пароля отправлена"
 msgid ""
 "Your password reset was successful, new password has been sent to your "
 "email"
-msgstr "Сброс пароля прошел успешно, новый пароль был отправлен на ваш email"
+msgstr "Сброс пароля произведён, новый пароль был отправлен на ваш email"
 
 #: kallithea/controllers/pullrequests.py:140
 #: kallithea/templates/changeset/changeset.html:13
@@ -323,24 +326,24 @@ msgstr "Закладки"
 
 #: kallithea/controllers/pullrequests.py:330
 msgid "Pull request requires a title with min. 3 chars"
-msgstr "Заголовок Pull запроса должен быть не менее 3-х символов"
+msgstr "Заголовок pull-запроса должен быть не менее 3-х символов"
 
 #: kallithea/controllers/pullrequests.py:332
 #, python-format
 msgid "Error creating pull request: %s"
-msgstr "Ошибка при создании pull запроса: %s"
+msgstr "Ошибка при создании pull-запроса: %s"
 
 #: kallithea/controllers/pullrequests.py:354
 msgid "Successfully opened new pull request"
-msgstr "Pull запрос создан успешно"
+msgstr "Pull-запрос создан успешно"
 
 #: kallithea/controllers/pullrequests.py:357
 msgid "Error occurred during sending pull request"
-msgstr "Произошла ошибка при создании Pull запроса"
+msgstr "Произошла ошибка при создании pull-запроса"
 
 #: kallithea/controllers/pullrequests.py:397
 msgid "Successfully deleted pull request"
-msgstr "Pull запрос успешно удалён"
+msgstr "Pull-запрос успешно удалён"
 
 #: kallithea/controllers/pullrequests.py:485
 msgid "Closing with"
@@ -349,8 +352,8 @@ msgstr "Закрытый с"
 #: kallithea/controllers/pullrequests.py:522
 msgid "Closing pull request on other statuses than rejected or approved forbidden"
 msgstr ""
-"Закрытие pull-requst'а со статусом, отличным от 'Одобрено' или "
-"'Отклонено' "
+"Закрытие pull-запроса со статусом, отличным от «Одобрено» или «Отклонено», "
+"невозможно"
 
 #: kallithea/controllers/search.py:135
 msgid "Invalid search query. Try quoting it."
@@ -469,22 +472,22 @@ msgstr "Произошла ошибка при обновлении пользо
 
 #: kallithea/controllers/admin/my_account.py:161
 msgid "Successfully updated password"
-msgstr ""
+msgstr "Пароль обновлён"
 
 #: kallithea/controllers/admin/my_account.py:171
 msgid "Error occurred during update of user password"
-msgstr ""
+msgstr "Ошибка при обновлении пароля"
 
 #: kallithea/controllers/admin/my_account.py:213
 #: kallithea/controllers/admin/users.py:432
 #, python-format
 msgid "Added email %s to user"
-msgstr "Пользователю добавлен E-mail %s"
+msgstr "Пользователю добавлен e-mail %s"
 
 #: kallithea/controllers/admin/my_account.py:219
 #: kallithea/controllers/admin/users.py:438
 msgid "An error occurred during email saving"
-msgstr "Произошла ошибка при сохранении E-mail"
+msgstr "Произошла ошибка при сохранении e-mail"
 
 #: kallithea/controllers/admin/my_account.py:228
 #: kallithea/controllers/admin/users.py:449
@@ -817,6 +820,8 @@ msgid ""
 "Unable to activate hgsubversion support. The \"hgsubversion\" library is "
 "missing"
 msgstr ""
+"Невозможно включить поддержку hgsubversion. Библиотека «hgsubversion» "
+"отсутствует"
 
 #: kallithea/controllers/admin/settings.py:182
 #: kallithea/controllers/admin/settings.py:274
@@ -1832,7 +1837,7 @@ msgstr "Недопустимые символы (не ascii) в пароле"
 
 #: kallithea/model/validators.py:294
 msgid "Invalid old password"
-msgstr ""
+msgstr "Неверно задан старый пароль"
 
 #: kallithea/model/validators.py:310
 msgid "Passwords do not match"
@@ -1981,7 +1986,7 @@ msgstr "фильтр..."
 #: kallithea/templates/index_base.html:6
 #: kallithea/templates/admin/repos/repos.html:12
 msgid "repositories"
-msgstr "репозитарии"
+msgstr "репозитории"
 
 #: kallithea/templates/index_base.html:20
 #: kallithea/templates/index_base.html:25
@@ -5485,6 +5490,7 @@ msgstr "Запрос на внесение изменений был рассм�
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:77
 #: kallithea/templates/pullrequests/pullrequest_show.html:79
+#, fuzzy
 msgid "Pull changes"
 msgstr "Pull изменения"
 
@@ -5498,7 +5504,7 @@ msgstr "Добавить или удалить рецензента данног
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:137
 msgid "Save Changes"
-msgstr ""
+msgstr "Сохранить изменения"
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:149
 msgid "Compare view"
@@ -5517,7 +5523,7 @@ msgstr "Pull запросы от %s"
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:14
 #, python-format
 msgid "Pull requests to %s"
-msgstr "Pull запросы для %s"
+msgstr "Pull-запросы для %s"
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:38
 #, python-format
@@ -5535,7 +5541,7 @@ msgstr "Скрыть закрытые pull запросы"
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:52
 msgid "Show closed pull requests too"
-msgstr "Показать закрытые pull запросы"
+msgstr "Показать закрытые pull-запросы"
 
 #: kallithea/templates/search/search.html:6
 #, python-format
@@ -5561,7 +5567,7 @@ msgstr "Содержимое файлов"
 
 #: kallithea/templates/search/search.html:69
 msgid "Commit messages"
-msgstr "Сообщения commit'а"
+msgstr "Сообщения коммитов"
 
 #: kallithea/templates/search/search.html:70
 msgid "File names"
@@ -5731,4 +5737,3 @@ msgstr "%s Меток"
 #: kallithea/templates/tags/tags.html:29
 msgid "Compare tags"
 msgstr "Сравнить метки"
-
