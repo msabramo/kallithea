@@ -8,15 +8,17 @@ msgstr ""
 "Project-Id-Version: Kallithea 2.2.5\n"
 "Report-Msgid-Bugs-To: marcin@maq.io\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-07-02 19:08-0400\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2014-11-20 11:03+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
+"Language-Team: Czech "
+"<https://hosted.weblate.org/projects/kallithea/kallithea/cs/>\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.6\n"
-"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 2.1-dev\n"
+"Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
 #: kallithea/controllers/pullrequests.py:265
@@ -25,7 +27,7 @@ msgstr ""
 
 #: kallithea/controllers/changelog.py:186
 msgid "All Branches"
-msgstr ""
+msgstr "Všechny větve"
 
 #: kallithea/controllers/changelog.py:189
 msgid "(closed)"
@@ -68,7 +70,7 @@ msgstr ""
 
 #: kallithea/controllers/error.py:72
 msgid "Home page"
-msgstr ""
+msgstr "Hlavní stránka"
 
 #: kallithea/controllers/error.py:101
 msgid ""
@@ -96,7 +98,7 @@ msgstr ""
 #: kallithea/controllers/feed.py:55
 #, python-format
 msgid "Changes on %s repository"
-msgstr ""
+msgstr "Změny na repozitáři %s"
 
 #: kallithea/controllers/feed.py:56
 #, python-format
@@ -120,7 +122,7 @@ msgstr ""
 
 #: kallithea/controllers/files.py:92
 msgid "Click here to add new file"
-msgstr ""
+msgstr "Klikněte pro přidání nového souboru"
 
 #: kallithea/controllers/files.py:93
 #, python-format
@@ -188,12 +190,12 @@ msgstr ""
 
 #: kallithea/controllers/files.py:524
 msgid "Downloads disabled"
-msgstr ""
+msgstr "Stahování vypnuto"
 
 #: kallithea/controllers/files.py:535
 #, python-format
 msgid "Unknown revision %s"
-msgstr ""
+msgstr "Neznámá revize %s"
 
 #: kallithea/controllers/files.py:537
 msgid "Empty repository"
@@ -208,7 +210,7 @@ msgstr ""
 #: kallithea/templates/email_templates/pull_request.html:12
 #: kallithea/templates/pullrequests/pullrequest.html:123
 msgid "Changesets"
-msgstr ""
+msgstr "Změny"
 
 #: kallithea/controllers/files.py:776
 #: kallithea/controllers/pullrequests.py:160
@@ -216,7 +218,7 @@ msgstr ""
 #: kallithea/templates/switch_to_list.html:3
 #: kallithea/templates/branches/branches.html:13
 msgid "Branches"
-msgstr ""
+msgstr "Větve"
 
 #: kallithea/controllers/files.py:777
 #: kallithea/controllers/pullrequests.py:161
@@ -224,7 +226,7 @@ msgstr ""
 #: kallithea/templates/switch_to_list.html:25
 #: kallithea/templates/tags/tags.html:13
 msgid "Tags"
-msgstr ""
+msgstr "Tagy"
 
 #: kallithea/controllers/forks.py:191
 #, python-format
@@ -252,15 +254,15 @@ msgstr ""
 #: kallithea/templates/files/files_delete.html:37
 #: kallithea/templates/files/files_edit.html:37
 msgid "Branch"
-msgstr ""
+msgstr "Větev"
 
 #: kallithea/controllers/home.py:138
 msgid "Tag"
-msgstr ""
+msgstr "Tag"
 
 #: kallithea/controllers/home.py:144
 msgid "Bookmark"
-msgstr ""
+msgstr "Záložka"
 
 #: kallithea/controllers/journal.py:114 kallithea/controllers/journal.py:157
 msgid "public journal"
@@ -653,7 +655,7 @@ msgstr ""
 #: kallithea/controllers/admin/repos.py:162
 #, python-format
 msgid "Error creating repository %s"
-msgstr ""
+msgstr "Chyba při vytváření repozitáře %s"
 
 #: kallithea/controllers/admin/repos.py:237
 #, python-format
@@ -735,7 +737,7 @@ msgstr ""
 
 #: kallithea/controllers/admin/repos.py:546
 msgid "Nothing"
-msgstr ""
+msgstr "Nic"
 
 #: kallithea/controllers/admin/repos.py:548
 #, python-format
@@ -761,11 +763,11 @@ msgstr ""
 
 #: kallithea/controllers/admin/repos.py:595
 msgid "Unlocked"
-msgstr ""
+msgstr "Odemčeno"
 
 #: kallithea/controllers/admin/repos.py:598
 msgid "Locked"
-msgstr ""
+msgstr "Zamčeno"
 
 #: kallithea/controllers/admin/repos.py:600
 #, python-format
