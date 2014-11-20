@@ -2,11 +2,11 @@
 # to create new language #
 ##########################
 
-Translations are available on transifex under::
+Translations are available on Hosted Weblate under::
 
-    https://www.transifex.com/projects/p/Kallithea/
+    https://hosted.weblate.org/projects/kallithea/kallithea/
 
-Preferred method is to register on transifex and request new language translation.
+Preferred method is to register on Weblate and request new language translation.
 
 manual creation of new language
 +++++++++++++++++++++++++++++++
@@ -26,7 +26,6 @@ Create new language by executing following command::
     python setup.py init_catalog -l <new_language_code>
 
 This creates a new language under directory kallithea/i18n/<new_language_code>
-Be sure to update transifex mapping under .tx/config for new language
 
 Edit the new PO file located in LC_MESSAGES directory with poedit or your
 favorite PO files editor. Do translations and at the end verify the translation
