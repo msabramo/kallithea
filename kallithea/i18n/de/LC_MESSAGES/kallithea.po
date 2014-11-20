@@ -5,23 +5,25 @@
 # stephanj <info@stephan-jauernick.de>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version:  Kallithea\n"
+"Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-02-13 14:34+0000\n"
-"Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
+"PO-Revision-Date: 2014-11-19 14:34+0200\n"
+"Last-Translator: Ingo von borstel <kallithea@planetmaker.de>\n"
 "Language-Team: German "
-"(http://www.transifex.com/projects/p/Kallithea/language/de/)\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"<https://hosted.weblate.org/projects/kallithea/kallithea/de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.1-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
 #: kallithea/controllers/pullrequests.py:265
 msgid "There are no changesets yet"
-msgstr ""
+msgstr "Es gibt noch keine Änderungssätze"
 
 #: kallithea/controllers/changelog.py:186
 msgid "All Branches"
@@ -29,7 +31,7 @@ msgstr "Alle Branches"
 
 #: kallithea/controllers/changelog.py:189
 msgid "(closed)"
-msgstr ""
+msgstr "(geschlossen)"
 
 #: kallithea/controllers/changeset.py:87
 msgid "Show whitespace"
@@ -42,28 +44,30 @@ msgstr ""
 #: kallithea/controllers/changeset.py:167
 #, python-format
 msgid "increase diff context to %(num)s lines"
-msgstr ""
+msgstr "diff-Kontext auf %(num)s Zeilen erhöhen"
 
 #: kallithea/controllers/changeset.py:209 kallithea/controllers/files.py:98
 #: kallithea/controllers/files.py:121
 msgid "Such revision does not exist for this repository"
-msgstr ""
+msgstr "Die angegebene Version existiert nicht in diesem Repository"
 
 #: kallithea/controllers/changeset.py:355
 #: kallithea/controllers/pullrequests.py:482
 #, python-format
 msgid "Status change -> %s"
-msgstr ""
+msgstr "Statusänderung -> %s"
 
 #: kallithea/controllers/changeset.py:386
 msgid ""
 "Changing status on a changeset associated with a closed pull request is "
 "not allowed"
 msgstr ""
+"Eine Änderung des Status eines Änderungssatzes, der mit einem geschlossen "
+"Pull-Request assoziert ist, ist nicht erlaubt"
 
 #: kallithea/controllers/compare.py:194 kallithea/templates/base/root.html:65
 msgid "Select changeset"
-msgstr ""
+msgstr "Änderungssätze auswählen"
 
 #: kallithea/controllers/error.py:72
 msgid "Home page"
@@ -73,7 +77,7 @@ msgstr "Startseite"
 msgid "The request could not be understood by the server due to malformed syntax."
 msgstr ""
 "Die Anfrage konnte vom Server nicht ausgewertet werden weil sie einen "
-"Ungültigen Syntax nutzt"
+"Ungültigen Syntax nutzt."
 
 #: kallithea/controllers/error.py:104
 msgid "Unauthorized access to resource"
@@ -81,7 +85,7 @@ msgstr "Unauthorisierter Zugang zur Ressource"
 
 #: kallithea/controllers/error.py:106
 msgid "You don't have permission to view this page"
-msgstr "Du hast keine Rechte um diese Seite zu betrachten"
+msgstr "Du hast keine Rechte, um diese Seite zu betrachten"
 
 #: kallithea/controllers/error.py:108
 msgid "The resource could not be found"
@@ -93,7 +97,7 @@ msgid ""
 "fulfilling the request."
 msgstr ""
 "Aufgrund einer Unerwarteten Gegebenheit konnte der Server diese Anfrage "
-"nicht vollenden"
+"nicht vollenden."
 
 #: kallithea/controllers/feed.py:55
 #, python-format
@@ -113,7 +117,7 @@ msgstr "%s %s Feed"
 #: kallithea/templates/pullrequests/pullrequest_show.html:178
 #: kallithea/templates/pullrequests/pullrequest_show.html:202
 msgid "Changeset was too big and was cut off..."
-msgstr ""
+msgstr "Der Änderungssatz war zu groß und wurde abgeschnitten..."
 
 #: kallithea/controllers/feed.py:93
 #, python-format
@@ -122,18 +126,18 @@ msgstr ""
 
 #: kallithea/controllers/files.py:92
 msgid "Click here to add new file"
-msgstr ""
+msgstr "Hier klicken, um eine neue Datei hinzuzufügen"
 
 #: kallithea/controllers/files.py:93
 #, python-format
 msgid "There are no files yet. %s"
-msgstr ""
+msgstr "Es gibt hier noch keine Dateien. %s"
 
 #: kallithea/controllers/files.py:301 kallithea/controllers/files.py:361
 #: kallithea/controllers/files.py:428
 #, python-format
 msgid "This repository is has been locked by %s on %s"
-msgstr ""
+msgstr "Dieses Repository ist von %s am %s gesperrt worden"
 
 #: kallithea/controllers/files.py:313
 msgid "You can only delete files with revision being a valid branch "
@@ -142,12 +146,12 @@ msgstr ""
 #: kallithea/controllers/files.py:324
 #, python-format
 msgid "Deleted file %s via Kallithea"
-msgstr ""
+msgstr "Datei %s via Kallithea gelöscht"
 
 #: kallithea/controllers/files.py:346
 #, python-format
 msgid "Successfully deleted file %s"
-msgstr ""
+msgstr "Datei %s erfolgreich gelöscht"
 
 #: kallithea/controllers/files.py:350 kallithea/controllers/files.py:416
 #: kallithea/controllers/files.py:498
@@ -161,7 +165,7 @@ msgstr ""
 #: kallithea/controllers/files.py:387
 #, python-format
 msgid "Edited file %s via Kallithea"
-msgstr ""
+msgstr "Datei %s via Kallithea editiert"
 
 #: kallithea/controllers/files.py:403
 msgid "No changes"
@@ -174,7 +178,7 @@ msgstr "Der Commit zu %s war erfolgreich"
 
 #: kallithea/controllers/files.py:440
 msgid "Added file via Kallithea"
-msgstr ""
+msgstr "Datei via Kallithea hinzugefügt"
 
 #: kallithea/controllers/files.py:461
 msgid "No content"
@@ -186,11 +190,11 @@ msgstr "Kein Dateiname"
 
 #: kallithea/controllers/files.py:490
 msgid "Location must be relative path and must not contain .. in path"
-msgstr ""
+msgstr "Der Ort muss ein relativer Pfad sein und darf nicht .. enthalten"
 
 #: kallithea/controllers/files.py:524
 msgid "Downloads disabled"
-msgstr ""
+msgstr "Downloads gesperrt"
 
 #: kallithea/controllers/files.py:535
 #, python-format
@@ -233,7 +237,7 @@ msgstr "Währen des Forken des Repositorys trat ein Fehler auf: %s"
 
 #: kallithea/controllers/home.py:86
 msgid "Groups"
-msgstr ""
+msgstr "Gruppen"
 
 #: kallithea/controllers/home.py:91
 #: kallithea/templates/admin/repo_groups/repo_group_edit_perms.html:106
@@ -256,11 +260,11 @@ msgstr ""
 
 #: kallithea/controllers/home.py:138
 msgid "Tag"
-msgstr ""
+msgstr "Marke"
 
 #: kallithea/controllers/home.py:144
 msgid "Bookmark"
-msgstr ""
+msgstr "Lesezeichen"
 
 #: kallithea/controllers/journal.py:114 kallithea/controllers/journal.py:157
 msgid "public journal"
@@ -273,7 +277,7 @@ msgstr "Logbuch"
 
 #: kallithea/controllers/login.py:187 kallithea/controllers/login.py:232
 msgid "bad captcha"
-msgstr ""
+msgstr "falsches Captcha"
 
 #: kallithea/controllers/login.py:193
 msgid "You have successfully registered into Kallithea"
@@ -295,7 +299,7 @@ msgstr ""
 #: kallithea/templates/changeset/changeset.html:13
 #: kallithea/templates/email_templates/changeset_comment.html:15
 msgid "Changeset"
-msgstr ""
+msgstr "Änderungssatz"
 
 #: kallithea/controllers/pullrequests.py:157
 msgid "Special"
@@ -313,12 +317,12 @@ msgstr "Lesezeichen"
 
 #: kallithea/controllers/pullrequests.py:330
 msgid "Pull request requires a title with min. 3 chars"
-msgstr ""
+msgstr "Pull-Requests benötigen einen Title mit mindestens 3 Zeichen"
 
 #: kallithea/controllers/pullrequests.py:332
 #, python-format
 msgid "Error creating pull request: %s"
-msgstr ""
+msgstr "Fehler beim Erstellen des Pull-Requests: %s"
 
 #: kallithea/controllers/pullrequests.py:354
 msgid "Successfully opened new pull request"
@@ -330,15 +334,17 @@ msgstr "Währen des abschicken des Pullrequests trat ein Fehler auf"
 
 #: kallithea/controllers/pullrequests.py:397
 msgid "Successfully deleted pull request"
-msgstr ""
+msgstr "Erfolgreich Pull-Request gelöscht"
 
 #: kallithea/controllers/pullrequests.py:485
 msgid "Closing with"
-msgstr ""
+msgstr "Schließen mit"
 
 #: kallithea/controllers/pullrequests.py:522
 msgid "Closing pull request on other statuses than rejected or approved forbidden"
 msgstr ""
+"Es ist verboten, Pull-Requests bei einem anderem Status als 'abgelehnt' oder "
+"'angenommen' zu schließen"
 
 #: kallithea/controllers/search.py:135
 msgid "Invalid search query. Try quoting it."
@@ -371,11 +377,11 @@ msgstr ""
 
 #: kallithea/controllers/admin/defaults.py:97
 msgid "Default settings updated successfully"
-msgstr ""
+msgstr "Standardeinstellungen erfolgreich geupdated"
 
 #: kallithea/controllers/admin/defaults.py:111
 msgid "Error occurred during update of defaults"
-msgstr ""
+msgstr "Ein Fehler trat beim updaten der Standardeinstellungen auf"
 
 #: kallithea/controllers/admin/gists.py:60
 #: kallithea/controllers/admin/my_account.py:257
@@ -387,40 +393,40 @@ msgstr ""
 #: kallithea/controllers/admin/my_account.py:258
 #: kallithea/controllers/admin/users.py:290
 msgid "5 minutes"
-msgstr ""
+msgstr "5 Minuten"
 
 #: kallithea/controllers/admin/gists.py:62
 #: kallithea/controllers/admin/my_account.py:259
 #: kallithea/controllers/admin/users.py:291
 msgid "1 hour"
-msgstr ""
+msgstr "1 Stunde"
 
 #: kallithea/controllers/admin/gists.py:63
 #: kallithea/controllers/admin/my_account.py:260
 #: kallithea/controllers/admin/users.py:292
 msgid "1 day"
-msgstr ""
+msgstr "1 Tag"
 
 #: kallithea/controllers/admin/gists.py:64
 #: kallithea/controllers/admin/my_account.py:261
 #: kallithea/controllers/admin/users.py:293
 msgid "1 month"
-msgstr ""
+msgstr "1 Monat"
 
 #: kallithea/controllers/admin/gists.py:68
 #: kallithea/controllers/admin/my_account.py:263
 #: kallithea/controllers/admin/users.py:295
 msgid "Lifetime"
-msgstr ""
+msgstr "Lebenszeit"
 
 #: kallithea/controllers/admin/gists.py:147
 msgid "Error occurred during gist creation"
-msgstr ""
+msgstr "Ein fehler trat auf bei der Erstellung des gist"
 
 #: kallithea/controllers/admin/gists.py:185
 #, python-format
 msgid "Deleted gist %s"
-msgstr ""
+msgstr "gist %s gelöscht"
 
 #: kallithea/controllers/admin/gists.py:234
 msgid "unmodified"
@@ -1105,7 +1111,7 @@ msgstr ""
 #: kallithea/lib/helpers.py:1101
 #, python-format
 msgid " and %s more"
-msgstr "und %s weitere"
+msgstr " und %s weitere"
 
 #: kallithea/lib/helpers.py:1105
 msgid "No Files"
@@ -5660,4 +5666,3 @@ msgstr ""
 #: kallithea/templates/tags/tags.html:29
 msgid "Compare tags"
 msgstr ""
-
