@@ -1,0 +1,26 @@
+%if c.file:
+    <h3 class="files_location">
+        ${_('Location')}: ${h.files_breadcrumbs(c.repo_name,c.changeset.raw_id,c.file.path)}
+        %if c.annotate:
+        - ${_('annotation')}
+        %endif
+        %if c.file.is_dir():
+          % if h.HasRepoPermissionAny('repository.write','repository.admin')(c.repo_name):
+             / <span title="${_('Add New File')}">
+               <a href="${h.url('files_add_home',repo_name=c.repo_name,revision=c.changeset.raw_id,f_path=c.f_path, anchor='edit')}">
+                   <i class="icon-plus-sign" style="color:#5bb75b;"></i></a>
+               </span>
+          % endif
+        %endif
+    </h3>
+        %if c.file.is_dir():
+            <%include file='files_browser.html'/>
+        %else:
+            <%include file='files_source.html'/>
+        %endif
+%else:
+    <h2>
+        <a href="#" onClick="javascript:parent.history.back();" target="main">${_('Go Back')}</a>
+        ${_('No files at given path')}: "${c.f_path or "/"}"
+    </h2>
+%endif

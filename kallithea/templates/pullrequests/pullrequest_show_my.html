@@ -1,0 +1,50 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('My Pull Requests')} &middot; ${c.site_name}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('My Pull Requests')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('my_pullrequests')}
+</%def>
+
+<%def name="main()">
+
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+
+    <div id="pullrequests_container" class="table">
+        ## loaded via AJAX
+        ${_('Loading...')}
+    </div>
+
+<script type="text/javascript">
+pyroutes.register('my_pullrequests_data', "${url('my_pullrequests_data')}", []);
+
+var show_pullrequests = function(e){
+
+    var url = pyroutes.url('my_pullrequests_data');
+    if ($('#show_closed').prop('checked')) {
+        var url = pyroutes.url('my_pullrequests_data', {'pr_show_closed': '1'});
+    }
+    asynchtml(url, $('#pullrequests_container'), function(){
+        // new #show_closed has just been loaded
+        $('#show_closed').change(function (e) {
+            show_pullrequests(e);
+        });
+    });
+}
+show_pullrequests()
+
+</script>
+
+</div>
+
+</%def>

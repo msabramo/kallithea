@@ -1,0 +1,15 @@
+## -*- coding: utf-8 -*-
+<%inherit file="main.txt"/>
+
+${_('Comment from %s on %s pull request "%s"') % (pr_comment_user, repo_name, pr_title)}:
+${body}
+
+%if status_change:
+    %if closing_pr:
+${_('The comment closed the pull request with status')}: ${status_change}
+    %else:
+${_('The comment was made with status')}: ${status_change}
+    %endif
+%endif
+
+${_('URL')}: ${pr_comment_url}

@@ -1,0 +1,89 @@
+## snippet for displaying default permission box
+## usage:
+##    <%namespace name="dpb" file="/base/default_perms_box.html"/>
+##    ${dpb.default_perms_box(<url_to_form>)}
+
+
+<%def name="default_perms_box(form_url)">
+${h.form(form_url, method='put')}
+    <div class="form">
+        <!-- fields -->
+        <div class="fields">
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="inherit_default_permissions">${_('Inherit from defaults')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('inherit_default_permissions',value=True)}
+                    <span class="help-block">
+                    ${h.literal(_('Select to inherit permissions from %s permissions settings, and default IP address whitelist.')
+                                % h.link_to('default global', url('admin_permissions')))}
+                    </span>
+                </div>
+             </div>
+
+             <div id="inherit_overlay">
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="create_repo_perm">${_('Create repositories')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('create_repo_perm',value=True)}
+                    <span class="help-block">
+                    ${h.literal(_('Select this option to allow repository creation for this user'))}
+                    </span>
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="create_user_group_perm">${_('Create user groups')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('create_user_group_perm',value=True)}
+                    <span class="help-block">
+                        ${h.literal(_('Select this option to allow user group creation for this user'))}
+                    </span>
+                </div>
+             </div>
+
+             <div class="field">
+                <div class="label label-checkbox">
+                    <label for="fork_repo_perm">${_('Fork repositories')}:</label>
+                </div>
+                <div class="checkboxes">
+                    ${h.checkbox('fork_repo_perm',value=True)}
+                    <span class="help-block">
+                        ${h.literal(_('Select this option to allow repository forking for this user'))}
+                    </span>
+                </div>
+             </div>
+
+            </div>
+            <div class="buttons">
+              ${h.submit('save',_('Save'),class_="btn")}
+              ${h.reset('reset',_('Reset'),class_="btn")}
+            </div>
+        </div>
+    </div>
+${h.end_form()}
+
+## JS
+<script>
+$(document).ready(function(e){
+    var show_custom_perms = function(inherit_default){
+        if(inherit_default){
+            $('#inherit_overlay').hide();
+        }else{
+            $('#inherit_overlay').show();
+        }
+    };
+
+    show_custom_perms($('#inherit_default_permissions').prop('checked'));
+    $('#inherit_default_permissions').change(function(){
+        show_custom_perms($('#inherit_default_permissions').prop('checked'));
+    });
+})
+</script>
+
+</%def>

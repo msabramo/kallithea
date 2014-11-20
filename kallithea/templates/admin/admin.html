@@ -1,0 +1,60 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Admin Journal')}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    <form id="filter_form">
+    <input class="q_filter_box ${'' if c.search_term else 'initial'}" id="j_filter" size="15" type="text" name="filter" value="${c.search_term or _('journal filter...')}"/>
+    <span class="tooltip" title="${h.tooltip(h.journal_filter_help())}">?</span>
+    <input type='submit' value="${_('Filter')}" class="btn btn-mini" style="padding:0px 2px 0px 2px;margin:0px"/>
+    ${_('Admin Journal')} - ${ungettext('%s Entry', '%s Entries', c.users_log.item_count) % (c.users_log.item_count)}
+    </form>
+    ${h.end_form()}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('admin')}
+</%def>
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    <div class="table">
+        <div id="user_log">
+            ${c.log_data}
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#j_filter').click(function(){
+    var $jfilter = $('#j_filter');
+    if($jfilter.hasClass('initial')){
+        $jfilter.val('');
+    }
+  });
+  var fix_j_filter_width = function(len){
+      $('#j_filter').css('width', Math.max(80, len*6.50)+'px');
+  };
+  $('#j_filter').keyup(function () {
+    fix_j_filter_width($('#j_filter').val().length);
+  });
+  $('#filter_form').submit(function (e) {
+      e.preventDefault();
+      var val = $('#j_filter').val();
+      window.location = "${url.current(filter='__FILTER__')}".replace('__FILTER__',val);
+  });
+  fix_j_filter_width($('#j_filter').val().length);
+});
+</script>
+</%def>

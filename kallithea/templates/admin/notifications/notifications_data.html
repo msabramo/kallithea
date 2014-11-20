@@ -1,0 +1,41 @@
+
+%if c.notifications:
+<%
+unread = lambda n:{False:'unread'}.get(n)
+%>
+
+
+<div class="notification-list  notification-table">
+%for notification in c.notifications:
+  <div id="notification_${notification.notification.notification_id}" class="container ${unread(notification.read)}">
+    <div class="notification-header">
+      <div class="gravatar">
+          <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(notification.notification.created_by_user.email),24)}"/>
+      </div>
+      <div class="desc ${unread(notification.read)}">
+      <a href="${url('notification', notification_id=notification.notification.notification_id)}">${notification.notification.description}</a>
+
+      </div>
+      <div class="delete-notifications">
+        <span id="${notification.notification.notification_id}" class="delete-notification"><i class="icon-minus-sign" id="yui-gen24" style="color: #b94a48; padding: 2px;"></i></span>
+      </div>
+      %if not notification.read:
+      <div class="read-notifications">
+        <span id="${notification.notification.notification_id}" class="read-notification"><i class="icon-ok-sign" id="yui-gen24" style="color: #4CBB17; padding: 2px;"></i></span>
+      </div>
+      %endif
+    </div>
+        <div class="notification-subject"></div>
+  </div>
+%endfor
+</div>
+
+<div class="notification-paginator">
+  <div class="pagination-wh pagination-left">
+  ${c.notifications.pager('$link_previous ~2~ $link_next',**request.GET.mixed())}
+  </div>
+</div>
+
+%else:
+    <div class="table">${_('No notifications here yet')}</div>
+%endif

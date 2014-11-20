@@ -1,0 +1,20 @@
+## -*- coding: utf-8 -*-
+<%inherit file="main.txt"/>
+
+%if is_mention:
+${_('%s mentioned you on %s pull request "%s"') % (pr_user_created, repo_name, pr_title)}
+%else:
+${_('%s requested your review of %s pull request "%s"') % (pr_user_created, repo_name, pr_title)}
+%endif
+
+${_('URL')}: ${pr_url}
+
+${_('Description')}:
+${body}
+
+${_('Changesets')}:
+%for r,r_msg in pr_revisions:
+${h.short_id(r)}:
+${h.shorter(r_msg, 256)}
+
+%endfor

@@ -1,0 +1,25 @@
+<div style="font-size: 24px; color: #666666; padding: 0px 0px 10px 0px">${_('User: %s') % c.user.username}</div>
+
+<dl class="dl-horizontal">
+<%
+ elems = [
+    (_('Repositories'), len(c.user.repositories), ', '.join((x.repo_name for x in c.user.repositories))),
+    (_('Source of Record'), c.user.extern_type, ''),
+    (_('Created on'), h.fmt_date(c.user.created_on), ''),
+    (_('Last Login'), c.user.last_login or '-', ''),
+    (_('Member of User groups'), len(c.user.group_member), ', '.join((x.users_group.users_group_name for x in c.user.group_member)))
+ ]
+%>
+%for dt, dd, tt in elems:
+  <dt style="width:150px; text-align: left">${dt}:</dt>
+  <dd style="margin-left: 160px" title="${tt}">${dd}</dd>
+%endfor
+</dl>
+
+${h.form(h.url('delete_user', id=c.user.user_id),method='delete')}
+    <button class="btn btn-small btn-danger" type="submit"
+            onclick="return confirm('${_('Confirm to delete this user: %s') % c.user.username}');">
+        <i class="icon-remove-sign"></i>
+        ${_('Delete this user')}
+    </button>
+${h.end_form()}

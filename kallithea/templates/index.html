@@ -1,0 +1,20 @@
+## -*- coding: utf-8 -*-
+<%inherit file="base/base.html"/>
+
+<%def name="title()">
+    ${_('Dashboard')}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs()">
+</%def>
+
+<%def name="page_nav()">
+${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+   <%include file="index_base.html" args="parent=self"/>
+</%def>

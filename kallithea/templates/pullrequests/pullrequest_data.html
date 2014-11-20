@@ -1,0 +1,31 @@
+## -*- coding: utf-8 -*-
+
+% for pr in c.pullrequests_pager:
+  <div class="pr ${'pr-closed' if pr.is_closed() else ''}">
+    <div class="pr-title">
+    %if pr.last_review_status:
+      <img src="${h.url('/images/icons/flag_status_%s.png' % pr.last_review_status)}" title="${_("Someone voted: %s") % pr.last_review_status}"/>
+    %else:
+      <img src="${h.url('/images/icons/flag_status_not_reviewed.png')}" title="${_("Nobody voted")}"/>
+    %endif
+      <a href="${pr.url()}">
+      ${pr.title or _("(no title)")}
+       %if pr.is_closed():
+         <span class="pr-closed-tag">${_('Closed')}</span>
+       %endif
+      </a>
+            ${_('opened on %s from') % (h.fmt_date(pr.created_on))}
+            <% org_ref_name=pr.org_ref.rsplit(':', 2)[-2] %>
+            <a href="${h.url('summary_home', repo_name=pr.org_repo.repo_name, anchor=org_ref_name)}">
+              ${pr.org_repo.repo_name}#${org_ref_name}
+            </a>
+    </div>
+  </div>
+% endfor
+
+
+<div class="notification-paginator">
+  <div class="pagination-wh pagination-left">
+  ${c.pullrequests_pager.pager('$link_previous ~2~ $link_next', **request.GET.mixed())}
+  </div>
+</div>

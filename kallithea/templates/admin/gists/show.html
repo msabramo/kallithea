@@ -1,0 +1,102 @@
+## -*- coding: utf-8 -*-
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('Gist')} &middot; ${c.gist.gist_access_id}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Gist')} &middot; ${c.gist.gist_access_id}
+    / ${_('URL')}: ${c.gist.gist_url()}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('gists')}
+</%def>
+
+<%def name="main()">
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        %if c.authuser.username != 'default':
+        <ul class="links">
+          <li>
+              <a href="${h.url('new_gist')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_(u'Create New Gist')}</a>
+          </li>
+        </ul>
+        %endif
+    </div>
+    <div class="table">
+        <div id="files_data">
+            <div id="body" class="codeblock">
+                <div class="code-header">
+                    <div class="stats">
+                        <div class="left" style="margin: -4px 0px 0px 0px">
+                          %if c.gist.gist_type == 'public':
+                            <div class="btn btn-mini btn-success disabled">${_('Public Gist')}</div>
+                          %else:
+                            <div class="btn btn-mini btn-warning disabled">${_('Private Gist')}</div>
+                          %endif
+                        </div>
+                        <div class="left item">
+                            ${c.gist.gist_description}
+                        </div>
+                        <div class="left item last" style="color: #AAA">
+                         %if c.gist.gist_expires == -1:
+                          ${_('Expires')}: ${_('never')}
+                         %else:
+                          ${_('Expires')}: ${h.age(h.time_to_datetime(c.gist.gist_expires))}
+                         %endif
+                       </div>
+
+                       %if h.HasPermissionAny('hg.admin')() or c.gist.gist_owner == c.authuser.user_id:
+                        <div style="float:right">
+                            ${h.form(url('gist', gist_id=c.gist.gist_id),method='delete')}
+                                ${h.submit('remove_gist', _('Delete'),class_="btn btn-mini btn-danger",onclick="return confirm('"+_('Confirm to delete this Gist')+"');")}
+                            ${h.end_form()}
+                        </div>
+                       %endif
+                        <div class="buttons">
+                          ## only owner should see that
+                          %if h.HasPermissionAny('hg.admin')() or c.gist.gist_owner == c.authuser.user_id:
+                            ${h.link_to(_('Edit'),h.url('edit_gist', gist_id=c.gist.gist_access_id),class_="btn btn-mini")}
+                          %endif
+                          ${h.link_to(_('Show as Raw'),h.url('formatted_gist', gist_id=c.gist.gist_access_id, format='raw'),class_="btn btn-mini")}
+                        </div>
+                    </div>
+
+                    <div class="author">
+                        <div class="gravatar">
+                            <img alt="gravatar" src="${h.gravatar_url(h.email_or_none(c.file_changeset.author),16)}"/>
+                        </div>
+                        <div title="${c.file_changeset.author}" class="user">${h.person(c.file_changeset.author)} - ${_('created')} ${h.age(c.file_changeset.date)}</div>
+                    </div>
+                    <div class="commit">${h.urlify_commit(c.file_changeset.message,c.repo_name)}</div>
+                </div>
+            </div>
+
+               ## iterate over the files
+               % for file in c.files:
+               <div style="border: 1px solid #EEE;margin-top:20px">
+                <div id="${h.FID('G', file.path)}" class="stats" style="border-bottom: 1px solid #DDD;padding: 8px 14px;">
+                    <a href="${c.gist.gist_url()}">¶</a>
+                    <b style="margin:0px 0px 0px 4px">${file.path}</b>
+                    <div style="float:right; margin: -5px">
+                       ${h.link_to(_('Show as raw'),h.url('formatted_gist_file', gist_id=c.gist.gist_access_id, format='raw', revision=file.changeset.raw_id, f_path=file.path),class_="btn btn-mini")}
+                    </div>
+                </div>
+                <div class="code-body">
+                    ${h.pygmentize(file,linenos=True,anchorlinenos=True,lineanchors='L',cssclass="code-highlight")}
+                </div>
+              </div>
+               %endfor
+        </div>
+    </div>
+
+
+</div>
+</%def>

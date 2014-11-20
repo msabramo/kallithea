@@ -1,0 +1,32 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s File Diff') % c.repo_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('File diff')} ${h.show_id(c.changeset_1)} &rarr; ${h.show_id(c.changeset_2)}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('changelog')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <div>
+    ## diff block
+    <%namespace name="diff_block" file="/changeset/diff_block.html"/>
+    ${diff_block.diff_block_js()}
+    ${diff_block.diff_block(c.changes)}
+    </div>
+</div>
+</%def>

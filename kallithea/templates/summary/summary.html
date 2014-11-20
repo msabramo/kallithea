@@ -1,0 +1,400 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Summary') % c.repo_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('Summary')}
+
+    ## locking icon
+    %if c.db_repo.enable_locking:
+     %if c.db_repo.locked[0]:
+       <span class="locking_locked tooltip" title="${_('Repository locked by %s') % h.person_by_id(c.db_repo.locked[0])}"></span>
+     %else:
+       <span class="locking_unlocked tooltip" title="${_('Repository unlocked')}"></span>
+     %endif
+    %endif
+
+    ##FORK
+    %if c.db_repo.fork:
+    <span>
+        - <i class="icon-code-fork"></i> ${_('Fork of')} "<a href="${h.url('summary_home',repo_name=c.db_repo.fork.repo_name)}">${c.db_repo.fork.repo_name}</a>"
+    </span>
+    %endif
+
+    ##REMOTE
+    %if c.db_repo.clone_uri:
+    <span>
+       - <i class="icon-code-fork"></i> ${_('Clone from')} "<a href="${h.url(str(h.hide_credentials(c.db_repo.clone_uri)))}">${h.hide_credentials(c.db_repo.clone_uri)}</a>"
+    <span>
+    %endif
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="head_extra()">
+<link href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}" rel="alternate" title="${_('%s ATOM feed') % c.repo_name}" type="application/atom+xml" />
+<link href="${h.url('rss_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}" rel="alternate" title="${_('%s RSS feed') % c.repo_name}" type="application/rss+xml" />
+
+<script>
+redirect_hash_branch = function(){
+    var branch = window.location.hash.replace(/^#(.*)/, '$1');
+    if (branch){
+        window.location = "${h.url('changelog_home',repo_name=c.repo_name,branch='__BRANCH__')}"
+            .replace('__BRANCH__',branch);
+    }
+}
+redirect_hash_branch();
+window.onhashchange = function() {
+    redirect_hash_branch();
+};
+</script>
+
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('summary')}
+<%
+summary = lambda n:{False:'summary-short'}.get(n)
+%>
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+    <!-- end box / title -->
+    <div class="form">
+        <div id="summary" class="fields">
+            <div class="field">
+                <div class="label-summary">
+                  <label>${_('Clone url')}:</label>
+                </div>
+                <div class="input ${summary(c.show_stats)}">
+                  <input style="width:80%" type="text" id="clone_url" readonly="readonly" value="${c.clone_repo_url}"/>
+                  <input style="display:none;width:80%" type="text" id="clone_url_id" readonly="readonly" value="${c.clone_repo_url_id}"/>
+                  <div style="display:none" id="clone_by_name" class="btn btn-small">${_('Show by Name')}</div>
+                  <div id="clone_by_id" class="btn btn-small">${_('Show by ID')}</div>
+                </div>
+            </div>
+
+            <div class="field">
+              <div class="label-summary">
+                  <label>${_('Description')}:</label>
+              </div>
+                 %if c.visual.stylify_metatags:
+                   <div class="input ${summary(c.show_stats)} desc">${h.urlify_text(h.desc_stylize(c.db_repo.description))}</div>
+                 %else:
+                   <div class="input ${summary(c.show_stats)} desc">${h.urlify_text(c.db_repo.description)}</div>
+                 %endif
+            </div>
+
+            <div class="field">
+              <div class="label-summary">
+                  <label>${_('Trending files')}:</label>
+              </div>
+              <div class="input ${summary(c.show_stats)}">
+                %if c.show_stats:
+                <div id="lang_stats"></div>
+                %else:
+                   ${_('Statistics are disabled for this repository')}
+                   %if h.HasPermissionAll('hg.admin')('enable stats on from summary'):
+                        ${h.link_to(_('Enable'),h.url('edit_repo',repo_name=c.repo_name, anchor='repo_enable_statistics'),class_="btn btn-mini")}
+                   %endif
+                %endif
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label-summary">
+                  <label>${_('Download')}:</label>
+              </div>
+              <div class="input ${summary(c.show_stats)}">
+                %if len(c.db_repo_scm_instance.revisions) == 0:
+                  ${_('There are no downloads yet')}
+                %elif not c.enable_downloads:
+                  ${_('Downloads are disabled for this repository')}
+                    %if h.HasPermissionAll('hg.admin')('enable downloads on from summary'):
+                        ${h.link_to(_('Enable'),h.url('edit_repo',repo_name=c.repo_name, anchor='repo_enable_downloads'),class_="btn btn-mini")}
+                    %endif
+                %else:
+                    <span id="${'zip_link'}">
+                        <a class="btn btn-small" href="${h.url('files_archive_home',repo_name=c.db_repo.repo_name,fname='tip.zip')}"><i class="icon-archive"></i> ${_('Download as zip')}</a>
+                    </span>
+                    ${h.hidden('download_options')}
+                    <span style="vertical-align: bottom">
+                      <input id="archive_subrepos" type="checkbox" name="subrepos" />
+                      <label for="archive_subrepos" class="tooltip" title="${h.tooltip(_('Check this to download archive with subrepos'))}" >${_('with subrepos')}</label>
+                    </span>
+                %endif
+              </div>
+            </div>
+        </div>
+        <div id="summary-menu-stats">
+          <ul>
+            <li>
+               <a title="${_('Owner')} ${c.db_repo.user.email}">
+                <i class="icon-user"></i> ${c.db_repo.user.username}
+                  <div class="gravatar" style="float: right; margin: 0px 0px 0px 0px" title="${c.db_repo.user.name} ${c.db_repo.user.lastname}">
+                     <img alt="gravatar" src="${h.gravatar_url(c.db_repo.user.email, 18)}"/>
+                  </div>
+              </a>
+            </li>
+            <li>
+               <a title="${_('Followers')}" href="${h.url('repo_followers_home',repo_name=c.repo_name)}">
+                <i class="icon-heart"></i> ${_('Followers')}
+                <span class="stats-bullet" id="current_followers_count">${c.repository_followers}</span>
+              </a>
+            </li>
+            <li>
+              <a title="${_('Forks')}" href="${h.url('repo_forks_home',repo_name=c.repo_name)}">
+                <i class="icon-code-fork"></i> ${_('Forks')}
+                <span class="stats-bullet">${c.repository_forks}</span>
+              </a>
+            </li>
+
+            %if c.authuser.username != 'default':
+            <li class="repo_size">
+              <a href="#" onclick="javascript:showRepoSize('repo_size_2','${c.db_repo.repo_name}','${str(h.get_token())}')"><i class="icon-archive"></i> ${_('Repository Size')}</a>
+              <span  class="stats-bullet" id="repo_size_2"></span>
+            </li>
+            %endif
+
+            <li>
+            %if c.authuser.username != 'default':
+              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
+            %else:
+              <a href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name)}"><i class="icon-rss-sign"></i> ${_('Feed')}</a>
+            %endif
+            </li>
+
+            %if c.show_stats:
+            <li>
+              <a title="${_('Statistics')}" href="${h.url('repo_stats_home',repo_name=c.repo_name)}">
+                <i class="icon-bar-chart"></i> ${_('Statistics')}
+              </a>
+            </li>
+            %endif
+          </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="box">
+    <div class="title">
+        <div class="breadcrumbs">
+        %if c.repo_changesets:
+            ${h.link_to(_('Latest Changes'),h.url('changelog_home',repo_name=c.repo_name))}
+        %else:
+            ${_('Quick Start')}
+         %endif
+        </div>
+    </div>
+    <div class="table">
+        <div id="shortlog_data">
+            <%include file='../changelog/changelog_summary_data.html'/>
+        </div>
+    </div>
+</div>
+
+%if c.readme_data:
+<div id="readme" class="anchor">
+<div class="box" style="background-color: #FAFAFA">
+    <div class="title" title="${_('Readme file from revision %s:%s') % (c.db_repo.landing_rev[0], c.db_repo.landing_rev[1])}">
+        <div class="breadcrumbs">
+            <a href="${h.url('files_home',repo_name=c.repo_name,revision='tip',f_path=c.readme_file)}">${c.readme_file}</a>
+        </div>
+    </div>
+    <div class="readme">
+      <div class="readme_box">
+        ${c.readme_data|n}
+      </div>
+    </div>
+</div>
+</div>
+%endif
+
+<script type="text/javascript">
+$(document).ready(function(){
+    var $clone_url = $('#clone_url');
+    var $clone_url_id = $('#clone_url_id');
+    var $clone_by_name = $('#clone_by_name');
+    var $clone_by_id = $('#clone_by_id');
+    $clone_url.click(function(e){
+        if($clone_url.hasClass('selected')){
+            return ;
+        }else{
+            $clone_url.addClass('selected');
+            $clone_url.select();
+        }
+    });
+
+    $clone_by_name.click(function(e){
+        // show url by name and hide name button
+        $clone_url.show();
+        $clone_by_name.hide();
+
+        // hide url by id and show name button
+        $clone_by_id.show();
+        $clone_url_id.hide();
+    });
+
+    $clone_by_id.click(function(e){
+        // show url by id and hide id button
+        $clone_by_id.hide();
+        $clone_url_id.show();
+
+        // hide url by name and show id button
+        $clone_by_name.show();
+        $clone_url.hide();
+    });
+
+    var cache = {}
+    $("#download_options").select2({
+        placeholder: _TM['Select changeset'],
+        dropdownAutoWidth: true,
+        query: function(query){
+          var key = 'cache';
+          var cached = cache[key] ;
+          if(cached) {
+            var data = {results: []};
+            //filter results
+            $.each(cached.results, function(){
+                var section = this.text;
+                var children = [];
+                $.each(this.children, function(){
+                    if(query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0 ){
+                        children.push({'id': this.id, 'text': this.text})
+                    }
+                })
+                data.results.push({'text': section, 'children': children})
+            });
+            query.callback(data);
+          }else{
+              $.ajax({
+                url: pyroutes.url('repo_refs_data', {'repo_name': '${c.repo_name}'}),
+                data: {},
+                dataType: 'json',
+                type: 'GET',
+                success: function(data) {
+                  cache[key] = data;
+                  query.callback({results: data.results});
+                }
+              })
+          }
+        }
+    });
+    // on change of download options
+    $('#download_options').change(function(e){
+       var new_cs = e.added
+
+       for(k in tmpl_links){
+           var s = $('#'+k+'_link');
+           if(s){
+             var title_tmpl = "${_('Download %s as %s') % ('__CS_NAME__','__CS_EXT__')}";
+             title_tmpl= title_tmpl.replace('__CS_NAME__',new_cs.text);
+             title_tmpl = title_tmpl.replace('__CS_EXT__',k);
+             title_tmpl = '<i class="icon-archive"></i> '+ title_tmpl;
+             var url = tmpl_links[k].replace('__CS__',new_cs.id);
+             var subrepos = $('#archive_subrepos').is(':checked');
+             url = url.replace('__SUB__',subrepos);
+             url = url.replace('__NAME__',title_tmpl);
+
+             s.html(url)
+           }
+       }
+    });
+
+    var tmpl_links = {};
+    %for cnt,archive in enumerate(c.db_repo_scm_instance._get_archives()):
+      tmpl_links["${archive['type']}"] = '${h.link_to('__NAME__', h.url('files_archive_home',repo_name=c.db_repo.repo_name, fname='__CS__'+archive['extension'],subrepos='__SUB__'),class_='btn btn-small')}';
+    %endfor
+})
+</script>
+
+%if c.show_stats:
+<script type="text/javascript">
+$(document).ready(function(){
+    var data = ${c.trending_languages|n};
+    var total = 0;
+    var no_data = true;
+    var tbl = document.createElement('table');
+    tbl.setAttribute('class','trending_language_tbl');
+    var cnt = 0;
+    for (var i=0;i<data.length;i++){
+        total+= data[i][1].count;
+    }
+    for (var i=0;i<data.length;i++){
+        cnt += 1;
+        no_data = false;
+
+        var hide = cnt>2;
+        var tr = document.createElement('tr');
+        if (hide){
+            tr.setAttribute('style','display:none');
+            tr.setAttribute('class','stats_hidden');
+        }
+        var k = data[i][0];
+        var obj = data[i][1];
+        var percentage = Math.round((obj.count/total*100),2);
+
+        var td1 = document.createElement('td');
+        td1.width = 150;
+        var trending_language_label = document.createElement('div');
+        trending_language_label.innerHTML = obj.desc+" ("+k+")";
+        td1.appendChild(trending_language_label);
+
+        var td2 = document.createElement('td');
+        td2.setAttribute('style','padding-right:14px !important');
+        var trending_language = document.createElement('div');
+        var nr_files = obj.count+" ${_('files')}";
+
+        trending_language.title = k+" "+nr_files;
+
+        if (percentage>22){
+            trending_language.innerHTML = "<b style='font-size:0.8em'>"+percentage+"% "+nr_files+ "</b>";
+        }
+        else{
+            trending_language.innerHTML = "<b style='font-size:0.8em'>"+percentage+"%</b>";
+        }
+
+        trending_language.setAttribute("class", 'trending_language top-right-rounded-corner bottom-right-rounded-corner');
+        trending_language.style.width=percentage+"%";
+        td2.appendChild(trending_language);
+
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tbl.appendChild(tr);
+        if(cnt == 3){
+            var show_more = document.createElement('tr');
+            var td = document.createElement('td');
+            lnk = document.createElement('a');
+
+            lnk.href='#';
+            lnk.innerHTML = "${_('Show more')}";
+            lnk.id='code_stats_show_more';
+            td.appendChild(lnk);
+
+            show_more.appendChild(td);
+            show_more.appendChild(document.createElement('td'));
+            tbl.appendChild(show_more);
+        }
+
+    }
+
+    $('#lang_stats').appendChild(tbl);
+    $('#code_status_show_more').click(function(){
+        $('.stats_hidden').show();
+        $('#code_status_show_more').hide();
+    });
+});
+</script>
+%endif
+
+</%def>

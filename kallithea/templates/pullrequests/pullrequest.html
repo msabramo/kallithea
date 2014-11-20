@@ -1,0 +1,273 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${c.repo_name} ${_('New Pull Request')}
+</%def>
+
+<%def name="breadcrumbs_links()">
+    ${_('New Pull Request')}
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('showpullrequest')}
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+    </div>
+
+    ${h.form(url('pullrequest', repo_name=c.repo_name), method='post', id='pull_request_form')}
+    <div class="form">
+        <!-- fields -->
+
+        <div class="fields" style="float:left;width:50%;padding-right:30px;">
+
+             <div class="field">
+                <div class="label">
+                    <label for="pullrequest_title">${_('Title')}:</label>
+                </div>
+                <div class="input">
+                    ${h.text('pullrequest_title',class_="large",placeholder=_('Summarize the changes - or leave empty'))}
+                </div>
+             </div>
+
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="pullrequest_desc">${_('Description')}:</label>
+                </div>
+                <div class="textarea text-area editor">
+                    ${h.textarea('pullrequest_desc',size=30,placeholder=_('Write a short description on this pull request'))}
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="label label-textarea">
+                    <label for="pullrequest_desc">${_('Changeset flow')}:</label>
+                </div>
+                <div class="input">
+                    ##ORG
+                    <div>
+                        <div>
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Origin repository')}:</b> <span id="org_repo_desc">${c.db_repo.description.split('\n')[0]}</span>
+                            </div>
+                            <div>
+                            ${h.select('org_repo','',c.cs_repos,class_='refs')}:${h.select('org_ref',c.default_cs_ref,c.cs_refs,class_='refs')}
+                            </div>
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Revision')}:</b> <span id="org_rev_span">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    ##OTHER, most Probably the PARENT OF THIS FORK
+                    <div style="border-top: 1px solid #EEE; margin: 5px 0px 0px 0px">
+                        <div>
+                            ## filled with JS
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Destination repository')}:</b> <span id="other_repo_desc">${c.a_repo.description.split('\n')[0]}</span>
+                            </div>
+                            <div>
+                            ${h.select('other_repo',c.a_repo.repo_name,c.a_repos,class_='refs')}:${h.select('other_ref',c.default_a_ref,c.a_refs,class_='refs')}
+                            </div>
+                            <div style="padding:5px 3px 3px 3px;">
+                            <b>${_('Revision')}:</b> <span id="other_rev_span">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="buttons">
+                    ${h.submit('save',_('Create Pull Request'),class_="btn")}
+                    ${h.reset('reset',_('Reset'),class_="btn")}
+               </div>
+            </div>
+
+        </div>
+
+        ## Reviewers
+        <div style="float:left; border-left:1px dashed #eee">
+            <div class="pr-details-title">${_('Pull Request Reviewers')}</div>
+            <div id="reviewers" style="padding:0px 0px 0px 15px">
+              ## members goes here !
+              <div>
+                <ul id="review_members" class="group_members">
+                %for member in [c.a_repo.user]:
+                  <li id="reviewer_${member.user_id}">
+                    <div class="reviewers_member">
+                      <div class="gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email, 14)}"/> </div>
+                      <div style="float:left">${member.firstname} ${member.lastname} (${_('owner')})</div>
+                      <input type="hidden" value="${member.user_id}" name="review_members" />
+                      <span class="action_button" style="padding: 3px" onclick="removeReviewMember(${member.user_id})" title="${_('Remove reviewer')}">
+                          <i class="icon-remove-sign" style="color: #FF4444;"></i>
+                      </span>
+                    </div>
+                  </li>
+                %endfor
+                </ul>
+              </div>
+
+              <div class='ac'>
+                <div class="reviewer_ac">
+                   ${h.text('user', class_='yui-ac-input',placeholder=_('Type name of reviewer to add'))}
+                   <div id="reviewers_container"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div style="clear:both;padding: 0 0 30px 0;"></div>
+
+        <h4>${_('Changesets')}</h4>
+        <div style="float:left;padding:0px 30px 30px 30px">
+           ## overview pulled by ajax
+           <div style="float:left" id="pull_request_overview"></div>
+        </div>
+        <div style="clear:both;"></div>
+
+    </div>
+
+    ${h.end_form()}
+
+</div>
+
+<script type="text/javascript" src="${h.url('/js/graph.js')}"></script>
+<script type="text/javascript">
+  var _USERS_AC_DATA = ${c.users_array|n};
+  var _GROUPS_AC_DATA = ${c.user_groups_array|n};
+  PullRequestAutoComplete('user', 'reviewers_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
+
+  pyroutes.register('pullrequest_repo_info', "${url('pullrequest_repo_info',repo_name='%(repo_name)s')}", ['repo_name']);
+
+  var pendingajax = undefined;
+  var otherrepoChanged = function(){
+      var $other_ref = $('#other_ref');
+      $other_ref.prop('disabled', true);
+      var repo_name = $('#other_repo').val();
+      if (pendingajax) {
+          pendingajax.abort();
+          pendingajax = undefined;
+      }
+      pendingajax = ajaxGET(pyroutes.url('pullrequest_repo_info', {"repo_name": repo_name}),
+          function(o){
+              pendingajax = undefined;
+              var data = JSON.parse(o.responseText);
+              $('#other_repo_desc').html(data.description);
+
+              // replace options of other_ref with the ones for the current other_repo
+              $other_ref.empty();
+              for(var i = 0; i < data.refs.length; i++)
+              {
+                var $optgroup = $('<optgroup/>').attr('label', data.refs[i][1]);
+                var options = data.refs[i][0];
+                var length = options.length;
+                for(var j = 0; j < length; j++)
+                {
+                  $optgroup.append($('<option/>').text(options[j][1]).val(options[j][0]));
+                }
+                $other_ref.append($optgroup);
+              }
+              $other_ref.val(data.selected_ref);
+
+              // reset && add the reviewer based on selected repo
+              YUD.get('review_members').innerHTML = '';
+              addReviewMember(data.user.user_id, data.user.firstname,
+                              data.user.lastname, data.user.username,
+                              data.user.gravatar_link);
+
+              // re-populate the select2 thingie
+              $("#other_ref").select2({
+                  dropdownAutoWidth: true
+              });
+
+              $other_ref.prop('disabled', false);
+              loadPreview();
+          });
+  };
+
+  var loadPreview = function(){
+      //url template
+      var url = "${h.url('compare_url',
+                         repo_name='__other_repo__',
+                         org_ref_type='rev',
+                         org_ref_name='__other_ref_name__',
+                         other_repo='__org_repo__',
+                         other_ref_type='rev',
+                         other_ref_name='__org_ref_name__',
+                         as_form=True,
+                         merge=True,
+                         )}";
+      var org_repo = YUQ('#pull_request_form #org_repo')[0].value;
+      var org_ref = YUQ('#pull_request_form #org_ref')[0].value.split(':');
+      ## TODO: make nice link like link_to_ref() do
+      YUD.get('org_rev_span').innerHTML = org_ref[2].substr(0,12);
+
+      var other_repo = YUQ('#pull_request_form #other_repo')[0].value;
+      var other_ref = YUQ('#pull_request_form #other_ref')[0].value.split(':');
+      YUD.get('other_rev_span').innerHTML = other_ref[2].substr(0,12);
+
+      var select_refs = YUQ('#pull_request_form select.refs')
+      var rev_data = {
+          '__org_repo__': org_repo,
+          '__org_ref_name__': org_ref[2],
+          '__other_repo__': other_repo,
+          '__other_ref_name__': other_ref[2]
+      }; // gather the org/other ref and repo here
+
+      for (k in rev_data){
+          url = url.replace(k,rev_data[k]);
+      }
+
+      if (pendingajax) {
+          pendingajax.abort();
+          pendingajax = undefined;
+      }
+      pendingajax = asynchtml(url, $('#pull_request_overview'), function(o){
+          pendingajax = undefined;
+          var jsdata = eval('('+YUD.get('jsdata').innerHTML+')'); // TODO: just get json
+          var r = new BranchRenderer('graph_canvas', 'graph_content_pr');
+          r.render(jsdata,100);
+      });
+  }
+
+  $(document).ready(function(){
+      $("#org_repo").select2({
+          dropdownAutoWidth: true
+      });
+      ## (org_repo can't change)
+
+      $("#org_ref").select2({
+          dropdownAutoWidth: true
+      });
+      $("#org_ref").on("change", function(e){
+          loadPreview();
+      });
+
+      $("#other_repo").select2({
+          dropdownAutoWidth: true
+      });
+      $("#other_repo").on("change", function(e){
+          otherrepoChanged();
+      });
+
+      $("#other_ref").select2({
+          dropdownAutoWidth: true
+      });
+      $("#other_ref").on("change", function(e){
+          loadPreview();
+      });
+
+      //lazy load overview after 0.5s
+      setTimeout(loadPreview, 500);
+  });
+
+</script>
+
+</%def>

@@ -1,0 +1,44 @@
+## -*- coding: utf-8 -*-
+
+% if c.forks_pager:
+    % for f in c.forks_pager:
+        <div>
+            <div class="fork_user">
+                <div class="gravatar">
+                    <img alt="gravatar" src="${h.gravatar_url(f.user.email,24)}"/>
+                </div>
+                <span style="font-size: 20px">
+                 <b>${f.user.username}</b> (${f.user.name} ${f.user.lastname}) /
+                  ${h.link_to(f.repo_name,h.url('summary_home',repo_name=f.repo_name))}
+                </span>
+                <div style="padding:5px 3px 3px 42px;">${f.description}</div>
+            </div>
+            <div style="clear:both;padding-top: 10px"></div>
+            <div class="follower_date">${_('Forked')} -
+                <span class="tooltip" title="${h.tooltip(h.fmt_date(f.created_on))}"> ${h.age(f.created_on)}</span>
+                <a title="${_('Compare fork with %s' % c.repo_name)}"
+                   href="${h.url('compare_url',repo_name=c.repo_name, org_ref_type=c.db_repo.landing_rev[0],org_ref_name=c.db_repo.landing_rev[1],other_repo=f.repo_name,other_ref_type=c.db_repo.landing_rev[0],other_ref_name=c.db_repo.landing_rev[1], merge=1)}"
+                   class="btn btn-small"><i class="icon-loop"></i> ${_('Compare Fork')}</a>
+            </div>
+            <div style="border-bottom: 1px solid #DDD;margin:10px 0px 10px 0px"></div>
+        </div>
+    % endfor
+  <div class="pagination-wh pagination-left">
+  <script type="text/javascript">
+  $(document).ready(function(){
+      var $forks = $('#forks');
+      $forks.on('click','.pager_link',function(e){
+          asynchtml(e.target.href, $forks, function(){
+              show_more_event();
+              tooltip_activate();
+              show_changeset_tooltip();
+          });
+          e.preventDefault();
+      });
+  });
+  </script>
+  ${c.forks_pager.pager('$link_previous ~2~ $link_next')}
+  </div>
+% else:
+    ${_('There are no forks yet')}
+% endif

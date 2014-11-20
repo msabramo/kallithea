@@ -1,0 +1,20 @@
+## -*- coding: utf-8 -*-
+<%inherit file="main.html"/>
+
+%if is_mention:
+<p>${_('Comment from %s on %s changeset %s mentioned you') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:</p>
+%else:
+<p>${_('Comment from %s on %s changeset %s') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:</p>
+%endif
+<p>${body}</p>
+
+%if status_change:
+    <p>${_('The changeset status was changed to')}: <b>${status_change}</b></p>
+%endif
+
+<p>${_('URL')}: <a href="${cs_comment_url}">${cs_comment_url}</a></p>
+
+<p>${_('Changeset')}: ${h.short_id(raw_id)}</p>
+<p>${_('Description')}:<br/>
+${h.shorter(message, 256)}
+</p>

@@ -1,0 +1,60 @@
+<%inherit file="/base/base.html"/>
+
+<%def name="title()">
+    ${_('%s Pull Requests') % c.repo_name}
+    %if c.site_name:
+        &middot; ${c.site_name}
+    %endif
+</%def>
+
+<%def name="breadcrumbs_links()">
+%if c.from_:
+    ${_("Pull Requests from %s'") % c.repo_name}
+%else:
+    ${_("Pull Requests to '%s'") % c.repo_name}
+%endif
+</%def>
+
+<%def name="page_nav()">
+    ${self.menu('repositories')}
+</%def>
+
+<%def name="main()">
+${self.repo_context_bar('showpullrequest')}
+
+<div class="box">
+    <!-- box / title -->
+    <div class="title">
+        ${self.breadcrumbs()}
+        <ul class="links">
+          <li>
+             %if c.authuser.username != 'default':
+              <span>
+                  <a id="open_new_pr" class="btn btn-small btn-success" href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-plus"></i> ${_('Open New Pull Request')}</a>
+              </span>
+             %endif
+              <span>
+                %if c.from_:
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed)}"><i class="icon-loop-2"></i> ${_('Show Pull Requests to %s') % c.repo_name}</a>
+                %else:
+                    <a class="btn btn-small" href="${h.url('pullrequest_show_all',repo_name=c.repo_name,closed=c.closed,from_=1)}"><i class="icon-loop-2"></i> ${_("Show Pull Requests from '%s'") % c.repo_name}</a>
+                %endif
+              </span>
+          </li>
+        </ul>
+    </div>
+
+    <div style="margin: 0 20px">
+        <div>
+        %if c.closed:
+            ${h.link_to(_('Hide closed pull requests (only show open pull requests)'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_))}
+        %else:
+            ${h.link_to(_('Show closed pull requests (in addition to open pull requests)'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_,closed=1))}
+        %endif
+        </div>
+    </div>
+
+    ${c.pullrequest_data}
+
+</div>
+</%def>
