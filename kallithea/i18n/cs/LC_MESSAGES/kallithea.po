@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Kallithea 2.2.5\n"
 "Report-Msgid-Bugs-To: marcin@maq.io\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-11-20 11:03+0200\n"
+"PO-Revision-Date: 2014-11-26 13:18+0200\n"
 "Last-Translator: Michal Čihař <michal@cihar.com>\n"
 "Language-Team: Czech "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/cs/>\n"
@@ -3064,14 +3064,14 @@ msgstr ""
 #: kallithea/templates/base/base.html:80
 #: kallithea/templates/base/base.html:162
 msgid "Settings"
-msgstr ""
+msgstr "Nastavení"
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:54
 #: kallithea/templates/admin/repos/repo_edit.html:49
 #: kallithea/templates/admin/user_groups/user_group_edit.html:43
 #: kallithea/templates/admin/users/user_edit.html:44
 msgid "Advanced"
-msgstr ""
+msgstr "Pokročilé"
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit_advanced.html:1
 #, python-format
@@ -3865,7 +3865,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_vcs.html:64
 msgid "Repositories location"
-msgstr ""
+msgstr "Umístění repozitářů"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:69
 msgid ""
