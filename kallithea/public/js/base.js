@@ -315,10 +315,8 @@ var pyroutes = (function() {
 /**
  * GLOBAL YUI Shortcuts
  */
-var YUC = YAHOO.util.Connect;
 var YUD = YAHOO.util.Dom;
 var YUE = YAHOO.util.Event;
-var YUQ = YAHOO.util.Selector.query;
 
 /* Invoke all functions in callbacks */
 var _run_callbacks = function(callbacks){
