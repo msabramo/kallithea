@@ -894,22 +894,21 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
         $('#node_filter_box_loading').show();
         $('#search_activate_id').hide();
         $('#add_node_id').hide();
-        YUC.initHeader('X-PARTIAL-XHR',true);
-        YUC.asyncRequest('GET', node_list_url, {
-            success:function(o){
-                nodes = JSON.parse(o.responseText).nodes;
-                $('#node_filter_box_loading').hide();
-                $('#node_filter_box').show();
-                $node_filter.focus();
-                if($node_filter.hasClass('init')){
-                    $node_filter.val('');
-                    $node_filter.removeClass('init');
-                }
-            },
-            failure:function(o){
-                console.log('failed to load');
-            }
-        },null);
+        $.ajax({url: node_list_url, headers: {'X-PARTIAL-XHR': '1'}, cache: false})
+            .done(function(json) {
+                    nodes = json.nodes;
+                    $('#node_filter_box_loading').hide();
+                    $('#node_filter_box').show();
+                    $node_filter.focus();
+                    if($node_filter.hasClass('init')){
+                        $node_filter.val('');
+                        $node_filter.removeClass('init');
+                    }
+                })
+            .fail(function() {
+                    console.log('failed to load');
+                })
+        ;
     }
 
     var updateFilter = function(e) {
