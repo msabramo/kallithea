@@ -400,19 +400,15 @@ var ajaxGET = function(url,success) {
 };
 
 var ajaxPOST = function(url,postData,success) {
-    // Set special header for ajax == HTTP_X_PARTIAL_XHR
-    YUC.initHeader('X-PARTIAL-XHR',true);
-
-    var sUrl = url;
-    var callback = {
-        success: success,
-        failure: function (o) {
-            alert("Ajax POST error: " + o.statusText);
-        }
-    };
     var postData = _toQueryString(postData);
-    var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
-    return request;
+    return $.ajax({url: url, data: postData, type: 'POST', headers: {'X-PARTIAL-XHR': '1'}, cache: false})
+        .done(success)
+        .fail(function(jqXHR, textStatus, errorThrown) {
+                if (textStatus == "abort")
+                    return;
+                alert("Ajax POST error: " + textStatus);
+            })
+        ;
 };
 
 
@@ -690,10 +686,9 @@ var injectInlineForm = function(tr){
 
         $overlay.show();
 
-        var success = function(o){
+        var success = function(json_data){
             $tr.removeClass('form-open');
             $form.remove();
-            var json_data = JSON.parse(o.responseText);
             _renderInlineComment(json_data);
         };
         var postData = {
@@ -718,8 +713,8 @@ var injectInlineForm = function(tr){
 
         var url = pyroutes.url('changeset_comment_preview', {'repo_name': REPO_NAME});
         var post_data = {'text': text};
-        ajaxPOST(url, post_data, function(o){
-            $('#preview-box_'+lineno).html(o.responseText);
+        ajaxPOST(url, post_data, function(html){
+            $('#preview-box_'+lineno).html(html);
             $('#preview-box_'+lineno).removeClass('unloaded');
         })
     })

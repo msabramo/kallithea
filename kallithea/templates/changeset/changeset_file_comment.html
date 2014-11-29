@@ -213,8 +213,8 @@ $(document).ready(function () {
        $('#preview-btn').hide();
 
        var url = pyroutes.url('changeset_comment_preview', {'repo_name': '${c.repo_name}'});
-       ajaxPOST(url,post_data,function(o){
-           $('#preview-box').html(o.responseText);
+       ajaxPOST(url,post_data,function(html){
+           $('#preview-box').html(html);
            $('#preview-box').removeClass('unloaded');
        });
    });
