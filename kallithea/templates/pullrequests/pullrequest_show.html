@@ -340,37 +340,20 @@ ${self.repo_context_bar('showpullrequest')}
       $(document).ready(function(){
           PullRequestAutoComplete('user', 'reviewers_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
-          YUE.on(YUQ('.show-inline-comments'),'change',function(e){
-              var show = 'none';
-              var target = e.currentTarget;
-              if(target.checked){
-                  var show = ''
-              }
-              var boxid = YUD.getAttribute(target,'id_for');
-              var comments = YUQ('#{0} .inline-comments'.format(boxid));
-              for(c in comments){
-                 YUD.setStyle(comments[c],'display',show);
-              }
-              var btns = YUQ('#{0} .inline-comments-button'.format(boxid));
-              for(c in btns){
-                  YUD.setStyle(btns[c],'display',show);
-               }
-          })
-
-          YUE.on(YUQ('.add-bubble'),'click',function(e){
+          $('.add-bubble').click(function(e){
               var tr = e.currentTarget;
               injectInlineForm(tr.parentNode.parentNode);
           });
 
           // inject comments into they proper positions
-          var file_comments = YUQ('.inline-comment-placeholder');
+          var file_comments = $('.inline-comment-placeholder').toArray();
           renderInlineComments(file_comments);
 
           linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
 
-          YUE.on(YUD.get('update_pull_request'),'click',function(e){
+          $('#update_pull_request').click(function(e){
               updateReviewers(undefined, "${c.repo_name}", "${c.pull_request.pull_request_id}");
-          })
+          });
 
           // hack: re-navigate to target after JS is done ... if a target is set and setting href thus won't reload
           if (window.location.hash != "") {
