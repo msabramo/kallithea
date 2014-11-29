@@ -243,21 +243,20 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                     YUE.preventDefault(e);
                 });
 
-                var msgs = YUQ('.message');
+                var $msgs = $('.message');
                 // get first element height
-                var el = YUQ('#graph_content .container')[0];
+                var el = $('#graph_content .container')[0];
                 var row_h = el.clientHeight;
-                for(var i=0;i<msgs.length;i++){
-                    var m = msgs[i];
+                $msgs.each(function() {
+                    var m = this;
 
                     var h = m.clientHeight;
-                    var pad = YUD.getStyle(m,'padding');
                     if(h > row_h){
                         var offset = row_h - (h+12);
-                        YUD.setStyle(m.nextElementSibling,'display','block');
-                        YUD.setStyle(m.nextElementSibling,'margin-top',offset+'px');
-                    };
-                }
+                        $(m.nextElementSibling).css('display', 'block');
+                        $(m.nextElementSibling).css('margin-top', offset+'px');
+                    }
+                });
 
                 $('.expand_commit').on('click',function(e){
                     var cid = $(this).attr('commit_id');
