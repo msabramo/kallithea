@@ -156,9 +156,8 @@ ${self.repo_context_bar('showpullrequest')}
           pendingajax = undefined;
       }
       pendingajax = ajaxGET(pyroutes.url('pullrequest_repo_info', {"repo_name": repo_name}),
-          function(o){
+          function(data){
               pendingajax = undefined;
-              var data = JSON.parse(o.responseText);
               $('#other_repo_desc').html(data.description);
 
               // replace options of other_ref with the ones for the current other_repo

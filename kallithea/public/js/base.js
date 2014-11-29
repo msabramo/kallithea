@@ -382,21 +382,14 @@ function asynchtml(url, $target, success, args){
 };
 
 var ajaxGET = function(url,success) {
-    // Set special header for ajax == HTTP_X_PARTIAL_XHR
-    YUC.initHeader('X-PARTIAL-XHR',true);
-
-    var sUrl = url;
-    var callback = {
-        success: success,
-        failure: function (o) {
-            if (o.status != 0) {
-                alert("Ajax GET error: " + o.statusText);
-            };
-        }
-    };
-
-    var request = YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
-    return request;
+    return $.ajax({url: url, headers: {'X-PARTIAL-XHR': '1'}, cache: false})
+        .done(success)
+        .fail(function(jqXHR, textStatus, errorThrown) {
+                if (textStatus == "abort")
+                    return;
+                alert("Ajax GET error: " + textStatus);
+        })
+        ;
 };
 
 var ajaxPOST = function(url,postData,success) {
@@ -436,8 +429,7 @@ var show_changeset_tooltip = function(){
         if(rid && !$target.hasClass('tooltip')){
             _show_tooltip(e, _TM['loading ...']);
             var url = pyroutes.url('changeset_info', {"repo_name": repo_name, "revision": rid});
-            ajaxGET(url, function(o){
-                    var json = JSON.parse(o.responseText);
+            ajaxGET(url, function(json){
                     $target.addClass('tooltip')
                     _show_tooltip(e, json['message']);
                     _activate_tooltip($target);
