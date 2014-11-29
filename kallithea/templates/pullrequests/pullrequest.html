@@ -176,7 +176,7 @@ ${self.repo_context_bar('showpullrequest')}
               $other_ref.val(data.selected_ref);
 
               // reset && add the reviewer based on selected repo
-              YUD.get('review_members').innerHTML = '';
+              $('#review_members').html('');
               addReviewMember(data.user.user_id, data.user.firstname,
                               data.user.lastname, data.user.username,
                               data.user.gravatar_link);
@@ -203,16 +203,15 @@ ${self.repo_context_bar('showpullrequest')}
                          as_form=True,
                          merge=True,
                          )}";
-      var org_repo = YUQ('#pull_request_form #org_repo')[0].value;
-      var org_ref = YUQ('#pull_request_form #org_ref')[0].value.split(':');
+      var org_repo = $('#pull_request_form #org_repo').val();
+      var org_ref = $('#pull_request_form #org_ref').val().split(':');
       ## TODO: make nice link like link_to_ref() do
-      YUD.get('org_rev_span').innerHTML = org_ref[2].substr(0,12);
+      $('#org_rev_span').html(org_ref[2].substr(0,12));
 
-      var other_repo = YUQ('#pull_request_form #other_repo')[0].value;
-      var other_ref = YUQ('#pull_request_form #other_ref')[0].value.split(':');
-      YUD.get('other_rev_span').innerHTML = other_ref[2].substr(0,12);
+      var other_repo = $('#pull_request_form #other_repo').val();
+      var other_ref = $('#pull_request_form #other_ref').val().split(':');
+      $('#other_rev_span').html(other_ref[2].substr(0,12));
 
-      var select_refs = YUQ('#pull_request_form select.refs')
       var rev_data = {
           '__org_repo__': org_repo,
           '__org_ref_name__': org_ref[2],
