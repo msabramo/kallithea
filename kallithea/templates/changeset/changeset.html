@@ -202,7 +202,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
           });
 
           // inject comments into they proper positions
-          var file_comments = YUQ('.inline-comment-placeholder');
+          var file_comments = $('.inline-comment-placeholder').toArray();
           renderInlineComments(file_comments);
 
           linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
