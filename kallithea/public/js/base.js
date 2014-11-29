@@ -559,43 +559,52 @@ var _close_tooltip = function(e){
  * @param display_element function that takes current node from nodes and
  *    does hide or show based on the node
  */
-var q_filter = function(target, $nodes, display_element) {
-    var $nodes = $nodes;
-    var $q_filter_field = $('#' + target);
-    var F = YAHOO.namespace(target);
+var q_filter = (function() {
+    var _namespace = {};
+    var namespace = function (target) {
+        if (!(target in _namespace)) {
+            _namespace[target] = {};
+        }
+        return _namespace[target];
+    };
+    return function (target, $nodes, display_element) {
+        var $nodes = $nodes;
+        var $q_filter_field = $('#' + target);
+        var F = namespace(target);
 
-    $q_filter_field.keyup(function (e) {
-        clearTimeout(F.filterTimeout);
-        F.filterTimeout = setTimeout(F.updateFilter, 600);
-    });
-
-    F.filterTimeout = null;
-
-    F.updateFilter = function () {
-        // Reset timeout
-        F.filterTimeout = null;
-
-        var obsolete = [];
-
-        var req = $q_filter_field.val().toLowerCase();
-
-        var showing = 0;
-        $nodes.each(function () {
-            var n = this;
-            var target_element = display_element(n);
-            if (req && n.innerHTML.toLowerCase().indexOf(req) == -1) {
-                $(target_element).hide();
-            }
-            else{
-                $(target_element).show();
-                showing += 1;
-            }
+        $q_filter_field.keyup(function (e) {
+            clearTimeout(F.filterTimeout);
+            F.filterTimeout = setTimeout(F.updateFilter, 600);
         });
 
-        $('#repo_count').html(showing);
-        /* FIXME: don't hardcode */
+        F.filterTimeout = null;
+
+        F.updateFilter = function () {
+            // Reset timeout
+            F.filterTimeout = null;
+
+            var obsolete = [];
+
+            var req = $q_filter_field.val().toLowerCase();
+
+            var showing = 0;
+            $nodes.each(function () {
+                var n = this;
+                var target_element = display_element(n);
+                if (req && n.innerHTML.toLowerCase().indexOf(req) == -1) {
+                    $(target_element).hide();
+                }
+                else {
+                    $(target_element).show();
+                    showing += 1;
+                }
+            });
+
+            $('#repo_count').html(showing);
+            /* FIXME: don't hardcode */
+        }
     }
-};
+})();
 
 /* return jQuery expression with a tr with body in 3rd column and class cls and id named after the body */
 var _table_tr = function(cls, body){
