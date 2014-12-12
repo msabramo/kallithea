@@ -7,17 +7,19 @@
 # xpol <xpolife@gmail.com>, 2012
 msgid ""
 msgstr ""
-"Project-Id-Version:  Kallithea\n"
+"Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-02-13 14:34+0000\n"
-"Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
-"Language-Team: Chinese (China) "
-"(http://www.transifex.com/projects/p/Kallithea/language/zh_CN/)\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"PO-Revision-Date: 2014-12-12 14:19+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
+"Language-Team: Simplified Chinese "
+"<https://hosted.weblate.org/projects/kallithea/kallithea/zh_CN/>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.2-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
@@ -1093,7 +1095,7 @@ msgstr "[停止关注]版本库"
 #: kallithea/lib/helpers.py:1101
 #, python-format
 msgid " and %s more"
-msgstr "还有%s个"
+msgstr " 还有%s个"
 
 #: kallithea/lib/helpers.py:1105
 msgid "No Files"
@@ -5616,4 +5618,3 @@ msgstr "%s标签"
 #: kallithea/templates/tags/tags.html:29
 msgid "Compare tags"
 msgstr "比较标签"
-
