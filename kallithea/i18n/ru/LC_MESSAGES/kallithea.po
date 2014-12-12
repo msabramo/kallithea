@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-11-19 13:22+0200\n"
-"Last-Translator: Andrew Shadura <andrew@shadura.me>\n"
+"PO-Revision-Date: 2014-12-12 14:21+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/ru/>\n"
 "Language: ru\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.1-dev\n"
+"X-Generator: Weblate 2.2-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
@@ -1120,7 +1120,7 @@ msgstr "[удалён из наблюдения] репозиторий"
 #: kallithea/lib/helpers.py:1101
 #, python-format
 msgid " and %s more"
-msgstr "и на %s больше"
+msgstr " и на %s больше"
 
 #: kallithea/lib/helpers.py:1105
 msgid "No Files"
@@ -1326,7 +1326,7 @@ msgstr "Группа Репозиториев - администрировани
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1622
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1649 kallithea/model/db.py:1659
 msgid "Kallithea Administrator"
-msgstr "Администратор Kallithea "
+msgstr "Администратор Kallithea"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1177
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1196
@@ -2395,7 +2395,7 @@ msgstr "Плагин"
 #: kallithea/templates/admin/defaults/defaults.html:5
 #: kallithea/templates/admin/defaults/defaults.html:28
 msgid "Repositories defaults"
-msgstr " Значения по умолчанию"
+msgstr "Значения по умолчанию"
 
 #: kallithea/templates/admin/defaults/defaults.html:14
 #: kallithea/templates/base/base.html:79
@@ -3397,7 +3397,7 @@ msgid ""
 "public journal"
 msgstr ""
 "Все производимые с этим репозиторием действия будут отображаться в "
-"общедостпном журнале "
+"общедостпном журнале"
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:49
 msgid "Change locking"
@@ -4548,7 +4548,7 @@ msgstr "Не удалось отозвать привилегии"
 
 #: kallithea/templates/base/root.html:62
 msgid "confirm to revoke permission for {0}: {1} ?"
-msgstr "подтвердите удаление привилегии для {0}: {1}"
+msgstr "подтвердите удаление привилегии для {0}: {1} ?"
 
 #: kallithea/templates/base/root.html:66
 msgid "specify changeset"
@@ -4603,7 +4603,7 @@ msgid "showing %d out of %d revision"
 msgid_plural "showing %d out of %d revisions"
 msgstr[0] "Показана %d из %d ревизий"
 msgstr[1] "Показаны %d из %d ревизий"
-msgstr[2] "Показаны %d из %d ревизий "
+msgstr[2] "Показаны %d из %d ревизий"
 
 #: kallithea/templates/changelog/changelog.html:43
 msgid "Clear selection"
@@ -5104,7 +5104,7 @@ msgstr ""
 #: kallithea/templates/files/diff_2way.html:22
 #: kallithea/templates/files/file_diff.html:11
 msgid "File diff"
-msgstr "Сравнение файлов "
+msgstr "Сравнение файлов"
 
 #: kallithea/templates/files/diff_2way.html:58
 msgid "ignore whitespace"
@@ -5559,7 +5559,7 @@ msgstr "Фраза для поиска"
 
 #: kallithea/templates/search/search.html:65
 msgid "Search in"
-msgstr "Критерий поиска:"
+msgstr "Критерий поиска"
 
 #: kallithea/templates/search/search.html:68
 msgid "File contents"
@@ -5604,7 +5604,7 @@ msgstr "Включено"
 
 #: kallithea/templates/summary/statistics.html:42
 msgid "Stats gathered: "
-msgstr "Полученная статистика:"
+msgstr "Полученная статистика: "
 
 #: kallithea/templates/summary/statistics.html:91
 #: kallithea/templates/summary/summary.html:354
