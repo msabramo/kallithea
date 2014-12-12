@@ -5,17 +5,19 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version:  Kallithea\n"
+"Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-02-13 14:34+0000\n"
-"Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
+"PO-Revision-Date: 2014-12-12 14:21+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
 "Language-Team: French "
-"(http://www.transifex.com/projects/p/Kallithea/language/fr/)\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"<https://hosted.weblate.org/projects/kallithea/kallithea/fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2.2-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
@@ -1105,7 +1107,7 @@ msgstr "[ne suit plus] le dépôt"
 #: kallithea/lib/helpers.py:1101
 #, python-format
 msgid " and %s more"
-msgstr "et %s de plus"
+msgstr " et %s de plus"
 
 #: kallithea/lib/helpers.py:1105
 msgid "No Files"
@@ -1416,7 +1418,7 @@ msgstr "Pas encore relue"
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:2157
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:2203 kallithea/model/db.py:2213
 msgid "Approved"
-msgstr "Approuvée "
+msgstr "Approuvée"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1628
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1655
@@ -4669,7 +4671,7 @@ msgstr ""
 
 #: kallithea/templates/changelog/changelog_summary_data.html:86
 msgid "Add or upload files directly via Kallithea"
-msgstr "Ajouter ou téléverser des fichiers directement via Kallithea…"
+msgstr "Ajouter ou téléverser des fichiers directement via Kallithea"
 
 #: kallithea/templates/changelog/changelog_summary_data.html:89
 #: kallithea/templates/files/files_ypjax.html:9
@@ -5543,7 +5545,7 @@ msgstr ""
 
 #: kallithea/templates/summary/statistics.html:42
 msgid "Stats gathered: "
-msgstr "Statistiques obtenues :"
+msgstr "Statistiques obtenues : "
 
 #: kallithea/templates/summary/statistics.html:91
 #: kallithea/templates/summary/summary.html:354
@@ -5676,4 +5678,3 @@ msgstr "Tags de %s"
 #: kallithea/templates/tags/tags.html:29
 msgid "Compare tags"
 msgstr ""
-
