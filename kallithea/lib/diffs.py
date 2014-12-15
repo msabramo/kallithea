@@ -350,16 +350,19 @@ class DiffProcessor(object):
         :param diff_chunk:
         """
 
+        match = None
         if self.vcs == 'git':
             match = self._git_header_re.match(diff_chunk)
-            diff = diff_chunk[match.end():]
-            return match.groupdict(), imap(self._escaper, diff.splitlines(1))
         elif self.vcs == 'hg':
             match = self._hg_header_re.match(diff_chunk)
-            diff = diff_chunk[match.end():]
-            return match.groupdict(), imap(self._escaper, diff.splitlines(1))
-        else:
+        if match is None:
             raise Exception('VCS type %s is not supported' % self.vcs)
+        groups = match.groupdict()
+        rest = diff_chunk[match.end():]
+        if rest and not rest.startswith('@') and not rest.startswith('literal '):
+            raise Exception('cannot parse diff header: %r followed by %r' % (diff_chunk[:match.end()], rest[:1000]))
+        difflines = imap(self._escaper, rest.splitlines(True))
+        return groups, difflines
 
     def _clean_line(self, line, command):
         if command in ['+', '-', ' ']:
@@ -500,7 +503,7 @@ class DiffProcessor(object):
 
     def _parse_lines(self, diff):
         """
-        Parse the diff an return data for the template.
+        Parse the diff and return data for the template.
         """
 
         lineiter = iter(diff)
