@@ -57,7 +57,7 @@ from kallithea.lib.utils import repo_name_slug, get_custom_lexer
 from kallithea.lib.utils2 import str2bool, safe_unicode, safe_str, \
     get_changeset_safe, datetime_to_time, time_to_datetime, AttributeDict,\
     safe_int
-from kallithea.lib.markup_renderer import MarkupRenderer
+from kallithea.lib.markup_renderer import MarkupRenderer, url_re
 from kallithea.lib.vcs.exceptions import ChangesetDoesNotExistError
 from kallithea.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
 from kallithea.config.conf import DATE_FORMAT, DATETIME_FORMAT
@@ -1256,13 +1256,10 @@ def urlify_text(text_, safe=True):
     :param text_:
     """
 
-    url_pat = re.compile(r'''(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]'''
-                         '''|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)''')
-
     def url_func(match_obj):
         url_full = match_obj.groups()[0]
         return '<a href="%(url)s">%(url)s</a>' % ({'url': url_full})
-    _newtext = url_pat.sub(url_func, text_)
+    _newtext = url_re.sub(url_func, text_)
     if safe:
         return literal(_newtext)
     return _newtext
