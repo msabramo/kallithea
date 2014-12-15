@@ -194,7 +194,7 @@ class DiffProcessor(object):
     #used for inline highlighter word split
     _token_re = re.compile(r'()(&gt;|&lt;|&amp;|<u>\t</u>| <i></i>|\W+?)')
 
-    _escape_re = re.compile(r'(&)|(<)|(>)|(\t)|( \n| $)')
+    _escape_re = re.compile(r'(&)|(<)|(>)|(\t)|(?<=.)( \n| $)')
 
 
     def __init__(self, diff, vcs='hg', format='gitdiff', diff_limit=None):
@@ -261,8 +261,9 @@ class DiffProcessor(object):
                 return '&gt;'
             if groups[3]:
                 return '<u>\t</u>'
-            if groups[4] and m.start(): # skip 1st column with +/-
+            if groups[4]:
                 return ' <i></i>'
+            assert False
 
         return self._escape_re.sub(substitute, safe_unicode(string))
 
