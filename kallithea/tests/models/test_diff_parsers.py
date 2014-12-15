@@ -255,7 +255,7 @@ class DiffLibTest(BaseTestCase):
     @parameterized.expand([(x,) for x in DIFF_FIXTURES])
     def test_diff(self, diff_fixture):
 
-        diff = fixture.load_resource(diff_fixture)
+        diff = fixture.load_resource(diff_fixture, strip=False)
 
         diff_proc = DiffProcessor(diff)
         diff_proc_d = diff_proc.prepare()

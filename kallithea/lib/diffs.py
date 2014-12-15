@@ -506,21 +506,21 @@ class DiffProcessor(object):
         Parse the diff and return data for the template.
         """
 
-        lineiter = iter(diff)
         stats = [0, 0]
+        (old_line, old_end, new_line, new_end) = (None, None, None, None)
 
         try:
             chunks = []
-            line = lineiter.next()
+            line = diff.next()
 
-            while line:
+            while True:
                 lines = []
                 chunks.append(lines)
 
                 match = self._chunk_re.match(line)
 
                 if not match:
-                    break
+                    raise Exception('error parsing diff @@ line %r' % line)
 
                 gr = match.groups()
                 (old_line, old_end,
@@ -542,19 +542,16 @@ class DiffProcessor(object):
                             'line':       line,
                         })
 
-                line = lineiter.next()
+                line = diff.next()
 
                 while old_line < old_end or new_line < new_end:
-                    command = ' '
-                    if line:
-                        command = line[0]
+                    if not line:
+                        raise Exception('error parsing diff - empty line at -%s+%s' % (old_line, new_line))
 
                     affects_old = affects_new = False
 
-                    # ignore those if we don't expect them
-                    if command in '#@':
-                        continue
-                    elif command == '+':
+                    command = line[0]
+                    if command == '+':
                         affects_new = True
                         action = 'add'
                         stats[0] += 1
@@ -562,9 +559,11 @@ class DiffProcessor(object):
                         affects_old = True
                         action = 'del'
                         stats[1] += 1
-                    else:
+                    elif command == ' ':
                         affects_old = affects_new = True
                         action = 'unmod'
+                    else:
+                        raise Exception('error parsing diff - unknown command in line %r at -%s+%s' % (line, old_line, new_line))
 
                     if not self._newline_marker.match(line):
                         old_line += affects_old
@@ -576,7 +575,7 @@ class DiffProcessor(object):
                             'line':         self._clean_line(line, command)
                         })
 
-                    line = lineiter.next()
+                    line = diff.next()
 
                     if self._newline_marker.match(line):
                         # we need to append to lines, since this is not
@@ -587,9 +586,16 @@ class DiffProcessor(object):
                             'action':       'context',
                             'line':         self._clean_line(line, command)
                         })
-
+                        line = diff.next()
+                if old_line > old_end:
+                        raise Exception('error parsing diff - more than %s "-" lines at -%s+%s' % (old_end, old_line, new_line))
+                if new_line > new_end:
+                        raise Exception('error parsing diff - more than %s "+" lines at -%s+%s' % (new_end, old_line, new_line))
         except StopIteration:
             pass
+        if old_line != old_end or new_line != new_end:
+            raise Exception('diff processing broken when old %s<>%s or new %s<>%s line %r' % (old_line, old_end, new_line, new_end, line))
+
         return chunks, stats
 
     def _safe_id(self, idstring):
