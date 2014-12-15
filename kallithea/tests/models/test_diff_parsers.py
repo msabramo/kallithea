@@ -246,7 +246,14 @@ DIFF_FIXTURES = {
           'ops': {COPIED_FILENODE: 'file copied from file4 to file5',
                   CHMOD_FILENODE: 'modified file chmod 100755 => 100644',
                   MOD_FILENODE: 'modified file'}}),
-    ]
+    ],
+    'hg_diff_rename_space_cr.diff': [
+        ('ohyes', 'R',
+         {'added': 4,
+          'deleted': 2,
+          'binary': False,
+          'ops': {RENAMED_FILENODE: 'file renamed from ohno to ohyes'}}),
+    ],
 }
 
 
