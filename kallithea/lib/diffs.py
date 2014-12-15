@@ -170,8 +170,8 @@ class DiffProcessor(object):
         (?:^index[ ](?P<a_blob_id>[0-9A-Fa-f]+)
             \.\.(?P<b_blob_id>[0-9A-Fa-f]+)[ ]?(?P<b_mode>.+)?(?:\n|$))?
         (?:^(?P<bin_patch>GIT[ ]binary[ ]patch)(?:\n|$))?
-        (?:^---[ ](a/(?P<a_file>.+)|/dev/null)(?:\n|$))?
-        (?:^\+\+\+[ ](b/(?P<b_file>.+)|/dev/null)(?:\n|$))?
+        (?:^---[ ](a/(?P<a_file>.+?)|/dev/null)\t?(?:\n|$))?
+        (?:^\+\+\+[ ](b/(?P<b_file>.+?)|/dev/null)\t?(?:\n|$))?
     """, re.VERBOSE | re.MULTILINE)
     _hg_header_re = re.compile(r"""
         # has already been split on this:
@@ -189,8 +189,8 @@ class DiffProcessor(object):
         (?:^index[ ](?P<a_blob_id>[0-9A-Fa-f]+)
             \.\.(?P<b_blob_id>[0-9A-Fa-f]+)[ ]?(?P<b_mode>.+)?(?:\n|$))?
         (?:^(?P<bin_patch>GIT[ ]binary[ ]patch)(?:\n|$))?
-        (?:^---[ ](a/(?P<a_file>.+)|/dev/null)(?:\n|$))?
-        (?:^\+\+\+[ ](b/(?P<b_file>.+)|/dev/null)(?:\n|$))?
+        (?:^---[ ](a/(?P<a_file>.+?)|/dev/null)\t?(?:\n|$))?
+        (?:^\+\+\+[ ](b/(?P<b_file>.+?)|/dev/null)\t?(?:\n|$))?
     """, re.VERBOSE | re.MULTILINE)
 
     #used for inline highlighter word split
