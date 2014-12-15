@@ -251,12 +251,17 @@ ${self.repo_context_bar('showpullrequest')}
       <div class="table" style="float:left;clear:none">
           <div class="diffblock">
               <div style="padding:5px">
-                ${_('Compare View')}
+                ${_('Summary of Pull Request Content')}
               </div>
           </div>
           <div id="changeset_compare_view_content">
+              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+                ${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span>
+              </div>
               ##CS
-              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}</div>
+              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+                ${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}
+              </div>
               <%include file="/compare/compare_cs.html" />
 
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
@@ -288,7 +293,6 @@ ${self.repo_context_bar('showpullrequest')}
                     </div>
                 %endfor
               </div>
-              <div class="comments-number pr-comments-number">${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span> </div>
               % if c.limited_diff:
                 <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff anyway')}</a></h5>
               % endif
