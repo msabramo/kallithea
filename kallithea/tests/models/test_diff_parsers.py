@@ -248,11 +248,11 @@ DIFF_FIXTURES = {
                   MOD_FILENODE: 'modified file'}}),
     ],
     'hg_diff_rename_space_cr.diff': [
-        ('ohyes', 'R',
+        ('oh yes', 'R',
          {'added': 4,
           'deleted': 2,
           'binary': False,
-          'ops': {RENAMED_FILENODE: 'file renamed from ohno to ohyes'}}),
+          'ops': {RENAMED_FILENODE: 'file renamed from oh no to oh yes'}}),
     ],
 }
 
