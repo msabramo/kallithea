@@ -563,21 +563,16 @@ class FilesController(BaseRepoController):
 
         if not use_cached_archive:
             # generate new archive
-            temp_stream = None
-            try:
-                fd, archive = tempfile.mkstemp()
-                temp_stream = open(archive, 'wb')
-                log.debug('Creating new temp archive in %s' % archive)
-                cs.fill_archive(stream=temp_stream, kind=fileformat, subrepos=subrepos)
-                temp_stream.close()
-                if not subrepos and archive_cache_enabled:
-                    #if we generated the archive and use cache rename that
-                    log.debug('Storing new archive in %s' % cached_archive_path)
-                    shutil.move(archive, cached_archive_path)
-                    archive = cached_archive_path
-            finally:
-                if temp_stream:
-                    temp_stream.close()
+            fd, archive = tempfile.mkstemp()
+            temp_stream = open(archive, 'wb')
+            log.debug('Creating new temp archive in %s' % archive)
+            cs.fill_archive(stream=temp_stream, kind=fileformat, subrepos=subrepos)
+            temp_stream.close()
+            if not subrepos and archive_cache_enabled:
+                #if we generated the archive and use cache rename that
+                log.debug('Storing new archive in %s' % cached_archive_path)
+                shutil.move(archive, cached_archive_path)
+                archive = cached_archive_path
 
         def get_chunked_archive(archive):
             stream = open(archive, 'rb')
