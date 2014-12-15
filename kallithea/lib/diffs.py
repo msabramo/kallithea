@@ -363,7 +363,7 @@ class DiffProcessor(object):
         rest = diff_chunk[match.end():]
         if rest and not rest.startswith('@') and not rest.startswith('literal '):
             raise Exception('cannot parse diff header: %r followed by %r' % (diff_chunk[:match.end()], rest[:1000]))
-        difflines = imap(self._escaper, rest.splitlines(True))
+        difflines = imap(self._escaper, re.findall(r'.*\n|.+$', rest)) # don't split on \r as str.splitlines do
         return groups, difflines
 
     def _clean_line(self, line, command):

@@ -249,7 +249,7 @@ DIFF_FIXTURES = {
     ],
     'hg_diff_rename_space_cr.diff': [
         ('oh yes', 'R',
-         {'added': 4,
+         {'added': 3,
           'deleted': 2,
           'binary': False,
           'ops': {RENAMED_FILENODE: 'file renamed from oh no to oh yes'}}),
