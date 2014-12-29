@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-12-22 20:26+0200\n"
-"Last-Translator: Calinou <calinou@opmbx.org>\n"
+"PO-Revision-Date: 2014-12-29 18:23+0200\n"
+"Last-Translator: Thomas De Schampheleire <patrickdepinguin@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/fr/>\n"
 "Language: fr\n"
@@ -3315,7 +3315,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_creating.html:9
 #, python-format
 msgid "%s Creating repository"
-msgstr ""
+msgstr "%s Création du dépôt"
 
 #: kallithea/templates/admin/repos/repo_creating.html:16
 msgid "Creating repository"
