@@ -150,11 +150,12 @@ class TestLibs(BaseTestCase):
         (dict(months= -1), u'1 month ago'),
         (dict(months= -1, days= -2), u'1 month ago'),
         (dict(months= -1, days= -20), u'1 month ago'),
-        (dict(years= -1, months= -1), u'1 year ago'),
-        (dict(years= -1, months= -10), u'1 year ago'),
+        (dict(years= -1, months= -1), u'13 months ago'),
+        (dict(years= -1, months= -10), u'22 months ago'),
         (dict(years= -2, months= -4), u'2 years ago'),
-        (dict(years= -2, months= -11), u'2 years ago'),
+        (dict(years= -2, months= -11), u'3 years ago'),
         (dict(years= -3, months= -2), u'3 years ago'),
+        (dict(years= -4, months= -8), u'5 years ago'),
     ])
     def test_age_short(self, age_args, expected):
         from kallithea.lib.utils2 import age

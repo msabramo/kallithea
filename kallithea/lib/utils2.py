@@ -408,6 +408,18 @@ def age(prevdate, show_short_version=False, now=None):
         deltas['month'] += 12
         deltas['year'] -= 1
 
+    # In short version, we want nicer handling of ages of more than a year
+    if show_short_version:
+        if deltas['year'] == 1:
+            # ages between 1 and 2 years: show as months
+            deltas['month'] += 12
+            deltas['year'] = 0
+        if deltas['year'] >= 2:
+            # ages 2+ years: round
+            if deltas['month'] > 6:
+                deltas['year'] += 1
+                deltas['month'] = 0
+
     # Format the result
     fmt_funcs = {
         'year': lambda d: ungettext(u'%d year', '%d years', d) % d,
