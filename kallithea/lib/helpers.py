@@ -1281,7 +1281,7 @@ def urlify_changesets(text_, repository):
          'rev': rev,
         }
 
-    return re.sub(r'(?:^|(?<=\s))([0-9a-fA-F]{12,40})(?=$|\s|[.,:])', url_func, text_)
+    return re.sub(r'(?:^|(?<=[\s(),]))([0-9a-fA-F]{12,40})(?=$|\s|[.,:()])', url_func, text_)
 
 
 def urlify_commit(text_, repository, link_=None):
