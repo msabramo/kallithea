@@ -417,9 +417,6 @@ class MercurialRepository(BaseRepository):
             else:
                 return os.stat(st_path).st_mtime
 
-    def _get_hidden(self):
-        return self._repo.ui.configbool("web", "hidden", untrusted=True)
-
     def _get_revision(self, revision):
         """
         Gets an ID revision given as str. This will always return a fill

@@ -1368,9 +1368,6 @@ class Repository(Base, BaseModel):
 
             repo = backend(safe_str(repo_full_path), create=False,
                            baseui=self._ui)
-            # skip hidden web repository
-            if repo._get_hidden():
-                return
         else:
             repo = backend(repo_full_path, create=False)
 
