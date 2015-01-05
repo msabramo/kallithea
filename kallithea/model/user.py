@@ -258,9 +258,16 @@ class UserModel(BaseModel):
         if user.repositories:
             repos = [x.repo_name for x in user.repositories]
             raise UserOwnsReposException(
-                _(u'user "%s" still owns %s repositories and cannot be '
-                  'removed. Switch owners or remove those repositories. %s')
+                _(u'User "%s" still owns %s repositories and cannot be '
+                  'removed. Switch owners or remove those repositories: %s')
                 % (user.username, len(repos), ', '.join(repos))
+            )
+        if user.repo_groups:
+            repogroups = [x.group_name for x in user.repo_groups]
+            raise UserOwnsReposException(
+                _(u'User "%s" still owns %s repository groups and cannot be '
+                  'removed. Switch owners or remove those repository groups: %s')
+                % (user.username, len(repogroups), ', '.join(repogroups))
             )
         self.sa.delete(user)
 
