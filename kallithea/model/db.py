@@ -1434,17 +1434,11 @@ class Repository(Base, BaseModel):
 
     def __get_instance(self):
         repo_full_path = self.repo_full_path
-        try:
-            alias = get_scm(repo_full_path)[0]
-            log.debug('Creating instance of %s repository from %s'
-                      % (alias, repo_full_path))
-            backend = get_backend(alias)
-        except VCSError:
-            log.error(traceback.format_exc())
-            log.error('Perhaps this repository is in db and not in '
-                      'filesystem run rescan repositories with '
-                      '"destroy old data " option from admin panel')
-            return
+
+        alias = get_scm(repo_full_path)[0]
+        log.debug('Creating instance of %s repository from %s'
+                  % (alias, repo_full_path))
+        backend = get_backend(alias)
 
         if alias == 'hg':
             repo = backend(safe_str(repo_full_path), create=False,
