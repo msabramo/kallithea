@@ -23,7 +23,9 @@ class TestAdminUsersGroupsController(TestController):
         response.follow()
 
         self.checkSessionFlash(response,
-                               'Created user group %s' % TEST_USER_GROUP)
+                               'Created user group <a href="/_admin/user_groups/')
+        self.checkSessionFlash(response,
+                               '/edit">%s</a>' % TEST_USER_GROUP)
 
     def test_new(self):
         response = self.app.get(url('new_users_group'))
@@ -45,7 +47,7 @@ class TestAdminUsersGroupsController(TestController):
         response.follow()
 
         self.checkSessionFlash(response,
-                               'Created user group %s' % users_group_name)
+                               'Created user group ')
 
         gr = Session().query(UserGroup)\
             .filter(UserGroup.users_group_name == users_group_name).one()
@@ -68,7 +70,7 @@ class TestAdminUsersGroupsController(TestController):
 
         ug = UserGroup.get_by_group_name(users_group_name)
         self.checkSessionFlash(response,
-                               'Created user group %s' % users_group_name)
+                               'Created user group ')
         ## ENABLE REPO CREATE ON A GROUP
         response = self.app.put(url('edit_user_group_default_perms',
                                     id=ug.users_group_id),
@@ -138,7 +140,7 @@ class TestAdminUsersGroupsController(TestController):
 
         ug = UserGroup.get_by_group_name(users_group_name)
         self.checkSessionFlash(response,
-                               'Created user group %s' % users_group_name)
+                               'Created user group ')
         ## ENABLE REPO CREATE ON A GROUP
         response = self.app.put(url('edit_user_group_default_perms',
                                     id=ug.users_group_id),

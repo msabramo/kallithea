@@ -128,11 +128,11 @@ class UsersController(BaseController):
         user_form = UserForm()()
         try:
             form_result = user_form.to_python(dict(request.POST))
-            user_model.create(form_result)
+            user = user_model.create(form_result)
             usr = form_result['username']
             action_logger(self.authuser, 'admin_created_user:%s' % usr,
                           None, self.ip_addr, self.sa)
-            h.flash(_('Created user %s') % usr,
+            h.flash(h.literal(_('Created user %s') % h.link_to(h.escape(usr), url('edit_user', id=user.user_id))),
                     category='success')
             Session().commit()
         except formencode.Invalid, errors:

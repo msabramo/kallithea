@@ -60,7 +60,8 @@ class TestAdminUsersController(TestController):
              'extern_type': 'internal',
              'email': email})
 
-        self.checkSessionFlash(response, '''Created user %s''' % (username))
+        self.checkSessionFlash(response, '''Created user <a href="/_admin/users/''')
+        self.checkSessionFlash(response, '''/edit">%s</a>''' % (username))
 
         new_user = Session().query(User).\
             filter(User.username == username).one()
