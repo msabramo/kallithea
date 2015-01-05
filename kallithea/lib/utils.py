@@ -362,9 +362,7 @@ def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
 
     elif read_from == 'db':
         sa = meta.Session()
-        ret = sa.query(Ui)\
-            .options(FromCache("sql_cache_short", "get_hg_ui_settings"))\
-            .all()
+        ret = sa.query(Ui).all()
 
         hg_ui = ret
         for ui_ in hg_ui:
