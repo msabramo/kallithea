@@ -1778,12 +1778,6 @@ var MultiSelectWidget = function(selected_id, available_id, form_id){
     $('#remove_element').click(function(e){
             $availableselect.append($selectedselect.children('option:selected'));
         });
-    $('#add_all_elements').click(function(e){
-            $selectedselect.append($availableselect.children('option'));
-        });
-    $('#remove_all_elements').click(function(e){
-            $availableselect.append($selectedselect.children('option'));
-        });
 
     $('#'+form_id).submit(function(){
             $selectedselect.children('option').each(function(i, e){
