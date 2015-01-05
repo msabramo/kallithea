@@ -3,7 +3,7 @@ import functools
 import decimal
 import imp
 
-__all__ = ['json', 'simplejson', 'stdlibjson']
+__all__ = ['json']
 
 
 def _is_aware(value):

@@ -29,13 +29,7 @@ import ldap
 import urllib2
 import uuid
 
-try:
-    from kallithea.lib.compat import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        import json
+from kallithea.lib.compat import json
 
 from ConfigParser import ConfigParser
 
