@@ -215,6 +215,31 @@ class TestAdminUsersController(TestController):
         response = self.app.delete(url('user', id=new_user.user_id))
         self.checkSessionFlash(response, 'Successfully deleted user')
 
+    def test_delete_user_group_err(self):
+        self.log_user()
+        username = 'usergrouperr'
+        groupname = 'usergroup_fail'
+
+        fixture.create_user(name=username)
+        ug = fixture.create_user_group(name=groupname, cur_user=username)
+
+        new_user = Session().query(User)\
+            .filter(User.username == username).one()
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'User "%s" still '
+                               'owns 1 user groups and cannot be removed. '
+                               'Switch owners or remove those user groups: '
+                               '%s' % (username, groupname))
+
+        # TODO: why do this fail?
+        #response = self.app.delete(url('delete_users_group', id=groupname))
+        #self.checkSessionFlash(response, 'Removed user group %s' % groupname)
+
+        fixture.destroy_user_group(ug.users_group_id)
+
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'Successfully deleted user')
+
     def test_show(self):
         response = self.app.get(url('user', id=1))
 
