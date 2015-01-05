@@ -25,17 +25,17 @@ from kallithea.lib import caching_query
 cache_manager = cache.CacheManager()
 
 __all__ = ['Base', 'Session']
-#
-# SQLAlchemy session manager. Updated by model.init_model()
-#
-Session = scoped_session(
-                sessionmaker(
-                    query_cls=caching_query.query_callable(cache_manager),
-                    expire_on_commit=True,
-                )
-          )
 
-# The declarative Base
+#
+# SQLAlchemy session manager.
+#
+session_factory = sessionmaker(
+    query_cls=caching_query.query_callable(cache_manager),
+    expire_on_commit=True)
+Session = scoped_session(session_factory)
+
+# The base class for declarative schemas in db.py
+# Engine is injected when model.__init__.init_model() sets meta.Base.metadata.bind
 Base = declarative_base()
 
 #to use cache use this in query
