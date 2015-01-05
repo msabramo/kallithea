@@ -2309,10 +2309,11 @@ class PullRequest(Base, BaseModel):
     def url(self, **kwargs):
         canonical = kwargs.pop('canonical', None)
         import kallithea.lib.helpers as h
-        s = '/' + self.title
         b = self.org_ref_parts[1]
         if b != self.other_ref_parts[1]:
-            s = '/_%s_%s' % (b, s)
+            s = '/_/' + b
+        else:
+            s = '/_/' + self.title
         kwargs['extra'] = urlreadable(s)
         if canonical:
             return h.canonical_url('pullrequest_show', repo_name=self.other_repo.repo_name,

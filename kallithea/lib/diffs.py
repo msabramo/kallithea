@@ -157,11 +157,12 @@ class DiffProcessor(object):
     _chunk_re = re.compile(r'^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(.*)')
     _newline_marker = re.compile(r'^\\ No newline at end of file')
     _git_header_re = re.compile(r"""
-        #^diff[ ]--git
+        # has already been split on this:
+        # ^diff[ ]--git
             [ ]a/(?P<a_path>.+?)[ ]b/(?P<b_path>.+?)\n
         (?:^similarity[ ]index[ ](?P<similarity_index>\d+)%\n
-           ^rename[ ]from[ ](?P<rename_from>\S+)\n
-           ^rename[ ]to[ ](?P<rename_to>\S+)(?:\n|$))?
+           ^rename[ ]from[ ](?P<rename_from>.+)\n
+           ^rename[ ]to[ ](?P<rename_to>.+)(?:\n|$))?
         (?:^old[ ]mode[ ](?P<old_mode>\d+)\n
            ^new[ ]mode[ ](?P<new_mode>\d+)(?:\n|$))?
         (?:^new[ ]file[ ]mode[ ](?P<new_file_mode>.+)(?:\n|$))?
@@ -169,32 +170,33 @@ class DiffProcessor(object):
         (?:^index[ ](?P<a_blob_id>[0-9A-Fa-f]+)
             \.\.(?P<b_blob_id>[0-9A-Fa-f]+)[ ]?(?P<b_mode>.+)?(?:\n|$))?
         (?:^(?P<bin_patch>GIT[ ]binary[ ]patch)(?:\n|$))?
-        (?:^---[ ](a/(?P<a_file>.+)|/dev/null)(?:\n|$))?
-        (?:^\+\+\+[ ](b/(?P<b_file>.+)|/dev/null)(?:\n|$))?
+        (?:^---[ ](a/(?P<a_file>.+?)|/dev/null)\t?(?:\n|$))?
+        (?:^\+\+\+[ ](b/(?P<b_file>.+?)|/dev/null)\t?(?:\n|$))?
     """, re.VERBOSE | re.MULTILINE)
     _hg_header_re = re.compile(r"""
-        #^diff[ ]--git
+        # has already been split on this:
+        # ^diff[ ]--git
             [ ]a/(?P<a_path>.+?)[ ]b/(?P<b_path>.+?)\n
         (?:^old[ ]mode[ ](?P<old_mode>\d+)\n
            ^new[ ]mode[ ](?P<new_mode>\d+)(?:\n|$))?
         (?:^similarity[ ]index[ ](?P<similarity_index>\d+)%(?:\n|$))?
-        (?:^rename[ ]from[ ](?P<rename_from>\S+)\n
-           ^rename[ ]to[ ](?P<rename_to>\S+)(?:\n|$))?
-        (?:^copy[ ]from[ ](?P<copy_from>\S+)\n
-           ^copy[ ]to[ ](?P<copy_to>\S+)(?:\n|$))?
+        (?:^rename[ ]from[ ](?P<rename_from>.+)\n
+           ^rename[ ]to[ ](?P<rename_to>.+)(?:\n|$))?
+        (?:^copy[ ]from[ ](?P<copy_from>.+)\n
+           ^copy[ ]to[ ](?P<copy_to>.+)(?:\n|$))?
         (?:^new[ ]file[ ]mode[ ](?P<new_file_mode>.+)(?:\n|$))?
         (?:^deleted[ ]file[ ]mode[ ](?P<deleted_file_mode>.+)(?:\n|$))?
         (?:^index[ ](?P<a_blob_id>[0-9A-Fa-f]+)
             \.\.(?P<b_blob_id>[0-9A-Fa-f]+)[ ]?(?P<b_mode>.+)?(?:\n|$))?
         (?:^(?P<bin_patch>GIT[ ]binary[ ]patch)(?:\n|$))?
-        (?:^---[ ](a/(?P<a_file>.+)|/dev/null)(?:\n|$))?
-        (?:^\+\+\+[ ](b/(?P<b_file>.+)|/dev/null)(?:\n|$))?
+        (?:^---[ ](a/(?P<a_file>.+?)|/dev/null)\t?(?:\n|$))?
+        (?:^\+\+\+[ ](b/(?P<b_file>.+?)|/dev/null)\t?(?:\n|$))?
     """, re.VERBOSE | re.MULTILINE)
 
     #used for inline highlighter word split
     _token_re = re.compile(r'()(&gt;|&lt;|&amp;|<u>\t</u>| <i></i>|\W+?)')
 
-    _escape_re = re.compile(r'(&)|(<)|(>)|(\t)|( \n| $)')
+    _escape_re = re.compile(r'(&)|(<)|(>)|(\t)|(?<=.)( \n| $)')
 
 
     def __init__(self, diff, vcs='hg', format='gitdiff', diff_limit=None):
@@ -261,8 +263,9 @@ class DiffProcessor(object):
                 return '&gt;'
             if groups[3]:
                 return '<u>\t</u>'
-            if groups[4] and m.start(): # skip 1st column with +/-
+            if groups[4]:
                 return ' <i></i>'
+            assert False
 
         return self._escape_re.sub(substitute, safe_unicode(string))
 
@@ -349,16 +352,19 @@ class DiffProcessor(object):
         :param diff_chunk:
         """
 
+        match = None
         if self.vcs == 'git':
             match = self._git_header_re.match(diff_chunk)
-            diff = diff_chunk[match.end():]
-            return match.groupdict(), imap(self._escaper, diff.splitlines(1))
         elif self.vcs == 'hg':
             match = self._hg_header_re.match(diff_chunk)
-            diff = diff_chunk[match.end():]
-            return match.groupdict(), imap(self._escaper, diff.splitlines(1))
-        else:
+        if match is None:
             raise Exception('VCS type %s is not supported' % self.vcs)
+        groups = match.groupdict()
+        rest = diff_chunk[match.end():]
+        if rest and not rest.startswith('@') and not rest.startswith('literal '):
+            raise Exception('cannot parse diff header: %r followed by %r' % (diff_chunk[:match.end()], rest[:1000]))
+        difflines = imap(self._escaper, re.findall(r'.*\n|.+$', rest)) # don't split on \r as str.splitlines do
+        return groups, difflines
 
     def _clean_line(self, line, command):
         if command in ['+', '-', ' ']:
@@ -401,7 +407,7 @@ class DiffProcessor(object):
                 # RENAME
                 if (head['rename_from'] and head['rename_to']
                       and head['rename_from'] != head['rename_to']):
-                    op = 'M'
+                    op = 'R'
                     stats['binary'] = True
                     stats['ops'][RENAMED_FILENODE] = ('file renamed from %s to %s'
                                     % (head['rename_from'], head['rename_to']))
@@ -499,24 +505,24 @@ class DiffProcessor(object):
 
     def _parse_lines(self, diff):
         """
-        Parse the diff an return data for the template.
+        Parse the diff and return data for the template.
         """
 
-        lineiter = iter(diff)
         stats = [0, 0]
+        (old_line, old_end, new_line, new_end) = (None, None, None, None)
 
         try:
             chunks = []
-            line = lineiter.next()
+            line = diff.next()
 
-            while line:
+            while True:
                 lines = []
                 chunks.append(lines)
 
                 match = self._chunk_re.match(line)
 
                 if not match:
-                    break
+                    raise Exception('error parsing diff @@ line %r' % line)
 
                 gr = match.groups()
                 (old_line, old_end,
@@ -538,19 +544,16 @@ class DiffProcessor(object):
                             'line':       line,
                         })
 
-                line = lineiter.next()
+                line = diff.next()
 
                 while old_line < old_end or new_line < new_end:
-                    command = ' '
-                    if line:
-                        command = line[0]
+                    if not line:
+                        raise Exception('error parsing diff - empty line at -%s+%s' % (old_line, new_line))
 
                     affects_old = affects_new = False
 
-                    # ignore those if we don't expect them
-                    if command in '#@':
-                        continue
-                    elif command == '+':
+                    command = line[0]
+                    if command == '+':
                         affects_new = True
                         action = 'add'
                         stats[0] += 1
@@ -558,9 +561,11 @@ class DiffProcessor(object):
                         affects_old = True
                         action = 'del'
                         stats[1] += 1
-                    else:
+                    elif command == ' ':
                         affects_old = affects_new = True
                         action = 'unmod'
+                    else:
+                        raise Exception('error parsing diff - unknown command in line %r at -%s+%s' % (line, old_line, new_line))
 
                     if not self._newline_marker.match(line):
                         old_line += affects_old
@@ -572,7 +577,7 @@ class DiffProcessor(object):
                             'line':         self._clean_line(line, command)
                         })
 
-                    line = lineiter.next()
+                    line = diff.next()
 
                     if self._newline_marker.match(line):
                         # we need to append to lines, since this is not
@@ -583,9 +588,16 @@ class DiffProcessor(object):
                             'action':       'context',
                             'line':         self._clean_line(line, command)
                         })
-
+                        line = diff.next()
+                if old_line > old_end:
+                        raise Exception('error parsing diff - more than %s "-" lines at -%s+%s' % (old_end, old_line, new_line))
+                if new_line > new_end:
+                        raise Exception('error parsing diff - more than %s "+" lines at -%s+%s' % (new_end, old_line, new_line))
         except StopIteration:
             pass
+        if old_line != old_end or new_line != new_end:
+            raise Exception('diff processing broken when old %s<>%s or new %s<>%s line %r' % (old_line, old_end, new_line, new_end, line))
+
         return chunks, stats
 
     def _safe_id(self, idstring):

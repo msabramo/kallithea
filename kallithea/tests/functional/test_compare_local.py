@@ -29,17 +29,39 @@ class TestCompareController(TestController):
         response.mustcontain('11 files changed with 94 insertions and 64 deletions')
 
         ## files diff
-        response.mustcontain('''<div class="node"><a href="#C--1c5cf9e91c12">docs/api/utils/index.rst</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--e3305437df55">test_and_report.sh</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--c8e92ef85cd1">.hgignore</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--6e08b694d687">.hgtags</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--2c14b00f3393">docs/api/index.rst</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--430ccbc82bdf">vcs/__init__.py</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--9c390eb52cd6">vcs/backends/hg.py</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--ebb592c595c0">vcs/utils/__init__.py</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--7abc741b5052">vcs/utils/annotate.py</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--2ef0ef106c56">vcs/utils/diffs.py</a></div>''')
-        response.mustcontain('''<div class="node"><a href="#C--3150cb87d4b7">vcs/utils/lazy.py</a></div>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-A"></i>
+                             <a href="#C--1c5cf9e91c12">docs/api/utils/index.rst</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-A"></i>
+                             <a href="#C--e3305437df55">test_and_report.sh</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--c8e92ef85cd1">.hgignore</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--6e08b694d687">.hgtags</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--2c14b00f3393">docs/api/index.rst</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--430ccbc82bdf">vcs/__init__.py</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--9c390eb52cd6">vcs/backends/hg.py</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--ebb592c595c0">vcs/utils/__init__.py</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--7abc741b5052">vcs/utils/annotate.py</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--2ef0ef106c56">vcs/utils/diffs.py</a>''')
+        response.mustcontain('''<div class="node">
+                             <i class="icon-diff-M"></i>
+                             <a href="#C--3150cb87d4b7">vcs/utils/lazy.py</a>''')
 
     def test_compare_tag_git(self):
         self.log_user()

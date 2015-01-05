@@ -72,14 +72,14 @@
 <%def name="admin_menu()">
   <ul class="admin_menu">
       <li><a href="${h.url('admin_home')}"><i class="icon-book"></i> ${_('Admin Journal')}</a></li>
-      <li><a href="${h.url('repos')}"><i class="icon-archive"></i> ${_('Repositories')}</a></li>
-      <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository Groups')}</a></li>
+      <li><a href="${h.url('repos')}"><i class="icon-database"></i> ${_('Repositories')}</a></li>
+      <li><a href="${h.url('repos_groups')}"><i class="icon-folder"></i> ${_('Repository Groups')}</a></li>
       <li><a href="${h.url('users')}"><i class="icon-user"></i> ${_('Users')}</a></li>
-      <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User Groups')}</a></li>
-      <li><a href="${h.url('admin_permissions')}"><i class="icon-ban-circle"></i> ${_('Permissions')}</a></li>
+      <li><a href="${h.url('users_groups')}"><i class="icon-users"></i> ${_('User Groups')}</a></li>
+      <li><a href="${h.url('admin_permissions')}"><i class="icon-block"></i> ${_('Permissions')}</a></li>
       <li><a href="${h.url('auth_home')}"><i class="icon-key"></i> ${_('Authentication')}</a></li>
       <li><a href="${h.url('defaults')}"><i class="icon-wrench"></i> ${_('Defaults')}</a></li>
-      <li class="last"><a href="${h.url('admin_settings')}"><i class="icon-cog"></i> ${_('Settings')}</a></li>
+      <li class="last"><a href="${h.url('admin_settings')}"><i class="icon-gear"></i> ${_('Settings')}</a></li>
   </ul>
 
 </%def>
@@ -89,13 +89,13 @@
 <%def name="admin_menu_simple(repositories=None, repository_groups=None, user_groups=None)">
   <ul>
    %if repositories:
-      <li><a href="${h.url('repos')}"><i class="icon-archive"></i> ${_('Repositories')}</a></li>
+      <li><a href="${h.url('repos')}"><i class="icon-database"></i> ${_('Repositories')}</a></li>
    %endif
    %if repository_groups:
-      <li><a href="${h.url('repos_groups')}"><i class="icon-folder-close"></i> ${_('Repository Groups')}</a></li>
+      <li><a href="${h.url('repos_groups')}"><i class="icon-folder"></i> ${_('Repository Groups')}</a></li>
    %endif
    %if user_groups:
-      <li><a href="${h.url('users_groups')}"><i class="icon-group"></i> ${_('User Groups')}</a></li>
+      <li><a href="${h.url('users_groups')}"><i class="icon-users"></i> ${_('User Groups')}</a></li>
    %endif
   </ul>
 </%def>
@@ -127,9 +127,9 @@
 
         ## public/private
         %if c.db_repo.private:
-          <i class="icon-lock"></i>
+          <i class="icon-keyhole-circled"></i>
         %else:
-          <i class="icon-unlock-alt"></i>
+          <i class="icon-globe"></i>
         %endif
         ${h.repo_link(c.db_repo.groups_and_repo)}
 
@@ -147,32 +147,32 @@
       <ul id="context-pages" class="horizontal-list">
         <li ${is_current('summary')}><a href="${h.url('summary_home', repo_name=c.repo_name)}"><i class="icon-file-text"></i> ${_('Summary')}</a></li>
         %if rev:
-        <li ${is_current('changelog')}><a href="${h.url('changelog_file_home', repo_name=c.repo_name, revision=rev, f_path='')}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
+        <li ${is_current('changelog')}><a href="${h.url('changelog_file_home', repo_name=c.repo_name, revision=rev, f_path='')}"><i class="icon-clock"></i> ${_('Changelog')}</a></li>
         %else:
-        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-time"></i> ${_('Changelog')}</a></li>
+        <li ${is_current('changelog')}><a href="${h.url('changelog_home', repo_name=c.repo_name)}"><i class="icon-clock"></i> ${_('Changelog')}</a></li>
         %endif
-        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name, revision=rev or 'tip')}"><i class="icon-file"></i> ${_('Files')}</a></li>
+        <li ${is_current('files')}><a href="${h.url('files_home', repo_name=c.repo_name, revision=rev or 'tip')}"><i class="icon-doc-inv"></i> ${_('Files')}</a></li>
         <li ${is_current('switch-to')}>
-          <a href="#" id="branch_tag_switcher_2" class="dropdown"><i class="icon-random"></i> ${_('Switch To')}</a>
+          <a href="#" id="branch_tag_switcher_2" class="dropdown"><i class="icon-exchange"></i> ${_('Switch To')}</a>
           <ul id="switch_to_list_2" class="switch_to submenu">
             <li><a href="#">${_('Loading...')}</a></li>
           </ul>
         </li>
         <li ${is_current('options')}>
              %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
-               <a href="${h.url('edit_repo',repo_name=c.repo_name)}" class="dropdown"><i class="icon-cogs"></i> ${_('Options')}</a>
+               <a href="${h.url('edit_repo',repo_name=c.repo_name)}" class="dropdown"><i class="icon-wrench"></i> ${_('Options')}</a>
              %else:
-               <a href="#" class="dropdown"><i class="icon-cogs"></i> ${_('Options')}</a>
+               <a href="#" class="dropdown"><i class="icon-wrench"></i> ${_('Options')}</a>
              %endif
           <ul>
              %if h.HasRepoPermissionAll('repository.admin')(c.repo_name):
-                   <li><a href="${h.url('edit_repo',repo_name=c.repo_name)}"><i class="icon-cog"></i> ${_('Settings')}</a></li>
+                   <li><a href="${h.url('edit_repo',repo_name=c.repo_name)}"><i class="icon-gear"></i> ${_('Settings')}</a></li>
              %endif
               %if c.db_repo.fork:
                <li><a href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref_name=c.db_repo.landing_rev[1], other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref_name=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}">
-                   <i class="icon-loop"></i> ${_('Compare Fork')}</a></li>
+                   <i class="icon-git-compare"></i> ${_('Compare Fork')}</a></li>
               %endif
-              <li><a href="${h.url('compare_home',repo_name=c.repo_name)}"><i class="icon-loop"></i> ${_('Compare')}</a></li>
+              <li><a href="${h.url('compare_home',repo_name=c.repo_name)}"><i class="icon-git-compare"></i> ${_('Compare')}</a></li>
 
               <li><a href="${h.url('search_repo',repo_name=c.repo_name)}"><i class="icon-search"></i> ${_('Search')}</a></li>
 
@@ -192,13 +192,13 @@
                     <span class="show-following"><i class="icon-heart"></i> ${_('Unfollow')}</span>
                   </a>
                   </li>
-                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Fork')}</a></li>
-                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-code-fork"></i> ${_('Create Pull Request')}</a></li>
+                  <li><a href="${h.url('repo_fork_home',repo_name=c.repo_name)}"><i class="icon-git-pull-request"></i> ${_('Fork')}</a></li>
+                  <li><a href="${h.url('pullrequest_home',repo_name=c.repo_name)}"><i class="icon-git-pull-request"></i> ${_('Create Pull Request')}</a></li>
               %endif
              </ul>
         </li>
         <li ${is_current('showpullrequest')}>
-          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests for %s') % c.repo_name}"> <i class="icon-code-fork"></i> ${_('Pull Requests')}
+          <a href="${h.url('pullrequest_show_all',repo_name=c.repo_name)}" title="${_('Show Pull Requests for %s') % c.repo_name}"> <i class="icon-git-pull-request"></i> ${_('Pull Requests')}
             %if c.repository_pull_requests:
               <span>${c.repository_pull_requests}</span>
             %endif
@@ -249,14 +249,14 @@
     %endif
       <li ${is_current('gists')}>
         <a class="menu_link childs" title="${_('Show public gists')}"  href="${h.url('gists')}">
-          <i class="icon-file-2"></i> ${_('Gists')}
+          <i class="icon-clippy"></i> ${_('Gists')}
         </a>
           <ul class="admin_menu">
-            <li><a href="${h.url('new_gist', public=1)}"><i class="icon-file-alt"></i> ${_('Create New Gist')}</a></li>
-            <li><a href="${h.url('gists')}"><i class="icon-copy"></i> ${_('All Public Gists')}</a></li>
+            <li><a href="${h.url('new_gist', public=1)}"><i class="icon-paste"></i> ${_('Create New Gist')}</a></li>
+            <li><a href="${h.url('gists')}"><i class="icon-globe"></i> ${_('All Public Gists')}</a></li>
             %if c.authuser.username != 'default':
-              <li><a href="${h.url('gists', public=1)}"><i class="icon-copy"></i> ${_('My Public Gists')}</a></li>
-              <li><a href="${h.url('gists', private=1)}"><i class="icon-file-text"></i> ${_('My Private Gists')}</a></li>
+              <li><a href="${h.url('gists', public=1)}"><i class="icon-user"></i> ${_('My Public Gists')}</a></li>
+              <li><a href="${h.url('gists', private=1)}"><i class="icon-keyhole-circled"></i> ${_('My Private Gists')}</a></li>
             %endif
           </ul>
       </li>
@@ -268,14 +268,14 @@
     % if h.HasPermissionAll('hg.admin')('access admin main page'):
       <li ${is_current('admin')}>
         <a class="menu_link childs" title="${_('Admin')}" href="${h.url('admin_home')}">
-          <i class="icon-cog"></i> ${_('Admin')}
+          <i class="icon-gear"></i> ${_('Admin')}
         </a>
         ${admin_menu()}
       </li>
     % elif c.authuser.repositories_admin or c.authuser.repository_groups_admin or c.authuser.user_groups_admin:
     <li ${is_current('admin')}>
         <a class="menu_link childs" title="${_('Admin')}">
-          <i class="icon-cog"></i> ${_('Admin')}
+          <i class="icon-gear"></i> ${_('Admin')}
         </a>
         ${admin_menu_simple(c.authuser.repositories_admin,
                             c.authuser.repository_groups_admin,
@@ -285,7 +285,7 @@
 
     <li ${is_current('my_pullrequests')}>
       <a class="menu_link" title="${_('My Pull Requests')}" href="${h.url('my_pullrequests')}">
-        <i class="icon-code-fork"></i> ${_('My Pull Requests')}
+        <i class="icon-git-pull-request"></i> ${_('My Pull Requests')}
         %if c.my_pr_count != 0:
           <span class="menu_link_notifications">${c.my_pr_count}</span>
         %endif
@@ -385,22 +385,22 @@
                     tmpl += '<i class="icon-git"></i> ';
                 }
                 if(obj_dict['private']){
-                    tmpl += '<i class="icon-lock" style="color: #e85634;"></i> ';
+                    tmpl += '<i class="icon-keyhole-circled"></i> ';
                 }
                 else if(visual_show_public_icon){
-                    tmpl += '<i class="icon-unlock-alt"></i> ';
+                    tmpl += '<i class="icon-globe"></i> ';
                 }
                 tmpl += '</span>';
             }
             if(obj_dict && state.type == 'group'){
-                    tmpl += '<i class="icon-folder-close"></i> ';
+                    tmpl += '<i class="icon-folder"></i> ';
             }
             tmpl += state.text;
             return tmpl;
         }
 
         $("#repo_switcher").select2({
-            placeholder: '<i class="icon-archive"></i> ${_('Repositories')}',
+            placeholder: '<i class="icon-database"></i> ${_('Repositories')}',
             dropdownAutoWidth: true,
             formatResult: format,
             formatSelection: format,
@@ -411,7 +411,7 @@
             dropdownCssClass: "repo-switcher-dropdown",
             escapeMarkup: function(m){
                 // don't escape our custom placeholder
-                if(m.substr(0,28) == '<i class="icon-archive"></i>'){
+                if(m.substr(0,29) == '<i class="icon-database"></i>'){
                     return m;
                 }
 
@@ -533,7 +533,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-cancel-circled"></i></button>
           <h4 class="modal-title">${_('Keyboard shortcuts')}</h4>
         </div>
         <div class="modal-body">

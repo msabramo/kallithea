@@ -26,21 +26,19 @@ DIFF_FIXTURES = {
     ],
 
     'hg_diff_mod_single_file_and_rename_and_chmod.diff': [
-        ('README', 'M',
+        ('README', 'R',
          {'added': 3,
           'deleted': 0,
           'binary': False,
-          'ops': {MOD_FILENODE: 'modified file',
-                  RENAMED_FILENODE: 'file renamed from README.rst to README',
+          'ops': {RENAMED_FILENODE: 'file renamed from README.rst to README',
                   CHMOD_FILENODE: 'modified file chmod 100755 => 100644'}}),
     ],
     'hg_diff_mod_file_and_rename.diff': [
-        ('README.rst', 'M',
+        ('README.rst', 'R',
          {'added': 3,
           'deleted': 0,
           'binary': False,
-          'ops': {MOD_FILENODE: 'modified file',
-                  RENAMED_FILENODE: 'file renamed from README to README.rst'}}),
+          'ops': {RENAMED_FILENODE: 'file renamed from README to README.rst'}}),
     ],
     'hg_diff_del_single_binary_file.diff': [
         ('US Warszawa.jpg', 'D',
@@ -66,14 +64,14 @@ DIFF_FIXTURES = {
           'ops': {CHMOD_FILENODE: 'modified file chmod 100755 => 100644'}}),
     ],
     'hg_diff_rename_file.diff': [
-        ('file_renamed', 'M',
+        ('file_renamed', 'R',
          {'added': 0,
           'deleted': 0,
           'binary': True,
           'ops': {RENAMED_FILENODE: 'file renamed from file to file_renamed'}}),
     ],
     'hg_diff_rename_and_chmod_file.diff': [
-        ('README', 'M',
+        ('README', 'R',
          {'added': 0,
           'deleted': 0,
           'binary': True,
@@ -132,7 +130,7 @@ DIFF_FIXTURES = {
           'ops': {CHMOD_FILENODE: 'modified file chmod 100644 => 100755'}})
     ],
     'git_diff_rename_file.diff': [
-        ('file.xls', 'M',
+        ('file.xls', 'R',
          {'added': 0,
           'deleted': 0,
           'binary': True,
@@ -248,7 +246,14 @@ DIFF_FIXTURES = {
           'ops': {COPIED_FILENODE: 'file copied from file4 to file5',
                   CHMOD_FILENODE: 'modified file chmod 100755 => 100644',
                   MOD_FILENODE: 'modified file'}}),
-    ]
+    ],
+    'hg_diff_rename_space_cr.diff': [
+        ('oh yes', 'R',
+         {'added': 3,
+          'deleted': 2,
+          'binary': False,
+          'ops': {RENAMED_FILENODE: 'file renamed from oh no to oh yes'}}),
+    ],
 }
 
 
@@ -257,7 +262,7 @@ class DiffLibTest(BaseTestCase):
     @parameterized.expand([(x,) for x in DIFF_FIXTURES])
     def test_diff(self, diff_fixture):
 
-        diff = fixture.load_resource(diff_fixture)
+        diff = fixture.load_resource(diff_fixture, strip=False)
 
         diff_proc = DiffProcessor(diff)
         diff_proc_d = diff_proc.prepare()

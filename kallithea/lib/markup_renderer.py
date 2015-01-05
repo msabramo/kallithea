@@ -35,6 +35,9 @@ from kallithea.lib.utils2 import safe_unicode, MENTIONS_REGEX
 log = logging.getLogger(__name__)
 
 
+url_re = re.compile(r'''(\bhttps?://(?:[\da-zA-Z0-9@:.-]+)'''
+                    r'''(?:[/a-zA-Z0-9_=@#~&+%.,:?!*()-]*[/a-zA-Z0-9_=@#~])?)''')
+
 class MarkupRenderer(object):
     RESTRUCTUREDTEXT_DISALLOWED_DIRECTIVES = ['include', 'meta', 'raw']
 
@@ -127,17 +130,11 @@ class MarkupRenderer(object):
         if universal_newline:
             newline = '\n'
             source = newline.join(source.splitlines())
-        def urlify_text(text):
-            url_pat = re.compile(r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]'
-                                 '|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)')
 
-            def url_func(match_obj):
-                url_full = match_obj.groups()[0]
-                return '<a href="%(url)s">%(url)s</a>' % ({'url': url_full})
-
-            return url_pat.sub(url_func, text)
-
-        source = urlify_text(source)
+        def url_func(match_obj):
+            url_full = match_obj.groups()[0]
+            return '<a href="%(url)s">%(url)s</a>' % ({'url': url_full})
+        source = url_re.sub(url_func, source)
         return '<br />' + source.replace("\n", '<br />')
 
     @classmethod

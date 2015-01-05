@@ -91,7 +91,7 @@ myDataTable.subscribe('postRenderEvent',function(oArgs) {
     var func = function(node){
         return node.parentNode.parentNode.parentNode.parentNode.parentNode;
     }
-    q_filter('q_filter_branches',YUQ('div.table tr td .logtags .branchtag a'),func);
+    q_filter('q_filter_branches',$('div.table tr td .logtags .branchtag a'),func);
 });
 
 </script>

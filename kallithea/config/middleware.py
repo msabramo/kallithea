@@ -79,24 +79,27 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
         # Handle Python exceptions
         app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
 
-        # we want our low level middleware to get to the request ASAP. We don't
-        # need any pylons stack middleware in them
-        app = SimpleHg(app, config)
-        app = SimpleGit(app, config)
-        app = RequestWrapper(app, config)
         # Display error documents for 401, 403, 404 status codes (and
         # 500 when debug is disabled)
+        # Note: will buffer the output in memory!
         if asbool(config['debug']):
             app = StatusCodeRedirect(app)
         else:
             app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
 
-    #enable https redirets based on HTTP_X_URL_SCHEME set by proxy
-    if any(asbool(config.get(x)) for x in ['https_fixup', 'force_https', 'use_htsts']):
-        app = HttpsFixup(app, config)
+        # Enable https redirects based on HTTP_X_URL_SCHEME set by proxy
+        if any(asbool(config.get(x)) for x in ['https_fixup', 'force_https', 'use_htsts']):
+            app = HttpsFixup(app, config)
+
+        # we want our low level middleware to get to the request ASAP. We don't
+        # need any pylons stack middleware in them - especially no StatusCodeRedirect buffering
+        app = SimpleHg(app, config)
+        app = SimpleGit(app, config)
+
+        app = RequestWrapper(app, config) # logging
 
     # Establish the Registry for this application
-    app = RegistryManager(app)
+    app = RegistryManager(app) # thread / request-local module globals / variables
 
     if asbool(static_files):
         # Serve static files

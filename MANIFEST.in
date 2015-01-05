@@ -17,5 +17,7 @@ recursive-include kallithea/public/images *
 recursive-include kallithea/public/js *
 #codemirror
 recursive-include kallithea/public/codemirror *
+#fontello
+recursive-include kallithea/public/fontello *
 #templates
 recursive-include kallithea/templates *

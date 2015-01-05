@@ -31,7 +31,7 @@ ${h.form(url('edit_user_group_perms', id=c.user_group.users_group_id),method='pu
                         <td>
                           %if r2p.user.username !='default':
                             <span style="color:#da4f49" class="action_button" onclick="ajaxActionRevoke(${r2p.user.user_id}, 'user', '${'id%s'%id(r2p.user.username)}', '${r2p.user.username}')">
-                             <i class="icon-remove"></i> ${_('revoke')}
+                             <i class="icon-minus-circled"></i> ${_('revoke')}
                             </span>
                           %endif
                         </td>
@@ -68,7 +68,7 @@ ${h.form(url('edit_user_group_perms', id=c.user_group.users_group_id),method='pu
                         </td>
                         <td>
                             <span style="color:#da4f49" class="action_button" onclick="ajaxActionRevoke(${g2p.user_group.users_group_id}, 'user_group', '${'id%s'%id(g2p.user_group.users_group_name)}', '${g2p.user_group.users_group_name}')">
-                            <i class="icon-remove"></i> ${_('revoke')}
+                            <i class="icon-minus-circled"></i> ${_('revoke')}
                             </span>
                         </td>
                     </tr>

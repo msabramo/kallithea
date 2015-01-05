@@ -57,7 +57,7 @@ from kallithea.lib.utils import repo_name_slug, get_custom_lexer
 from kallithea.lib.utils2 import str2bool, safe_unicode, safe_str, \
     get_changeset_safe, datetime_to_time, time_to_datetime, AttributeDict,\
     safe_int
-from kallithea.lib.markup_renderer import MarkupRenderer
+from kallithea.lib.markup_renderer import MarkupRenderer, url_re
 from kallithea.lib.vcs.exceptions import ChangesetDoesNotExistError
 from kallithea.lib.vcs.backends.base import BaseChangeset, EmptyChangeset
 from kallithea.config.conf import DATE_FORMAT, DATETIME_FORMAT
@@ -588,9 +588,9 @@ def boolicon(value):
     """
 
     if value:
-        return HTML.tag('i', class_="icon-ok-sign")
+        return HTML.tag('i', class_="icon-ok")
     else:
-        return HTML.tag('i', class_="icon-minus-sign")
+        return HTML.tag('i', class_="icon-minus-circled")
 
 
 def action_parser(user_log, feed=False, parse_cs=False):
@@ -773,23 +773,23 @@ def action_parser(user_log, feed=False, parse_cs=False):
     # action : translated str, callback(extractor), icon
     action_map = {
     'user_deleted_repo':           (_('[deleted] repository'),
-                                    None, 'icon-trash'),
+                                    None, 'icon-trashcan'),
     'user_created_repo':           (_('[created] repository'),
                                     None, 'icon-plus icon-plus-colored'),
     'user_created_fork':           (_('[created] repository as fork'),
-                                    None, 'icon-code-fork'),
+                                    None, 'icon-fork'),
     'user_forked_repo':            (_('[forked] repository'),
-                                    get_fork_name, 'icon-code-fork'),
+                                    get_fork_name, 'icon-fork'),
     'user_updated_repo':           (_('[updated] repository'),
                                     None, 'icon-pencil icon-pencil-colored'),
     'user_downloaded_archive':      (_('[downloaded] archive from repository'),
-                                    get_archive_name, 'icon-download-alt'),
+                                    get_archive_name, 'icon-download-cloud'),
     'admin_deleted_repo':          (_('[delete] repository'),
-                                    None, 'icon-trash'),
+                                    None, 'icon-trashcan'),
     'admin_created_repo':          (_('[created] repository'),
                                     None, 'icon-plus icon-plus-colored'),
     'admin_forked_repo':           (_('[forked] repository'),
-                                    None, 'icon-code-fork icon-fork-colored'),
+                                    None, 'icon-fork icon-fork-colored'),
     'admin_updated_repo':          (_('[updated] repository'),
                                     None, 'icon-pencil icon-pencil-colored'),
     'admin_created_user':          (_('[created] user'),
@@ -805,15 +805,15 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'user_commented_pull_request': (_('[commented] on pull request for'),
                                     get_pull_request, 'icon-comment icon-comment-colored'),
     'user_closed_pull_request':    (_('[closed] pull request for'),
-                                    get_pull_request, 'icon-check'),
+                                    get_pull_request, 'icon-ok'),
     'push':                        (_('[pushed] into'),
-                                    get_cs_links, 'icon-arrow-up'),
+                                    get_cs_links, 'icon-move-up'),
     'push_local':                  (_('[committed via Kallithea] into repository'),
                                     get_cs_links, 'icon-pencil icon-pencil-colored'),
     'push_remote':                 (_('[pulled from remote] into repository'),
-                                    get_cs_links, 'icon-arrow-up'),
+                                    get_cs_links, 'icon-move-up'),
     'pull':                        (_('[pulled] from'),
-                                    None, 'icon-arrow-down'),
+                                    None, 'icon-move-down'),
     'started_following_repo':      (_('[started following] repository'),
                                     None, 'icon-heart icon-heart-colored'),
     'stopped_following_repo':      (_('[stopped following] repository'),
@@ -1256,13 +1256,10 @@ def urlify_text(text_, safe=True):
     :param text_:
     """
 
-    url_pat = re.compile(r'''(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]'''
-                         '''|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)''')
-
     def url_func(match_obj):
         url_full = match_obj.groups()[0]
         return '<a href="%(url)s">%(url)s</a>' % ({'url': url_full})
-    _newtext = url_pat.sub(url_func, text_)
+    _newtext = url_re.sub(url_func, text_)
     if safe:
         return literal(_newtext)
     return _newtext

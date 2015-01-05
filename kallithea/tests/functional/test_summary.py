@@ -37,7 +37,7 @@ class TestSummaryController(TestController):
         )
         #public/private
         response.mustcontain(
-            """<i class="icon-unlock-alt">"""
+            """<i class="icon-globe">"""
         )
 
         # clone url...
@@ -57,7 +57,7 @@ class TestSummaryController(TestController):
         )
         #public/private
         response.mustcontain(
-            """<i class="icon-unlock-alt">"""
+            """<i class="icon-globe">"""
         )
 
         # clone url...
@@ -77,7 +77,7 @@ class TestSummaryController(TestController):
         )
         #public/private
         response.mustcontain(
-            """<i class="icon-unlock-alt">"""
+            """<i class="icon-globe">"""
         )
 
     def test_index_by_repo_having_id_path_in_name_hg(self):
@@ -106,7 +106,7 @@ class TestSummaryController(TestController):
         )
         #public/private
         response.mustcontain(
-            """<i class="icon-unlock-alt">"""
+            """<i class="icon-globe">"""
         )
 
     def _enable_stats(self, repo):

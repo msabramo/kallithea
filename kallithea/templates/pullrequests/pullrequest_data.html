@@ -4,9 +4,9 @@
   <div class="pr ${'pr-closed' if pr.is_closed() else ''}">
     <div class="pr-title">
     %if pr.last_review_status:
-      <img src="${h.url('/images/icons/flag_status_%s.png' % pr.last_review_status)}" title="${_("Someone voted: %s") % pr.last_review_status}"/>
+      <i class="icon-circle changeset-status-${pr.last_review_status}" title="${_("Someone voted: %s") % pr.last_review_status}"></i>
     %else:
-      <img src="${h.url('/images/icons/flag_status_not_reviewed.png')}" title="${_("Nobody voted")}"/>
+      <i class="icon-circle changeset-status-not_reviewed" title="${_("Nobody voted")}"></i>
     %endif
       <a href="${pr.url()}">
       ${pr.title or _("(no title)")}

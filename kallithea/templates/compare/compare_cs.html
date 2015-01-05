@@ -22,7 +22,7 @@
         <td style="width:50px">
           %if cs.raw_id in c.statuses:
             <div title="${_('Changeset status: %s') % c.statuses[cs.raw_id][1]}" class="changeset-status-ico">
-                <img height="16" width="16" src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cs.raw_id][0])}" />
+                <i class="icon-circle changeset-status-${c.statuses[cs.raw_id][0]}"></i>
             </div>
           %endif
           %if c.cs_comments.get(cs.raw_id):
@@ -46,7 +46,7 @@
         %endif
         </td>
         <td class="expand_commit" commit_id="${cs.raw_id}" title="${_('Expand commit message')}">
-            <i class="icon-resize-vertical" style="color:#DDD"></i>
+            <i class="icon-align-left" style="color:#999"></i>
         </td>
         <td><div id="C-${cs.raw_id}" class="message">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
         </tr>

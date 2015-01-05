@@ -10,7 +10,7 @@
     <li>
        <a title="${_('Summary')}" href="${h.url('summary_home',repo_name=repo_name)}">
        <span class="icon">
-           <i class="icon-file-text"></i>
+           <i class="icon-doc-text-inv"></i>
        </span>
        <span>${_('Summary')}</span>
        </a>
@@ -18,7 +18,7 @@
     <li>
        <a title="${_('Changelog')}" href="${h.url('changelog_home',repo_name=repo_name)}">
        <span class="icon">
-           <i class="icon-list-alt"></i>
+           <i class="icon-clock"></i>
        </span>
        <span>${_('Changelog')}</span>
        </a>
@@ -26,7 +26,7 @@
     <li>
        <a title="${_('Files')}" href="${h.url('files_home',repo_name=repo_name)}">
        <span class="icon">
-           <i class="icon-file-alt"></i>
+           <i class="icon-docs"></i>
        </span>
        <span>${_('Files')}</span>
        </a>
@@ -34,7 +34,7 @@
     <li>
        <a title="${_('Fork')}" href="${h.url('repo_fork_home',repo_name=repo_name)}">
        <span class="icon">
-           <i class="icon-code-fork"></i>
+           <i class="icon-fork"></i>
        </span>
        <span>${_('Fork')}</span>
        </a>
@@ -42,7 +42,7 @@
     <li>
        <a title="${_('Settings')}" href="${h.url('edit_repo',repo_name=repo_name)}">
        <span class="icon">
-           <i class="icon-cog"></i>
+           <i class="icon-gear"></i>
        </span>
        <span>${_('Settings')}</span>
        </a>
@@ -75,19 +75,19 @@
 
     ##PRIVATE/PUBLIC
     %if private and c.visual.show_private_icon:
-      <i class="icon-lock" style="color: #e85634; font-size: 16px; vertical-align: -2px; margin: 0px 1px 0px 3px" title="${_('Private repository')}"></i>
+      <i class="icon-keyhole-circled" title="${_('Private repository')}" style="font-size: 16px; vertical-align: -2px; margin: 0px 1px 0px 3px"></i>
     %elif not private and c.visual.show_public_icon:
-      <i class="icon-unlock-alt" style="color: #999999; font-size: 16px; vertical-align: -2px; margin: 0px 1px 0px 3px" title="${_('Public repository')}"></i>
+      <i class="icon-globe" title="${_('Public repository')}" style="font-size: 16px; vertical-align: -2px; margin: 0px 1px 0px 3px"></i>
     %else:
       <span style="margin: 0px 8px 0px 8px"></span>
     %endif
     ${get_name(name)}
     </a>
     %if fork_of:
-      <a href="${h.url('summary_home',repo_name=fork_of.repo_name)}"><i class="icon-code-fork"></i></a>
+      <a href="${h.url('summary_home',repo_name=fork_of.repo_name)}"><i class="icon-fork"></i></a>
     %endif
     %if rstate == 'repo_state_pending':
-      <i class="icon-cogs" style="color: #036185;" title="${_('Repository creating in progress...')}"></i>
+      <i class="icon-wrench" style="color: #036185;" title="${_('Repository creating in progress...')}"></i>
     %endif
   </div>
 </%def>
@@ -108,17 +108,17 @@
 
 <%def name="rss(name)">
   %if c.authuser.username != 'default':
-    <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name,api_key=c.authuser.api_key)}"><i class="icon-rss-sign" style="color: #fa9b39"></i></a>
+    <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name,api_key=c.authuser.api_key)}"><i class="icon-rss-squared"></i></a>
   %else:
-    <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name)}"><i class="icon-rss-sign" style="color: #fa9b39"></i></a>
+    <a title="${_('Subscribe to %s rss feed')% name}" href="${h.url('rss_feed_home',repo_name=name)}"><i class="icon-rss-squared"></i></a>
   %endif
 </%def>
 
 <%def name="atom(name)">
   %if c.authuser.username != 'default':
-    <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name,api_key=c.authuser.api_key)}"><i class="icon-rss-sign"  style="color: #fa9b39"></i></a>
+    <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name,api_key=c.authuser.api_key)}"><i class="icon-rss-squared"></i></a>
   %else:
-    <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name)}"><i class="icon-rss-sign"  style="color: #fa9b39"></i></a>
+    <a title="${_('Subscribe to %s atom feed')% name}" href="${h.url('atom_feed_home',repo_name=name)}"><i class="icon-rss-squared"></i></a>
   %endif
 </%def>
 
@@ -135,7 +135,7 @@
     </div>
     <div style="float:left" class="grid_delete">
       ${h.form(h.url('repo', repo_name=repo_name),method='delete')}
-        <i class="icon-remove-sign" style="color:#FF4444"></i>
+        <i class="icon-minus-circled" style="color:#FF4444"></i>
         ${h.submit('remove_%s' % repo_name,_('delete'),class_="action_button",
         onclick="return confirm('"+_('Confirm to delete this repository: %s') % repo_name+"');")}
       ${h.end_form()}
@@ -163,7 +163,7 @@
  </div>
  <div style="float:left" class="grid_delete">
   ${h.form(h.url('delete_user', id=user_id),method='delete')}
-    <i class="icon-remove-sign" style="color:#FF4444"></i>
+    <i class="icon-minus-circled" style="color:#FF4444"></i>
     ${h.submit('remove_',_('delete'),id="remove_user_%s" % user_id, class_="action_button",
     onclick="return confirm('"+_('Confirm to delete this user: %s') % username+"');")}
   ${h.end_form()}
@@ -179,7 +179,7 @@
  </div>
  <div style="float:left" class="grid_delete">
     ${h.form(h.url('users_group', id=user_group_id),method='delete')}
-      <i class="icon-remove-sign" style="color:#FF4444"></i>
+      <i class="icon-minus-circled" style="color:#FF4444"></i>
       ${h.submit('remove_',_('delete'),id="remove_group_%s" % user_group_id, class_="action_button",
       onclick="return confirm('"+_('Confirm to delete this user group: %s') % user_group_name+"');")}
     ${h.end_form()}
@@ -195,7 +195,7 @@
  </div>
  <div style="float:left" class="grid_delete">
     ${h.form(h.url('repos_group', group_name=repo_group_name),method='delete')}
-        <i class="icon-remove-sign" style="color:#FF4444"></i>
+        <i class="icon-minus-circled" style="color:#FF4444"></i>
         ${h.submit('remove_%s' % repo_group_name,_('delete'),class_="action_button",
         onclick="return confirm('"+ungettext('Confirm to delete this group: %s with %s repository','Confirm to delete this group: %s with %s repositories',gr_count) % (repo_group_name, gr_count)+"');")}
     ${h.end_form()}
@@ -216,7 +216,7 @@
 <%def name="user_group_name(user_group_id, user_group_name)">
   <div style="white-space: nowrap">
   <a href="${h.url('edit_users_group', id=user_group_id)}">
-    <i class="icon-group" title="${_('User group')}"></i> ${user_group_name}</a>
+    <i class="icon-users" title="${_('User group')}"></i> ${user_group_name}</a>
   </div>
 </%def>
 

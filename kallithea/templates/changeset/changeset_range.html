@@ -33,7 +33,7 @@ ${self.repo_context_bar('changelog')}
                     ${h.show_id(c.cs_ranges[0])}
                     <i class="icon-arrow-right"></i>
                     ${h.show_id(c.cs_ranges[-1])}
-                    <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref_name=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref_name=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-loop"></i> Compare Revisions</a>
+                    <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref_name=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref_name=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-git-compare"></i> Compare Revisions</a>
                 </div>
             </div>
         </div>
@@ -48,7 +48,7 @@ ${self.repo_context_bar('changelog')}
                 <td><span class="tooltip" title="${h.age(cs.date)}">${cs.date}</span></td>
                 <td>
                   %if c.statuses:
-                    <div title="${h.tooltip(_('Changeset status'))}" class="changeset-status-ico"><img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses[cnt])}" /></div>
+                    <div title="${h.tooltip(_('Changeset status'))}" class="changeset-status-ico"><i class="icon-circle changeset-status-${c.statuses[cnt]}"></i></div>
                   %endif
                 </td>
                 <td><div class="message">${h.urlify_commit(h.wrap_paragraphs(cs.message),c.repo_name)}</div></td>
@@ -63,6 +63,7 @@ ${self.repo_context_bar('changelog')}
                     %for FID, (cs1, cs2, change, path, diff, stats) in c.changes[cs.raw_id].iteritems():
                         <div class="cs_${change}">
                             <div class="node">
+                                <i class="icon-diff-${change}"></i>
                                 ${h.link_to(h.safe_unicode(path),h.url.current(anchor=FID))}
                             </div>
                             <div class="changes">${h.fancy_file_stats(stats)}</div>

@@ -254,5 +254,21 @@ and licensed under the MIT-permissive license, which is
 [included in this distribution](MIT-Permissive-License.txt).
 
 
+Icon fonts
+----------
+
+Kallithea incorporates subsets of both
+[Font Awesome](http://fontawesome.io) and
+[GitHub Octicons](https://octicons.github.com) for icons. Font Awesome is:
+
+Copyright (c) 2012, Dave Gandy
+
+Octicons is:
+
+Copyright (c) 2012-2014 GitHub
+
+These two sets are distributed under [SIL OFL 1.1](http://scripts.sil.org/OFL)
+and have been combined into one font called "kallithea."
+
 
 EOF

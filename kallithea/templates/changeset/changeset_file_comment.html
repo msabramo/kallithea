@@ -39,7 +39,7 @@
            <div  style="float:left" class="changeset-status-container">
              <div style="float:left;padding:10px 2px 0px 2px"></div>
              <div title="${_('Changeset status')}" class="changeset-status-lbl"> ${co.status_change[0].status_lbl}</div>
-             <div class="changeset-status-ico"><img src="${h.url(str('/images/icons/flag_status_%s.png' % co.status_change[0].status))}" /></div>
+             <div class="changeset-status-ico"><i class="icon-circle changeset-status-${co.status_change[0].status}"></i></div>
            </div>
         %endif
 
@@ -166,7 +166,7 @@
                 %for status,lbl in c.changeset_statuses:
                     <span style="margin-left: 15px;">
                         <input type="radio" class="status_change_radio" name="changeset_status" id="${status}" value="${status}">
-                        <label for="${status}"><img src="${h.url('/images/icons/flag_status_%s.png' % status)}" />${lbl}</label>
+                        <label for="${status}"><i class="icon-circle changeset-status-${status}" /></i>${lbl}</label>
                     </span>
                 %endfor
                 %if is_pr and change_status:
@@ -213,8 +213,8 @@ $(document).ready(function () {
        $('#preview-btn').hide();
 
        var url = pyroutes.url('changeset_comment_preview', {'repo_name': '${c.repo_name}'});
-       ajaxPOST(url,post_data,function(o){
-           $('#preview-box').html(o.responseText);
+       ajaxPOST(url,post_data,function(html){
+           $('#preview-box').html(html);
            $('#preview-box').removeClass('unloaded');
        });
    });

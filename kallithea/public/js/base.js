@@ -315,10 +315,8 @@ var pyroutes = (function() {
 /**
  * GLOBAL YUI Shortcuts
  */
-var YUC = YAHOO.util.Connect;
 var YUD = YAHOO.util.Dom;
 var YUE = YAHOO.util.Event;
-var YUQ = YAHOO.util.Selector.query;
 
 /* Invoke all functions in callbacks */
 var _run_callbacks = function(callbacks){
@@ -382,37 +380,26 @@ function asynchtml(url, $target, success, args){
 };
 
 var ajaxGET = function(url,success) {
-    // Set special header for ajax == HTTP_X_PARTIAL_XHR
-    YUC.initHeader('X-PARTIAL-XHR',true);
-
-    var sUrl = url;
-    var callback = {
-        success: success,
-        failure: function (o) {
-            if (o.status != 0) {
-                alert("Ajax GET error: " + o.statusText);
-            };
-        }
-    };
-
-    var request = YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
-    return request;
+    return $.ajax({url: url, headers: {'X-PARTIAL-XHR': '1'}, cache: false})
+        .done(success)
+        .fail(function(jqXHR, textStatus, errorThrown) {
+                if (textStatus == "abort")
+                    return;
+                alert("Ajax GET error: " + textStatus);
+        })
+        ;
 };
 
 var ajaxPOST = function(url,postData,success) {
-    // Set special header for ajax == HTTP_X_PARTIAL_XHR
-    YUC.initHeader('X-PARTIAL-XHR',true);
-
-    var sUrl = url;
-    var callback = {
-        success: success,
-        failure: function (o) {
-            alert("Ajax POST error: " + o.statusText);
-        }
-    };
     var postData = _toQueryString(postData);
-    var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
-    return request;
+    return $.ajax({url: url, data: postData, type: 'POST', headers: {'X-PARTIAL-XHR': '1'}, cache: false})
+        .done(success)
+        .fail(function(jqXHR, textStatus, errorThrown) {
+                if (textStatus == "abort")
+                    return;
+                alert("Ajax POST error: " + textStatus);
+            })
+        ;
 };
 
 
@@ -440,8 +427,7 @@ var show_changeset_tooltip = function(){
         if(rid && !$target.hasClass('tooltip')){
             _show_tooltip(e, _TM['loading ...']);
             var url = pyroutes.url('changeset_info', {"repo_name": repo_name, "revision": rid});
-            ajaxGET(url, function(o){
-                    var json = JSON.parse(o.responseText);
+            ajaxGET(url, function(json){
                     $target.addClass('tooltip')
                     _show_tooltip(e, json['message']);
                     _activate_tooltip($target);
@@ -571,45 +557,52 @@ var _close_tooltip = function(e){
  * @param display_element function that takes current node from nodes and
  *    does hide or show based on the node
  */
-var q_filter = function(target, nodes, display_element){
-    var nodes = nodes;
-    var $q_filter_field = $('#' + target);
-    var F = YAHOO.namespace(target);
+var q_filter = (function() {
+    var _namespace = {};
+    var namespace = function (target) {
+        if (!(target in _namespace)) {
+            _namespace[target] = {};
+        }
+        return _namespace[target];
+    };
+    return function (target, $nodes, display_element) {
+        var $nodes = $nodes;
+        var $q_filter_field = $('#' + target);
+        var F = namespace(target);
 
-    $q_filter_field.keyup(function(e){
-        clearTimeout(F.filterTimeout);
-        F.filterTimeout = setTimeout(F.updateFilter, 600);
-    });
+        $q_filter_field.keyup(function (e) {
+            clearTimeout(F.filterTimeout);
+            F.filterTimeout = setTimeout(F.updateFilter, 600);
+        });
 
-    F.filterTimeout = null;
-
-    F.updateFilter  = function() {
-        // Reset timeout
         F.filterTimeout = null;
 
-        var obsolete = [];
+        F.updateFilter = function () {
+            // Reset timeout
+            F.filterTimeout = null;
 
-        var req = $q_filter_field.val().toLowerCase();
+            var obsolete = [];
 
-        var l = nodes.length;
-        var i;
-        var showing = 0;
+            var req = $q_filter_field.val().toLowerCase();
 
-        for (i=0; i<l; i++ ){
-            var n = nodes[i];
-            var target_element = display_element(n)
-            if(req && n.innerHTML.toLowerCase().indexOf(req) == -1){
-                $(target_element).hide();
-            }
-            else{
-                $(target_element).show();
-                showing += 1;
-            }
+            var showing = 0;
+            $nodes.each(function () {
+                var n = this;
+                var target_element = display_element(n);
+                if (req && n.innerHTML.toLowerCase().indexOf(req) == -1) {
+                    $(target_element).hide();
+                }
+                else {
+                    $(target_element).show();
+                    showing += 1;
+                }
+            });
+
+            $('#repo_count').html(showing);
+            /* FIXME: don't hardcode */
         }
-
-        $('#repo_count').html(showing); /* FIXME: don't hardcode */
     }
-};
+})();
 
 /* return jQuery expression with a tr with body in 3rd column and class cls and id named after the body */
 var _table_tr = function(cls, body){
@@ -690,10 +683,9 @@ var injectInlineForm = function(tr){
 
         $overlay.show();
 
-        var success = function(o){
+        var success = function(json_data){
             $tr.removeClass('form-open');
             $form.remove();
-            var json_data = JSON.parse(o.responseText);
             _renderInlineComment(json_data);
         };
         var postData = {
@@ -718,8 +710,8 @@ var injectInlineForm = function(tr){
 
         var url = pyroutes.url('changeset_comment_preview', {'repo_name': REPO_NAME});
         var post_data = {'text': text};
-        ajaxPOST(url, post_data, function(o){
-            $('#preview-box_'+lineno).html(o.responseText);
+        ajaxPOST(url, post_data, function(html){
+            $('#preview-box_'+lineno).html(html);
             $('#preview-box_'+lineno).removeClass('unloaded');
         })
     })
@@ -900,22 +892,21 @@ var fileBrowserListeners = function(current_url, node_list_url, url_base){
         $('#node_filter_box_loading').show();
         $('#search_activate_id').hide();
         $('#add_node_id').hide();
-        YUC.initHeader('X-PARTIAL-XHR',true);
-        YUC.asyncRequest('GET', node_list_url, {
-            success:function(o){
-                nodes = JSON.parse(o.responseText).nodes;
-                $('#node_filter_box_loading').hide();
-                $('#node_filter_box').show();
-                $node_filter.focus();
-                if($node_filter.hasClass('init')){
-                    $node_filter.val('');
-                    $node_filter.removeClass('init');
-                }
-            },
-            failure:function(o){
-                console.log('failed to load');
-            }
-        },null);
+        $.ajax({url: node_list_url, headers: {'X-PARTIAL-XHR': '1'}, cache: false})
+            .done(function(json) {
+                    nodes = json.nodes;
+                    $('#node_filter_box_loading').hide();
+                    $('#node_filter_box').show();
+                    $node_filter.focus();
+                    if($node_filter.hasClass('init')){
+                        $node_filter.val('');
+                        $node_filter.removeClass('init');
+                    }
+                })
+            .fail(function() {
+                    console.log('failed to load');
+                })
+        ;
     }
 
     var updateFilter = function(e) {
@@ -1473,14 +1464,14 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
         '     <li id="reviewer_{2}">\n'+
         '       <div class="reviewers_member">\n'+
         '           <div class="reviewer_status tooltip" title="not_reviewed">\n'+
-        '             <img src="/images/icons/flag_status_not_reviewed.png"/>\n'+
+        '             <i class="icon-circle changeset-status-not_reviewed"></i>\n'+
         '           </div>\n'+
         '         <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="{0}"/> </div>\n'+
         '         <div style="float:left;">{1}</div>\n'+
         '         <input type="hidden" value="{2}" name="review_members" />\n'+
         '         <div class="reviewer_member_remove action_button" onclick="removeReviewMember({2})">\n'+
-        '             <i class="icon-remove-sign" style="color: #FF4444;"></i>\n'+
-        '         </div> *\n'+
+        '             <i class="icon-minus-circled" style="color: #FF4444;"></i>\n'+
+        '         </div>\n'+
         '       </div>\n'+
         '     </li>\n'
         ).format(gravatar_link, displayname, id);

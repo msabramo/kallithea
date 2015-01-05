@@ -91,7 +91,7 @@ myDataTable.subscribe('postRenderEvent',function(oArgs) {
     var func = function(node){
         return node.parentNode.parentNode.parentNode.parentNode.parentNode;
     }
-    q_filter('q_filter_tags',YUQ('div.table tr td .logtags .tagtag a'),func);
+    q_filter('q_filter_tags',$('div.table tr td .logtags .tagtag a'),func);
 });
 
 </script>

@@ -84,7 +84,7 @@ ${self.repo_context_bar('showpullrequest')}
             <div class="changeset-status-container" style="float:none;clear:both">
             %if c.current_voting_result:
               <div class="changeset-status-ico" style="padding:0px 4px 0px 0px">
-                  <img src="${h.url('/images/icons/flag_status_%s.png' % c.current_voting_result)}" title="${_('Pull request status calculated from votes')}"/></div>
+                  <i class="icon-circle changeset-status-${c.current_voting_result}" title="${_('Pull request status calculated from votes')}"></i></div>
               <div class="changeset-status-lbl tooltip" title="${_('Pull request status calculated from votes')}">
                 %if c.pull_request.is_closed():
                     ${_('Closed')},
@@ -215,14 +215,14 @@ ${self.repo_context_bar('showpullrequest')}
               <li id="reviewer_${member.user_id}">
                 <div class="reviewers_member">
                     <div class="reviewer_status tooltip" title="${h.tooltip(h.changeset_status_lbl(status.status if status else 'not_reviewed'))}">
-                      <img src="${h.url(str('/images/icons/flag_status_%s.png' % (status.status if status else 'not_reviewed')))}"/>
+                      <i class="icon-circle changeset-status-${status.status if status else 'not_reviewed'}"></i>
                     </div>
                   <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email,14)}"/> </div>
                   <div style="float:left;">${member.full_name} (${_('owner') if c.pull_request.user_id == member.user_id else _('reviewer')})</div>
                   <input type="hidden" value="${member.user_id}" name="review_members" />
                   %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.user_id == c.authuser.user_id):
                   <div class="reviewer_member_remove action_button" onclick="removeReviewMember(${member.user_id})" title="${_('Remove reviewer')}">
-                      <i class="icon-remove-sign" style="color: #FF4444;"></i>
+                      <i class="icon-minus-circled" style="color: #FF4444;"></i>
                   </div>
                   %endif
                 </div>
@@ -251,12 +251,17 @@ ${self.repo_context_bar('showpullrequest')}
       <div class="table" style="float:left;clear:none">
           <div class="diffblock">
               <div style="padding:5px">
-                ${_('Compare View')}
+                ${_('Summary of Pull Request Content')}
               </div>
           </div>
           <div id="changeset_compare_view_content">
+              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+                ${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span>
+              </div>
               ##CS
-              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}</div>
+              <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
+                ${ungettext('Showing %s commit','Showing %s commits', len(c.cs_ranges)) % len(c.cs_ranges)}
+              </div>
               <%include file="/compare/compare_cs.html" />
 
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
@@ -280,12 +285,14 @@ ${self.repo_context_bar('showpullrequest')}
                 %endif
                 %for fid, change, f, stat in c.files:
                     <div class="cs_${change}">
-                      <div class="node">${h.link_to(h.safe_unicode(f),'#' + fid)}</div>
+                      <div class="node">
+                          <i class="icon-diff-${change}"></i>
+                          ${h.link_to(h.safe_unicode(f),'#' + fid)}
+                      </div>
                       <div class="changes">${h.fancy_file_stats(stat)}</div>
                     </div>
                 %endfor
               </div>
-              <div class="comments-number pr-comments-number">${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span> </div>
               % if c.limited_diff:
                 <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff anyway')}</a></h5>
               % endif
@@ -333,37 +340,20 @@ ${self.repo_context_bar('showpullrequest')}
       $(document).ready(function(){
           PullRequestAutoComplete('user', 'reviewers_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
-          YUE.on(YUQ('.show-inline-comments'),'change',function(e){
-              var show = 'none';
-              var target = e.currentTarget;
-              if(target.checked){
-                  var show = ''
-              }
-              var boxid = YUD.getAttribute(target,'id_for');
-              var comments = YUQ('#{0} .inline-comments'.format(boxid));
-              for(c in comments){
-                 YUD.setStyle(comments[c],'display',show);
-              }
-              var btns = YUQ('#{0} .inline-comments-button'.format(boxid));
-              for(c in btns){
-                  YUD.setStyle(btns[c],'display',show);
-               }
-          })
-
-          YUE.on(YUQ('.add-bubble'),'click',function(e){
+          $('.add-bubble').click(function(e){
               var tr = e.currentTarget;
               injectInlineForm(tr.parentNode.parentNode);
           });
 
           // inject comments into they proper positions
-          var file_comments = YUQ('.inline-comment-placeholder');
+          var file_comments = $('.inline-comment-placeholder').toArray();
           renderInlineComments(file_comments);
 
           linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
 
-          YUE.on(YUD.get('update_pull_request'),'click',function(e){
+          $('#update_pull_request').click(function(e){
               updateReviewers(undefined, "${c.repo_name}", "${c.pull_request.pull_request_id}");
-          })
+          });
 
           // hack: re-navigate to target after JS is done ... if a target is set and setting href thus won't reload
           if (window.location.hash != "") {

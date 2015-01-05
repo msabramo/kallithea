@@ -6,9 +6,9 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
       <li class="${'closed' if pull_request.is_closed() else ''}">
         <div style="height: 12px">
             %if pull_request.last_review_status:
-              <img src="${h.url('/images/icons/flag_status_%s.png' % pull_request.last_review_status)}" title="${_("Someone voted: %s") % pull_request.last_review_status}"/>
+              <i class="icon-circle changeset-status-${pull_request.last_review_status}" title="${_("Someone voted: %s") % pull_request.last_review_status}"></i>
             %else:
-              <img src="${h.url('/images/icons/flag_status_not_reviewed.png')}" title="${_("Nobody voted")}"/>
+              <i class="icon-circle changeset-status-not_reviewed" title="${_("Nobody voted")}"></i>
             %endif
             <a href="${pull_request.url()}">
               ${pull_request.title or _("(no title)")}
@@ -22,7 +22,13 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
               (${_('Closed')})
             %endif
             ${h.form(url('pullrequest_delete', repo_name=pull_request.other_repo.repo_name, pull_request_id=pull_request.pull_request_id),method='delete', style="display:inline-block")}
-              ${h.submit('remove_%s' % pull_request.pull_request_id, '', title=_('Delete Pull Request'),class_="delete_icon action_button",onclick="return confirm('"+_('Confirm to delete this pull request')+"');")}
+            <button class="action_button"
+                    id="remove_${pull_request.pull_request_id}"
+                    name="remove_${pull_request.pull_request_id}"
+                    title="${_('Delete Pull Request')}"
+                    onclick="return confirm('${_('Confirm to delete this pull request')}');">
+              <i class="icon-minus-circled"></i>
+            </button>
             ${h.end_form()}
         </div>
       </li>
@@ -39,9 +45,9 @@ ${h.checkbox('show_closed',checked="checked" if c.show_closed else "", label=_('
       <li class="${'closed' if pull_request.is_closed() else ''}">
         <div style="height: 12px">
             %if pull_request.last_review_status:
-              <img src="${h.url('/images/icons/flag_status_%s.png' % pull_request.last_review_status)}" title="${_("Someone voted: %s") % pull_request.last_review_status}"/>
+              <i class="icon-circle changeset-status-${pull_request.last_review_status}" title="${_("Someone voted: %s") % pull_request.last_review_status}"></i>
             %else:
-              <img src="${h.url('/images/icons/flag_status_not_reviewed.png')}" title="${_("Nobody voted")}"/>
+              <i class="icon-circle changeset-status-not_reviewed" title="${_("Nobody voted")}"></i>
             %endif
             <a href="${pull_request.url()}">
               ${pull_request.title or _("(no title)")}

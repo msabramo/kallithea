@@ -33,19 +33,19 @@ class TestFilesController(TestController):
                                     revision='tip',
                                     f_path='/'))
         # Test response...
-        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/docs">docs</a>')
-        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/vcs">vcs</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.gitignore">.gitignore</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.hgignore">.hgignore</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.hgtags">.hgtags</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.travis.yml">.travis.yml</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/MANIFEST.in">MANIFEST.in</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/README.rst">README.rst</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/run_test_and_report.sh">run_test_and_report.sh</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/setup.cfg">setup.cfg</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/setup.py">setup.py</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/test_and_report.sh">test_and_report.sh</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/tox.ini">tox.ini</a>')
+        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/docs"><i class="icon-folder-open"></i><span>docs</span></a>')
+        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/vcs"><i class="icon-folder-open"></i><span>vcs</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.gitignore"><i class="icon-doc"></i><span>.gitignore</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.hgignore"><i class="icon-doc"></i><span>.hgignore</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.hgtags"><i class="icon-doc"></i><span>.hgtags</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/.travis.yml"><i class="icon-doc"></i><span>.travis.yml</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/MANIFEST.in"><i class="icon-doc"></i><span>MANIFEST.in</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/README.rst"><i class="icon-doc"></i><span>README.rst</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/run_test_and_report.sh"><i class="icon-doc"></i><span>run_test_and_report.sh</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/setup.cfg"><i class="icon-doc"></i><span>setup.cfg</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/setup.py"><i class="icon-doc"></i><span>setup.py</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/test_and_report.sh"><i class="icon-doc"></i><span>test_and_report.sh</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/96507bd11ecc815ebc6270fdf6db110928c09c1e/tox.ini"><i class="icon-doc"></i><span>tox.ini</span></a>')
 
     def test_index_revision(self):
         self.log_user()
@@ -59,9 +59,9 @@ class TestFilesController(TestController):
 
         #Test response...
 
-        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/7ba66bec8d6dbba14a2155be32408c435c5f4492/docs">docs</a>')
-        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/7ba66bec8d6dbba14a2155be32408c435c5f4492/tests">tests</a>')
-        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/7ba66bec8d6dbba14a2155be32408c435c5f4492/README.rst">README.rst</a>')
+        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/7ba66bec8d6dbba14a2155be32408c435c5f4492/docs"><i class="icon-folder-open"></i><span>docs</span></a>')
+        response.mustcontain('<a class="browser-dir ypjax-link" href="/vcs_test_hg/files/7ba66bec8d6dbba14a2155be32408c435c5f4492/tests"><i class="icon-folder-open"></i><span>tests</span></a>')
+        response.mustcontain('<a class="browser-file ypjax-link" href="/vcs_test_hg/files/7ba66bec8d6dbba14a2155be32408c435c5f4492/README.rst"><i class="icon-doc"></i><span>README.rst</span></a>')
         response.mustcontain('1.1 KiB')
         response.mustcontain('text/x-python')
 

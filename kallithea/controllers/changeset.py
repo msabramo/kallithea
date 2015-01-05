@@ -109,8 +109,8 @@ def _ignorews_url(GET, fileid=None):
         params[ctx_key] += [ctx_val]
 
     params['anchor'] = fileid
-    img = h.image(h.url('/images/icons/text_strikethrough.png'), lbl, class_='icon')
-    return h.link_to(img, h.url.current(**params), title=lbl, class_='tooltip')
+    icon = h.literal('<i class="icon-strike"></i>')
+    return h.link_to(icon, h.url.current(**params), title=lbl, class_='tooltip')
 
 
 def get_line_ctx(fid, GET):
@@ -169,8 +169,8 @@ def _context_url(GET, fileid=None):
     lbl = _('increase diff context to %(num)s lines') % {'num': ln_ctx}
 
     params['anchor'] = fileid
-    img = h.image(h.url('/images/icons/table_add.png'), lbl, class_='icon')
-    return h.link_to(img, h.url.current(**params), title=lbl, class_='tooltip')
+    icon = h.literal('<i class="icon-sort"></i>')
+    return h.link_to(icon, h.url.current(**params), title=lbl, class_='tooltip')
 
 
 class ChangesetController(BaseRepoController):

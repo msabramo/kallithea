@@ -1,0 +1,17 @@
+diff --git a/oh no b/oh yes
+rename from oh no
+rename to oh yes
+--- a/oh no	
++++ b/oh yes	
+@@ -1,4 +1,4 @@
+ 1
+-2+ 2
+-3 
++2
++3
+ 4
+@@ -5,3 +6,4 @@
+ 5
+ 6
+ 7
++8

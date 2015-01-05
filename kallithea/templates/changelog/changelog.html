@@ -62,7 +62,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                                 <a id="compare_fork"
                                    title="${_('Compare fork with %s' % c.db_repo.fork.repo_name)}"
                                    href="${h.url('compare_url',repo_name=c.db_repo.fork.repo_name,org_ref_type=c.db_repo.landing_rev[0],org_ref_name=c.db_repo.landing_rev[1],other_repo=c.repo_name,other_ref_type='branch' if request.GET.get('branch') else c.db_repo.landing_rev[0],other_ref_name=request.GET.get('branch') or c.db_repo.landing_rev[1], merge=1)}"
-                                   class="btn btn-small"><i class="icon-loop"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
+                                   class="btn btn-small"><i class="icon-git-compare"></i> ${_('Compare fork with parent repo (%s)' % c.db_repo.fork.repo_name)}</a>
                             %endif
                             ## text and href of open_new_pr is controlled from javascript
                             <a id="open_new_pr" class="btn btn-small"></a>
@@ -93,11 +93,11 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                             <div class="changeset-status-ico">
                             %if c.statuses.get(cs.raw_id)[2]:
                               <a class="tooltip" title="${_('Changeset status: %s\nClick to open associated pull request #%s') % (h.changeset_status_lbl(c.statuses.get(cs.raw_id)[0]), c.statuses.get(cs.raw_id)[2])}" href="${h.url('pullrequest_show',repo_name=c.statuses.get(cs.raw_id)[3],pull_request_id=c.statuses.get(cs.raw_id)[2])}">
-                                <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
+                                <i class="icon-circle changeset-status-${c.statuses.get(cs.raw_id)[0]}"></i>
                               </a>
                             %else:
                               <a class="tooltip" title="${_('Changeset status: %s') % h.changeset_status_lbl(c.statuses.get(cs.raw_id)[0])}" href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
-                                  <img src="${h.url('/images/icons/flag_status_%s.png' % c.statuses.get(cs.raw_id)[0])}" />
+                                  <i class="icon-circle changeset-status-${c.statuses.get(cs.raw_id)[0]}"></i>
                               </a>
                             %endif
                             </div>
@@ -116,7 +116,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                             <div class="date">${h.age(cs.date,True)}</div>
                         </td>
                         <td class="expand_commit" commit_id="${cs.raw_id}" title="${_('Expand commit message')}">
-                            <i class="icon-resize-vertical" style="color:#DDD"></i>
+                            <i class="icon-align-left" style="color:#999"></i>
                         </td>
                         <td class="mid">
                             <div class="log-container">
@@ -127,7 +127,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                                             <div class="comments-cnt" title="${_('Changeset has comments')}">
                                                 <a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
                                                     ${len(c.comments[cs.raw_id])}
-                                                    <i class="icon-comment-alt icon-comment-colored"></i>
+                                                    <i class="icon-comment-discussion"></i>
                                                 </a>
                                             </div>
                                         </div>
@@ -243,21 +243,20 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                     YUE.preventDefault(e);
                 });
 
-                var msgs = YUQ('.message');
+                var $msgs = $('.message');
                 // get first element height
-                var el = YUQ('#graph_content .container')[0];
+                var el = $('#graph_content .container')[0];
                 var row_h = el.clientHeight;
-                for(var i=0;i<msgs.length;i++){
-                    var m = msgs[i];
+                $msgs.each(function() {
+                    var m = this;
 
                     var h = m.clientHeight;
-                    var pad = YUD.getStyle(m,'padding');
                     if(h > row_h){
                         var offset = row_h - (h+12);
-                        YUD.setStyle(m.nextElementSibling,'display','block');
-                        YUD.setStyle(m.nextElementSibling,'margin-top',offset+'px');
-                    };
-                }
+                        $(m.nextElementSibling).css('display', 'block');
+                        $(m.nextElementSibling).css('margin-top', offset+'px');
+                    }
+                });
 
                 $('.expand_commit').on('click',function(e){
                     var cid = $(this).attr('commit_id');

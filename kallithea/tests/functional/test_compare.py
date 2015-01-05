@@ -105,7 +105,7 @@ class TestCompareController(TestController):
         ## files
         response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
-        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
+        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-arrows-cw"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
     def test_compare_forks_on_branch_extra_commits_git(self):
         self.log_user()
@@ -153,7 +153,7 @@ class TestCompareController(TestController):
         ## files
         response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
-        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
+        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-arrows-cw"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
     def test_compare_forks_on_branch_extra_commits_origin_has_incomming_hg(self):
         self.log_user()
@@ -208,7 +208,7 @@ class TestCompareController(TestController):
         ## files
         response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
-        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
+        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-arrows-cw"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
     def test_compare_forks_on_branch_extra_commits_origin_has_incomming_git(self):
         self.log_user()
@@ -263,7 +263,7 @@ class TestCompareController(TestController):
         ## files
         response.mustcontain("""<a href="#C--826e8142e6ba">file1</a>""")
         #swap
-        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-refresh"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
+        response.mustcontain("""<a class="btn btn-small" href="/%s/compare/branch@%s...branch@%s?other_repo=%s&amp;merge=True"><i class="icon-arrows-cw"></i> Swap</a>""" % (repo2.repo_name, rev1, rev2, repo1.repo_name))
 
     def test_compare_cherry_pick_changesets_from_bottom(self):
 

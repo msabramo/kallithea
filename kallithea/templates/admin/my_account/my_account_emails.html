@@ -15,7 +15,7 @@
             <td>
                 ${h.form(url('my_account_emails'),method='delete')}
                     ${h.hidden('del_email_id',em.email_id)}
-                    <i class="icon-remove-sign" style="color:#FF4444"></i>
+                    <i class="icon-minus-circled" style="color:#FF4444"></i>
                     ${h.submit('remove_',_('delete'),id="remove_email_%s" % em.email_id,
                     class_="action_button", onclick="return  confirm('"+_('Confirm to delete this email: %s') % em.email+"');")}
                 ${h.end_form()}

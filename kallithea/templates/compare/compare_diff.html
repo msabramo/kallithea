@@ -33,9 +33,9 @@ ${self.repo_context_bar('changelog')}
                 <div>
                     ${h.hidden('compare_org')} <i class="icon-arrow-right"></i> ${h.hidden('compare_other')}
                     %if not c.compare_home:
-                        <a class="btn btn-small" href="${c.swap_url}"><i class="icon-refresh"></i> ${_('Swap')}</a>
+                        <a class="btn btn-small" href="${c.swap_url}"><i class="icon-arrows-cw"></i> ${_('Swap')}</a>
                     %endif
-                    <div id="compare_revs" class="btn btn-small"><i class="icon-loop"></i> ${_('Compare Revisions')}</div>
+                    <div id="compare_revs" class="btn btn-small"><i class="icon-git-compare"></i> ${_('Compare Revisions')}</div>
                 </div>
             </div>
         </div>
@@ -68,10 +68,13 @@ ${self.repo_context_bar('changelog')}
                      <span class="empty_data">${_('No files')}</span>
                   %endif
                   %for fid, change, f, stat in c.files:
-                      <div class="cs_${change}">
-                        <div class="node">${h.link_to(h.safe_unicode(f), '#' + fid)}</div>
-                        <div class="changes">${h.fancy_file_stats(stat)}</div>
-                      </div>
+                     <div class="cs_${change}">
+                         <div class="node">
+                             <i class="icon-diff-${change}"></i>
+                             ${h.link_to(h.safe_unicode(f), '#' + fid)}
+                         </div>
+                         <div class="changes">${h.fancy_file_stats(stat)}</div>
+                     </div>
                   %endfor
                 </div>
                 % if c.limited_diff:

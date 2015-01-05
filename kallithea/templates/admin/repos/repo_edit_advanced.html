@@ -51,7 +51,7 @@ ${h.form(url('edit_repo_advanced_locking', repo_name=c.repo_info.repo_name), met
         ${h.hidden('set_unlock', '1')}
         <button class="btn btn-small" type="submit"
                 onclick="return confirm('${_('Confirm to unlock repository.')}');">
-            <i class="icon-unlock"></i>
+            <i class="icon-lock-open-alt"></i>
             ${_('Unlock Repository')}
         </button>
        ${'Locked by %s on %s' % (h.person_by_id(c.repo_info.locked[0]),h.fmt_date(h.time_to_datetime(c.repo_info.locked[1])))}
@@ -78,7 +78,7 @@ ${h.form(url('repo', repo_name=c.repo_name),method='delete')}
 <div class="form">
     <button class="btn btn-small btn-danger" type="submit"
             onclick="return confirm('${_('Confirm to delete this repository: %s') % c.repo_name}');">
-        <i class="icon-remove-sign"></i>
+        <i class="icon-remove-circled"></i>
         ${_('Delete this Repository')}
     </button>
     %if c.repo_info.forks.count():

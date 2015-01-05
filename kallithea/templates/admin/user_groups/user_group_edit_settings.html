@@ -41,19 +41,19 @@ ${h.form(url('users_group', id=c.user_group.users_group_id),method='put', id='ed
                                                 ${h.select('users_group_members',[x[0] for x in c.group_members],c.group_members,multiple=True,size=8,style="min-width:210px")}
                                                <div id="remove_all_elements" style="cursor:pointer;text-align:center;margin: 4px; ">
                                                    ${_('Remove all elements')}
-                                                   <i style="cursor:pointer; font-size: 16px;position: relative; bottom: -2px; padding: 2px" class="icon-chevron-right"></i>
+                                                   <i style="cursor:pointer; font-size: 16px;position: relative; bottom: -2px; padding: 2px" class="icon-right-open"></i>
                                                </div>
                                             </div>
                                             <div style="float:left;width:20px;padding-top:50px">
-                                                <i style="cursor:pointer; padding: 4px; font-size: 16px" id="add_element" class="icon-chevron-left"></i>
+                                                <i style="cursor:pointer; padding: 4px; font-size: 16px" id="add_element" class="icon-left-open"></i>
                                                 <br />
-                                                <i style="cursor:pointer; padding: 4px; font-size: 16px" id="remove_element" class="icon-chevron-right"></i>
+                                                <i style="cursor:pointer; padding: 4px; font-size: 16px" id="remove_element" class="icon-right-open"></i>
                                             </div>
                                             <div style="float:left">
                                                  <div class="text" style="padding: 0px 0px 6px;">${_('Available members')}</div>
                                                  ${h.select('available_members',[],c.available_members,multiple=True,size=8,style="min-width:210px")}
                                                  <div id="add_all_elements" style="cursor:pointer;text-align:center;margin: 4px;">
-                                                     <i style="cursor:pointer;font-size: 16px;position: relative; bottom: -2px; padding: 4px" class="icon-chevron-left"></i>${_('Add all elements')}
+                                                     <i style="cursor:pointer;font-size: 16px;position: relative; bottom: -2px; padding: 4px" class="icon-left-open"></i>${_('Add all elements')}
                                                  </div>
                                             </div>
                                         </div>
