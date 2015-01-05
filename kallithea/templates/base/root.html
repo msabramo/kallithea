@@ -1,6 +1,5 @@
 ## -*- coding: utf-8 -*-
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>${self.title()}</title>
@@ -9,25 +8,17 @@
         <link rel="icon" href="${h.url('/images/favicon.ico')}" type="image/png" />
 
         ## CSS ###
-        <%def name="css()">
-            <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.kallithea_version)}"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.kallithea_version)}"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.kallithea_version)}" media="screen"/>
-            <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.kallithea_version)}" media="screen"/>
-
-            <link rel="stylesheet" type="text/css" href="${h.url('/fontello/css/kallithea.css', ver=c.kallithea_version)}">
-            ## EXTRA FOR CSS
-            ${self.css_extra()}
-        </%def>
-
+        <link rel="stylesheet" type="text/css" href="${h.url('/js/select2/select2.css', ver=c.kallithea_version)}"/>
+        <link rel="stylesheet" type="text/css" href="${h.url('/css/pygments.css', ver=c.kallithea_version)}"/>
+        <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.kallithea_version)}" media="screen"/>
+        <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.kallithea_version)}" media="screen"/>
+        <link rel="stylesheet" type="text/css" href="${h.url('/fontello/css/kallithea.css', ver=c.kallithea_version)}">
         <%def name="css_extra()"></%def>
-
-        ${self.css()}
+        ${self.css_extra()}
 
         ## JAVASCRIPT ##
-        <%def name="js()">
-            <script type="text/javascript">
-            //JS translations map
+        <script type="text/javascript">
+            ## JS translations map
             var TRANSLATION_MAP = {
                 'Add Another Comment':'${_("Add Another Comment")}',
                 'Stop following this repository':"${_('Stop following this repository')}",
@@ -46,7 +37,7 @@
                 'Collapse Diff': "${_('Collapse Diff')}",
                 'Expand Diff': "${_('Expand Diff')}",
                 'Failed to revoke permission': "${_('Failed to revoke permission')}",
-                'Confirm to revoke permission for {0}: {1} ?': "${_('confirm to revoke permission for {0}: {1} ?')}",
+                'Confirm to revoke permission for {0}: {1} ?': "${_('Confirm to revoke permission for {0}: {1} ?')}",
                 'enabled': "${_('enabled')}",
                 'disabled': "${_('disabled')}",
                 'Select changeset': "${_('Select changeset')}",
@@ -65,24 +56,24 @@
             %if hasattr(c, 'repo_name'):
                 var REPO_NAME = "${c.repo_name}";
             %endif
-            </script>
-            <script type="text/javascript" src="${h.url('/js/yui.2.9.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/jquery-1.11.1.min.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/bootstrap.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/select2/select2.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/mousetrap.js', ver=c.kallithea_version)}"></script>
-            <!--[if lt IE 9]>
-               <script language="javascript" type="text/javascript" src="${h.url('/js/excanvas.min.js')}"></script>
-            <![endif]-->
-            <script type="text/javascript" src="${h.url('/js/yui.flot.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/native.history.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/pyroutes_map.js', ver=c.kallithea_version)}"></script>
-            <script type="text/javascript" src="${h.url('/js/base.js', ver=c.kallithea_version)}"></script>
-           ## EXTRA FOR JS
-           ${self.js_extra()}
-            <script type="text/javascript">
+        </script>
+        <script type="text/javascript" src="${h.url('/js/yui.2.9.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/jquery-1.11.1.min.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/bootstrap.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/select2/select2.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/mousetrap.js', ver=c.kallithea_version)}"></script>
+        <!--[if lt IE 9]>
+           <script language="javascript" type="text/javascript" src="${h.url('/js/excanvas.min.js')}"></script>
+        <![endif]-->
+        <script type="text/javascript" src="${h.url('/js/yui.flot.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/native.history.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/pyroutes_map.js', ver=c.kallithea_version)}"></script>
+        <script type="text/javascript" src="${h.url('/js/base.js', ver=c.kallithea_version)}"></script>
+        ## EXTRA FOR JS
+        <%def name="js_extra()"></%def>
+        ${self.js_extra()}
+        <script type="text/javascript">
             (function(window,undefined){
-                // Prepare
                 var History = window.History; // Note: We are using a capital H instead of a lower h
                 if ( !History.enabled ) {
                      // History.js is disabled for this browser.
@@ -113,16 +104,14 @@
               pyroutes.register('repo_size', "${h.url('repo_size', repo_name='%(repo_name)s')}", ['repo_name']);
               pyroutes.register('changeset_comment_preview', "${h.url('changeset_comment_preview', repo_name='%(repo_name)s')}", ['repo_name']);
               pyroutes.register('repo_refs_data', "${h.url('repo_refs_data', repo_name='%(repo_name)s')}", ['repo_name']);
-           });
-            </script>
-        </%def>
-        <%def name="js_extra()"></%def>
-        ${self.js()}
+             });
+        </script>
+
         <%def name="head_extra()"></%def>
         ${self.head_extra()}
     </head>
     <body id="body">
-     ## IE hacks
+      ## IE hacks
       <!--[if IE 7]>
       <script>$(document.body).addClass('ie7')</script>
       <![endif]-->
