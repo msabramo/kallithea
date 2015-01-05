@@ -669,16 +669,16 @@ var injectInlineForm = function(tr){
 
         if(lineno === undefined){
             alert('Error submitting, line ' + lineno + ' not found.');
-            return
+            return;
         }
         if(f_path === undefined){
             alert('Error submitting, file path ' + f_path + ' not found.');
-            return
+            return;
         }
 
         var text = $('#text_'+lineno).val();
         if(text == ""){
-            return
+            return;
         }
 
         $overlay.show();

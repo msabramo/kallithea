@@ -190,7 +190,7 @@ class FilesController(BaseRepoController):
             return render('files/files_ypjax.html')
 
         # TODO: tags and bookmarks?
-        c.revision_options = [(c.changeset.raw_id, 
+        c.revision_options = [(c.changeset.raw_id,
                               _('%s at %s') % (c.changeset.branch, h.short_id(c.changeset.raw_id)))] + \
             [(n, b) for b, n in c.db_repo_scm_instance.branches.items()]
         if c.db_repo_scm_instance.closed_branches:

@@ -286,7 +286,6 @@ class DbManage(object):
     def create_ui_settings(self, repo_store_path):
         """
         Creates ui settings, fills out hooks
-        and disables dotencode
         """
 
         #HOOKS

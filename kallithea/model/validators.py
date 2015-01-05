@@ -87,7 +87,7 @@ def UniqueListFromString():
             value = aslist(value, ',')
             seen = set()
             return [c for c in value if not (c in seen or seen.add(c))]
-    
+
         def empty_value(self, value):
             return []
 

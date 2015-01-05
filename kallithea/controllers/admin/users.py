@@ -94,9 +94,8 @@ class UsersController(BaseController):
                 .render(user_id, username, _=_, h=h, c=c))
 
         for user in c.users_list:
-
             users_data.append({
-                "gravatar": grav_tmpl(user. email, 20),
+                "gravatar": grav_tmpl(user.email, 20),
                 "raw_name": user.username,
                 "username": username(user.user_id, user.username),
                 "firstname": user.name,
