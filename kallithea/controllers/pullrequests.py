@@ -584,6 +584,7 @@ class PullrequestsController(BaseRepoController):
                     c.a_branch_name = other_scm_instance.get_changeset(c.a_ref_name).branch # use ref_type ?
                 except EmptyRepositoryError:
                     c.a_branch_name = 'null' # not a branch name ... but close enough
+            arevs = []
             # candidates: descendants of old head that are on the right branch
             #             and not are the old head itself ...
             #             and nothing at all if old head is a descendent of target ref name
@@ -601,12 +602,11 @@ class PullrequestsController(BaseRepoController):
                 else:
                     c.update_msg = _('No changesets found for updating this pull request.')
 
-            revs = org_scm_instance._repo.revs('head() & not (%s::) & branch(%s) & !closed()', revs[0], c.cs_branch_name)
-            if revs:
-                c.update_msg_other = _('Note: Branch %s also contains unrelated changes, such as %s.') % (c.cs_branch_name,
-                    h.short_id(org_scm_instance.get_changeset((max(revs))).raw_id))
-            else:
-                c.update_msg_other = _('Branch %s does not contain other changes.') % c.cs_branch_name
+            brevs = org_scm_instance._repo.revs('%s - %d - %ld', c.cs_branch_name, revs[0], arevs)
+            if brevs:
+                c.update_msg_other = _('Note: Branch %s has another head: %s.') % (c.cs_branch_name,
+                    h.short_id(org_scm_instance.get_changeset((max(brevs))).raw_id))
+
         elif org_scm_instance.alias == 'git':
             c.update_msg = _("Git pull requests don't support updates yet.")
 
