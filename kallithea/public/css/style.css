@@ -4864,7 +4864,7 @@ table.code-highlighttable div.code-highlight pre i,
 table.code-difftable td.code pre i {
     border-style: solid;
     border-left-width: 1px;
-    color: rgba(0,0,0,0.15);
+    color: rgba(0,0,0,0.5);
 }
 
 /** LINE NUMBERS **/
