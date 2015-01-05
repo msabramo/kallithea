@@ -417,6 +417,7 @@ def authenticate(username, password, environ=None):
             return plugin_user
 
         # we failed to Auth because .auth() method didn't return proper the user
-        log.warning("User `%s` failed to authenticate against %s"
-                    % (username, plugin.__module__))
+        if username:
+            log.warning("User `%s` failed to authenticate against %s"
+                        % (username, plugin.__module__))
     return None
