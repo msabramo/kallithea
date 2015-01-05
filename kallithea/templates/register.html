@@ -12,7 +12,7 @@
         <div id="logo">
           <a href="${h.url('home')}" style="display: block;">
             <div class="header">
-                <img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/>
+                <img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.onerror='';this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/>
             </div>
             %if c.site_name:
              <div class="branding">${c.site_name}</div>
