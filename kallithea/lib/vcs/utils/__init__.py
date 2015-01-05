@@ -158,6 +158,8 @@ def author_email(author):
 
     Regex taken from http://www.regular-expressions.info/email.html
     """
+    if not author:
+        return ''
     import re
     r = author.find('>')
     l = author.find('<')
@@ -180,9 +182,9 @@ def author_name(author):
     It'll try to find an email in the author string and just cut it off
     to get the username
     """
-
+    if not author:
+        return ''
     if not '@' in author:
         return author
-    else:
-        return author.replace(author_email(author), '').replace('<', '')\
-            .replace('>', '').strip()
+    return author.replace(author_email(author), '').replace('<', '')\
+        .replace('>', '').strip()

@@ -241,7 +241,7 @@ class RepoModel(BaseModel):
                 "last_changeset": last_rev(repo.repo_name, cs_cache),
                 "last_rev_raw": cs_cache.get('revision'),
                 "desc": desc(repo.description),
-                "owner": h.person(repo.user.username),
+                "owner": h.person(repo.user),
                 "state": state(repo.repo_state),
                 "rss": rss_lnk(repo.repo_name),
                 "atom": atom_lnk(repo.repo_name),
@@ -251,7 +251,7 @@ class RepoModel(BaseModel):
                 row.update({
                     "action": repo_actions(repo.repo_name),
                     "owner": owner_actions(repo.user.user_id,
-                                           h.person(repo.user.username))
+                                           h.person(repo.user))
                 })
             repos_data.append(row)
 

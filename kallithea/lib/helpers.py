@@ -519,6 +519,8 @@ def email_or_none(author):
 
 
 def person(author, show_attr="username"):
+    """Find the user identified by 'author', return one of the users attributes,
+    default to the username attribute, None if there is no user"""
     # attr to return from fetched user
     person_getter = lambda usr: getattr(usr, show_attr)
 

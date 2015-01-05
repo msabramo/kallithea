@@ -5,7 +5,7 @@
  elems = [
     (_('Members'), len(c.group_members_obj), ''),
     (_('Created on'), h.fmt_date(c.user_group.created_on), ''),
-    (_('Owner'), h.person(c.user_group.user.username), '')
+    (_('Owner'), h.person(c.user_group.user), '')
     ]
 %>
 %for dt, dd, tt in elems:
