@@ -471,7 +471,7 @@ def map_groups(path):
 
 
 def repo2db_mapper(initial_repo_list, remove_obsolete=False,
-                   install_git_hook=False):
+                   install_git_hook=False, user=None):
     """
     maps all repos given in initial_repo_list, non existing repositories
     are created, if remove_obsolete is True it also check for db entries
@@ -486,7 +486,8 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
     from kallithea.model.scm import ScmModel
     sa = meta.Session()
     repo_model = RepoModel()
-    user = User.get_first_admin()
+    if user is None:
+        user = User.get_first_admin()
     added = []
 
     ##creation defaults

@@ -208,7 +208,8 @@ class SettingsController(BaseController):
 
             filesystem_repos = ScmModel().repo_scan()
             added, removed = repo2db_mapper(filesystem_repos, rm_obsolete,
-                                            install_git_hook=install_git_hooks)
+                                            install_git_hook=install_git_hooks,
+                                            user=c.authuser.username)
             _repr = lambda l: ', '.join(map(safe_unicode, l)) or '-'
             h.flash(_('Repositories successfully '
                       'rescanned added: %s ; removed: %s') %
