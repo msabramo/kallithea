@@ -28,6 +28,7 @@ Original author and date, and relevant copyright and licensing information is be
 
 import logging
 from collections import  defaultdict
+from sqlalchemy.orm import joinedload
 
 from kallithea.model import BaseModel
 from kallithea.model.db import ChangesetStatus, PullRequest
@@ -103,6 +104,7 @@ class ChangesetStatusModel(BaseModel):
                      with_revisions=False):
         q = self._get_status_query(repo, revision, pull_request,
                                    with_revisions)
+        q = q.options(joinedload('author'))
         return q.all()
 
     def get_status(self, repo, revision=None, pull_request=None, as_str=True):
