@@ -67,11 +67,6 @@ class ErrorController(BaseController):
         c.error_message = cgi.escape(request.GET.get('code', str(resp.status)))
         c.error_explanation = self.get_error_explanation(resp.status_int)
 
-        #  redirect to when error with given seconds
-        c.redirect_time = 0
-        c.redirect_module = _('Home page')
-        c.url_redirect = "/"
-
         return render('/errors/error_document.html')
 
     def img(self, id):
