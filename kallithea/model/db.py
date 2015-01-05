@@ -1362,7 +1362,8 @@ class Repository(Base, BaseModel):
 
     def statuses(self, revisions):
         """
-        Returns statuses for this repository
+        Returns statuses for this repository.
+        PRs without any votes do _not_ show up as unreviewed.
 
         :param revisions: list of revisions to get statuses for
         """
@@ -1373,16 +1374,8 @@ class Repository(Base, BaseModel):
             .filter(ChangesetStatus.repo == self)\
             .filter(ChangesetStatus.version == 0)\
             .filter(ChangesetStatus.revision.in_(revisions))
+
         grouped = {}
-
-        stat = ChangesetStatus.DEFAULT
-        status_lbl = ChangesetStatus.get_status_lbl(stat)
-        for pr in PullRequest.query().filter(PullRequest.org_repo == self).all():
-            for rev in pr.revisions:
-                pr_id = pr.pull_request_id
-                pr_repo = pr.other_repo.repo_name
-                grouped[rev] = [stat, status_lbl, pr_id, pr_repo]
-
         for stat in statuses.all():
             pr_id = pr_repo = None
             if stat.pull_request:
