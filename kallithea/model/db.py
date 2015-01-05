@@ -2363,8 +2363,10 @@ class Notification(Base, BaseModel):
         for u in recipients:
             assoc = UserNotification()
             assoc.notification = notification
-            u.notifications.append(assoc)
+            assoc.user_id = u.user_id
+            Session().add(assoc)
         Session().add(notification)
+        Session().flush() # assign notificaiton.notification_id
         return notification
 
     @property
