@@ -2388,8 +2388,7 @@ class UserNotification(Base, BaseModel):
     sent_on = Column('sent_on', DateTime(timezone=False), nullable=True, unique=None)
 
     user = relationship('User', lazy="joined")
-    notification = relationship('Notification', lazy="joined",
-                                order_by=lambda: Notification.created_on.desc(),)
+    notification = relationship('Notification', lazy="joined")
 
     def mark_as_read(self):
         self.read = True

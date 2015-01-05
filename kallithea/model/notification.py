@@ -31,6 +31,7 @@ import traceback
 
 from pylons import tmpl_context as c
 from pylons.i18n.translation import _
+from sqlalchemy.orm import joinedload, subqueryload
 
 import kallithea
 from kallithea.lib import helpers as h
@@ -167,7 +168,10 @@ class NotificationModel(BaseModel):
         q = UserNotification.query()\
             .filter(UserNotification.user == user)\
             .join((Notification, UserNotification.notification_id ==
-                                 Notification.notification_id))
+                                 Notification.notification_id))\
+            .options(joinedload('notification'))\
+            .options(subqueryload('notification.created_by_user'))\
+            .order_by(Notification.created_on.desc())
 
         if filter_:
             q = q.filter(Notification.type_.in_(filter_))
