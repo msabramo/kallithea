@@ -793,7 +793,7 @@ class UserGroup(Base, BaseModel):
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     _group_data = Column("group_data", LargeBinary(), nullable=True)  # JSON data
 
-    members = relationship('UserGroupMember', cascade="all, delete, delete-orphan", lazy="joined")
+    members = relationship('UserGroupMember', cascade="all, delete-orphan", lazy="joined")
     users_group_to_perm = relationship('UserGroupToPerm', cascade='all')
     users_group_repo_to_perm = relationship('UserGroupRepoToPerm', cascade='all')
     users_group_repo_group_to_perm = relationship('UserGroupRepoGroupToPerm', cascade='all')
@@ -971,18 +971,18 @@ class Repository(Base, BaseModel):
                              primaryjoin='UserFollowing.follows_repo_id==Repository.repo_id',
                              cascade='all')
     extra_fields = relationship('RepositoryField',
-                                cascade="all, delete, delete-orphan")
+                                cascade="all, delete-orphan")
 
     logs = relationship('UserLog')
-    comments = relationship('ChangesetComment', cascade="all, delete, delete-orphan")
+    comments = relationship('ChangesetComment', cascade="all, delete-orphan")
 
     pull_requests_org = relationship('PullRequest',
                     primaryjoin='PullRequest.org_repo_id==Repository.repo_id',
-                    cascade="all, delete, delete-orphan")
+                    cascade="all, delete-orphan")
 
     pull_requests_other = relationship('PullRequest',
                     primaryjoin='PullRequest.other_repo_id==Repository.repo_id',
-                    cascade="all, delete, delete-orphan")
+                    cascade="all, delete-orphan")
 
     def __unicode__(self):
         return u"<%s('%s:%s')>" % (self.__class__.__name__, self.repo_id,
@@ -2169,7 +2169,7 @@ class ChangesetComment(Base, BaseModel):
 
     author = relationship('User', lazy='joined')
     repo = relationship('Repository')
-    status_change = relationship('ChangesetStatus', cascade="all, delete, delete-orphan")
+    status_change = relationship('ChangesetStatus', cascade="all, delete-orphan")
     pull_request = relationship('PullRequest')
 
     @classmethod
@@ -2283,12 +2283,12 @@ class PullRequest(Base, BaseModel):
 
     author = relationship('User', lazy='joined')
     reviewers = relationship('PullRequestReviewers',
-                             cascade="all, delete, delete-orphan")
+                             cascade="all, delete-orphan")
     org_repo = relationship('Repository', primaryjoin='PullRequest.org_repo_id==Repository.repo_id')
     other_repo = relationship('Repository', primaryjoin='PullRequest.other_repo_id==Repository.repo_id')
     statuses = relationship('ChangesetStatus')
     comments = relationship('ChangesetComment',
-                             cascade="all, delete, delete-orphan")
+                             cascade="all, delete-orphan")
 
     def is_closed(self):
         return self.status == self.STATUS_CLOSED
@@ -2360,7 +2360,7 @@ class Notification(Base, BaseModel):
 
     created_by_user = relationship('User')
     notifications_to_users = relationship('UserNotification', lazy='joined',
-                                          cascade="all, delete, delete-orphan")
+                                          cascade="all, delete-orphan")
 
     @property
     def recipients(self):
