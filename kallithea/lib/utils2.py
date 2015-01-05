@@ -32,7 +32,6 @@ import sys
 import time
 import uuid
 import datetime
-import traceback
 import webob
 import urllib
 import urlobject
@@ -596,14 +595,14 @@ def fix_PATH(os_=None):
 
 
 def obfuscate_url_pw(engine):
-    _url = engine or ''
     from sqlalchemy.engine import url as sa_url
+    from sqlalchemy.exc import ArgumentError
     try:
-        _url = sa_url.make_url(engine)
-        if _url.password:
-            _url.password = 'XXXXX'
-    except Exception:
-        pass
+        _url = sa_url.make_url(engine or '')
+    except ArgumentError:
+        return engine
+    if _url.password:
+        _url.password = 'XXXXX'
     return str(_url)
 
 
@@ -622,9 +621,7 @@ def _extract_extras(env=None):
 
     try:
         rc_extras = json.loads(env['KALLITHEA_EXTRAS'])
-    except Exception:
-        print os.environ
-        print >> sys.stderr, traceback.format_exc()
+    except KeyError:
         rc_extras = {}
 
     try:

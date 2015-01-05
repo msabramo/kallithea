@@ -79,7 +79,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name))
-        except Exception:
+        except vcs.exceptions.VCSError:
             self.fail('no repo %s in filesystem' % repo_name)
 
         RepoModel().delete(repo_name)
@@ -118,7 +118,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name))
-        except Exception:
+        except vcs.exceptions.VCSError:
             self.fail('no repo %s in filesystem' % repo_name)
 
     def test_create_in_group(self):
@@ -166,7 +166,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name_full))
-        except Exception:
+        except vcs.exceptions.VCSError:
             RepoGroupModel().delete(group_name)
             Session().commit()
             self.fail('no repo %s in filesystem' % repo_name)
@@ -254,7 +254,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name_full))
-        except Exception:
+        except vcs.exceptions.VCSError:
             RepoGroupModel().delete(group_name)
             Session().commit()
             self.fail('no repo %s in filesystem' % repo_name)
@@ -310,7 +310,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name_full))
-        except Exception:
+        except vcs.exceptions.VCSError:
             RepoGroupModel().delete(group_name)
             Session().commit()
             self.fail('no repo %s in filesystem' % repo_name)
@@ -384,7 +384,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name))
-        except Exception:
+        except vcs.exceptions.VCSError:
             self.fail('no repo %s in filesystem' % repo_name)
 
         response = self.app.delete(url('repo', repo_name=repo_name))
@@ -435,7 +435,7 @@ class _BaseTest(TestController):
         # test if the repository was created on filesystem
         try:
             vcs.get_repo(os.path.join(TESTS_TMP_PATH, repo_name))
-        except Exception:
+        except vcs.exceptions.VCSError:
             self.fail('no repo %s in filesystem' % repo_name)
 
         response = self.app.delete(url('repo', repo_name=repo_name))

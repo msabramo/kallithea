@@ -1266,7 +1266,7 @@ class Repository(Base, BaseModel):
             try:
                 from pylons import tmpl_context as c
                 uri_tmpl = c.clone_uri_tmpl
-            except Exception:
+            except AttributeError:
                 # in any case if we call this outside of request context,
                 # ie, not having tmpl_context set up
                 pass
@@ -2091,19 +2091,16 @@ class CacheInvalidation(Base, BaseModel):
         inv_objs = Session().query(cls).filter(cls.cache_args == repo_name).all()
         log.debug('for repo %s got %s invalidation objects'
                   % (safe_str(repo_name), inv_objs))
-        try:
-            for inv_obj in inv_objs:
-                log.debug('marking %s key for invalidation based on repo_name=%s'
-                          % (inv_obj, safe_str(repo_name)))
-                if delete:
-                    Session().delete(inv_obj)
-                else:
-                    inv_obj.cache_active = False
-                    Session().add(inv_obj)
-            Session().commit()
-        except Exception:
-            log.error(traceback.format_exc())
-            Session().rollback()
+
+        for inv_obj in inv_objs:
+            log.debug('marking %s key for invalidation based on repo_name=%s'
+                      % (inv_obj, safe_str(repo_name)))
+            if delete:
+                Session().delete(inv_obj)
+            else:
+                inv_obj.cache_active = False
+                Session().add(inv_obj)
+        Session().commit()
 
     @classmethod
     def test_and_set_valid(cls, repo_name, kind, valid_cache_keys=None):
@@ -2119,20 +2116,15 @@ class CacheInvalidation(Base, BaseModel):
         if valid_cache_keys and cache_key in valid_cache_keys:
             return True
 
-        try:
-            inv_obj = cls.query().filter(cls.cache_key == cache_key).scalar()
-            if not inv_obj:
-                inv_obj = CacheInvalidation(cache_key, repo_name)
-            if inv_obj.cache_active:
-                return True
-            inv_obj.cache_active = True
-            Session().add(inv_obj)
-            Session().commit()
-            return False
-        except Exception:
-            log.error(traceback.format_exc())
-            Session().rollback()
-            return False
+        inv_obj = cls.query().filter(cls.cache_key == cache_key).scalar()
+        if not inv_obj:
+            inv_obj = CacheInvalidation(cache_key, repo_name)
+        if inv_obj.cache_active:
+            return True
+        inv_obj.cache_active = True
+        Session().add(inv_obj)
+        Session().commit()
+        return False
 
     @classmethod
     def get_valid_cache_keys(cls):

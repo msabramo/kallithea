@@ -27,6 +27,7 @@ Original author and date, and relevant copyright and licensing information is be
 """
 
 import logging
+import traceback
 from itertools import groupby
 
 from sqlalchemy import or_
@@ -95,11 +96,7 @@ class JournalController(BaseController):
                 .options(joinedload(UserLog.user))\
                 .options(joinedload(UserLog.repository))
             #filter
-            try:
-                journal = _journal_filter(journal, c.search_term)
-            except Exception:
-                # we want this to crash for now
-                raise
+            journal = _journal_filter(journal, c.search_term)
             journal = journal.filter(filtering_criterion)\
                         .order_by(UserLog.action_date.desc())
         else:
@@ -320,6 +317,7 @@ class JournalController(BaseController):
                     Session.commit()
                     return 'ok'
                 except Exception:
+                    log.error(traceback.format_exc())
                     raise HTTPBadRequest()
 
             repo_id = request.POST.get('follows_repo_id')
@@ -330,6 +328,7 @@ class JournalController(BaseController):
                     Session.commit()
                     return 'ok'
                 except Exception:
+                    log.error(traceback.format_exc())
                     raise HTTPBadRequest()
 
         log.debug('token mismatch %s vs %s' % (cur_token, token))

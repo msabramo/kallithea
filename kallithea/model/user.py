@@ -91,23 +91,20 @@ class UserModel(BaseModel):
         # raises UserCreationError if it's not allowed
         check_allowed_create_user(user_data, cur_user)
         from kallithea.lib.auth import get_crypt_password
-        try:
-            new_user = User()
-            for k, v in form_data.items():
-                if k == 'password':
-                    v = get_crypt_password(v)
-                if k == 'firstname':
-                    k = 'name'
-                setattr(new_user, k, v)
 
-            new_user.api_key = generate_api_key(form_data['username'])
-            self.sa.add(new_user)
+        new_user = User()
+        for k, v in form_data.items():
+            if k == 'password':
+                v = get_crypt_password(v)
+            if k == 'firstname':
+                k = 'name'
+            setattr(new_user, k, v)
 
-            log_create_user(new_user.get_dict(), cur_user)
-            return new_user
-        except Exception:
-            log.error(traceback.format_exc())
-            raise
+        new_user.api_key = generate_api_key(form_data['username'])
+        self.sa.add(new_user)
+
+        log_create_user(new_user.get_dict(), cur_user)
+        return new_user
 
     def create_or_update(self, username, password, email, firstname='',
                          lastname='', active=True, admin=False,
@@ -185,104 +182,90 @@ class UserModel(BaseModel):
         from kallithea.model.notification import NotificationModel
         import kallithea.lib.helpers as h
 
-        try:
-            form_data['admin'] = False
-            form_data['extern_name'] = EXTERN_TYPE_INTERNAL
-            form_data['extern_type'] = EXTERN_TYPE_INTERNAL
-            new_user = self.create(form_data)
+        form_data['admin'] = False
+        form_data['extern_name'] = EXTERN_TYPE_INTERNAL
+        form_data['extern_type'] = EXTERN_TYPE_INTERNAL
+        new_user = self.create(form_data)
 
-            self.sa.add(new_user)
-            self.sa.flush()
+        self.sa.add(new_user)
+        self.sa.flush()
 
-            # notification to admins
-            subject = _('New user registration')
-            body = ('New user registration\n'
-                    '---------------------\n'
-                    '- Username: %s\n'
-                    '- Full Name: %s\n'
-                    '- Email: %s\n')
-            body = body % (new_user.username, new_user.full_name, new_user.email)
-            edit_url = h.canonical_url('edit_user', id=new_user.user_id)
-            email_kwargs = {'registered_user_url': edit_url, 'new_username': new_user.username}
-            NotificationModel().create(created_by=new_user, subject=subject,
-                                       body=body, recipients=None,
-                                       type_=Notification.TYPE_REGISTRATION,
-                                       email_kwargs=email_kwargs)
-        except Exception:
-            log.error(traceback.format_exc())
-            raise
+        # notification to admins
+        subject = _('New user registration')
+        body = ('New user registration\n'
+                '---------------------\n'
+                '- Username: %s\n'
+                '- Full Name: %s\n'
+                '- Email: %s\n')
+        body = body % (new_user.username, new_user.full_name, new_user.email)
+        edit_url = h.canonical_url('edit_user', id=new_user.user_id)
+        email_kwargs = {'registered_user_url': edit_url, 'new_username': new_user.username}
+        NotificationModel().create(created_by=new_user, subject=subject,
+                                   body=body, recipients=None,
+                                   type_=Notification.TYPE_REGISTRATION,
+                                   email_kwargs=email_kwargs)
 
     def update(self, user_id, form_data, skip_attrs=[]):
         from kallithea.lib.auth import get_crypt_password
-        try:
-            user = self.get(user_id, cache=False)
-            if user.username == User.DEFAULT_USER:
-                raise DefaultUserException(
-                                _("You can't Edit this user since it's "
-                                  "crucial for entire application"))
 
-            for k, v in form_data.items():
-                if k in skip_attrs:
-                    continue
-                if k == 'new_password' and v:
-                    user.password = get_crypt_password(v)
-                else:
-                    # old legacy thing orm models store firstname as name,
-                    # need proper refactor to username
-                    if k == 'firstname':
-                        k = 'name'
-                    setattr(user, k, v)
-            self.sa.add(user)
-        except Exception:
-            log.error(traceback.format_exc())
-            raise
+        user = self.get(user_id, cache=False)
+        if user.username == User.DEFAULT_USER:
+            raise DefaultUserException(
+                            _("You can't Edit this user since it's "
+                              "crucial for entire application"))
+
+        for k, v in form_data.items():
+            if k in skip_attrs:
+                continue
+            if k == 'new_password' and v:
+                user.password = get_crypt_password(v)
+            else:
+                # old legacy thing orm models store firstname as name,
+                # need proper refactor to username
+                if k == 'firstname':
+                    k = 'name'
+                setattr(user, k, v)
+        self.sa.add(user)
 
     def update_user(self, user, **kwargs):
         from kallithea.lib.auth import get_crypt_password
-        try:
-            user = self._get_user(user)
-            if user.username == User.DEFAULT_USER:
-                raise DefaultUserException(
-                    _("You can't Edit this user since it's"
-                      " crucial for entire application")
-                )
 
-            for k, v in kwargs.items():
-                if k == 'password' and v:
-                    v = get_crypt_password(v)
+        user = self._get_user(user)
+        if user.username == User.DEFAULT_USER:
+            raise DefaultUserException(
+                _("You can't Edit this user since it's"
+                  " crucial for entire application")
+            )
 
-                setattr(user, k, v)
-            self.sa.add(user)
-            return user
-        except Exception:
-            log.error(traceback.format_exc())
-            raise
+        for k, v in kwargs.items():
+            if k == 'password' and v:
+                v = get_crypt_password(v)
+
+            setattr(user, k, v)
+        self.sa.add(user)
+        return user
 
     def delete(self, user, cur_user=None):
         if not cur_user:
             cur_user = getattr(get_current_authuser(), 'username', None)
         user = self._get_user(user)
 
-        try:
-            if user.username == User.DEFAULT_USER:
-                raise DefaultUserException(
-                    _(u"You can't remove this user since it's"
-                      " crucial for entire application")
-                )
-            if user.repositories:
-                repos = [x.repo_name for x in user.repositories]
-                raise UserOwnsReposException(
-                    _(u'user "%s" still owns %s repositories and cannot be '
-                      'removed. Switch owners or remove those repositories. %s')
-                    % (user.username, len(repos), ', '.join(repos))
-                )
-            self.sa.delete(user)
+        if user.username == User.DEFAULT_USER:
+            raise DefaultUserException(
+                _(u"You can't remove this user since it's"
+                  " crucial for entire application")
+            )
+        if user.repositories:
+            repos = [x.repo_name for x in user.repositories]
+            raise UserOwnsReposException(
+                _(u'user "%s" still owns %s repositories and cannot be '
+                  'removed. Switch owners or remove those repositories. %s')
+                % (user.username, len(repos), ', '.join(repos))
+            )
+        self.sa.delete(user)
 
-            from kallithea.lib.hooks import log_delete_user
-            log_delete_user(user.get_dict(), cur_user)
-        except Exception:
-            log.error(traceback.format_exc())
-            raise
+        from kallithea.lib.hooks import log_delete_user
+        log_delete_user(user.get_dict(), cur_user)
 
     def reset_password_link(self, data):
         from kallithea.lib.celerylib import tasks, run_task
@@ -290,29 +273,25 @@ class UserModel(BaseModel):
         import kallithea.lib.helpers as h
 
         user_email = data['email']
-        try:
-            user = User.get_by_email(user_email)
-            if user:
-                log.debug('password reset user found %s' % user)
-                link = h.canonical_url('reset_password_confirmation', key=user.api_key)
-                reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
-                body = EmailNotificationModel().get_email_tmpl(reg_type,
-                                                               'txt',
-                                                               user=user.short_contact,
-                                                               reset_url=link)
-                html_body = EmailNotificationModel().get_email_tmpl(reg_type,
-                                                               'html',
-                                                               user=user.short_contact,
-                                                               reset_url=link)
-                log.debug('sending email')
-                run_task(tasks.send_email, [user_email],
-                         _("Password reset link"), body, html_body)
-                log.info('send new password mail to %s' % user_email)
-            else:
-                log.debug("password reset email %s not found" % user_email)
-        except Exception:
-            log.error(traceback.format_exc())
-            return False
+        user = User.get_by_email(user_email)
+        if user:
+            log.debug('password reset user found %s' % user)
+            link = h.canonical_url('reset_password_confirmation', key=user.api_key)
+            reg_type = EmailNotificationModel.TYPE_PASSWORD_RESET
+            body = EmailNotificationModel().get_email_tmpl(reg_type,
+                                                           'txt',
+                                                           user=user.short_contact,
+                                                           reset_url=link)
+            html_body = EmailNotificationModel().get_email_tmpl(reg_type,
+                                                           'html',
+                                                           user=user.short_contact,
+                                                           reset_url=link)
+            log.debug('sending email')
+            run_task(tasks.send_email, [user_email],
+                     _("Password reset link"), body, html_body)
+            log.info('send new password mail to %s' % user_email)
+        else:
+            log.debug("password reset email %s not found" % user_email)
 
         return True
 
@@ -320,32 +299,21 @@ class UserModel(BaseModel):
         from kallithea.lib.celerylib import tasks, run_task
         from kallithea.lib import auth
         user_email = data['email']
-        pre_db = True
-        try:
-            user = User.get_by_email(user_email)
-            new_passwd = auth.PasswordGenerator().gen_password(8,
-                            auth.PasswordGenerator.ALPHABETS_BIG_SMALL)
-            if user:
-                user.password = auth.get_crypt_password(new_passwd)
-                Session().add(user)
-                Session().commit()
-                log.info('change password for %s' % user_email)
-            if new_passwd is None:
-                raise Exception('unable to generate new password')
+        user = User.get_by_email(user_email)
+        new_passwd = auth.PasswordGenerator().gen_password(8,
+                        auth.PasswordGenerator.ALPHABETS_BIG_SMALL)
+        if user:
+            user.password = auth.get_crypt_password(new_passwd)
+            Session().add(user)
+            Session().commit()
+            log.info('change password for %s' % user_email)
+        if new_passwd is None:
+            raise Exception('unable to generate new password')
 
-            pre_db = False
-            run_task(tasks.send_email, [user_email],
-                     _('Your new password'),
-                     _('Your new Kallithea password:%s') % (new_passwd,))
-            log.info('send new password mail to %s' % user_email)
-
-        except Exception:
-            log.error('Failed to update user password')
-            log.error(traceback.format_exc())
-            if pre_db:
-                # we rollback only if local db stuff fails. If it goes into
-                # run_task, we're pass rollback state this wouldn't work then
-                Session().rollback()
+        run_task(tasks.send_email, [user_email],
+                 _('Your new password'),
+                 _('Your new Kallithea password:%s') % (new_passwd,))
+        log.info('send new password mail to %s' % user_email)
 
         return True
 
@@ -364,29 +332,21 @@ class UserModel(BaseModel):
         if user_id is None and api_key is None and username is None:
             raise Exception('You need to pass user_id, api_key or username')
 
-        try:
-            dbuser = None
-            if user_id:
-                dbuser = self.get(user_id)
-            elif api_key:
-                dbuser = self.get_by_api_key(api_key)
-            elif username:
-                dbuser = self.get_by_username(username)
+        dbuser = None
+        if user_id:
+            dbuser = self.get(user_id)
+        elif api_key:
+            dbuser = self.get_by_api_key(api_key)
+        elif username:
+            dbuser = self.get_by_username(username)
 
-            if dbuser is not None and dbuser.active:
-                log.debug('filling %s data' % dbuser)
-                for k, v in dbuser.get_dict().iteritems():
-                    if k not in ['api_keys', 'permissions']:
-                        setattr(auth_user, k, v)
-            else:
-                return False
-
-        except Exception:
-            log.error(traceback.format_exc())
-            auth_user.is_authenticated = False
-            return False
-
-        return True
+        if dbuser is not None and dbuser.active:
+            log.debug('filling %s data' % dbuser)
+            for k, v in dbuser.get_dict().iteritems():
+                if k not in ['api_keys', 'permissions']:
+                    setattr(auth_user, k, v)
+            return True
+        return False
 
     def has_perm(self, user, perm):
         perm = self._get_perm(perm)

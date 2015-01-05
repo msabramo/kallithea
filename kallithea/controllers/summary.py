@@ -118,8 +118,6 @@ class SummaryController(BaseRepoController):
                 pass
             except EmptyRepositoryError:
                 pass
-            except Exception:
-                log.error(traceback.format_exc())
 
             return readme_data, readme_file
 

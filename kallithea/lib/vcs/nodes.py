@@ -340,9 +340,9 @@ class FileNode(Node):
 
                 #try with pygments
                 try:
-                    from pygments.lexers import get_lexer_for_filename
-                    mt = get_lexer_for_filename(self.name).mimetypes
-                except Exception:
+                    from pygments import lexers
+                    mt = lexers.get_lexer_for_filename(self.name).mimetypes
+                except lexers.ClassNotFound:
                     mt = None
 
                 if mt:

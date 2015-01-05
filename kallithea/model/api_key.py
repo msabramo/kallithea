@@ -28,7 +28,6 @@ Original author and date, and relevant copyright and licensing information is be
 from __future__ import with_statement
 import time
 import logging
-import traceback
 from sqlalchemy import or_
 
 from kallithea.lib.utils2 import generate_api_key
@@ -71,11 +70,7 @@ class ApiKeyModel(BaseModel):
             api_key = api_key.filter(UserApiKeys.user_id == user.user_id)
 
         api_key = api_key.scalar()
-        try:
-            Session().delete(api_key)
-        except Exception:
-            log.error(traceback.format_exc())
-            raise
+        Session().delete(api_key)
 
     def get_api_keys(self, user, show_expired=True):
         user = self._get_user(user)

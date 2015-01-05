@@ -344,13 +344,8 @@ class MercurialRepository(BaseRepository):
                 opts = {}
                 if not update_after_clone:
                     opts.update({'noupdate': True})
-                try:
-                    MercurialRepository._check_url(url, self.baseui)
-                    clone(self.baseui, url, self.path, **opts)
-#                except urllib2.URLError:
-#                    raise Abort("Got HTTP 404 error")
-                except Exception:
-                    raise
+                MercurialRepository._check_url(url, self.baseui)
+                clone(self.baseui, url, self.path, **opts)
 
                 # Don't try to create if we've already cloned repo
                 create = False
