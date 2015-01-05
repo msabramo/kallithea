@@ -32,8 +32,9 @@ import shutil
 import logging
 import traceback
 from datetime import datetime
-from kallithea.lib.utils import make_ui
+from sqlalchemy.orm import subqueryload
 
+from kallithea.lib.utils import make_ui
 from kallithea.lib.vcs.backends import get_backend
 from kallithea.lib.compat import json
 from kallithea.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
@@ -44,7 +45,7 @@ from kallithea.lib.hooks import log_delete_repository
 from kallithea.model import BaseModel
 from kallithea.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \
     UserRepoGroupToPerm, UserGroupRepoGroupToPerm, User, Permission, \
-    Statistics, UserGroup, Ui, RepoGroup, \
+    Statistics, UserGroup, UserGroupMember, Ui, RepoGroup, \
     Setting, RepositoryField
 
 from kallithea.lib import helpers as h
@@ -146,7 +147,9 @@ class RepoModel(BaseModel):
 
     def get_user_groups_js(self):
         user_groups = self.sa.query(UserGroup) \
-            .filter(UserGroup.users_group_active == True).all()
+            .filter(UserGroup.users_group_active == True) \
+            .options(subqueryload(UserGroup.members)) \
+            .all()
         user_groups = UserGroupList(user_groups, perm_set=['usergroup.read',
                                                            'usergroup.write',
                                                            'usergroup.admin'])
