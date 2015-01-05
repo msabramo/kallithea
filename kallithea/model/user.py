@@ -269,6 +269,13 @@ class UserModel(BaseModel):
                   'removed. Switch owners or remove those repository groups: %s')
                 % (user.username, len(repogroups), ', '.join(repogroups))
             )
+        if user.user_groups:
+            usergroups = [x.users_group_name for x in user.user_groups]
+            raise UserOwnsReposException(
+                _(u'User "%s" still owns %s user groups and cannot be '
+                  'removed. Switch owners or remove those user groups: %s')
+                % (user.username, len(usergroups), ', '.join(usergroups))
+            )
         self.sa.delete(user)
 
         from kallithea.lib.hooks import log_delete_user
