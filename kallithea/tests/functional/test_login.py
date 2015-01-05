@@ -347,7 +347,7 @@ class TestLoginController(TestController):
             self.assertEqual(['ChangesetController:changeset_raw'],
                              whitelist['api_access_controllers_whitelist'])
 
-            new_api_key = ApiKeyModel().create(TEST_USER_ADMIN_LOGIN, 'test')
+            new_api_key = ApiKeyModel().create(TEST_USER_ADMIN_LOGIN, u'test')
             Session().commit()
             with fixture.anon_access(False):
                 self.app.get(url(controller='changeset',
@@ -361,7 +361,7 @@ class TestLoginController(TestController):
             self.assertEqual(['ChangesetController:changeset_raw'],
                              whitelist['api_access_controllers_whitelist'])
 
-            new_api_key = ApiKeyModel().create(TEST_USER_ADMIN_LOGIN, 'test')
+            new_api_key = ApiKeyModel().create(TEST_USER_ADMIN_LOGIN, u'test')
             Session().commit()
             #patch the api key and make it expired
             new_api_key.expires = 0

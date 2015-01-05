@@ -5,7 +5,7 @@ from kallithea.model.db import User, Gist
 
 
 def _create_gist(f_name, content='some gist', lifetime=-1,
-                 description='gist-desc', gist_type='public',
+                 description=u'gist-desc', gist_type='public',
                  owner=TEST_USER_ADMIN_LOGIN):
     gist_mapping = {
         f_name: {'content': content}
@@ -33,7 +33,7 @@ class TestGistsController(TestController):
 
         g1 = _create_gist('gist1').gist_access_id
         g2 = _create_gist('gist2', lifetime=1400).gist_access_id
-        g3 = _create_gist('gist3', description='gist3-desc').gist_access_id
+        g3 = _create_gist('gist3', description=u'gist3-desc').gist_access_id
         g4 = _create_gist('gist4', gist_type='private').gist_access_id
         response = self.app.get(url('gists'))
         # Test response...

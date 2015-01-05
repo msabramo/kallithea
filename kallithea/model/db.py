@@ -2275,7 +2275,7 @@ class PullRequest(Base, BaseModel):
 
     @revisions.setter
     def revisions(self, val):
-        self._revisions = ':'.join(val)
+        self._revisions = safe_unicode(':'.join(val))
 
     @property
     def org_ref_parts(self):
