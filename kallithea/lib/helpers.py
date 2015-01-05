@@ -1283,6 +1283,16 @@ def urlify_changesets(text_, repository):
 
     return re.sub(r'(?:^|(?<=[\s(),]))([0-9a-fA-F]{12,40})(?=$|\s|[.,:()])', url_func, text_)
 
+def linkify_others(t, l):
+    urls = re.compile(r'(\<a.*?\<\/a\>)',)
+    links = []
+    for e in urls.split(t):
+        if not urls.match(e):
+            links.append('<a class="message-link" href="%s">%s</a>' % (l, e))
+        else:
+            links.append(e)
+
+    return ''.join(links)
 
 def urlify_commit(text_, repository, link_=None):
     """
@@ -1294,22 +1304,8 @@ def urlify_commit(text_, repository, link_=None):
     :param repository:
     :param link_: changeset link
     """
-    import traceback
-    from pylons import url  # doh, we need to re-import url to mock it later
-
     def escaper(string):
         return string.replace('<', '&lt;').replace('>', '&gt;')
-
-    def linkify_others(t, l):
-        urls = re.compile(r'(\<a.*?\<\/a\>)',)
-        links = []
-        for e in urls.split(t):
-            if not urls.match(e):
-                links.append('<a class="message-link" href="%s">%s</a>' % (l, e))
-            else:
-                links.append(e)
-
-        return ''.join(links)
 
     # urlify changesets - extract revisions and make link out of them
     newtext = urlify_changesets(escaper(text_), repository)
@@ -1317,7 +1313,13 @@ def urlify_commit(text_, repository, link_=None):
     # extract http/https links and make them real urls
     newtext = urlify_text(newtext, safe=False)
 
+    newtext = urlify_issues(newtext, repository, link_)
+
+    return literal(newtext)
+
+def urlify_issues(newtext, repository, link_=None):
     try:
+        import traceback
         from kallithea import CONFIG
         conf = CONFIG
 
@@ -1329,8 +1331,9 @@ def urlify_commit(text_, repository, link_=None):
             and 'issue_prefix%s' % x.group(1) in conf
         ]
 
-        log.debug('found issue server suffixes `%s` during valuation of: %s'
-                  % (','.join(valid_indices), newtext))
+        if valid_indices:
+            log.debug('found issue server suffixes `%s` during valuation of: %s'
+                      % (','.join(valid_indices), newtext))
 
         for pattern_index in valid_indices:
             ISSUE_PATTERN = conf.get('issue_pat%s' % pattern_index)
@@ -1377,8 +1380,7 @@ def urlify_commit(text_, repository, link_=None):
     except Exception:
         log.error(traceback.format_exc())
         pass
-
-    return literal(newtext)
+    return newtext
 
 
 def rst(source):
