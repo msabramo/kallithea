@@ -2149,7 +2149,10 @@ class ChangesetComment(Base, BaseModel):
 
     author = relationship('User', lazy='joined')
     repo = relationship('Repository')
-    status_change = relationship('ChangesetStatus', cascade="all, delete-orphan")
+    # status_change is frequently used directly in templates - make it a lazy
+    # join to avoid fetching each related ChangesetStatus on demand.
+    # There will only be one ChangesetStatus referencing each comment so the join will not explode.
+    status_change = relationship('ChangesetStatus', cascade="all, delete-orphan", lazy='joined')
     pull_request = relationship('PullRequest')
 
     @classmethod
