@@ -2132,6 +2132,7 @@ class ChangesetComment(Base, BaseModel):
     __tablename__ = 'changeset_comments'
     __table_args__ = (
         Index('cc_revision_idx', 'revision'),
+        Index('cc_pull_request_id_idx', 'pull_request_id'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True},
     )
@@ -2178,6 +2179,8 @@ class ChangesetStatus(Base, BaseModel):
     __table_args__ = (
         Index('cs_revision_idx', 'revision'),
         Index('cs_version_idx', 'version'),
+        Index('cs_pull_request_id_idx', 'pull_request_id'),
+        Index('cs_changeset_comment_id_idx', 'changeset_comment_id'),
         UniqueConstraint('repo_id', 'revision', 'version'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True}
@@ -2227,6 +2230,8 @@ class ChangesetStatus(Base, BaseModel):
 class PullRequest(Base, BaseModel):
     __tablename__ = 'pull_requests'
     __table_args__ = (
+        Index('pr_org_repo_id_idx', 'org_repo_id'),
+        Index('pr_other_repo_id_idx', 'other_repo_id'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True},
     )
