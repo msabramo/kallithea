@@ -2129,11 +2129,12 @@ class CacheInvalidation(Base, BaseModel):
             inv_obj = cls.query().filter(cls.cache_key == cache_key).scalar()
             if not inv_obj:
                 inv_obj = CacheInvalidation(cache_key, repo_name)
-            was_valid = inv_obj.cache_active
+            if inv_obj.cache_active:
+                return True
             inv_obj.cache_active = True
             Session().add(inv_obj)
             Session().commit()
-            return was_valid
+            return False
         except Exception:
             log.error(traceback.format_exc())
             Session().rollback()
