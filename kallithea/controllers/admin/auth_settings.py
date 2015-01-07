@@ -57,6 +57,7 @@ class AuthSettingsController(BaseController):
             'kallithea.lib.auth_modules.auth_container',
             'kallithea.lib.auth_modules.auth_ldap',
             'kallithea.lib.auth_modules.auth_crowd',
+            'kallithea.lib.auth_modules.auth_pam'
         ]
         c.enabled_plugins = Setting.get_auth_plugins()
 
