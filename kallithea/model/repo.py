@@ -32,8 +32,9 @@ import shutil
 import logging
 import traceback
 from datetime import datetime
-from kallithea.lib.utils import make_ui
+from sqlalchemy.orm import subqueryload
 
+from kallithea.lib.utils import make_ui
 from kallithea.lib.vcs.backends import get_backend
 from kallithea.lib.compat import json
 from kallithea.lib.utils2 import LazyProperty, safe_str, safe_unicode, \
@@ -44,7 +45,7 @@ from kallithea.lib.hooks import log_delete_repository
 from kallithea.model import BaseModel
 from kallithea.model.db import Repository, UserRepoToPerm, UserGroupRepoToPerm, \
     UserRepoGroupToPerm, UserGroupRepoGroupToPerm, User, Permission, \
-    Statistics, UserGroup, Ui, RepoGroup, \
+    Statistics, UserGroup, UserGroupMember, Ui, RepoGroup, \
     Setting, RepositoryField
 
 from kallithea.lib import helpers as h
@@ -146,7 +147,9 @@ class RepoModel(BaseModel):
 
     def get_user_groups_js(self):
         user_groups = self.sa.query(UserGroup) \
-            .filter(UserGroup.users_group_active == True).all()
+            .filter(UserGroup.users_group_active == True) \
+            .options(subqueryload(UserGroup.members)) \
+            .all()
         user_groups = UserGroupList(user_groups, perm_set=['usergroup.read',
                                                            'usergroup.write',
                                                            'usergroup.admin'])
@@ -238,7 +241,7 @@ class RepoModel(BaseModel):
                 "last_changeset": last_rev(repo.repo_name, cs_cache),
                 "last_rev_raw": cs_cache.get('revision'),
                 "desc": desc(repo.description),
-                "owner": h.person(repo.user.username),
+                "owner": h.person(repo.user),
                 "state": state(repo.repo_state),
                 "rss": rss_lnk(repo.repo_name),
                 "atom": atom_lnk(repo.repo_name),
@@ -248,7 +251,7 @@ class RepoModel(BaseModel):
                 row.update({
                     "action": repo_actions(repo.repo_name),
                     "owner": owner_actions(repo.user.user_id,
-                                           h.person(repo.user.username))
+                                           h.person(repo.user))
                 })
             repos_data.append(row)
 

@@ -22,6 +22,7 @@ import logging
 from collections import defaultdict
 from pylons.i18n.translation import _
 from webhelpers.pylonslib.secure_form import authentication_token
+import sqlalchemy
 
 from formencode.validators import (
     UnicodeString, OneOf, Int, Number, Regex, Email, Bool, StringBoolean, Set,
@@ -87,7 +88,7 @@ def UniqueListFromString():
             value = aslist(value, ',')
             seen = set()
             return [c for c in value if not (c in seen or seen.add(c))]
-    
+
         def empty_value(self, value):
             return []
 
@@ -142,7 +143,7 @@ def ValidRepoUser():
             try:
                 User.query().filter(User.active == True)\
                     .filter(User.username == value).one()
-            except Exception:
+            except sqlalchemy.exc.InvalidRequestError: # NoResultFound/MultipleResultsFound
                 msg = M(self, 'invalid_username', state, username=value)
                 raise formencode.Invalid(msg, value, state,
                     error_dict=dict(username=msg)

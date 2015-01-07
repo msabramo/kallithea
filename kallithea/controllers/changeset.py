@@ -75,10 +75,7 @@ def get_ignore_ws(fid, GET):
     ig_ws_global = GET.get('ignorews')
     ig_ws = filter(lambda k: k.startswith('WS'), GET.getall(fid))
     if ig_ws:
-        try:
-            return int(ig_ws[0].split(':')[-1])
-        except Exception:
-            pass
+        return int(ig_ws[0].split(':')[-1])
     return ig_ws_global
 
 

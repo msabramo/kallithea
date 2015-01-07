@@ -157,6 +157,12 @@ def get_new_dir(title):
     return get_normalized_path(path)
 
 
+import logging
+
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
+
 def init_stack(config=None):
     if not config:
         config = pylons.test.pylonsapp.config
@@ -167,6 +173,8 @@ def init_stack(config=None):
     # Initialize a translator for tests that utilize i18n
     translator = _get_translator(pylons.config.get('lang'))
     pylons.translator._push_object(translator)
+    h = NullHandler()
+    logging.getLogger("kallithea").addHandler(h)
 
 
 class BaseTestCase(unittest.TestCase):

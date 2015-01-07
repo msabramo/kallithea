@@ -7,7 +7,7 @@
     (_('Total repositories'), c.repo_group.repositories_recursive_count, ''),
     (_('Children groups'), c.repo_group.children.count(), ''),
     (_('Created on'), h.fmt_date(c.repo_group.created_on), ''),
-    (_('Owner'), h.person(c.repo_group.user.username), '')
+    (_('Owner'), h.person(c.repo_group.user), '')
  ]
 %>
 %for dt, dd, tt in elems:

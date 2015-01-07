@@ -519,6 +519,8 @@ def email_or_none(author):
 
 
 def person(author, show_attr="username"):
+    """Find the user identified by 'author', return one of the users attributes,
+    default to the username attribute, None if there is no user"""
     # attr to return from fetched user
     person_getter = lambda usr: getattr(usr, show_attr)
 
@@ -1281,8 +1283,18 @@ def urlify_changesets(text_, repository):
          'rev': rev,
         }
 
-    return re.sub(r'(?:^|(?<=\s))([0-9a-fA-F]{12,40})(?=$|\s|[.,:])', url_func, text_)
+    return re.sub(r'(?:^|(?<=[\s(),]))([0-9a-fA-F]{12,40})(?=$|\s|[.,:()])', url_func, text_)
 
+def linkify_others(t, l):
+    urls = re.compile(r'(\<a.*?\<\/a\>)',)
+    links = []
+    for e in urls.split(t):
+        if not urls.match(e):
+            links.append('<a class="message-link" href="%s">%s</a>' % (l, e))
+        else:
+            links.append(e)
+
+    return ''.join(links)
 
 def urlify_commit(text_, repository, link_=None):
     """
@@ -1294,22 +1306,8 @@ def urlify_commit(text_, repository, link_=None):
     :param repository:
     :param link_: changeset link
     """
-    import traceback
-    from pylons import url  # doh, we need to re-import url to mock it later
-
     def escaper(string):
         return string.replace('<', '&lt;').replace('>', '&gt;')
-
-    def linkify_others(t, l):
-        urls = re.compile(r'(\<a.*?\<\/a\>)',)
-        links = []
-        for e in urls.split(t):
-            if not urls.match(e):
-                links.append('<a class="message-link" href="%s">%s</a>' % (l, e))
-            else:
-                links.append(e)
-
-        return ''.join(links)
 
     # urlify changesets - extract revisions and make link out of them
     newtext = urlify_changesets(escaper(text_), repository)
@@ -1317,68 +1315,68 @@ def urlify_commit(text_, repository, link_=None):
     # extract http/https links and make them real urls
     newtext = urlify_text(newtext, safe=False)
 
-    try:
-        from kallithea import CONFIG
-        conf = CONFIG
+    newtext = urlify_issues(newtext, repository, link_)
 
-        # allow multiple issue servers to be used
-        valid_indices = [
-            x.group(1)
-            for x in map(lambda x: re.match(r'issue_pat(.*)', x), conf.keys())
-            if x and 'issue_server_link%s' % x.group(1) in conf
-            and 'issue_prefix%s' % x.group(1) in conf
-        ]
+    return literal(newtext)
 
+def urlify_issues(newtext, repository, link_=None):
+    from kallithea import CONFIG as conf
+
+    # allow multiple issue servers to be used
+    valid_indices = [
+        x.group(1)
+        for x in map(lambda x: re.match(r'issue_pat(.*)', x), conf.keys())
+        if x and 'issue_server_link%s' % x.group(1) in conf
+        and 'issue_prefix%s' % x.group(1) in conf
+    ]
+
+    if valid_indices:
         log.debug('found issue server suffixes `%s` during valuation of: %s'
                   % (','.join(valid_indices), newtext))
 
-        for pattern_index in valid_indices:
-            ISSUE_PATTERN = conf.get('issue_pat%s' % pattern_index)
-            ISSUE_SERVER_LNK = conf.get('issue_server_link%s' % pattern_index)
-            ISSUE_PREFIX = conf.get('issue_prefix%s' % pattern_index)
+    for pattern_index in valid_indices:
+        ISSUE_PATTERN = conf.get('issue_pat%s' % pattern_index)
+        ISSUE_SERVER_LNK = conf.get('issue_server_link%s' % pattern_index)
+        ISSUE_PREFIX = conf.get('issue_prefix%s' % pattern_index)
 
-            log.debug('pattern suffix `%s` PAT:%s SERVER_LINK:%s PREFIX:%s'
-                      % (pattern_index, ISSUE_PATTERN, ISSUE_SERVER_LNK,
-                         ISSUE_PREFIX))
+        log.debug('pattern suffix `%s` PAT:%s SERVER_LINK:%s PREFIX:%s'
+                  % (pattern_index, ISSUE_PATTERN, ISSUE_SERVER_LNK,
+                     ISSUE_PREFIX))
 
-            URL_PAT = re.compile(r'%s' % ISSUE_PATTERN)
+        URL_PAT = re.compile(r'%s' % ISSUE_PATTERN)
 
-            def url_func(match_obj):
-                pref = ''
-                if match_obj.group().startswith(' '):
-                    pref = ' '
+        def url_func(match_obj):
+            pref = ''
+            if match_obj.group().startswith(' '):
+                pref = ' '
 
-                issue_id = ''.join(match_obj.groups())
-                issue_url = ISSUE_SERVER_LNK.replace('{id}', issue_id)
-                if repository:
-                    issue_url = issue_url.replace('{repo}', repository)
-                    repo_name = repository.split(URL_SEP)[-1]
-                    issue_url = issue_url.replace('{repo_name}', repo_name)
+            issue_id = ''.join(match_obj.groups())
+            issue_url = ISSUE_SERVER_LNK.replace('{id}', issue_id)
+            if repository:
+                issue_url = issue_url.replace('{repo}', repository)
+                repo_name = repository.split(URL_SEP)[-1]
+                issue_url = issue_url.replace('{repo_name}', repo_name)
 
-                return (
-                    '%(pref)s<a class="%(cls)s" href="%(url)s">'
-                    '%(issue-prefix)s%(id-repr)s'
-                    '</a>'
-                    ) % {
-                     'pref': pref,
-                     'cls': 'issue-tracker-link',
-                     'url': issue_url,
-                     'id-repr': issue_id,
-                     'issue-prefix': ISSUE_PREFIX,
-                     'serv': ISSUE_SERVER_LNK,
-                    }
-            newtext = URL_PAT.sub(url_func, newtext)
-            log.debug('processed prefix:`%s` => %s' % (pattern_index, newtext))
+            return (
+                '%(pref)s<a class="%(cls)s" href="%(url)s">'
+                '%(issue-prefix)s%(id-repr)s'
+                '</a>'
+                ) % {
+                 'pref': pref,
+                 'cls': 'issue-tracker-link',
+                 'url': issue_url,
+                 'id-repr': issue_id,
+                 'issue-prefix': ISSUE_PREFIX,
+                 'serv': ISSUE_SERVER_LNK,
+                }
+        newtext = URL_PAT.sub(url_func, newtext)
+        log.debug('processed prefix:`%s` => %s' % (pattern_index, newtext))
 
-        # if we actually did something above
-        if link_:
-            # wrap not links into final link => link_
-            newtext = linkify_others(newtext, link_)
-    except Exception:
-        log.error(traceback.format_exc())
-        pass
-
-    return literal(newtext)
+    # if we actually did something above
+    if link_:
+        # wrap not links into final link => link_
+        newtext = linkify_others(newtext, link_)
+    return newtext
 
 
 def rst(source):

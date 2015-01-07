@@ -293,12 +293,8 @@ class KallitheaExternalAuthPlugin(KallitheaAuthPluginBase):
             Session().flush()
             # enforce user is just in given groups, all of them has to be ones
             # created from plugins. We store this info in _group_data JSON field
-            try:
-                groups = auth['groups'] or []
-                UserGroupModel().enforce_groups(user, groups, self.name)
-            except Exception:
-                # for any reason group syncing fails, we should proceed with login
-                log.error(traceback.format_exc())
+            groups = auth['groups'] or []
+            UserGroupModel().enforce_groups(user, groups, self.name)
             Session().commit()
         return auth
 
@@ -417,6 +413,7 @@ def authenticate(username, password, environ=None):
             return plugin_user
 
         # we failed to Auth because .auth() method didn't return proper the user
-        log.warning("User `%s` failed to authenticate against %s"
-                    % (username, plugin.__module__))
+        if username:
+            log.warning("User `%s` failed to authenticate against %s"
+                        % (username, plugin.__module__))
     return None

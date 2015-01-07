@@ -59,13 +59,10 @@ __all__ = ['whoosh_index', 'get_commits_stats', 'send_email']
 def get_logger(cls):
     if CELERY_ON:
         try:
-            log = cls.get_logger()
-        except Exception:
-            log = logging.getLogger(__name__)
-    else:
-        log = logging.getLogger(__name__)
-
-    return log
+            return cls.get_logger()
+        except AttributeError:
+            pass
+    return logging.getLogger(__name__)
 
 
 @task(ignore_result=True)

@@ -152,10 +152,7 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
 
-    try:
-        return _run(argv)
-    except Exception:
-        raise
+    return _run(argv)
 
 
 if __name__ == '__main__':

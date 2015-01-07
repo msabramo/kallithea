@@ -208,12 +208,13 @@ class SettingsController(BaseController):
 
             filesystem_repos = ScmModel().repo_scan()
             added, removed = repo2db_mapper(filesystem_repos, rm_obsolete,
-                                            install_git_hook=install_git_hooks)
-            _repr = lambda l: ', '.join(map(safe_unicode, l)) or '-'
-            h.flash(_('Repositories successfully '
-                      'rescanned added: %s ; removed: %s') %
-                    (_repr(added), _repr(removed)),
-                    category='success')
+                                            install_git_hook=install_git_hooks,
+                                            user=c.authuser.username)
+            h.flash(h.literal(_('Repositories successfully rescanned. Added: %s. Removed: %s.') %
+                (', '.join(h.link_to(safe_unicode(repo_name), h.url('summary_home', repo_name=repo_name))
+                 for repo_name in added) or '-',
+                 ', '.join(h.escape(safe_unicode(repo_name)) for repo_name in removed) or '-')),
+                category='success')
             return redirect(url('admin_settings_mapping'))
 
         defaults = Setting.get_app_settings()

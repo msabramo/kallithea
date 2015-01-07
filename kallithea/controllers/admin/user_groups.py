@@ -138,16 +138,17 @@ class UserGroupsController(BaseController):
         users_group_form = UserGroupForm()()
         try:
             form_result = users_group_form.to_python(dict(request.POST))
-            UserGroupModel().create(name=form_result['users_group_name'],
-                                    description=form_result['user_group_description'],
-                                    owner=self.authuser.user_id,
-                                    active=form_result['users_group_active'])
+            ug = UserGroupModel().create(name=form_result['users_group_name'],
+                                         description=form_result['user_group_description'],
+                                         owner=self.authuser.user_id,
+                                         active=form_result['users_group_active'])
 
             gr = form_result['users_group_name']
             action_logger(self.authuser,
                           'admin_created_users_group:%s' % gr,
                           None, self.ip_addr, self.sa)
-            h.flash(_('Created user group %s') % gr, category='success')
+            h.flash(h.literal(_('Created user group %s') % h.link_to(h.escape(gr), url('edit_users_group', id=ug.users_group_id))),
+                category='success')
             Session().commit()
         except formencode.Invalid, errors:
             return htmlfill.render(

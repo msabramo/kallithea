@@ -121,34 +121,16 @@ class MercurialRepository(BaseRepository):
         if self._empty:
             return {}
 
-        def _branchtags(localrepo):
-            """
-            Patched version of mercurial branchtags to not return the closed
-            branches
+        bt = OrderedDict()
+        for bn, _heads, tip, isclosed in sorted(self._repo.branchmap().iterbranches()):
+            if isclosed:
+                if closed:
+                    bt[safe_unicode(bn)] = hex(tip)
+            else:
+                if normal:
+                    bt[safe_unicode(bn)] = hex(tip)
 
-            :param localrepo: locarepository instance
-            """
-
-            bt = {}
-            bt_closed = {}
-            for bn, heads in localrepo.branchmap().iteritems():
-                tip = heads[-1]
-                if 'close' in localrepo.changelog.read(tip)[5]:
-                    bt_closed[bn] = tip
-                else:
-                    bt[bn] = tip
-
-            if not normal:
-                return bt_closed
-            if closed:
-                bt.update(bt_closed)
-            return bt
-
-        sortkey = lambda ctx: ctx[0]  # sort by name
-        _branches = [(safe_unicode(n), hex(h),) for n, h in
-                     _branchtags(self._repo).items()]
-
-        return OrderedDict(sorted(_branches, key=sortkey, reverse=False))
+        return bt
 
     @LazyProperty
     def tags(self):
@@ -362,13 +344,8 @@ class MercurialRepository(BaseRepository):
                 opts = {}
                 if not update_after_clone:
                     opts.update({'noupdate': True})
-                try:
-                    MercurialRepository._check_url(url, self.baseui)
-                    clone(self.baseui, url, self.path, **opts)
-#                except urllib2.URLError:
-#                    raise Abort("Got HTTP 404 error")
-                except Exception:
-                    raise
+                MercurialRepository._check_url(url, self.baseui)
+                clone(self.baseui, url, self.path, **opts)
 
                 # Don't try to create if we've already cloned repo
                 create = False
@@ -416,9 +393,6 @@ class MercurialRepository(BaseRepository):
                 return os.stat(cl_path).st_mtime
             else:
                 return os.stat(st_path).st_mtime
-
-    def _get_hidden(self):
-        return self._repo.ui.configbool("web", "hidden", untrusted=True)
 
     def _get_revision(self, revision):
         """

@@ -421,6 +421,8 @@ class User(Base, BaseModel):
     user_perms = relationship('UserToPerm', primaryjoin="User.user_id==UserToPerm.user_id", cascade='all')
 
     repositories = relationship('Repository')
+    repo_groups = relationship('RepoGroup')
+    user_groups = relationship('UserGroup')
     user_followers = relationship('UserFollowing', primaryjoin='UserFollowing.follows_user_id==User.user_id', cascade='all')
     followings = relationship('UserFollowing', primaryjoin='UserFollowing.user_id==User.user_id', cascade='all')
 
@@ -793,7 +795,7 @@ class UserGroup(Base, BaseModel):
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     _group_data = Column("group_data", LargeBinary(), nullable=True)  # JSON data
 
-    members = relationship('UserGroupMember', cascade="all, delete, delete-orphan", lazy="joined")
+    members = relationship('UserGroupMember', cascade="all, delete-orphan", lazy="joined")
     users_group_to_perm = relationship('UserGroupToPerm', cascade='all')
     users_group_repo_to_perm = relationship('UserGroupRepoToPerm', cascade='all')
     users_group_repo_group_to_perm = relationship('UserGroupRepoGroupToPerm', cascade='all')
@@ -971,18 +973,18 @@ class Repository(Base, BaseModel):
                              primaryjoin='UserFollowing.follows_repo_id==Repository.repo_id',
                              cascade='all')
     extra_fields = relationship('RepositoryField',
-                                cascade="all, delete, delete-orphan")
+                                cascade="all, delete-orphan")
 
     logs = relationship('UserLog')
-    comments = relationship('ChangesetComment', cascade="all, delete, delete-orphan")
+    comments = relationship('ChangesetComment', cascade="all, delete-orphan")
 
     pull_requests_org = relationship('PullRequest',
                     primaryjoin='PullRequest.org_repo_id==Repository.repo_id',
-                    cascade="all, delete, delete-orphan")
+                    cascade="all, delete-orphan")
 
     pull_requests_other = relationship('PullRequest',
                     primaryjoin='PullRequest.other_repo_id==Repository.repo_id',
-                    cascade="all, delete, delete-orphan")
+                    cascade="all, delete-orphan")
 
     def __unicode__(self):
         return u"<%s('%s:%s')>" % (self.__class__.__name__, self.repo_id,
@@ -1266,7 +1268,7 @@ class Repository(Base, BaseModel):
             try:
                 from pylons import tmpl_context as c
                 uri_tmpl = c.clone_uri_tmpl
-            except Exception:
+            except AttributeError:
                 # in any case if we call this outside of request context,
                 # ie, not having tmpl_context set up
                 pass
@@ -1362,7 +1364,8 @@ class Repository(Base, BaseModel):
 
     def statuses(self, revisions):
         """
-        Returns statuses for this repository
+        Returns statuses for this repository.
+        PRs without any votes do _not_ show up as unreviewed.
 
         :param revisions: list of revisions to get statuses for
         """
@@ -1373,16 +1376,8 @@ class Repository(Base, BaseModel):
             .filter(ChangesetStatus.repo == self)\
             .filter(ChangesetStatus.version == 0)\
             .filter(ChangesetStatus.revision.in_(revisions))
+
         grouped = {}
-
-        stat = ChangesetStatus.DEFAULT
-        status_lbl = ChangesetStatus.get_status_lbl(stat)
-        for pr in PullRequest.query().filter(PullRequest.org_repo == self).all():
-            for rev in pr.revisions:
-                pr_id = pr.pull_request_id
-                pr_repo = pr.other_repo.repo_name
-                grouped[rev] = [stat, status_lbl, pr_id, pr_repo]
-
         for stat in statuses.all():
             pr_id = pr_repo = None
             if stat.pull_request:
@@ -1434,25 +1429,15 @@ class Repository(Base, BaseModel):
 
     def __get_instance(self):
         repo_full_path = self.repo_full_path
-        try:
-            alias = get_scm(repo_full_path)[0]
-            log.debug('Creating instance of %s repository from %s'
-                      % (alias, repo_full_path))
-            backend = get_backend(alias)
-        except VCSError:
-            log.error(traceback.format_exc())
-            log.error('Perhaps this repository is in db and not in '
-                      'filesystem run rescan repositories with '
-                      '"destroy old data " option from admin panel')
-            return
+
+        alias = get_scm(repo_full_path)[0]
+        log.debug('Creating instance of %s repository from %s'
+                  % (alias, repo_full_path))
+        backend = get_backend(alias)
 
         if alias == 'hg':
-
             repo = backend(safe_str(repo_full_path), create=False,
                            baseui=self._ui)
-            # skip hidden web repository
-            if repo._get_hidden():
-                return
         else:
             repo = backend(repo_full_path, create=False)
 
@@ -2101,19 +2086,16 @@ class CacheInvalidation(Base, BaseModel):
         inv_objs = Session().query(cls).filter(cls.cache_args == repo_name).all()
         log.debug('for repo %s got %s invalidation objects'
                   % (safe_str(repo_name), inv_objs))
-        try:
-            for inv_obj in inv_objs:
-                log.debug('marking %s key for invalidation based on repo_name=%s'
-                          % (inv_obj, safe_str(repo_name)))
-                if delete:
-                    Session().delete(inv_obj)
-                else:
-                    inv_obj.cache_active = False
-                    Session().add(inv_obj)
-            Session().commit()
-        except Exception:
-            log.error(traceback.format_exc())
-            Session().rollback()
+
+        for inv_obj in inv_objs:
+            log.debug('marking %s key for invalidation based on repo_name=%s'
+                      % (inv_obj, safe_str(repo_name)))
+            if delete:
+                Session().delete(inv_obj)
+            else:
+                inv_obj.cache_active = False
+                Session().add(inv_obj)
+        Session().commit()
 
     @classmethod
     def test_and_set_valid(cls, repo_name, kind, valid_cache_keys=None):
@@ -2129,19 +2111,15 @@ class CacheInvalidation(Base, BaseModel):
         if valid_cache_keys and cache_key in valid_cache_keys:
             return True
 
-        try:
-            inv_obj = cls.query().filter(cls.cache_key == cache_key).scalar()
-            if not inv_obj:
-                inv_obj = CacheInvalidation(cache_key, repo_name)
-            was_valid = inv_obj.cache_active
-            inv_obj.cache_active = True
-            Session().add(inv_obj)
-            Session().commit()
-            return was_valid
-        except Exception:
-            log.error(traceback.format_exc())
-            Session().rollback()
-            return False
+        inv_obj = cls.query().filter(cls.cache_key == cache_key).scalar()
+        if not inv_obj:
+            inv_obj = CacheInvalidation(cache_key, repo_name)
+        if inv_obj.cache_active:
+            return True
+        inv_obj.cache_active = True
+        Session().add(inv_obj)
+        Session().commit()
+        return False
 
     @classmethod
     def get_valid_cache_keys(cls):
@@ -2156,6 +2134,7 @@ class ChangesetComment(Base, BaseModel):
     __tablename__ = 'changeset_comments'
     __table_args__ = (
         Index('cc_revision_idx', 'revision'),
+        Index('cc_pull_request_id_idx', 'pull_request_id'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True},
     )
@@ -2173,7 +2152,10 @@ class ChangesetComment(Base, BaseModel):
 
     author = relationship('User', lazy='joined')
     repo = relationship('Repository')
-    status_change = relationship('ChangesetStatus', cascade="all, delete, delete-orphan")
+    # status_change is frequently used directly in templates - make it a lazy
+    # join to avoid fetching each related ChangesetStatus on demand.
+    # There will only be one ChangesetStatus referencing each comment so the join will not explode.
+    status_change = relationship('ChangesetStatus', cascade="all, delete-orphan", lazy='joined')
     pull_request = relationship('PullRequest')
 
     @classmethod
@@ -2199,6 +2181,8 @@ class ChangesetStatus(Base, BaseModel):
     __table_args__ = (
         Index('cs_revision_idx', 'revision'),
         Index('cs_version_idx', 'version'),
+        Index('cs_pull_request_id_idx', 'pull_request_id'),
+        Index('cs_changeset_comment_id_idx', 'changeset_comment_id'),
         UniqueConstraint('repo_id', 'revision', 'version'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True}
@@ -2248,6 +2232,8 @@ class ChangesetStatus(Base, BaseModel):
 class PullRequest(Base, BaseModel):
     __tablename__ = 'pull_requests'
     __table_args__ = (
+        Index('pr_org_repo_id_idx', 'org_repo_id'),
+        Index('pr_other_repo_id_idx', 'other_repo_id'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True},
     )
@@ -2275,7 +2261,7 @@ class PullRequest(Base, BaseModel):
 
     @revisions.setter
     def revisions(self, val):
-        self._revisions = ':'.join(val)
+        self._revisions = safe_unicode(':'.join(val))
 
     @property
     def org_ref_parts(self):
@@ -2287,12 +2273,12 @@ class PullRequest(Base, BaseModel):
 
     author = relationship('User', lazy='joined')
     reviewers = relationship('PullRequestReviewers',
-                             cascade="all, delete, delete-orphan")
+                             cascade="all, delete-orphan")
     org_repo = relationship('Repository', primaryjoin='PullRequest.org_repo_id==Repository.repo_id')
     other_repo = relationship('Repository', primaryjoin='PullRequest.other_repo_id==Repository.repo_id')
     statuses = relationship('ChangesetStatus')
     comments = relationship('ChangesetComment',
-                             cascade="all, delete, delete-orphan")
+                             cascade="all, delete-orphan")
 
     def is_closed(self):
         return self.status == self.STATUS_CLOSED
@@ -2364,7 +2350,7 @@ class Notification(Base, BaseModel):
 
     created_by_user = relationship('User')
     notifications_to_users = relationship('UserNotification', lazy='joined',
-                                          cascade="all, delete, delete-orphan")
+                                          cascade="all, delete-orphan")
 
     @property
     def recipients(self):
@@ -2387,8 +2373,10 @@ class Notification(Base, BaseModel):
         for u in recipients:
             assoc = UserNotification()
             assoc.notification = notification
-            u.notifications.append(assoc)
+            assoc.user_id = u.user_id
+            Session().add(assoc)
         Session().add(notification)
+        Session().flush() # assign notificaiton.notification_id
         return notification
 
     @property
@@ -2410,8 +2398,7 @@ class UserNotification(Base, BaseModel):
     sent_on = Column('sent_on', DateTime(timezone=False), nullable=True, unique=None)
 
     user = relationship('User', lazy="joined")
-    notification = relationship('Notification', lazy="joined",
-                                order_by=lambda: Notification.created_on.desc(),)
+    notification = relationship('Notification', lazy="joined")
 
     def mark_as_read(self):
         self.read = True

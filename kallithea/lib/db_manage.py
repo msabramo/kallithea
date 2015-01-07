@@ -190,12 +190,8 @@ class DbManage(object):
 
         paths.ui_value = paths.ui_value.replace('*', '')
 
-        try:
-            self.sa.add(paths)
-            self.sa.commit()
-        except Exception:
-            self.sa.rollback()
-            raise
+        self.sa.add(paths)
+        self.sa.commit()
 
     def fix_default_user(self):
         """
@@ -210,12 +206,8 @@ class DbManage(object):
         def_user.lastname = 'User'
         def_user.email = 'anonymous@kallithea-scm.org'
 
-        try:
-            self.sa.add(def_user)
-            self.sa.commit()
-        except Exception:
-            self.sa.rollback()
-            raise
+        self.sa.add(def_user)
+        self.sa.commit()
 
     def fix_settings(self):
         """
@@ -224,12 +216,8 @@ class DbManage(object):
 
         hgsettings3 = Setting('ga_code', '')
 
-        try:
-            self.sa.add(hgsettings3)
-            self.sa.commit()
-        except Exception:
-            self.sa.rollback()
-            raise
+        self.sa.add(hgsettings3)
+        self.sa.commit()
 
     def admin_prompt(self, second=False):
         if not self.tests:
@@ -286,7 +274,6 @@ class DbManage(object):
     def create_ui_settings(self, repo_store_path):
         """
         Creates ui settings, fills out hooks
-        and disables dotencode
         """
 
         #HOOKS

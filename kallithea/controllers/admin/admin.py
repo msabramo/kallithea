@@ -131,11 +131,7 @@ class AdminController(BaseController):
 
         #FILTERING
         c.search_term = request.GET.get('filter')
-        try:
-            users_log = _journal_filter(users_log, c.search_term)
-        except Exception:
-            # we want this to crash for now
-            raise
+        users_log = _journal_filter(users_log, c.search_term)
 
         users_log = users_log.order_by(UserLog.action_date.desc())
 

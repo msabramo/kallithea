@@ -669,16 +669,16 @@ var injectInlineForm = function(tr){
 
         if(lineno === undefined){
             alert('Error submitting, line ' + lineno + ' not found.');
-            return
+            return;
         }
         if(f_path === undefined){
             alert('Error submitting, file path ' + f_path + ' not found.');
-            return
+            return;
         }
 
         var text = $('#text_'+lineno).val();
         if(text == ""){
-            return
+            return;
         }
 
         $overlay.show();
@@ -1471,7 +1471,7 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
         '         <input type="hidden" value="{2}" name="review_members" />\n'+
         '         <div class="reviewer_member_remove action_button" onclick="removeReviewMember({2})">\n'+
         '             <i class="icon-minus-circled" style="color: #FF4444;"></i>\n'+
-        '         </div>\n'+
+        '         </div> (add not saved)\n'+
         '       </div>\n'+
         '     </li>\n'
         ).format(gravatar_link, displayname, id);
@@ -1490,7 +1490,7 @@ var removeReviewMember = function(reviewer_id, repo_name, pull_request_id){
     var $li = $('#reviewer_{0}'.format(reviewer_id));
     $li.find('div div').css("text-decoration", "line-through");
     $li.find('input').remove();
-    $li.find('.reviewer_member_remove').remove();
+    $li.find('.reviewer_member_remove').replaceWith('&nbsp;(remove not saved)');
 }
 
 /* handle "Save Changes" of addReviewMember and removeReviewMember on PR */
@@ -1777,12 +1777,6 @@ var MultiSelectWidget = function(selected_id, available_id, form_id){
         });
     $('#remove_element').click(function(e){
             $availableselect.append($selectedselect.children('option:selected'));
-        });
-    $('#add_all_elements').click(function(e){
-            $selectedselect.append($availableselect.children('option'));
-        });
-    $('#remove_all_elements').click(function(e){
-            $availableselect.append($selectedselect.children('option'));
         });
 
     $('#'+form_id).submit(function(){

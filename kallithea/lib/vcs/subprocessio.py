@@ -45,15 +45,9 @@ class StreamFeeder(Thread):
         else:  # can be either file pointer or file-like
             if type(source) in (int, long):  # file pointer it is
                 ## converting file descriptor (int) stdin into file-like
-                try:
-                    source = os.fdopen(source, 'rb', 16384)
-                except Exception:
-                    pass
+                source = os.fdopen(source, 'rb', 16384)
             # let's see if source is file-like by now
-            try:
-                filelike = source.read
-            except Exception:
-                pass
+            filelike = hasattr(source, 'read')
         if not filelike and not self.bytes:
             raise TypeError("StreamFeeder's source object must be a readable "
                             "file-like, a file descriptor, or a string-like.")

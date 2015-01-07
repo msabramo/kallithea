@@ -32,7 +32,6 @@ import sys
 import time
 import uuid
 import datetime
-import traceback
 import webob
 import urllib
 import urlobject
@@ -409,6 +408,18 @@ def age(prevdate, show_short_version=False, now=None):
         deltas['month'] += 12
         deltas['year'] -= 1
 
+    # In short version, we want nicer handling of ages of more than a year
+    if show_short_version:
+        if deltas['year'] == 1:
+            # ages between 1 and 2 years: show as months
+            deltas['month'] += 12
+            deltas['year'] = 0
+        if deltas['year'] >= 2:
+            # ages 2+ years: round
+            if deltas['month'] > 6:
+                deltas['year'] += 1
+                deltas['month'] = 0
+
     # Format the result
     fmt_funcs = {
         'year': lambda d: ungettext(u'%d year', '%d years', d) % d,
@@ -596,14 +607,14 @@ def fix_PATH(os_=None):
 
 
 def obfuscate_url_pw(engine):
-    _url = engine or ''
     from sqlalchemy.engine import url as sa_url
+    from sqlalchemy.exc import ArgumentError
     try:
-        _url = sa_url.make_url(engine)
-        if _url.password:
-            _url.password = 'XXXXX'
-    except Exception:
-        pass
+        _url = sa_url.make_url(engine or '')
+    except ArgumentError:
+        return engine
+    if _url.password:
+        _url.password = 'XXXXX'
     return str(_url)
 
 
@@ -622,9 +633,7 @@ def _extract_extras(env=None):
 
     try:
         rc_extras = json.loads(env['KALLITHEA_EXTRAS'])
-    except Exception:
-        print os.environ
-        print >> sys.stderr, traceback.format_exc()
+    except KeyError:
         rc_extras = {}
 
     try:

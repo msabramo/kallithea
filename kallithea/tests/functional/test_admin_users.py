@@ -60,7 +60,8 @@ class TestAdminUsersController(TestController):
              'extern_type': 'internal',
              'email': email})
 
-        self.checkSessionFlash(response, '''Created user %s''' % (username))
+        self.checkSessionFlash(response, '''Created user <a href="/_admin/users/''')
+        self.checkSessionFlash(response, '''/edit">%s</a>''' % (username))
 
         new_user = Session().query(User).\
             filter(User.username == username).one()
@@ -164,6 +165,79 @@ class TestAdminUsersController(TestController):
             .filter(User.username == username).one()
         response = self.app.delete(url('user', id=new_user.user_id))
 
+        self.checkSessionFlash(response, 'Successfully deleted user')
+
+    def test_delete_repo_err(self):
+        self.log_user()
+        username = 'repoerr'
+        reponame = 'repoerr_fail'
+
+        fixture.create_user(name=username)
+        fixture.create_repo(name=reponame, cur_user=username)
+
+        new_user = Session().query(User)\
+            .filter(User.username == username).one()
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'User "%s" still '
+                               'owns 1 repositories and cannot be removed. '
+                               'Switch owners or remove those repositories: '
+                               '%s' % (username, reponame))
+
+        response = self.app.delete(url('repo', repo_name=reponame))
+        self.checkSessionFlash(response, 'Deleted repository %s' % reponame)
+
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'Successfully deleted user')
+
+    def test_delete_repo_group_err(self):
+        self.log_user()
+        username = 'repogrouperr'
+        groupname = 'repogroup_fail'
+
+        fixture.create_user(name=username)
+        fixture.create_repo_group(name=groupname, cur_user=username)
+
+        new_user = Session().query(User)\
+            .filter(User.username == username).one()
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'User "%s" still '
+                               'owns 1 repository groups and cannot be removed. '
+                               'Switch owners or remove those repository groups: '
+                               '%s' % (username, groupname))
+
+        # Relevant _if_ the user deletion succeeded to make sure we can render groups without owner
+        # rg = RepoGroup.get_by_group_name(group_name=groupname)
+        # response = self.app.get(url('repos_groups', id=rg.group_id))
+
+        response = self.app.delete(url('delete_repo_group', group_name=groupname))
+        self.checkSessionFlash(response, 'Removed repository group %s' % groupname)
+
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'Successfully deleted user')
+
+    def test_delete_user_group_err(self):
+        self.log_user()
+        username = 'usergrouperr'
+        groupname = 'usergroup_fail'
+
+        fixture.create_user(name=username)
+        ug = fixture.create_user_group(name=groupname, cur_user=username)
+
+        new_user = Session().query(User)\
+            .filter(User.username == username).one()
+        response = self.app.delete(url('user', id=new_user.user_id))
+        self.checkSessionFlash(response, 'User "%s" still '
+                               'owns 1 user groups and cannot be removed. '
+                               'Switch owners or remove those user groups: '
+                               '%s' % (username, groupname))
+
+        # TODO: why do this fail?
+        #response = self.app.delete(url('delete_users_group', id=groupname))
+        #self.checkSessionFlash(response, 'Removed user group %s' % groupname)
+
+        fixture.destroy_user_group(ug.users_group_id)
+
+        response = self.app.delete(url('user', id=new_user.user_id))
         self.checkSessionFlash(response, 'Successfully deleted user')
 
     def test_show(self):

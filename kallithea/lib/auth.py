@@ -711,8 +711,6 @@ def set_available_permissions(config):
         sa = meta.Session
         all_perms = sa.query(Permission).all()
         config['available_permissions'] = [x.permission_name for x in all_perms]
-    except Exception:
-        log.error(traceback.format_exc())
     finally:
         meta.Session.remove()
 
@@ -1175,12 +1173,7 @@ class HasPermissionAnyMiddleware(object):
         # dict by unicode
         repo_name = safe_unicode(repo_name)
         usr = AuthUser(user.user_id)
-        try:
-            self.user_perms = set([usr.permissions['repositories'][repo_name]])
-        except Exception:
-            log.error('Exception while accessing permissions %s' %
-                      traceback.format_exc())
-            self.user_perms = set()
+        self.user_perms = set([usr.permissions['repositories'][repo_name]])
         self.username = user.username
         self.repo_name = repo_name
         return self.check_permissions()
@@ -1318,15 +1311,8 @@ def check_ip_access(source_ip, allowed_ips=None):
     log.debug('checking if ip:%s is subnet of %s' % (source_ip, allowed_ips))
     if isinstance(allowed_ips, (tuple, list, set)):
         for ip in allowed_ips:
-            try:
-                if ipaddr.IPAddress(source_ip) in ipaddr.IPNetwork(ip):
-                    log.debug('IP %s is network %s' %
-                              (ipaddr.IPAddress(source_ip), ipaddr.IPNetwork(ip)))
-                    return True
-                # for any case we cannot determine the IP, don't crash just
-                # skip it and log as error, we want to say forbidden still when
-                # sending bad IP
-            except Exception:
-                log.error(traceback.format_exc())
-                continue
+            if ipaddr.IPAddress(source_ip) in ipaddr.IPNetwork(ip):
+                log.debug('IP %s is network %s' %
+                          (ipaddr.IPAddress(source_ip), ipaddr.IPNetwork(ip)))
+                return True
     return False

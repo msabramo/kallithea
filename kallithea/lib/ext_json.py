@@ -1,21 +1,26 @@
+"""
+Extended JSON encoder for json
+
+json.org do not specify how date time can be represented - monkeypatch it to do something.
+"""
+
 import datetime
 import functools
 import decimal
-import imp
+import json # is re-exported after monkey patching
 
-__all__ = ['json', 'simplejson', 'stdlibjson']
+__all__ = ['json']
 
 
-def _is_aware(value):
+def _is_tz_aware(value):
     """
-    Determines if a given datetime.time is aware.
+    Determines if a given datetime.time is timezone aware.
 
     The logic is described in Python's docs:
     http://docs.python.org/library/datetime.html#datetime.tzinfo
     """
     return (value.tzinfo is not None
             and value.tzinfo.utcoffset(value) is not None)
-
 
 def _obj_dump(obj):
     """
@@ -41,7 +46,7 @@ def _obj_dump(obj):
     elif isinstance(obj, decimal.Decimal):
         return str(obj)
     elif isinstance(obj, datetime.time):
-        if _is_aware(obj):
+        if _is_tz_aware(obj):
             raise ValueError("JSON can't represent timezone-aware times.")
         r = obj.isoformat()
         if obj.microsecond:
@@ -58,65 +63,15 @@ def _obj_dump(obj):
         raise NotImplementedError
 
 
-# Import simplejson
-try:
-    # import simplejson initially
-    _sj = imp.load_module('_sj', *imp.find_module('simplejson'))
-
-    def extended_encode(obj):
+class ExtendedEncoder(json.JSONEncoder):
+    def default(self, obj):
         try:
             return _obj_dump(obj)
         except NotImplementedError:
             pass
         raise TypeError("%r is not JSON serializable" % (obj,))
-    # we handle decimals our own it makes unified behavior of json vs
-    # simplejson
-    sj_version = [int(x) for x in _sj.__version__.split('.')]
-    major, minor = sj_version[0], sj_version[1]
-    if major < 2 or (major == 2 and minor < 1):
-        # simplejson < 2.1 doesnt support use_decimal
-        _sj.dumps = functools.partial(_sj.dumps,
-                                             default=extended_encode)
-        _sj.dump = functools.partial(_sj.dump,
-                                            default=extended_encode)
-    else:
-        _sj.dumps = functools.partial(_sj.dumps,
-                                             default=extended_encode,
-                                             use_decimal=False)
-        _sj.dump = functools.partial(_sj.dump,
-                                            default=extended_encode,
-                                            use_decimal=False)
-    simplejson = _sj
-
-except ImportError:
-    # no simplejson set it to None
-    simplejson = None
 
 
-try:
-    # simplejson not found try out regular json module
-    _json = imp.load_module('_json', *imp.find_module('json'))
-
-    # extended JSON encoder for json
-    class ExtendedEncoder(_json.JSONEncoder):
-        def default(self, obj):
-            try:
-                return _obj_dump(obj)
-            except NotImplementedError:
-                pass
-            raise TypeError("%r is not JSON serializable" % (obj,))
-    # monkey-patch JSON encoder to use extended version
-    _json.dumps = functools.partial(_json.dumps, cls=ExtendedEncoder)
-    _json.dump = functools.partial(_json.dump, cls=ExtendedEncoder)
-
-    stdlibjson = _json
-except ImportError:
-    stdlibjson = None
-
-# set all available json modules
-if simplejson:
-    json = _sj
-elif stdlibjson:
-    json = _json
-else:
-    raise ImportError('Could not find any json modules')
+# monkey-patch and export JSON encoder to use custom encoding method
+json.dumps = functools.partial(json.dumps, cls=ExtendedEncoder)
+json.dump = functools.partial(json.dump, cls=ExtendedEncoder)

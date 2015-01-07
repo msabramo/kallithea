@@ -126,7 +126,12 @@ class TestLibs(BaseTestCase):
         (dict(hours= -24 * 5), u'5 days ago'),
         (dict(months= -1), u'1 month ago'),
         (dict(months= -1, days= -2), u'1 month and 2 days ago'),
+        (dict(months= -1, days= -20), u'1 month and 19 days ago'),
         (dict(years= -1, months= -1), u'1 year and 1 month ago'),
+        (dict(years= -1, months= -10), u'1 year and 10 months ago'),
+        (dict(years= -2, months= -4), u'2 years and 4 months ago'),
+        (dict(years= -2, months= -11), u'2 years and 11 months ago'),
+        (dict(years= -3, months= -2), u'3 years and 2 months ago'),
     ])
     def test_age(self, age_args, expected):
         from kallithea.lib.utils2 import age
@@ -136,7 +141,30 @@ class TestLibs(BaseTestCase):
         self.assertEqual(age(n + delt(**age_args), now=n), expected)
 
     @parameterized.expand([
+        (dict(), u'just now'),
+        (dict(seconds= -1), u'1 second ago'),
+        (dict(seconds= -60 * 2), u'2 minutes ago'),
+        (dict(hours= -1), u'1 hour ago'),
+        (dict(hours= -24), u'1 day ago'),
+        (dict(hours= -24 * 5), u'5 days ago'),
+        (dict(months= -1), u'1 month ago'),
+        (dict(months= -1, days= -2), u'1 month ago'),
+        (dict(months= -1, days= -20), u'1 month ago'),
+        (dict(years= -1, months= -1), u'13 months ago'),
+        (dict(years= -1, months= -10), u'22 months ago'),
+        (dict(years= -2, months= -4), u'2 years ago'),
+        (dict(years= -2, months= -11), u'3 years ago'),
+        (dict(years= -3, months= -2), u'3 years ago'),
+        (dict(years= -4, months= -8), u'5 years ago'),
+    ])
+    def test_age_short(self, age_args, expected):
+        from kallithea.lib.utils2 import age
+        from dateutil import relativedelta
+        n = datetime.datetime(year=2012, month=5, day=17)
+        delt = lambda *args, **kwargs: relativedelta.relativedelta(*args, **kwargs)
+        self.assertEqual(age(n + delt(**age_args), show_short_version=True, now=n), expected)
 
+    @parameterized.expand([
         (dict(), u'just now'),
         (dict(seconds=1), u'in 1 second'),
         (dict(seconds=60 * 2), u'in 2 minutes'),
@@ -339,7 +367,6 @@ class TestLibs(BaseTestCase):
       ("_21/121", '21'),
       ("/_21/_12", '21'),
       ("_21/rc/foo", '21'),
-
     ])
     def test_get_repo_by_id(self, test, expected):
         from kallithea.lib.utils import _extract_id_from_repo_name

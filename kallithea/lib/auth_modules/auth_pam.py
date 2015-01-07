@@ -132,7 +132,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
                 user_attrs["firstname"] = match.group('first_name')
                 user_attrs["lastname"] = match.group('last_name')
         except Exception:
-            log.warning("Cannot extract additional info for PAM user")
+            log.warning("Cannot extract additional info for PAM user %s", username)
             pass
 
         log.debug("pamuser: \n%s" % formatted_json(user_attrs))

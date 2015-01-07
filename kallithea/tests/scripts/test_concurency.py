@@ -200,12 +200,12 @@ if __name__ == '__main__':
 
         try:
             METHOD = sys.argv[3]
-        except Exception:
+        except IndexError:
             pass
 
         try:
             backend = sys.argv[4]
-        except Exception:
+        except IndexError:
             backend = 'hg'
 
         if METHOD == 'pull':

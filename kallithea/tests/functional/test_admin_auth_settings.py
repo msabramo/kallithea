@@ -23,7 +23,7 @@ class TestAuthSettingsController(TestController):
 
     def test_ldap_save_settings(self):
         self.log_user()
-        if ldap_lib_installed:
+        if not ldap_lib_installed:
             raise SkipTest('skipping due to missing ldap lib')
 
         params = self._enable_plugins('kallithea.lib.auth_modules.auth_internal,kallithea.lib.auth_modules.auth_ldap')
@@ -53,7 +53,7 @@ class TestAuthSettingsController(TestController):
 
     def test_ldap_error_form_wrong_port_number(self):
         self.log_user()
-        if ldap_lib_installed:
+        if not ldap_lib_installed:
             raise SkipTest('skipping due to missing ldap lib')
 
         params = self._enable_plugins('kallithea.lib.auth_modules.auth_internal,kallithea.lib.auth_modules.auth_ldap')
@@ -80,7 +80,7 @@ class TestAuthSettingsController(TestController):
 
     def test_ldap_error_form(self):
         self.log_user()
-        if ldap_lib_installed:
+        if not ldap_lib_installed:
             raise SkipTest('skipping due to missing ldap lib')
 
         params = self._enable_plugins('kallithea.lib.auth_modules.auth_internal,kallithea.lib.auth_modules.auth_ldap')

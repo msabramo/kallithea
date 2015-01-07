@@ -57,20 +57,15 @@ class ErrorController(BaseController):
         resp = request.environ.get('pylons.original_response')
         c.site_name = config.get('title')
 
-        log.debug('### %s ###' % resp.status)
+        log.debug('### %s ###' % resp and resp.status)
 
         e = request.environ
         c.serv_p = r'%(protocol)s://%(host)s/' \
                                     % {'protocol': e.get('wsgi.url_scheme'),
                                        'host': e.get('HTTP_HOST'), }
 
-        c.error_message = cgi.escape(request.GET.get('code', str(resp.status)))
-        c.error_explanation = self.get_error_explanation(resp.status_int)
-
-        #  redirect to when error with given seconds
-        c.redirect_time = 0
-        c.redirect_module = _('Home page')
-        c.url_redirect = "/"
+        c.error_message = resp and cgi.escape(request.GET.get('code', str(resp.status)))
+        c.error_explanation = resp and self.get_error_explanation(resp.status_int)
 
         return render('/errors/error_document.html')
 
@@ -94,7 +89,7 @@ class ErrorController(BaseController):
             [400, 401, 403, 404, 500]"""
         try:
             code = int(code)
-        except Exception:
+        except ValueError:
             code = 500
 
         if code == 400:

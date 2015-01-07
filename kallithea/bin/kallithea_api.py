@@ -101,7 +101,7 @@ def main(argv=None):
 
     try:
         margs = dict(map(lambda s: s.split(':', 1), other))
-    except Exception:
+    except ValueError:
         sys.stderr.write('Error parsing arguments \n')
         sys.exit()
     if args.format == FORMAT_PRETTY:

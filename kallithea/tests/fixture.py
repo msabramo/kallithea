@@ -228,7 +228,7 @@ class Fixture(object):
 
     def create_gist(self, **kwargs):
         form_data = {
-            'description': 'new-gist',
+            'description': u'new-gist',
             'owner': TEST_USER_ADMIN_LOGIN,
             'gist_type': GistModel.cls.GIST_PUBLIC,
             'lifetime': -1,

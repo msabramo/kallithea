@@ -146,7 +146,7 @@ class RepoGroupsController(BaseController):
                 "group_name": repo_group_name(repo_gr.group_name, children_groups),
                 "desc": repo_gr.group_description,
                 "repos": repo_count,
-                "owner": h.person(repo_gr.user.username),
+                "owner": h.person(repo_gr.user),
                 "action": repo_group_actions(repo_gr.group_id, repo_gr.group_name,
                                              repo_count)
             })

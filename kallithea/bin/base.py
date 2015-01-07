@@ -31,13 +31,7 @@ import random
 import urllib2
 import pprint
 
-try:
-    from kallithea.lib.ext_json import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        import json
+from kallithea.lib.compat import json
 
 CONFIG_NAME = '.config/kallithea'
 FORMAT_PRETTY = 'pretty'

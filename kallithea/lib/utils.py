@@ -120,16 +120,10 @@ def get_repo_group_slug(request):
 
 def get_user_group_slug(request):
     _group = request.environ['pylons.routes_dict'].get('id')
-    try:
-        _group = UserGroup.get(_group)
-        if _group:
-            _group = _group.users_group_name
-    except Exception:
-        log.debug(traceback.format_exc())
-        #catch all failures here
-        pass
-
-    return _group
+    _group = UserGroup.get(_group)
+    if _group:
+        return _group.users_group_name
+    return None
 
 
 def _extract_id_from_repo_name(repo_name):
@@ -147,15 +141,14 @@ def get_repo_by_id(repo_name):
     :param repo_name:
     :return: repo_name if matched else None
     """
-    try:
-        _repo_id = _extract_id_from_repo_name(repo_name)
-        if _repo_id:
-            from kallithea.model.db import Repository
-            return Repository.get(_repo_id).repo_name
-    except Exception:
-        log.debug('Failed to extract repo_name from URL %s' % (
-                  traceback.format_exc()))
-        return
+    _repo_id = _extract_id_from_repo_name(repo_name)
+    if _repo_id:
+        from kallithea.model.db import Repository
+        repo = Repository.get(_repo_id)
+        if repo:
+            # TODO: return repo instead of reponame? or would that be a layering violation?
+            return repo.repo_name
+    return None
 
 
 def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
@@ -180,43 +173,39 @@ def action_logger(user, action, repo, ipaddr='', sa=None, commit=False):
     if not ipaddr:
         ipaddr = getattr(get_current_authuser(), 'ip_addr', '')
 
-    try:
-        if getattr(user, 'user_id', None):
-            user_obj = User.get(user.user_id)
-        elif isinstance(user, basestring):
-            user_obj = User.get_by_username(user)
-        else:
-            raise Exception('You have to provide a user object or a username')
+    if getattr(user, 'user_id', None):
+        user_obj = User.get(user.user_id)
+    elif isinstance(user, basestring):
+        user_obj = User.get_by_username(user)
+    else:
+        raise Exception('You have to provide a user object or a username')
 
-        if getattr(repo, 'repo_id', None):
-            repo_obj = Repository.get(repo.repo_id)
-            repo_name = repo_obj.repo_name
-        elif isinstance(repo, basestring):
-            repo_name = repo.lstrip('/')
-            repo_obj = Repository.get_by_repo_name(repo_name)
-        else:
-            repo_obj = None
-            repo_name = ''
+    if getattr(repo, 'repo_id', None):
+        repo_obj = Repository.get(repo.repo_id)
+        repo_name = repo_obj.repo_name
+    elif isinstance(repo, basestring):
+        repo_name = repo.lstrip('/')
+        repo_obj = Repository.get_by_repo_name(repo_name)
+    else:
+        repo_obj = None
+        repo_name = ''
 
-        user_log = UserLog()
-        user_log.user_id = user_obj.user_id
-        user_log.username = user_obj.username
-        user_log.action = safe_unicode(action)
+    user_log = UserLog()
+    user_log.user_id = user_obj.user_id
+    user_log.username = user_obj.username
+    user_log.action = safe_unicode(action)
 
-        user_log.repository = repo_obj
-        user_log.repository_name = repo_name
+    user_log.repository = repo_obj
+    user_log.repository_name = repo_name
 
-        user_log.action_date = datetime.datetime.now()
-        user_log.user_ip = ipaddr
-        sa.add(user_log)
+    user_log.action_date = datetime.datetime.now()
+    user_log.user_ip = ipaddr
+    sa.add(user_log)
 
-        log.info('Logging action:%s on %s by user:%s ip:%s' %
-                 (action, safe_unicode(repo), user_obj, ipaddr))
-        if commit:
-            sa.commit()
-    except Exception:
-        log.error(traceback.format_exc())
-        raise
+    log.info('Logging action:%s on %s by user:%s ip:%s' %
+             (action, safe_unicode(repo), user_obj, ipaddr))
+    if commit:
+        sa.commit()
 
 
 def get_filesystem_repos(path, recursive=False, skip_removed_repos=True):
@@ -373,9 +362,7 @@ def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
 
     elif read_from == 'db':
         sa = meta.Session()
-        ret = sa.query(Ui)\
-            .options(FromCache("sql_cache_short", "get_hg_ui_settings"))\
-            .all()
+        ret = sa.query(Ui).all()
 
         hg_ui = ret
         for ui_ in hg_ui:
@@ -471,7 +458,7 @@ def map_groups(path):
 
 
 def repo2db_mapper(initial_repo_list, remove_obsolete=False,
-                   install_git_hook=False):
+                   install_git_hook=False, user=None):
     """
     maps all repos given in initial_repo_list, non existing repositories
     are created, if remove_obsolete is True it also check for db entries
@@ -486,7 +473,8 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
     from kallithea.model.scm import ScmModel
     sa = meta.Session()
     repo_model = RepoModel()
-    user = User.get_first_admin()
+    if user is None:
+        user = User.get_first_admin()
     added = []
 
     ##creation defaults
@@ -815,7 +803,7 @@ def check_git_version():
         ver = '.'.join(ver.split('.')[:3])
     try:
         _ver = StrictVersion(ver)
-    except Exception:
+    except ValueError:
         _ver = StrictVersion('0.0.0')
         stderr = traceback.format_exc()
 

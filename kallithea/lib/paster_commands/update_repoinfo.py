@@ -12,10 +12,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-kallithea.lib.paster_commands.make_rcextensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+kallithea.lib.paster_commands.update_repoinfo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-uodate-repoinfo paster command for Kallithea
+update-repoinfo paster command for Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -65,8 +65,8 @@ class Command(BasePasterCommand):
                                if self.options.repo_update_list else None
 
         if repo_update_list:
-            repo_list = Repository.query()\
-                .filter(Repository.repo_name.in_(repo_update_list))
+            repo_list = list(Repository.query()\
+                .filter(Repository.repo_name.in_(repo_update_list)))
         else:
             repo_list = Repository.getAll()
         RepoModel.update_repoinfo(repositories=repo_list)
@@ -75,7 +75,7 @@ class Command(BasePasterCommand):
         if self.options.invalidate_cache:
             for r in repo_list:
                 r.set_invalidate()
-        log.info('Updated cache for %s repositories' % (len(repo_list)))
+        print 'Updated cache for %s repositories' % (len(repo_list))
 
     def update_parser(self):
         self.parser.add_option('--update-only',
