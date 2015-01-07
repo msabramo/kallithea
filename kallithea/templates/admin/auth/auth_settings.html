@@ -47,9 +47,6 @@
                </ul>
            </div>
        </div>
-       <div class="buttons">
-          ${h.submit('save',_('Save'),class_="btn")}
-       </div>
     </div>
 
     %for cnt, module in enumerate(c.auth_plugins):
@@ -102,6 +99,11 @@
         %endfor
         </div>
     %endfor
+        <div class="fields">
+            <div class="buttons">
+                ${h.submit('save',_('Save'),class_="btn")}
+            </div>
+        </div>
     </div>
     ${h.end_form()}
 </div>
