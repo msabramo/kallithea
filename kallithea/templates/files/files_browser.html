@@ -22,7 +22,7 @@
         elif node.is_submodule():
             c = "icon-file-submodule"
     %>
-    <%return h.literal('<i class="%s"></i><span>%s</span>' % (c, node.name))%>
+    <%return h.literal('<i class="%s"></i><span>%s</span>' % (c, h.escape(node.name)))%>
 </%def>
 <div id="body" class="browserblock">
     <div class="browser-header">
