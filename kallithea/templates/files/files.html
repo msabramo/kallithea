@@ -3,7 +3,7 @@
 <%def name="title(*args)">
     ${_('%s Files') % c.repo_name}
     %if hasattr(c,'file'):
-        &middot; ${h.safe_unicode(c.file.path) or '\\'}
+        &middot; ${h.safe_unicode(c.file.path) or '/'}
     %endif
 
     %if c.site_name:
@@ -81,7 +81,7 @@ var ypjax_links = function(){
         var f_path = parts2.join('/');
 
         //page title make this consistent with title() mako function on top
-        var title = "${_('%s Files') % c.repo_name}" + " &middot; " + (f_path || '\\') + " &middot; " + "${c.site_name}";
+        var title = "${_('%s Files') % c.repo_name}" + " &middot; " + (f_path || '/') + " &middot; " + "${c.site_name}";
 
         var _node_list_url = node_list_url.replace('__REV__',rev).replace('__FPATH__', f_path);
         var _url_base = url_base.replace('__REV__',rev);
