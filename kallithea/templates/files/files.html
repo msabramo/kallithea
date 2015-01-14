@@ -81,7 +81,7 @@ var ypjax_links = function(){
         var f_path = parts2.join('/');
 
         //page title make this consistent with title() mako function on top
-        var title = "${_('%s Files') % c.repo_name}" + " &middot; " + (f_path || '/') + " &middot; " + "${c.site_name}";
+        var title = "${_('%s Files') % c.repo_name}" + " \u00B7 " + (f_path || '/') + " \u00B7 " + "${c.site_name}";
 
         var _node_list_url = node_list_url.replace('__REV__',rev).replace('__FPATH__', f_path);
         var _url_base = url_base.replace('__REV__',rev);
