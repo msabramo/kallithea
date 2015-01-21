@@ -398,7 +398,7 @@ class PullrequestsController(BaseRepoController):
         new_revisions = [r for r in revisions if r not in old_revisions]
         lost = old_revisions.difference(revisions)
 
-        infos = ['','', 'This is an update of %s "%s".' %
+        infos = ['This is an update of %s "%s".' %
                  (h.canonical_url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
                       pull_request_id=pull_request_id),
                   old_pull_request.title)]
@@ -407,15 +407,15 @@ class PullrequestsController(BaseRepoController):
             infos.append(_('Missing changesets since the previous version:'))
             for r in old_pull_request.revisions:
                 if r in lost:
-                    desc = org_repo.get_changeset(r).message.split('\n')[0]
-                    infos.append('  %s "%s"' % (h.short_id(r), desc))
+                    rev_desc = org_repo.get_changeset(r).message.split('\n')[0]
+                    infos.append('  %s "%s"' % (h.short_id(r), rev_desc))
 
         if new_revisions:
             infos.append(_('New changesets on %s %s since the previous version:') % (org_ref_type, org_ref_name))
             for r in reversed(revisions):
                 if r in new_revisions:
-                    desc = org_repo.get_changeset(r).message.split('\n')[0]
-                    infos.append('  %s %s' % (h.short_id(r), h.shorter(desc, 80)))
+                    rev_desc = org_repo.get_changeset(r).message.split('\n')[0]
+                    infos.append('  %s %s' % (h.short_id(r), h.shorter(rev_desc, 80)))
 
             if ancestor_rev == other_rev:
                 infos.append(_("Ancestor didn't change - show diff since previous version:"))
@@ -435,7 +435,8 @@ class PullrequestsController(BaseRepoController):
         new_other_ref = '%s:%s:%s' % (other_ref_type, other_ref_name, ancestor_rev)
         new_org_ref = '%s:%s:%s' % (org_ref_type, org_ref_name, new_org_rev)
 
-        reviewers = [r.user_id for r in old_pull_request.reviewers]
+        reviewers_ids = [r.user_id for r in old_pull_request.reviewers]
+
         try:
             old_title, old_v = re.match(r'(.*)\(v(\d+)\)\s*$', old_pull_request.title).groups()
             v = int(old_v) + 1
@@ -443,15 +444,19 @@ class PullrequestsController(BaseRepoController):
             old_title = old_pull_request.title
             v = 2
         title = '%s (v%s)' % (old_title.strip(), v)
-        description = (old_pull_request.description.rstrip() +
-                       '\n'.join(infos))
+
+        # using a mail-like separator, insert new update info at the top of the list
+        descriptions = old_pull_request.description.replace('\r\n', '\n').split('\n-- \n', 1)
+        description = descriptions[0].strip() + '\n\n-- \n' + '\n'.join(infos)
+        if len(descriptions) > 1:
+            description += '\n\n' + descriptions[1].strip()
 
         try:
             pull_request = PullRequestModel().create(
                 self.authuser.user_id,
                 old_pull_request.org_repo.repo_name, new_org_ref,
                 old_pull_request.other_repo.repo_name, new_other_ref,
-                revisions, reviewers, title, description
+                revisions, reviewers_ids, title, description
             )
         except Exception:
             h.flash(_('Error occurred while creating pull request'),
