@@ -282,8 +282,9 @@ class MercurialRepository(BaseRepository):
         if os.path.isdir(url) or url.startswith('file:'):
             return True
 
+        url_prefix = None
         if '+' in url[:url.find('://')]:
-            url = url[url.find('+') + 1:]
+            url_prefix, url = url.split('+', 1)
 
         handlers = []
         url_obj = hg_url(url)
@@ -317,13 +318,14 @@ class MercurialRepository(BaseRepository):
             # means it cannot be cloned
             raise urllib2.URLError("[%s] org_exc: %s" % (cleaned_uri, e))
 
-        # now check if it's a proper hg repo
-        try:
-            httppeer(repoui or ui.ui(), url).lookup('tip')
-        except Exception, e:
-            raise urllib2.URLError(
-                "url [%s] does not look like an hg repo org_exc: %s"
-                % (cleaned_uri, e))
+        if not url_prefix: # skip svn+http://... (and git+... too)
+            # now check if it's a proper hg repo
+            try:
+                httppeer(repoui or ui.ui(), url).lookup('tip')
+            except Exception, e:
+                raise urllib2.URLError(
+                    "url [%s] does not look like an hg repo org_exc: %s"
+                    % (cleaned_uri, e))
 
         return True
 
