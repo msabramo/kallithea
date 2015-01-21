@@ -213,12 +213,13 @@ class TestController(BaseTestCase):
     def _get_logged_user(self):
         return User.get_by_username(self._logged_username)
 
-    def checkSessionFlash(self, response, msg):
-        self.assertTrue('flash' in response.session,
-                        msg='Response session have no flash key' % response.session)
-        if not any(msg in m for level, m in response.session['flash']):
-            for level, m in response.session['flash']:
-                msg = u'msg `%s` not found in session flash: got `%s` instead' % (msg, m)
-                self.fail(safe_str(msg))
-            msg = u'msg `%s` not found in empty session flash' % (msg)
-            self.fail(safe_str(msg))
+    def checkSessionFlash(self, response, msg, skip=0):
+        try:
+            level, m = response.session['flash'][-1 - skip]
+            if msg in m:
+                return
+        except IndexError:
+            pass
+        self.fail(safe_str(u'msg `%s` not found in session flash skipping %s: %s' %
+                           (msg, skip,
+                            ', '.join('`%s`' % m for level, m in response.session['flash']))))
