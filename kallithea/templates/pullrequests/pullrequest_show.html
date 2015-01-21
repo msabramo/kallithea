@@ -19,10 +19,10 @@
 <% editable = not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.authuser.user_id) %>
 ${self.repo_context_bar('showpullrequest')}
 <div class="box">
-    <!-- box / title -->
-    <div class="title">
-        ${self.breadcrumbs()}
-    </div>
+  <!-- box / title -->
+  <div class="title">
+    ${self.breadcrumbs()}
+  </div>
 
     <div class="form pr-box" style="float: left">
       <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
@@ -207,7 +207,7 @@ ${self.repo_context_bar('showpullrequest')}
     </div>
     ## REVIEWERS
     <div style="float:left; border-left:1px dashed #eee">
-       <div class="pr-details-title">${_('Pull Request Reviewers')}</div>
+        <div class="pr-details-title">${_('Pull Request Reviewers')}</div>
         <div id="reviewers" style="padding:0px 0px 5px 10px">
           ## members goes here !
           <div>
@@ -243,16 +243,16 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
           %endif
         </div>
-       </div>
+    </div>
 
-    <div style="overflow: auto; clear: both">
-      ##DIFF
-      <div class="table" style="float:left;clear:none">
-          <div class="diffblock">
-              <div style="padding:5px">
-                ${_('Summary of Pull Request Content')}
-              </div>
-          </div>
+  <div style="clear: both"></div>
+</div>
+
+<div class="box">
+    <div class="title">
+      <div class="breadcrumbs">${_('Pull Request Content')}</div>
+    </div>
+    <div class="table">
           <div id="changeset_compare_view_content">
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
                 ${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span>
@@ -296,7 +296,6 @@ ${self.repo_context_bar('showpullrequest')}
                 <h5>${_('Changeset was too big and was cut off...')} <a href="${h.url.current(fulldiff=1, **request.GET.mixed())}">${_('Show full diff anyway')}</a></h5>
               % endif
           </div>
-      </div>
     </div>
     <script>
     var _USERS_AC_DATA = ${c.users_array|n};
