@@ -365,24 +365,10 @@ class PullrequestsController(BaseRepoController):
 
         return redirect(pull_request.url())
 
-    @LoginRequired()
-    @NotAnonymous()
-    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
-                                   'repository.admin')
-    def copy_update(self, repo_name, pull_request_id):
-        old_pull_request = PullRequest.get_or_404(pull_request_id)
-        assert old_pull_request.other_repo.repo_name == repo_name
-        if old_pull_request.is_closed():
-            raise HTTPForbidden()
-
+    def create_update(self, old_pull_request, updaterev, title, description, reviewers_ids):
         org_repo = RepoModel()._get_repo(old_pull_request.org_repo.repo_name)
         org_ref_type, org_ref_name, org_rev = old_pull_request.org_ref.split(':')
-        updaterev = request.POST.get('updaterev')
-        if updaterev:
-            new_org_rev = self._get_ref_rev(org_repo, 'rev', updaterev)
-        else:
-            # assert org_ref_type == 'branch', org_ref_type # TODO: what if not?
-            new_org_rev = self._get_ref_rev(org_repo, org_ref_type, org_ref_name)
+        new_org_rev = self._get_ref_rev(org_repo, 'rev', updaterev)
 
         other_repo = RepoModel()._get_repo(old_pull_request.other_repo.repo_name)
         other_ref_type, other_ref_name, other_rev = old_pull_request.other_ref.split(':') # other_rev is ancestor
@@ -400,7 +386,7 @@ class PullrequestsController(BaseRepoController):
 
         infos = ['This is an update of %s "%s".' %
                  (h.canonical_url('pullrequest_show', repo_name=old_pull_request.other_repo.repo_name,
-                      pull_request_id=pull_request_id),
+                      pull_request_id=old_pull_request.pull_request_id),
                   old_pull_request.title)]
 
         if lost:
@@ -435,18 +421,15 @@ class PullrequestsController(BaseRepoController):
         new_other_ref = '%s:%s:%s' % (other_ref_type, other_ref_name, ancestor_rev)
         new_org_ref = '%s:%s:%s' % (org_ref_type, org_ref_name, new_org_rev)
 
-        reviewers_ids = [r.user_id for r in old_pull_request.reviewers]
-
         try:
-            old_title, old_v = re.match(r'(.*)\(v(\d+)\)\s*$', old_pull_request.title).groups()
+            title, old_v = re.match(r'(.*)\(v(\d+)\)\s*$', title).groups()
             v = int(old_v) + 1
         except (AttributeError, ValueError):
-            old_title = old_pull_request.title
             v = 2
-        title = '%s (v%s)' % (old_title.strip(), v)
+        title = '%s (v%s)' % (title.strip(), v)
 
         # using a mail-like separator, insert new update info at the top of the list
-        descriptions = old_pull_request.description.replace('\r\n', '\n').split('\n-- \n', 1)
+        descriptions = description.replace('\r\n', '\n').split('\n-- \n', 1)
         description = descriptions[0].strip() + '\n\n-- \n' + '\n'.join(infos)
         if len(descriptions) > 1:
             description += '\n\n' + descriptions[1].strip()
@@ -470,9 +453,9 @@ class PullrequestsController(BaseRepoController):
                                                    pull_request_id=pull_request.pull_request_id),
             repo=old_pull_request.other_repo.repo_id,
             user=c.authuser.user_id,
-            pull_request=pull_request_id,
+            pull_request=old_pull_request.pull_request_id,
             closing_pr=True)
-        PullRequestModel().close_pull_request(pull_request_id)
+        PullRequestModel().close_pull_request(old_pull_request.pull_request_id)
 
         Session().commit()
         h.flash(_('Pull request update created'),
@@ -496,13 +479,20 @@ class PullrequestsController(BaseRepoController):
             raise HTTPForbidden()
 
         _form = PullRequestPostForm()().to_python(request.POST)
+        reviewers_ids = [int(s) for s in _form['review_members']]
+
+        if _form['updaterev']:
+            return self.create_update(pull_request,
+                                      _form['updaterev'],
+                                      _form['pullrequest_title'],
+                                      _form['pullrequest_desc'],
+                                      reviewers_ids)
 
         old_description = pull_request.description
         pull_request.title = _form['pullrequest_title']
         pull_request.description = _form['pullrequest_desc'].strip() or _('No description')
         PullRequestModel().mention_from_description(pull_request, old_description)
 
-        reviewers_ids = [int(s) for s in _form['review_members']]
         PullRequestModel().update_reviewers(pull_request_id, reviewers_ids)
 
         Session().commit()

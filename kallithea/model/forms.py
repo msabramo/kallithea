@@ -505,6 +505,7 @@ def PullRequestPostForm():
         pullrequest_title = v.UnicodeString(strip=True, required=True)
         pullrequest_desc = v.UnicodeString(strip=True, required=False)
         review_members = v.Set()
+        updaterev = v.UnicodeString(strip=True, required=False, if_missing=None)
 
     return _PullRequestPostForm
 

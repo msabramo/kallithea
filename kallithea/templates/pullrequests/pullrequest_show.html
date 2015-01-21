@@ -173,13 +173,26 @@ ${self.repo_context_bar('showpullrequest')}
             <div class="input">
               <div class="msg-div">${c.update_msg}</div>
               %if c.available:
-              <div style="max-height:200px; overflow-y:auto; overflow-x:hidden; margin-bottom: 10px">
+              <div id="updaterevs" style="max-height:200px; overflow-y:auto; overflow-x:hidden; margin-bottom: 10px">
                 <table class="noborder">
                   %for cnt, cs in enumerate(c.available):
                     <tr>
-                    <td>${h.radio(name='updaterev', value=cs.raw_id)}</td>
-                    <td>${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</td>
-                    <td><div class="message" style="white-space:normal; height:1.1em; max-width: 500px; padding:0">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
+                      %if cs.revision == c.cs_ranges[-1].revision:
+                        <td>
+                          %if editable:
+                            ${h.radio(name='updaterev', value='')}
+                          %endif
+                        </td>
+                        <td colspan="2">${_("Current revision - no change")}</td>
+                      %else:
+                        <td>
+                          %if editable:
+                            ${h.radio(name='updaterev', value=cs.raw_id)}
+                          %endif
+                        </td>
+                        <td>${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</td>
+                        <td><div class="message" style="white-space:normal; height:1.1em; max-width: 500px; padding:0">${h.urlify_commit(cs.message, c.repo_name)}</div></td>
+                      %endif
                     </tr>
                   %endfor
                 </table>
@@ -187,11 +200,6 @@ ${self.repo_context_bar('showpullrequest')}
               %endif
               <div class="msg-div">${c.update_msg_other}</div>
             </div>
-            %if editable and c.available:
-              <div class="buttons">
-                ${h.submit('copy_update',_('Create Pull Request Update'),class_="btn btn-small")}
-              </div>
-            %endif
         </div>
       </div>
     </div>
@@ -235,8 +243,9 @@ ${self.repo_context_bar('showpullrequest')}
       <div class="fields">
         %if editable:
           <div class="buttons">
-            ${h.submit('pr-form-save',_('Save'),class_="btn btn-small")}
-            ${h.reset('pr-form-reset',_('Cancel'),class_="btn btn-small")}
+            ${h.submit('pr-form-save',_('Save Changes'),class_="btn btn-small")}
+            ${h.submit('pr-form-clone',_('Save as New Pull Request'),class_="btn btn-small",disabled='disabled')}
+            ${h.reset('pr-form-reset',_('Cancel Changes'),class_="btn btn-small")}
           </div>
         %endif
       </div>
@@ -344,10 +353,17 @@ ${self.repo_context_bar('showpullrequest')}
 
           linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
 
+          $('#updaterevs input').change(function(e){
+              var update = !!e.target.value;
+              $('#pr-form-save').prop('disabled',update);
+              $('#pr-form-clone').prop('disabled',!update);
+          });
           var $org_review_members = $('#review_members').clone();
           $('#pr-form-reset').click(function(e){
               $('#pr-edit-form').hide();
               $('.pr-not-edit').show();
+              $('#pr-form-save').prop('disabled',false);
+              $('#pr-form-clone').prop('disabled',true);
               $('#review_members').html($org_review_members);
           });
 

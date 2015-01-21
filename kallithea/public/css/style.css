@@ -3490,6 +3490,7 @@ input.btn {
     cursor: default !important;
 }
 
+input[disabled].btn,
 .btn.disabled {
     color: #999;
 }
