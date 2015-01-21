@@ -152,7 +152,7 @@ class UserGroupModel(BaseModel):
 
     def delete(self, user_group, force=False):
         """
-        Deletes repository group, unless force flag is used
+        Deletes user group, unless force flag is used
         raises exception if there are members in that group, else deletes
         group and users
 
@@ -164,10 +164,11 @@ class UserGroupModel(BaseModel):
             # check if this group is not assigned to repo
             assigned_groups = UserGroupRepoToPerm.query()\
                 .filter(UserGroupRepoToPerm.users_group == user_group).all()
+            assigned_groups = [x.repository.repo_name for x in assigned_groups]
 
             if assigned_groups and not force:
                 raise UserGroupsAssignedException(
-                    'RepoGroup assigned to %s' % assigned_groups)
+                    'User Group assigned to %s' % ", ".join(assigned_groups))
             self.sa.delete(user_group)
         except Exception:
             log.error(traceback.format_exc())

@@ -1568,7 +1568,7 @@ class BaseTestApi(object):
         gr_id = ugroup.users_group_id
 
         ugr_to_perm = RepoModel().grant_user_group_permission(self.REPO, gr_name, 'repository.write')
-        msg = 'RepoGroup assigned to [%s]' % (ugr_to_perm)
+        msg = 'User Group assigned to %s' % ugr_to_perm.repository.repo_name
 
         id_, params = _build_data(self.apikey, 'delete_user_group',
                                   usergroupid=gr_name,
