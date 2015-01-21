@@ -183,7 +183,7 @@ ${self.repo_context_bar('showpullrequest')}
               %if c.available:
               <div style="max-height:200px; overflow-y:auto; overflow-x:hidden; margin-bottom: 10px">
                 <table class="noborder">
-                  %for cnt, cs in enumerate(reversed(c.available)):
+                  %for cnt, cs in enumerate(c.available):
                     <tr>
                     <td>${h.radio(name='updaterev', value=cs.raw_id)}</td>
                     <td>${h.link_to(h.show_id(cs),h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id))}</td>

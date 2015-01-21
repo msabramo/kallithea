@@ -570,7 +570,7 @@ class PullrequestsController(BaseRepoController):
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
         c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
 
-        c.available = []
+        arevs = []
         c.cs_branch_name = c.cs_ref_name
         other_scm_instance = c.a_repo.scm_instance
         c.update_msg = ""
@@ -584,7 +584,6 @@ class PullrequestsController(BaseRepoController):
                     c.a_branch_name = other_scm_instance.get_changeset(c.a_ref_name).branch # use ref_type ?
                 except EmptyRepositoryError:
                     c.a_branch_name = 'null' # not a branch name ... but close enough
-            arevs = []
             # candidates: descendants of old head that are on the right branch
             #             and not are the old head itself ...
             #             and nothing at all if old head is a descendent of target ref name
@@ -594,11 +593,11 @@ class PullrequestsController(BaseRepoController):
                 arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
                                                     revs[0], c.cs_branch_name, revs[0])
                 if arevs:
+                    arevs = sorted(arevs, reverse=True)
                     if c.pull_request.is_closed():
                         c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.cs_branch_name
                     else:
                         c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.cs_branch_name
-                    c.available = [org_scm_instance.get_changeset(x) for x in arevs]
                 else:
                     c.update_msg = _('No changesets found for updating this pull request.')
 
@@ -609,6 +608,8 @@ class PullrequestsController(BaseRepoController):
 
         elif org_scm_instance.alias == 'git':
             c.update_msg = _("Git pull requests don't support updates yet.")
+
+        c.available = [org_scm_instance.get_changeset(r) for r in arevs]
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = c.cs_repo.get_comments(raw_ids)
