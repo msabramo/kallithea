@@ -523,20 +523,20 @@ def repo2db_mapper(initial_repo_list, remove_obsolete=False,
                 ScmModel().install_git_hook(db_repo.scm_instance)
 
     removed = []
-    if remove_obsolete:
-        # remove from database those repositories that are not in the filesystem
-        for repo in sa.query(Repository).all():
-            if repo.repo_name not in initial_repo_list.keys():
+    # remove from database those repositories that are not in the filesystem
+    for repo in sa.query(Repository).all():
+        if repo.repo_name not in initial_repo_list.keys():
+            if remove_obsolete:
                 log.debug("Removing non-existing repository found in db `%s`" %
                           repo.repo_name)
                 try:
-                    removed.append(repo.repo_name)
                     RepoModel(sa).delete(repo, forks='detach', fs_remove=False)
                     sa.commit()
                 except Exception:
                     #don't hold further removals on error
                     log.error(traceback.format_exc())
                     sa.rollback()
+            removed.append(repo.repo_name)
     return added, removed
 
 
