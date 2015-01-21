@@ -390,14 +390,14 @@ class PullrequestsController(BaseRepoController):
                   old_pull_request.title)]
 
         if lost:
-            infos.append(_('Missing changesets since the previous version:'))
+            infos.append(_('Missing changesets since the previous pull request:'))
             for r in old_pull_request.revisions:
                 if r in lost:
                     rev_desc = org_repo.get_changeset(r).message.split('\n')[0]
                     infos.append('  %s "%s"' % (h.short_id(r), rev_desc))
 
         if new_revisions:
-            infos.append(_('New changesets on %s %s since the previous version:') % (org_ref_type, org_ref_name))
+            infos.append(_('New changesets on %s %s since the previous pull request:') % (org_ref_type, org_ref_name))
             for r in reversed(revisions):
                 if r in new_revisions:
                     rev_desc = org_repo.get_changeset(r).message.split('\n')[0]
@@ -472,6 +472,7 @@ class PullrequestsController(BaseRepoController):
         pull_request = PullRequest.get_or_404(pull_request_id)
         if pull_request.is_closed():
             raise HTTPForbidden()
+        assert pull_request.other_repo.repo_name == repo_name
         #only owner or admin can update it
         owner = pull_request.author.user_id == c.authuser.user_id
         repo_admin = h.HasRepoPermissionAny('repository.admin')(c.repo_name)
@@ -570,22 +571,22 @@ class PullrequestsController(BaseRepoController):
             #             and nothing at all if old head is a descendent of target ref name
             if other_scm_instance._repo.revs('present(%s)::&%s', c.cs_ranges[-1].raw_id, c.a_branch_name):
                 c.update_msg = _('This pull request has already been merged to %s.') % c.a_branch_name
-            else: # look for children of PR head on source branch in org repo
+            elif c.pull_request.is_closed():
+                c.update_msg = _('This pull request has been closed and can not be updated.')
+            else: # look for descendants of PR head on source branch in org repo
                 arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
                                                     revs[0], c.cs_branch_name, revs[0])
                 if arevs:
                     arevs = sorted(arevs, reverse=True)
-                    if c.pull_request.is_closed():
-                        c.update_msg = _('This pull request has been closed and can not be updated with descendent changes on %s:') % c.cs_branch_name
-                    else:
-                        c.update_msg = _('This pull request can be updated with descendent changes on %s:') % c.cs_branch_name
+                    c.update_msg = _('This pull request can be updated with changes on %s:') % c.cs_branch_name
                 else:
                     c.update_msg = _('No changesets found for updating this pull request.')
 
-            brevs = org_scm_instance._repo.revs('%s - %d - %ld', c.cs_branch_name, revs[0], arevs)
-            if brevs:
-                c.update_msg_other = _('Note: Branch %s has another head: %s.') % (c.cs_branch_name,
-                    h.short_id(org_scm_instance.get_changeset((max(brevs))).raw_id))
+                # TODO: handle branch heads that not are tip-most
+                brevs = org_scm_instance._repo.revs('%s - %d - %ld', c.cs_branch_name, revs[0], arevs)
+                if brevs:
+                    c.update_msg_other = _('Note: Branch %s has another head: %s.') % (c.cs_branch_name,
+                        h.short_id(org_scm_instance.get_changeset((max(brevs))).raw_id))
 
         elif org_scm_instance.alias == 'git':
             c.update_msg = _("Git pull requests don't support updates yet.")
