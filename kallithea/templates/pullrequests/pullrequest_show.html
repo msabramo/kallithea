@@ -172,11 +172,14 @@ ${self.repo_context_bar('showpullrequest')}
             </div>
             <div class="input">
               <div class="msg-div">${c.update_msg}</div>
-              %if c.available:
+              %if c.avail_revs:
               <div id="updaterevs" style="max-height:200px; overflow-y:auto; overflow-x:hidden; margin-bottom: 10px">
-                <table class="noborder">
-                  %for cnt, cs in enumerate(c.available):
-                    <tr>
+                <div style="height:0">
+                  <canvas id="avail_graph_canvas"></canvas>
+                </div>
+                <table id="updaterevs-table" class="noborder" style="padding-left:50px">
+                  %for cnt, cs in enumerate(c.avail_cs):
+                    <tr id="chg_available_${cnt+1}">
                       %if cs.revision == c.cs_ranges[-1].revision:
                         <td>
                           %if editable:
@@ -346,6 +349,10 @@ ${self.repo_context_bar('showpullrequest')}
               var tr = e.currentTarget;
               injectInlineForm(tr.parentNode.parentNode);
           });
+
+          var avail_jsdata = ${c.avail_jsdata|n};
+          var avail_r = new BranchRenderer('avail_graph_canvas', 'updaterevs-table', 'chg_available_');
+          avail_r.render(avail_jsdata,40);
 
           // inject comments into they proper positions
           var file_comments = $('.inline-comment-placeholder').toArray();

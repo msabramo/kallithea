@@ -552,7 +552,8 @@ class PullrequestsController(BaseRepoController):
         revs = [ctx.revision for ctx in reversed(c.cs_ranges)]
         c.jsdata = json.dumps(graph_data(org_scm_instance, revs))
 
-        arevs = []
+        avail_revs = set()
+        avail_show = []
         c.cs_branch_name = c.cs_ref_name
         other_scm_instance = c.a_repo.scm_instance
         c.update_msg = ""
@@ -574,24 +575,29 @@ class PullrequestsController(BaseRepoController):
             elif c.pull_request.is_closed():
                 c.update_msg = _('This pull request has been closed and can not be updated.')
             else: # look for descendants of PR head on source branch in org repo
-                arevs = org_scm_instance._repo.revs('%s:: & branch(%s) - %s',
-                                                    revs[0], c.cs_branch_name, revs[0])
-                if arevs:
-                    arevs = sorted(arevs, reverse=True)
+                avail_revs = org_scm_instance._repo.revs('%s:: & branch(%s)',
+                                                         revs[0], c.cs_branch_name)
+                if len(avail_revs) > 1: # more than just revs[0]
+                    show = set(avail_revs)
                     c.update_msg = _('This pull request can be updated with changes on %s:') % c.cs_branch_name
                 else:
+                    show = set()
                     c.update_msg = _('No changesets found for updating this pull request.')
 
                 # TODO: handle branch heads that not are tip-most
-                brevs = org_scm_instance._repo.revs('%s - %d - %ld', c.cs_branch_name, revs[0], arevs)
+                brevs = org_scm_instance._repo.revs('%s - %ld', c.cs_branch_name, avail_revs)
                 if brevs:
                     c.update_msg_other = _('Note: Branch %s has another head: %s.') % (c.cs_branch_name,
                         h.short_id(org_scm_instance.get_changeset((max(brevs))).raw_id))
 
+                avail_show = sorted(show, reverse=True)
+
         elif org_scm_instance.alias == 'git':
             c.update_msg = _("Git pull requests don't support updates yet.")
 
-        c.available = [org_scm_instance.get_changeset(r) for r in arevs]
+        c.avail_revs = avail_revs
+        c.avail_cs = [org_scm_instance.get_changeset(r) for r in avail_show]
+        c.avail_jsdata = json.dumps(graph_data(org_scm_instance, avail_show))
 
         raw_ids = [x.raw_id for x in c.cs_ranges]
         c.cs_comments = c.cs_repo.get_comments(raw_ids)
