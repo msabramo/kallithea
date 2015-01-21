@@ -589,6 +589,9 @@ class PullrequestsController(BaseRepoController):
                 # TODO: handle branch heads that not are tip-most
                 brevs = org_scm_instance._repo.revs('%s - %ld', c.cs_branch_name, avail_revs)
                 if brevs:
+                    # also show changesets that are on branch but neither ancestors nor descendants
+                    show.update(org_scm_instance._repo.revs('::%ld - ::%ld - ::%s', brevs, avail_revs, c.a_branch_name))
+                    show.add(revs[0]) # make sure graph shows this so we can see how they relate
                     c.update_msg_other = _('Note: Branch %s has another head: %s.') % (c.cs_branch_name,
                         h.short_id(org_scm_instance.get_changeset((max(brevs))).raw_id))
 
