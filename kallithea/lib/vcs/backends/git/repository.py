@@ -625,17 +625,13 @@ class GitRepository(BaseRepository):
             cmd += ' -- "%s"' % path
 
         stdout, stderr = self.run_git_command(cmd)
+        # TODO: don't ignore stderr
         # If we used 'show' command, strip first few lines (until actual diff
         # starts)
         if rev1 == self.EMPTY_CHANGESET:
-            lines = stdout.splitlines()
-            x = 0
-            for line in lines:
-                if line.startswith('diff'):
-                    break
-                x += 1
-            # Append new line just like 'diff' command do
-            stdout = '\n'.join(lines[x:]) + '\n'
+            parts = stdout.split('\ndiff ', 1)
+            if len(parts) > 1:
+                stdout = 'diff ' + parts[1]
         return stdout
 
     @LazyProperty
