@@ -360,7 +360,7 @@ class DiffProcessor(object):
         elif self.vcs == 'hg':
             match = self._hg_header_re.match(diff_chunk)
         if match is None:
-            raise Exception('VCS type %s is not supported' % self.vcs)
+            raise Exception('diff not recognized as valid %s diff' % self.vcs)
         groups = match.groupdict()
         rest = diff_chunk[match.end():]
         if rest and not rest.startswith('@') and not rest.startswith('literal '):
