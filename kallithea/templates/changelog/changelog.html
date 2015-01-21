@@ -165,7 +165,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
             </div>
         </div>
 
-        <script type="text/javascript" src="${h.url('/js/graph.js')}"></script>
+        <script type="text/javascript" src="${h.url('/js/graph.js', ver=c.kallithea_version)}"></script>
         <script type="text/javascript">
             $(document).ready(function(){
                 //Monitor range checkboxes and build a link to changesets ranges
@@ -284,7 +284,7 @@ ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision
                 });
 
                 var jsdata = ${c.jsdata|n};
-                var r = new BranchRenderer('graph_canvas', 'graph_content');
+                var r = new BranchRenderer('graph_canvas', 'graph_content', 'chg_');
                 r.render(jsdata,100);
             });
 

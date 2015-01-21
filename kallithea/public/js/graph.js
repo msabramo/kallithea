@@ -22,10 +22,12 @@ var colors = [
 	[ 0.0, 0.0, 0.0 ]
 ];
 
-function BranchRenderer(canvas_id, content_id) {
-
+function BranchRenderer(canvas_id, content_id, row_id_prefix) {
+	// canvas_id is canvas to render into
+	// content_id's height is applied to canvas
+	// row_id_prefix is prefix that is applied to get row id's
 	this.canvas = document.getElementById(canvas_id);
-	var t = document.getElementById(content_id);
+	var content = document.getElementById(content_id);
 	
 	if (!document.createElement("canvas").getContext)
 		this.canvas = window.G_vmlCanvasManager.initElement(this.canvas);
@@ -62,10 +64,9 @@ function BranchRenderer(canvas_id, content_id) {
 
 	this.render = function(data,canvasWidth) {
 		var idx = 1;
-		var rela = this.canvas;
 
 		this.canvas.setAttribute('width',canvasWidth);
-		this.canvas.setAttribute('height',t.clientHeight);
+		this.canvas.setAttribute('height',content.clientHeight);
 
 		var lineCount = 1;
 		for (var i=0;i<data.length;i++) {
@@ -82,13 +83,12 @@ function BranchRenderer(canvas_id, content_id) {
 		var base_x = canvasWidth - edge_pad;
 
 		for (var i=0; i < data.length; ++i) {
-
-			var row = document.getElementById("chg_"+idx);
+			var row = document.getElementById(row_id_prefix+idx);
 			if (row == null) {
-				console.log("error: row chg_"+idx+" not found");
+				console.log("error: row "+row_id_prefix+idx+" not found");
 				continue;
 			}
-			var	next = document.getElementById("chg_"+(idx+1));
+			var next = document.getElementById(row_id_prefix+(idx+1));
 			var extra = 0;
 			
 			cur = data[i];
@@ -96,8 +96,8 @@ function BranchRenderer(canvas_id, content_id) {
 			in_l = cur[1];
 			closing = cur[2];
 
-			var rowY = row.offsetTop + row.offsetHeight/2 - rela.offsetTop;
-			var nextY = (next == null) ? rowY + row.offsetHeight/2 : next.offsetTop + next.offsetHeight/2 - rela.offsetTop;
+			var rowY = row.offsetTop + row.offsetHeight/2;
+			var nextY = (next == null) ? rowY + row.offsetHeight/2 : next.offsetTop + next.offsetHeight/2;
 
 			for (var j in in_l) {
 				line = in_l[j];
@@ -149,7 +149,6 @@ function BranchRenderer(canvas_id, content_id) {
 				this.ctx.lineWidth=this.line_width;
 				this.ctx.beginPath();
 				this.ctx.moveTo(x, rowY);
-
 				if (start == end)
 				{
 					this.ctx.lineTo(x,nextY+extra,3);
