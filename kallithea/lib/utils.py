@@ -62,7 +62,7 @@ from kallithea.lib.vcs.utils.fakemod import create_module
 
 log = logging.getLogger(__name__)
 
-REMOVED_REPO_PAT = re.compile(r'rm__\d{8}_\d{6}_\d{6}__.*')
+REMOVED_REPO_PAT = re.compile(r'rm__\d{8}_\d{6}_\d{6}_.*')
 
 
 def recursive_replace(str_, replace=' '):
