@@ -16,6 +16,7 @@
 </%def>
 
 <%def name="main()">
+<% editable = not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.authuser.user_id) %>
 ${self.repo_context_bar('showpullrequest')}
 <div class="box">
     <!-- box / title -->
@@ -35,7 +36,7 @@ ${self.repo_context_bar('showpullrequest')}
         <div class="field pr-not-edit" style="min-height:37px">
           <div class="label-summary">
             <label>${_('Description')}:</label>
-            %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.author.user_id == c.authuser.user_id):
+            %if editable:
             <div style="margin: 5px">
               <a class="btn btn-small" onclick="YUD.setStyle('pr-edit-form','display','');YUD.setStyle(YUD.getElementsByClassName('pr-not-edit'),'display','none')">${_("Edit")}</a>
             </div>
@@ -46,7 +47,7 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
         </div>
 
-        %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin', 'repository.admin')() or c.pull_request.author.user_id == c.authuser.user_id):
+        %if editable:
         <div id="pr-edit-form" style="display:none">
           ${h.form(url('pullrequest_post', repo_name=c.repo_name, pull_request_id=c.pull_request.pull_request_id), method='post', id='pull_request_form')}
 
@@ -194,7 +195,7 @@ ${self.repo_context_bar('showpullrequest')}
               %endif
               <div class="msg-div">${c.update_msg_other}</div>
             </div>
-            %if c.available and not c.pull_request.is_closed():
+            %if editable and c.available:
               <div class="buttons">
                 ${h.submit('copy_update',_('Create Pull Request Update'),class_="btn btn-small")}
               </div>
@@ -220,7 +221,7 @@ ${self.repo_context_bar('showpullrequest')}
                   <div class="reviewer_gravatar gravatar"><img alt="gravatar" src="${h.gravatar_url(member.email,14)}"/> </div>
                   <div style="float:left;">${member.full_name} (${_('owner') if c.pull_request.user_id == member.user_id else _('reviewer')})</div>
                   <input type="hidden" value="${member.user_id}" name="review_members" />
-                  %if not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.user_id == c.authuser.user_id):
+                  %if editable:
                   <div class="reviewer_member_remove action_button" onclick="removeReviewMember(${member.user_id})" title="${_('Remove reviewer')}">
                       <i class="icon-minus-circled" style="color: #FF4444;"></i>
                   </div>
@@ -230,9 +231,8 @@ ${self.repo_context_bar('showpullrequest')}
             %endfor
             </ul>
           </div>
-          %if not c.pull_request.is_closed():
+          %if editable:
           <div class='ac'>
-            %if h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.authuser.user_id:
             <div class="reviewer_ac">
                ${h.text('user', class_='yui-ac-input',placeholder=_('Type name of reviewer to add'))}
                <div id="reviewers_container"></div>
@@ -240,7 +240,6 @@ ${self.repo_context_bar('showpullrequest')}
             <div style="padding:0px 10px">
              <span id="update_pull_request" class="btn btn-small">${_('Save Changes')}</span>
             </div>
-            %endif
           </div>
           %endif
         </div>
@@ -359,7 +358,7 @@ ${self.repo_context_bar('showpullrequest')}
           if (window.location.hash != "") {
               window.location.href = window.location.href;
           }
-      })
+      });
     </script>
 
 </div>
