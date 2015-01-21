@@ -784,7 +784,7 @@ class BasePasterCommand(Command):
 def check_git_version():
     """
     Checks what version of git is installed in system, and issues a warning
-    if it's too old for Kallithea to properly work.
+    if it's too old for Kallithea to work properly.
     """
     from kallithea import BACKENDS
     from kallithea.lib.vcs.backends.git.repository import GitRepository
@@ -797,31 +797,23 @@ def check_git_version():
     stdout, stderr = GitRepository._run_git_command('--version', _bare=True,
                                                     _safe=True)
 
-    ver = (stdout.split(' ')[-1] or '').strip() or '0.0.0'
-    if len(ver.split('.')) > 3:
-        #StrictVersion needs to be only 3 element type
-        ver = '.'.join(ver.split('.')[:3])
-    try:
-        _ver = StrictVersion(ver)
-    except ValueError:
-        _ver = StrictVersion('0.0.0')
-        stderr = traceback.format_exc()
+    m = re.search("\d+.\d+.\d+", stdout)
+    if m:
+        ver = StrictVersion(m.group(0))
+    else:
+        ver = StrictVersion('0.0.0')
 
-    req_ver = '1.7.4'
-    to_old_git = False
-    if  _ver < StrictVersion(req_ver):
-        to_old_git = True
+    req_ver = StrictVersion('1.7.4')
 
-    if 'git' in BACKENDS:
-        log.debug('Git executable: "%s" version detected: %s'
-                  % (settings.GIT_EXECUTABLE_PATH, stdout))
-        if stderr:
-            log.warning('Unable to detect git version, org error was: %r' % stderr)
-        elif to_old_git:
-            log.warning('Kallithea detected git version %s, which is too old '
-                        'for the system to function properly. Make sure '
-                        'its version is at least %s' % (ver, req_ver))
-    return _ver
+    log.debug('Git executable: "%s" version %s detected: %s'
+              % (settings.GIT_EXECUTABLE_PATH, ver, stdout))
+    if stderr:
+        log.warning('Error detecting git version: %r' % stderr)
+    elif ver < req_ver:
+        log.warning('Kallithea detected git version %s, which is too old '
+                    'for the system to function properly. '
+                    'Please upgrade to version %s or later.' % (ver, req_ver))
+    return ver
 
 
 @decorator.decorator
