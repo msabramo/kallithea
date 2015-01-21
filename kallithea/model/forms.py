@@ -485,7 +485,6 @@ def PullRequestForm(repo_id):
         allow_extra_fields = True
         filter_extra_fields = True
 
-        user = v.UnicodeString(strip=True, required=True)
         org_repo = v.UnicodeString(strip=True, required=True)
         org_ref = v.UnicodeString(strip=True, required=True)
         other_repo = v.UnicodeString(strip=True, required=True)
@@ -505,6 +504,7 @@ def PullRequestPostForm():
 
         pullrequest_title = v.UnicodeString(strip=True, required=True)
         pullrequest_desc = v.UnicodeString(strip=True, required=False)
+        review_members = v.Set()
 
     return _PullRequestPostForm
 

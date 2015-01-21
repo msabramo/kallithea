@@ -713,11 +713,6 @@ def make_map(config):
                  controller='pullrequests',
                  action='post', conditions=dict(function=check_repo,
                                                 method=["POST"]))
-    rmap.connect('pullrequest_update',
-                 '/{repo_name:.*?}/pull-request/{pull_request_id}',
-                 controller='pullrequests',
-                 action='update', conditions=dict(function=check_repo,
-                                                method=["PUT"]))
     rmap.connect('pullrequest_delete',
                  '/{repo_name:.*?}/pull-request/{pull_request_id}',
                  controller='pullrequests',

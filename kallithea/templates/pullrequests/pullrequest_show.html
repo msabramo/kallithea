@@ -24,6 +24,7 @@ ${self.repo_context_bar('showpullrequest')}
     ${self.breadcrumbs()}
   </div>
 
+  ${h.form(url('pullrequest_post', repo_name=c.repo_name, pull_request_id=c.pull_request.pull_request_id), method='post', id='pull_request_form')}
     <div class="form pr-box" style="float: left">
       <div class="pr-details-title ${'closed' if c.pull_request.is_closed() else ''}">
           ${_('Title')}: ${c.pull_request.title}
@@ -49,8 +50,6 @@ ${self.repo_context_bar('showpullrequest')}
 
         %if editable:
         <div id="pr-edit-form" style="display:none">
-          ${h.form(url('pullrequest_post', repo_name=c.repo_name, pull_request_id=c.pull_request.pull_request_id), method='post', id='pull_request_form')}
-
           <div class="field">
               <div class="label-summary">
                   <label for="pullrequest_title">${_('Title')}:</label>
@@ -67,13 +66,7 @@ ${self.repo_context_bar('showpullrequest')}
               <div class="textarea text-area editor">
                   ${h.textarea('pullrequest_desc',size=30,content=c.pull_request.description,placeholder=_('Write a short description on this pull request'))}
               </div>
-              <div class="buttons">
-                  ${h.submit('save',_('Save'),class_="btn btn-mini")}
-                  ${h.reset('reset',_('Cancel'),class_="btn btn-mini",onclick="YUD.setStyle('pr-edit-form','display','none');YUD.setStyle(YUD.getElementsByClassName('pr-not-edit'),'display','')")}
-             </div>
           </div>
-
-          ${h.end_form()}
         </div>
         %endif
 
@@ -173,8 +166,7 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
         </div>
 
-        ${h.form(url('pullrequest_copy_update',repo_name=c.repo_name,pull_request_id=c.pull_request.pull_request_id), method='post')}
-          <div class="field">
+        <div class="field">
             <div class="label-summary">
               <label>${_('Update')}:</label>
             </div>
@@ -200,9 +192,7 @@ ${self.repo_context_bar('showpullrequest')}
                 ${h.submit('copy_update',_('Create Pull Request Update'),class_="btn btn-small")}
               </div>
             %endif
-          </div>
-        ${h.end_form()}
-
+        </div>
       </div>
     </div>
     ## REVIEWERS
@@ -237,15 +227,21 @@ ${self.repo_context_bar('showpullrequest')}
                ${h.text('user', class_='yui-ac-input',placeholder=_('Type name of reviewer to add'))}
                <div id="reviewers_container"></div>
             </div>
-            <div style="padding:0px 10px">
-             <span id="update_pull_request" class="btn btn-small">${_('Save Changes')}</span>
-            </div>
           </div>
           %endif
         </div>
     </div>
-
-  <div style="clear: both"></div>
+    <div class="form" style="clear:both">
+      <div class="fields">
+        %if editable:
+          <div class="buttons">
+            ${h.submit('pr-form-save',_('Save'),class_="btn btn-small")}
+            ${h.reset('pr-form-reset',_('Cancel'),class_="btn btn-small")}
+          </div>
+        %endif
+      </div>
+    </div>
+  ${h.end_form()}
 </div>
 
 <div class="box">
@@ -306,7 +302,6 @@ ${self.repo_context_bar('showpullrequest')}
 
     pyroutes.register('pullrequest_comment', "${url('pullrequest_comment',repo_name='%(repo_name)s',pull_request_id='%(pull_request_id)s')}", ['repo_name', 'pull_request_id']);
     pyroutes.register('pullrequest_comment_delete', "${url('pullrequest_comment_delete',repo_name='%(repo_name)s',comment_id='%(comment_id)s')}", ['repo_name', 'comment_id']);
-    pyroutes.register('pullrequest_update', "${url('pullrequest_update',repo_name='%(repo_name)s',pull_request_id='%(pull_request_id)s')}", ['repo_name', 'pull_request_id']);
 
     </script>
 
@@ -349,8 +344,11 @@ ${self.repo_context_bar('showpullrequest')}
 
           linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
 
-          $('#update_pull_request').click(function(e){
-              updateReviewers(undefined, "${c.repo_name}", "${c.pull_request.pull_request_id}");
+          var $org_review_members = $('#review_members').clone();
+          $('#pr-form-reset').click(function(e){
+              $('#pr-edit-form').hide();
+              $('.pr-not-edit').show();
+              $('#review_members').html($org_review_members);
           });
 
           // hack: re-navigate to target after JS is done ... if a target is set and setting href thus won't reload

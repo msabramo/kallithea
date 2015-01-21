@@ -486,43 +486,29 @@ class PullrequestsController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def post(self, repo_name, pull_request_id):
-        repo = RepoModel()._get_repo(repo_name)
-        pull_request = PullRequest.get_or_404(pull_request_id)
-        old_description = pull_request.description
-
-        _form = PullRequestPostForm()().to_python(request.POST)
-
-        pull_request.title = _form['pullrequest_title']
-        pull_request.description = _form['pullrequest_desc'].strip() or _('No description')
-
-        PullRequestModel().mention_from_description(pull_request, old_description)
-
-        Session().commit()
-        h.flash(_('Pull request updated'), category='success')
-
-        return redirect(pull_request.url())
-
-    # pullrequest_update for updating reviewer list
-    @LoginRequired()
-    @NotAnonymous()
-    @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
-                                   'repository.admin')
-    @jsonify
-    def update(self, repo_name, pull_request_id):
         pull_request = PullRequest.get_or_404(pull_request_id)
         if pull_request.is_closed():
             raise HTTPForbidden()
         #only owner or admin can update it
         owner = pull_request.author.user_id == c.authuser.user_id
         repo_admin = h.HasRepoPermissionAny('repository.admin')(c.repo_name)
-        if h.HasPermissionAny('hg.admin') or repo_admin or owner:
-            reviewers_ids = map(int, filter(lambda v: v not in [None, ''],
-                request.POST.get('reviewers_ids', '').split(',')))
+        if not (h.HasPermissionAny('hg.admin') or repo_admin or owner):
+            raise HTTPForbidden()
 
-            PullRequestModel().update_reviewers(pull_request_id, reviewers_ids)
-            Session().commit()
-            return True
-        raise HTTPForbidden()
+        _form = PullRequestPostForm()().to_python(request.POST)
+
+        old_description = pull_request.description
+        pull_request.title = _form['pullrequest_title']
+        pull_request.description = _form['pullrequest_desc'].strip() or _('No description')
+        PullRequestModel().mention_from_description(pull_request, old_description)
+
+        reviewers_ids = [int(s) for s in _form['review_members']]
+        PullRequestModel().update_reviewers(pull_request_id, reviewers_ids)
+
+        Session().commit()
+        h.flash(_('Pull request updated'), category='success')
+
+        return redirect(pull_request.url())
 
     @LoginRequired()
     @NotAnonymous()

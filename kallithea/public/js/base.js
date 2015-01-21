@@ -1489,26 +1489,8 @@ var addReviewMember = function(id,fname,lname,nname,gravatar_link){
 var removeReviewMember = function(reviewer_id, repo_name, pull_request_id){
     var $li = $('#reviewer_{0}'.format(reviewer_id));
     $li.find('div div').css("text-decoration", "line-through");
-    $li.find('input').remove();
+    $li.find('input').attr('name', 'review_members_removed');
     $li.find('.reviewer_member_remove').replaceWith('&nbsp;(remove not saved)');
-}
-
-/* handle "Save Changes" of addReviewMember and removeReviewMember on PR */
-var updateReviewers = function(reviewers_ids, repo_name, pull_request_id){
-    if (reviewers_ids === undefined){
-        var reviewers_ids = [];
-        $('#review_members').find('input').each(function(){
-                reviewers_ids.push(this.value);
-            });
-    }
-    var url = pyroutes.url('pullrequest_update', {"repo_name":repo_name,
-                                                  "pull_request_id": pull_request_id});
-    var postData = {'_method':'put',
-                    'reviewers_ids': reviewers_ids};
-    var success = function(o){
-        window.location.reload();
-    }
-    ajaxPOST(url,postData,success);
 }
 
 /* activate auto completion of users and groups ... but only used for users as PR reviewers */
