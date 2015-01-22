@@ -863,6 +863,22 @@ HasRepoGroupPermissionAny
 #==============================================================================
 # GRAVATAR URL
 #==============================================================================
+def gravatar(email_address, cls='', size=30, ssl_enabled=True):
+    """return html element of the gravatar
+
+    This method will return an <img> with the resolution double the size (for
+    retina screens) of the image. If the url returned from gravatar_url is
+    empty then we fallback to using an icon.
+
+    """
+    src = gravatar_url(email_address, size*2, ssl_enabled)
+
+    #  here it makes sense to use style="width: ..." (instead of, say, a
+    # stylesheet) because we using this to generate a high-res (retina) size
+    tmpl = """<img alt="gravatar" class="{cls}" style="width: {size}px; height: {size}px" src="{src}"/>"""
+
+    tmpl = tmpl.format(cls=cls, size=size, src=src)
+    return literal(tmpl)
 
 def gravatar_url(email_address, size=30, ssl_enabled=True):
     # doh, we need to re-import those to mock it later
