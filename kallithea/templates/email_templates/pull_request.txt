@@ -2,19 +2,19 @@
 <%inherit file="main.txt"/>
 
 %if is_mention:
-${_('%s mentioned you on %s pull request "%s"') % (pr_user_created, repo_name, pr_title)}
+${_('%s mentioned you on %s pull request "%s"') % (pr_user_created, repo_name, pr_title)|n,unicode}
 %else:
-${_('%s requested your review of %s pull request "%s"') % (pr_user_created, repo_name, pr_title)}
+${_('%s requested your review of %s pull request "%s"') % (pr_user_created, repo_name, pr_title)|n,unicode}
 %endif
 
-${_('URL')}: ${pr_url}
+${_('URL')|n,unicode}: ${pr_url|n,unicode}
 
-${_('Description')}:
-${body}
+${_('Description')|n,unicode}:
+${body|n,unicode}
 
-${_('Changesets')}:
+${_('Changesets')|n,unicode}:
 %for r,r_msg in pr_revisions:
-${h.short_id(r)}:
-${h.shorter(r_msg, 256)}
+${h.short_id(r)|n,unicode}:
+${h.shorter(r_msg, 256)|n,unicode}
 
 %endfor

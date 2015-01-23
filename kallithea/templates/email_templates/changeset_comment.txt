@@ -2,18 +2,18 @@
 <%inherit file="main.txt"/>
 
 %if is_mention:
-${_('Comment from %s on %s changeset %s mentioned you') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:
+${_('Comment from %s on %s changeset %s mentioned you') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))|n,unicode}:
 %else:
-${_('Comment from %s on %s changeset %s') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))}:
+${_('Comment from %s on %s changeset %s') % (cs_comment_user, cs_target_repo, h.short_id(raw_id))|n,unicode}:
 %endif
-${body}
+${body|n,unicode}
 
 %if status_change:
-${_('The changeset status was changed to')}: ${status_change}
+${_('The changeset status was changed to')|n,unicode}: ${status_change|n,unicode}
 %endif
 
-${_('URL')}: ${cs_comment_url}
+${_('URL')|n,unicode}: ${cs_comment_url|n,unicode}
 
-${_('Changeset')}: ${h.short_id(raw_id)}
-${_('Description')}:
-${h.shorter(message, 256)}
+${_('Changeset')|n,unicode}: ${h.short_id(raw_id)|n,unicode}
+${_('Description')|n,unicode}:
+${h.shorter(message, 256)|n,unicode}
