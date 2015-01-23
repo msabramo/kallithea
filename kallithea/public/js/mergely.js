@@ -1,26 +1,31 @@
 /**
- * Copyright (c) 2013 by Jamie Peabody, http://www.mergely.com
+ * Copyright (c) 2012-2015 by Jamie Peabody, http://www.mergely.com
  * All rights reserved.
- * Version: 3.3.4 2013-11-02
+ * Version: 3.3.9 2014-12-07
  *
  * NOTE by bkuhn@sfconservancy.org for Kallithea:
  * Mergely license appears at http://www.mergely.com/license.php and in LICENSE-MERGELY.html
  */
-Mgly = {};
+
+"use strict"; 
+
+(function( window, document, jQuery, CodeMirror ){
+
+var Mgly = {};
 
 Mgly.Timer = function(){
 	var self = this;
-	self.start = function() { self.t0 = new Date().getTime(); }
+	self.start = function() { self.t0 = new Date().getTime(); };
 	self.stop = function() {
 		var t1 = new Date().getTime();
 		var d = t1 - self.t0; 
 		self.t0 = t1;
 		return d;
-	}
+	};
 	self.start();
-}
+};
 
-Mgly.ChangeExpression = new RegExp(/(\d+(?:,\d+)?)([acd])(\d+(?:,\d+)?)/);
+Mgly.ChangeExpression = new RegExp(/(^(?![><\-])*\d+(?:,\d+)?)([acd])(\d+(?:,\d+)?)/);
 
 Mgly.DiffParser = function(diff) {
 	var changes = [];
@@ -45,7 +50,7 @@ Mgly.DiffParser = function(diff) {
 		changes[change_id++] = change;
 	}
 	return changes;
-}
+};
 
 Mgly.sizeOf = function(obj) {
 	var size = 0, key;
@@ -53,12 +58,13 @@ Mgly.sizeOf = function(obj) {
 		if (obj.hasOwnProperty(key)) size++;
 	}
 	return size;
-}
+};
 
 Mgly.LCS = function(x, y) {
 	this.x = x.replace(/[ ]{1}/g, '\n');
 	this.y = y.replace(/[ ]{1}/g, '\n');
-}
+};
+
 jQuery.extend(Mgly.LCS.prototype, {
 	clear: function() { this.ready = 0; },
 	diff: function(added, removed) {
@@ -81,11 +87,11 @@ jQuery.extend(Mgly.LCS.prototype, {
 			}
 			if (change.op != 'd') {
 				// find the starting index of the line
-				li = d.getLines('lhs').slice(0, change['rhs-line-from']).join(' ').length;
+				li = d.getLines('rhs').slice(0, change['rhs-line-from']).join(' ').length;
 				// get the index of the the span of the change
 				lj = change['rhs-line-to'] + 1;
 				// get the changed text
-				var rchange = d.getLines('lhs').slice(change['rhs-line-from'], lj).join(' ');
+				var rchange = d.getLines('rhs').slice(change['rhs-line-from'], lj).join(' ');
 				if (change.op == 'a') rchange += ' ';// include the leading space
 				else if (li > 0 && change.op == 'c') li += 1; // ignore leading space if not first word
 				// output the changed index and text
@@ -103,7 +109,7 @@ Mgly.CodeifyText = function(settings) {
 	jQuery.extend(this, settings);
 	this.lhs = settings.lhs.split('\n');
 	this.rhs = settings.rhs.split('\n');
-}
+};
 
 jQuery.extend(Mgly.CodeifyText.prototype, {
 	getCodes: function(side) {
@@ -158,8 +164,8 @@ Mgly.diff = function(lhs, rhs, options) {
 		modified: {}
 	};
 	var max = (lhs_ctx.codes.length + rhs_ctx.codes.length + 1);
-	var vector_d = Array( 2 * max + 2 );
-	var vector_u = Array( 2 * max + 2 );
+	var vector_d = [];
+	var vector_u = [];
 	this._lcs(lhs_ctx, 0, lhs_ctx.codes.length, rhs_ctx, 0, rhs_ctx.codes.length, vector_u, vector_d);
 	this._optimize(lhs_ctx);
 	this._optimize(rhs_ctx);
@@ -189,14 +195,18 @@ jQuery.extend(Mgly.diff.prototype, {
 			else if (item.rhs_inserted_count == 0) rhs_str = item.rhs_start;
 			else rhs_str = (item.rhs_start + 1) + ',' + (item.rhs_start + item.rhs_inserted_count);
 			nf += lhs_str + change + rhs_str + '\n';
-			if (this.rhs_lines && this.lhs_lines) {
+
+			var lhs_lines = this.getLines('lhs');
+			var rhs_lines = this.getLines('rhs');
+			if (rhs_lines && lhs_lines) {
+				var i;
 				// if rhs/lhs lines have been retained, output contextual diff
-				for (var i = item.lhs_start; i < item.lhs_start + item.lhs_deleted_count; ++i) {
-					nf += '< ' + this.lhs_lines[i] + '\n';
+				for (i = item.lhs_start; i < item.lhs_start + item.lhs_deleted_count; ++i) {
+					nf += '< ' + lhs_lines[i] + '\n';
 				}
 				if (item.rhs_inserted_count && item.lhs_deleted_count) nf += '---\n';
-				for (var i = item.rhs_start; i < item.rhs_start + item.rhs_inserted_count; ++i) {
-					nf += '> ' + this.rhs_lines[i] + '\n';
+				for (i = item.rhs_start; i < item.rhs_start + item.rhs_inserted_count; ++i) {
+					nf += '> ' + rhs_lines[i] + '\n';
 				}
 			}
 		}
@@ -238,10 +248,9 @@ jQuery.extend(Mgly.diff.prototype, {
 		var maxd = ((lhs_upper - lhs_lower + rhs_upper - rhs_lower) / 2) + 1;
 		vector_d[ offset_down + kdown + 1 ] = lhs_lower;
 		vector_u[ offset_up + kup - 1 ] = lhs_upper;
-		var ret = {x:0,y:0};
-		for (var d = 0; d <= maxd; ++d) {
-			for (var k = kdown - d; k <= kdown + d; k += 2) {
-				var x, y;
+		var ret = {x:0,y:0}, d, k, x, y;
+		for (d = 0; d <= maxd; ++d) {
+			for (k = kdown - d; k <= kdown + d; k += 2) {
 				if (k == kdown - d) {
 					x = vector_d[ offset_down + k + 1 ];//down
 				}
@@ -267,9 +276,8 @@ jQuery.extend(Mgly.diff.prototype, {
 				}
 			}
 			// Extend the reverse path.
-			for (var k = kup - d; k <= kup + d; k += 2) {
+			for (k = kup - d; k <= kup + d; k += 2) {
 				// find the only or better starting point
-				var x, y;
 				if (k == kup + d) {
 					x = vector_u[offset_up + k - 1]; // up
 				} else {
@@ -391,21 +399,21 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			viewport: false,
 			ignorews: false,
 			fadein: 'fast',
-			editor_width: '400px',
+			editor_width: '650px',
 			editor_height: '400px',
 			resize_timeout: 500,
 			change_timeout: 150,
-			fgcolor: {a:'#4ba3fa',c:'#a3a3a3',d:'#ff7f7f'},
+			fgcolor: {a:'#4ba3fa',c:'#a3a3a3',d:'#ff7f7f',  // color for differences (soft color)
+				ca:'#4b73ff',cc:'#434343',cd:'#ff4f4f'},    // color for currently active difference (bright color)
 			bgcolor: '#eee',
 			vpcolor: 'rgba(0, 0, 200, 0.5)',
 			lhs: function(setValue) { },
 			rhs: function(setValue) { },
 			loaded: function() { },
-			//_auto_height: function(h) { return h - 20; },
 			_auto_width: function(w) { return w; },
 			resize: function(init) {
 				var scrollbar = init ? 16 : 0;
-				var w = jQuery(el).parent().width() + scrollbar;
+				var w = jQuery(el).parent().width() + scrollbar, h = 0;
 				if (this.width == 'auto') {
 					w = this._auto_width(w);
 				}
@@ -445,7 +453,7 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			lineWrapping: false,
 			lineNumbers: true,
 			gutters: ['merge', 'CodeMirror-linenumbers']
-		}
+		};
 		this.lhs_cmsettings = {};
 		this.rhs_cmsettings = {};
 		
@@ -455,13 +463,15 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		// save options if there are any
 		if (options && options.cmsettings) jQuery.extend(this.lhs_cmsettings, cmsettings, options.cmsettings, options.lhs_cmsettings);
 		if (options && options.cmsettings) jQuery.extend(this.rhs_cmsettings, cmsettings, options.cmsettings, options.rhs_cmsettings);
-		if (options) jQuery.extend(this.settings, options);
+		//if (options) jQuery.extend(this.settings, options);
 		
 		// bind if the element is destroyed
 		this.element.bind('destroyed', jQuery.proxy(this.teardown, this));
 
 		// save this instance in jQuery data, binding this view to the node
 		jQuery.data(el, 'mergely', this);
+
+		this._setOptions(options);
 	},
 	unbind: function() {
 		if (this.changed_timeout != null) clearTimeout(this.changed_timeout);
@@ -487,6 +497,26 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 	unmarkup: function() {
 		this._clear();
 	},
+	scrollToDiff: function(direction) {
+		if (!this.changes.length) return;
+		if (direction == 'next') {
+			this._current_diff = Math.min(++this._current_diff, this.changes.length - 1);
+		}
+		else {
+			this._current_diff = Math.max(--this._current_diff, 0);
+		}
+		this._scroll_to_change(this.changes[this._current_diff]);
+		this._changed(this.id + '-lhs', this.id + '-rhs');
+	},
+	mergeCurrentChange: function(side) {
+		if (!this.changes.length) return;
+		if (side == 'lhs' && !this.lhs_cmsettings.readOnly) {
+			this._merge_change(this.changes[this._current_diff], 'rhs', 'lhs');
+		}
+		else if (side == 'rhs' && !this.rhs_cmsettings.readOnly) {
+			this._merge_change(this.changes[this._current_diff], 'lhs', 'rhs');
+		}
+	},
 	scrollTo: function(side, num) {
 		var le = this.editor[this.id + '-lhs'];
 		var re = this.editor[this.id + '-rhs'];
@@ -499,31 +529,34 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			re.centerOnCursor();
 		}
 	},
+	_setOptions: function(opts) {
+		jQuery.extend(this.settings, opts);
+		if (this.settings.hasOwnProperty('rhs_margin')) {
+			// dynamically swap the margin
+			if (this.settings.rhs_margin == 'left') {
+				this.element.find('.mergely-margin:last-child').insertAfter(
+					this.element.find('.mergely-canvas'));
+			}
+			else {
+				var target = this.element.find('.mergely-margin').last();
+				target.appendTo(target.parent());
+			}
+		}
+		if (this.settings.hasOwnProperty('sidebar')) {
+			// dynamically enable sidebars
+			if (this.settings.sidebar) {
+				jQuery(this.element).find('.mergely-margin').css({display: 'block'});
+			}
+			else {
+				jQuery(this.element).find('.mergely-margin').css({display: 'none'});
+			}
+		}
+	},
 	options: function(opts) {
 		if (opts) {
-			jQuery.extend(this.settings, opts);
+			this._setOptions(opts);
 			if (this.settings.autoresize) this.resize();
 			if (this.settings.autoupdate) this.update();
-			if (this.settings.hasOwnProperty('rhs_margin')) {
-				// dynamically swap the margin
-				if (this.settings.rhs_margin == 'left') {
-					this.element.find('.mergely-margin:last-child').insertAfter(
-						this.element.find('.mergely-canvas'));
-				}
-				else {
-					var target = this.element.find('.mergely-margin').last();
-					target.appendTo(target.parent());
-				}
-			}
-			if (this.settings.hasOwnProperty('sidebar')) {
-				// dynamically enable sidebars
-				if (this.settings.sidebar) {
-					jQuery(this.element).find('.mergely-margin').css({display: 'block'});
-				}
-				else {
-					jQuery(this.element).find('.mergely-margin').css({display: 'none'});
-				}
-			}
 		}
 		else {
 			return this.settings;
@@ -590,10 +623,8 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		return d.normal_form();
 	},
 	bind: function(el) {
-		jQuery(this.element).hide();//hide
+		this.element.hide();//hide
 		this.id = jQuery(el).attr('id');
-		var height = this.settings.editor_height;
-		var width = this.settings.editor_width;
 		this.changed_timeout = null;
 		this.chfns = {};
 		this.chfns[this.id + '-lhs'] = [];
@@ -611,7 +642,7 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		}
 		else {
 			// homebrew
-			var style = 'opacity:0.4;width:10px;height:15px;background-color:#888;cursor:pointer;text-align:center;color:#eee;border:1px solid: #222;margin-right:5px;';
+			var style = 'opacity:0.4;width:10px;height:15px;background-color:#888;cursor:pointer;text-align:center;color:#eee;border:1px solid: #222;margin-right:5px;margin-top: -2px;';
 			merge_lhs_button = '<div style="' + style + '" title="Merge left">&lt;</div>';
 			merge_rhs_button = '<div style="' + style + '" title="Merge right">&gt;</div>';
 		}
@@ -619,19 +650,21 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		this.merge_lhs_button = jQuery(merge_lhs_button);
 		
 		// create the textarea and canvas elements
-		jQuery(this.element).append(jQuery('<div class="mergely-margin" style="height: ' + height + '"><canvas id="' + this.id + '-lhs-margin" width="8px" height="' + height + '"></canvas></div>'));
-		jQuery(this.element).append(jQuery('<div style="position:relative;width:' + width + '; height:' + height + '" id="' + this.id + '-editor-lhs" class="mergely-column"><textarea style="" id="' + this.id + '-lhs"></textarea></div>'));
-		jQuery(this.element).append(jQuery('<div class="mergely-canvas" style="height: ' + height + '"><canvas id="' + this.id + '-lhs-' + this.id + '-rhs-canvas" style="width:28px" width="28px" height="' + height + '"></canvas></div>'));
+		var height = this.settings.editor_height;
+		var width = this.settings.editor_width;
+		this.element.append(jQuery('<div class="mergely-margin" style="height: ' + height + '"><canvas id="' + this.id + '-lhs-margin" width="8px" height="' + height + '"></canvas></div>'));
+		this.element.append(jQuery('<div style="position:relative;width:' + width + '; height:' + height + '" id="' + this.id + '-editor-lhs" class="mergely-column"><textarea style="" id="' + this.id + '-lhs"></textarea></div>'));
+		this.element.append(jQuery('<div class="mergely-canvas" style="height: ' + height + '"><canvas id="' + this.id + '-lhs-' + this.id + '-rhs-canvas" style="width:28px" width="28px" height="' + height + '"></canvas></div>'));
 		var rmargin = jQuery('<div class="mergely-margin" style="height: ' + height + '"><canvas id="' + this.id + '-rhs-margin" width="8px" height="' + height + '"></canvas></div>');
 		if (!this.settings.sidebar) {
-			jQuery(this.element).find('.mergely-margin').css({display: 'none'});
+			this.element.find('.mergely-margin').css({display: 'none'});
 		}
 		if (this.settings.rhs_margin == 'left') {
-			jQuery(this.element).append(rmargin);
+			this.element.append(rmargin);
 		}
-		jQuery(this.element).append(jQuery('<div style="width:' + width + '; height:' + height + '" id="' + this.id + '-editor-rhs" class="mergely-column"><textarea style="" id="' + this.id + '-rhs"></textarea></div>'));
+		this.element.append(jQuery('<div style="width:' + width + '; height:' + height + '" id="' + this.id + '-editor-rhs" class="mergely-column"><textarea style="" id="' + this.id + '-rhs"></textarea></div>'));
 		if (this.settings.rhs_margin != 'left') {
-			jQuery(this.element).append(rmargin);
+			this.element.append(rmargin);
 		}
 		//codemirror
 		var cmstyle = '#' + this.id + ' .CodeMirror-gutter-text { padding: 5px 0 0 0; }' +
@@ -640,6 +673,8 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		if (this.settings.autoresize) {
 			cmstyle += this.id + ' .CodeMirror-scroll { height: 100%; overflow: auto; }';
 		}
+		// adjust the margin line height
+		cmstyle += '\n.CodeMirror { line-height: 18px; }';
 		jQuery('<style type="text/css">' + cmstyle + '</style>').appendTo('head');
 
 		//bind
@@ -672,7 +707,7 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 				if (self.settings.autoupdate) {
 					self._changing(self.id + '-lhs', self.id + '-rhs');
 				}
-			}
+			};
 			jQuery(window).resize(
 				function () {
 					if (sz_timeout1) clearTimeout(sz_timeout1);
@@ -682,17 +717,41 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			sz(true);
 		}
 		//bind
-		
+		var setv;
 		if (this.settings.lhs) {
-			var setv = this.editor[this.id + '-lhs'].getDoc().setValue;
+			setv = this.editor[this.id + '-lhs'].getDoc().setValue;
 			this.settings.lhs(setv.bind(this.editor[this.id + '-lhs'].getDoc()));
 		}
 		if (this.settings.rhs) {
-			var setv = this.editor[this.id + '-rhs'].getDoc().setValue;
+			setv = this.editor[this.id + '-rhs'].getDoc().setValue;
 			this.settings.rhs(setv.bind(this.editor[this.id + '-rhs'].getDoc()));
 		}
 	},
-	
+
+	_scroll_to_change : function(change) {
+		if (!change) return;
+		var self = this;
+		var led = self.editor[self.id+'-lhs'];
+		var red = self.editor[self.id+'-rhs'];
+
+		var yref = led.getScrollerElement().offsetHeight * 0.5; // center between >0 and 1/2
+
+		// set cursors
+		led.setCursor(Math.max(change["lhs-line-from"],0), 0); // use led.getCursor().ch ?
+		red.setCursor(Math.max(change["rhs-line-from"],0), 0);
+
+		// using directly CodeMirror breaks canvas alignment
+		// var ly = led.charCoords({line: Math.max(change["lhs-line-from"],0), ch: 0}, "local").top;
+
+		// calculate scroll offset for current change. Warning: returns relative y position so we scroll to 0 first.
+		led.scrollTo(null, 0);
+		red.scrollTo(null, 0);
+		self._calculate_offsets(self.id+'-lhs', self.id+'-rhs', [change]);
+		led.scrollTo(null, Math.max(change["lhs-y-start"]-yref, 0));
+		red.scrollTo(null, Math.max(change["rhs-y-start"]-yref, 0));
+		// right pane should simply follows
+	},
+
 	_scrolling: function(editor_name) {
 		if (this._skipscroll[editor_name] === true) {
 			// scrolling one side causes the other to event - ignore it
@@ -761,9 +820,8 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			if (scroll || force_scroll) {
 				// scroll the other side
 				this.trace('scroll', 'scrolling other side', top_to - top_adjust);
-				var scroller = jQuery(this.editor[name].getScrollerElement());
 				this._skipscroll[name] = true;//disable next event
-				scroller.scrollTop(top_to - top_adjust).scrollLeft(left_to);
+				this.editor[name].scrollTo(left_to, top_to - top_adjust);
 			}
 			else this.trace('scroll', 'not scrolling other side');
 			
@@ -794,29 +852,32 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		this._diff(editor_name1, editor_name2);
 	},
 	_clear: function() {
-		var self = this;
-		for (var name in this.editor) {
+		var self = this, name, editor, fns, timer, i, change, l;
+
+		var clear_changes = function() {
+			timer = new Mgly.Timer();
+			for (i = 0, l = editor.lineCount(); i < l; ++i) {
+				editor.removeLineClass(i, 'background');
+			}
+			for (i = 0; i < fns.length; ++i) {
+				//var edid = editor.getDoc().id;
+				change = fns[i];
+				//if (change.doc.id != edid) continue;
+				if (change.lines.length) {
+					self.trace('change', 'clear text', change.lines[0].text);
+				}
+				change.clear();
+			}
+			editor.clearGutter('merge');
+			self.trace('change', 'clear time', timer.stop());
+		};
+
+		for (name in this.editor) {
 			if (!this.editor.hasOwnProperty(name)) continue;
-			var editor = this.editor[name];
-			var fns = self.chfns[name];
+			editor = this.editor[name];
+			fns = self.chfns[name];
 			// clear editor changes
-			editor.operation(function() {
-				var timer = new Mgly.Timer();
-				for (var i = 0, l = editor.lineCount(); i < l; ++i) {
-					editor.removeLineClass(i, 'background');
-				}
-				for (var i = 0; i < fns.length; ++i) {
-					//var edid = editor.getDoc().id;
-					var change = fns[i];
-					//if (change.doc.id != edid) continue;
-					if (change.lines.length) {
-						self.trace('change', 'clear text', change.lines[0].text);
-					}
-					change.clear();
-				}
-				editor.clearGutter('merge');
-				self.trace('change', 'clear time', timer.stop());
-			});
+			editor.operation(clear_changes);
 		}
 		self.chfns[name] = [];
 		
@@ -849,6 +910,12 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		this.trace('change', 'diff time', timer.stop());
 		this.changes = Mgly.DiffParser(d.normal_form());
 		this.trace('change', 'parse time', timer.stop());
+		if (this._current_diff === undefined) {
+			// go to first difference on start-up
+			this._current_diff = 0;
+			this._scroll_to_change(this.changes[0]);
+		}
+		this.trace('change', 'scroll_to_change time', timer.stop());
 		this._calculate_offsets(editor_name1, editor_name2, this.changes);
 		this.trace('change', 'offsets time', timer.stop());
 		this._markup_changes(editor_name1, editor_name2, this.changes);
@@ -964,23 +1031,23 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			var rlf = change['rhs-line-from'] >= 0 ? change['rhs-line-from'] : 0;
 			var rlt = change['rhs-line-to'] >= 0 ? change['rhs-line-to'] : 0;
 			
-			var ls, le, rs, re;
-			if (this.editor[editor_name1].getOption('lineWrapping') || this.editor[editor_name1].getOption('lineWrapping')) {
+			var ls, le, rs, re, tls, tle, lhseh, lhssh, rhssh, rhseh;
+			if (this.editor[editor_name1].getOption('lineWrapping') || this.editor[editor_name2].getOption('lineWrapping')) {
 				// If using line-wrapping, we must get the height of the line
-				var tls = this.editor[editor_name1].cursorCoords({line: llf, ch: 0}, 'page');
-				var lhssh = this.editor[editor_name1].getLineHandle(llf);
+				tls = this.editor[editor_name1].cursorCoords({line: llf, ch: 0}, 'page');
+				lhssh = this.editor[editor_name1].getLineHandle(llf);
 				ls = { top: tls.top, bottom: tls.top + lhssh.height };
 
-				var tle = this.editor[editor_name1].cursorCoords({line: llt, ch: 0}, 'page');
-				var lhseh = this.editor[editor_name1].getLineHandle(llt);
+				tle = this.editor[editor_name1].cursorCoords({line: llt, ch: 0}, 'page');
+				lhseh = this.editor[editor_name1].getLineHandle(llt);
 				le = { top: tle.top, bottom: tle.top + lhseh.height };
 				
-				var tls = this.editor[editor_name2].cursorCoords({line: rlf, ch: 0}, 'page');
-				var rhssh = this.editor[editor_name2].getLineHandle(rlf);
+				tls = this.editor[editor_name2].cursorCoords({line: rlf, ch: 0}, 'page');
+				rhssh = this.editor[editor_name2].getLineHandle(rlf);
 				rs = { top: tls.top, bottom: tls.top + rhssh.height };
 
-				var tle = this.editor[editor_name2].cursorCoords({line: rlt, ch: 0}, 'page');
-				var rhseh = this.editor[editor_name2].getLineHandle(rlt);
+				tle = this.editor[editor_name2].cursorCoords({line: rlt, ch: 0}, 'page');
+				rhseh = this.editor[editor_name2].getLineHandle(rlt);
 				re = { top: tle.top, bottom: tle.top + rhseh.height };
 			}
 			else {
@@ -1133,8 +1200,8 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 		this.trace('change', 'markup rhs-editor time', timer.stop());
 		
 		// mark text deleted, LCS changes
-		var marktext = [];
-		for (var i = 0; this.settings.lcs && i < changes.length; ++i) {
+		var marktext = [], i, j, k, p;
+		for (i = 0; this.settings.lcs && i < changes.length; ++i) {
 			var change = changes[i];
 			var llf = change['lhs-line-from'] >= 0 ? change['lhs-line-from'] : 0;
 			var llt = change['lhs-line-to'] >= 0 ? change['lhs-line-to'] : 0;
@@ -1156,34 +1223,30 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			}
 			else if (change['op'] == 'c') {
 				// apply LCS changes to each line
-				for (var j = llf, k = rlf, p = 0; 
+				for (j = llf, k = rlf, p = 0; 
 					 ((j >= 0) && (j <= llt)) || ((k >= 0) && (k <= rlt));
 					 ++j, ++k) {
+					var lhs_line, rhs_line;
 					if (k + p > rlt) {
 						// lhs continues past rhs, mark lhs as deleted
-						var lhs_line = led.getLine( j );
+						lhs_line = led.getLine( j );
 						marktext.push([led, {line:j, ch:0}, {line:j, ch:lhs_line.length}, {className: 'mergely ch d lhs'}]);
 						continue;
 					}
 					if (j + p > llt) {
 						// rhs continues past lhs, mark rhs as added
-						var rhs_line = red.getLine( k );
+						rhs_line = red.getLine( k );
 						marktext.push([red, {line:k, ch:0}, {line:k, ch:rhs_line.length}, {className: 'mergely ch a rhs'}]);
 						continue;
 					}
-					var lhs_line = led.getLine( j );
-					var rhs_line = red.getLine( k );
-					var lhs_start = { line: -1, ch: -1 };
-					var lhs_stop = { line: -1, ch: -1 };
-					var rhs_start = { line: -1, ch: -1 };
-					var rhs_stop = { line: -1, ch: -1 };
-					
+					lhs_line = led.getLine( j );
+					rhs_line = red.getLine( k );
 					var lcs = new Mgly.LCS(lhs_line, rhs_line);
 					lcs.diff(
-						function (from, to) {//added
+						function added (from, to) {
 							marktext.push([red, {line:k, ch:from}, {line:k, ch:to}, {className: 'mergely ch a rhs'}]);
 						},
-						removed = function (from, to) {//removed
+						function removed (from, to) {
 							marktext.push([led, {line:j, ch:from}, {line:j, ch:to}, {className: 'mergely ch d lhs'}]);
 						}
 					);
@@ -1234,51 +1297,62 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 				}
 			});
 			var change = self.changes[cid];
-
-			var line = {lhs: ed['lhs'].lineInfo(llt), rhs: ed['rhs'].lineInfo(rlt)};
-	
-			var text = ed[side].getRange(
-				CodeMirror.Pos(change[side + '-line-from'], 0),
-				CodeMirror.Pos(change[side + '-line-to'] + 1, 0));
-			
-			if (change['op'] == 'c') {
-				ed[oside].replaceRange(text,
-					CodeMirror.Pos(change[oside + '-line-from'], 0),
-					CodeMirror.Pos(change[oside + '-line-to'] + 1, 0));
-			}
-			else if (side == 'rhs') {
-				if (change['op'] == 'a') {
-					ed[oside].replaceRange(text,
-						CodeMirror.Pos(change[oside + '-line-from'] + 1, 0),
-						CodeMirror.Pos(change[oside + '-line-to'] + 1, 0));
-				}
-				else {// 'd'
-					var from = parseInt(change[oside + '-line-from']);
-					var to = parseInt(change[oside + '-line-to']);
-					for (var i = to; i >= from; --i) {
-						ed[oside].removeLine(i);
-					}
-				}
-			}
-			else if (side == 'lhs') {
-				if (change['op'] == 'a') {
-					var from = parseInt(change[oside + '-line-from']);
-					var to = parseInt(change[oside + '-line-to']);
-					for (var i = to; i >= from; --i) {
-						ed[oside].removeLine(i);
-					}
-				}
-				else {// 'd'
-					ed[oside].replaceRange( text,
-						CodeMirror.Pos(change[oside + '-line-from'] + 1, 0));
-				}
-			}
-			//reset
-			ed['lhs'].setValue(ed['lhs'].getValue());
-			ed['rhs'].setValue(ed['rhs'].getValue());
+			self._merge_change(change, side, oside);
 			return false;
 		});
 		this.trace('change', 'markup buttons time', timer.stop());
+	},
+	_merge_change :	function(change, side, oside) {
+		if (!change) return;
+		var led = this.editor[this.id+'-lhs'];
+		var red = this.editor[this.id+'-rhs'];
+		var ed = {lhs:led, rhs:red};
+		var i, from, to;
+
+		var text = ed[side].getRange(
+			CodeMirror.Pos(change[side + '-line-from'], 0),
+			CodeMirror.Pos(change[side + '-line-to'] + 1, 0));
+		
+		if (change['op'] == 'c') {
+			ed[oside].replaceRange(text,
+				CodeMirror.Pos(change[oside + '-line-from'], 0),
+				CodeMirror.Pos(change[oside + '-line-to'] + 1, 0));
+		}
+		else if (side == 'rhs') {
+			if (change['op'] == 'a') {
+				ed[oside].replaceRange(text,
+					CodeMirror.Pos(change[oside + '-line-from'] + 1, 0),
+					CodeMirror.Pos(change[oside + '-line-to'] + 1, 0));
+			}
+			else {// 'd'
+				from = parseInt(change[oside + '-line-from'], 10);
+				to = parseInt(change[oside + '-line-to'], 10);
+				for (i = to; i >= from; --i) {
+					ed[oside].setCursor({line: i, ch: -1});
+					ed[oside].execCommand('deleteLine');
+				}
+			}
+		}
+		else if (side == 'lhs') {
+			if (change['op'] == 'a') {
+				from = parseInt(change[oside + '-line-from'], 10);
+				to = parseInt(change[oside + '-line-to'], 10);
+				for (i = to; i >= from; --i) {
+					//ed[oside].removeLine(i);
+					ed[oside].setCursor({line: i, ch: -1});
+					ed[oside].execCommand('deleteLine');
+				}
+			}
+			else {// 'd'
+				ed[oside].replaceRange( text,
+					CodeMirror.Pos(change[oside + '-line-from'] + 1, 0));
+			}
+		}
+		//reset
+		ed['lhs'].setValue(ed['lhs'].getValue());
+		ed['rhs'].setValue(ed['rhs'].getValue());
+
+		this._scroll_to_change(change);
 	},
 	_draw_info: function(editor_name1, editor_name2) {
 		var visible_page_height = jQuery(this.editor[editor_name1].getScrollerElement()).height();
@@ -1349,14 +1423,14 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			this.trace('draw', 'marker calculated', lhs_y_start, lhs_y_end, rhs_y_start, rhs_y_end);
 
 			ctx_lhs.beginPath();
-			ctx_lhs.fillStyle = this.settings.fgcolor[change['op']];
+			ctx_lhs.fillStyle = this.settings.fgcolor[(this._current_diff==i?'c':'')+change['op']];
 			ctx_lhs.strokeStyle = '#000';
 			ctx_lhs.lineWidth = 0.5;
 			ctx_lhs.fillRect(1.5, lhs_y_start, 4.5, Math.max(lhs_y_end - lhs_y_start, 5));
 			ctx_lhs.strokeRect(1.5, lhs_y_start, 4.5, Math.max(lhs_y_end - lhs_y_start, 5));
 
 			ctx_rhs.beginPath();
-			ctx_rhs.fillStyle = this.settings.fgcolor[change['op']];
+			ctx_rhs.fillStyle = this.settings.fgcolor[(this._current_diff==i?'c':'')+change['op']];
 			ctx_rhs.strokeStyle = '#000';
 			ctx_rhs.lineWidth = 0.5;
 			ctx_rhs.fillRect(1.5, rhs_y_start, 4.5, Math.max(rhs_y_end - rhs_y_start, 5));
@@ -1375,8 +1449,8 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 			
 			// draw left box
 			ctx.beginPath();
-			ctx.strokeStyle = this.settings.fgcolor[change['op']];
-			ctx.lineWidth = 1;
+			ctx.strokeStyle = this.settings.fgcolor[(this._current_diff==i?'c':'')+change['op']];
+			ctx.lineWidth = (this._current_diff==i) ? 1.5 : 1;
 			
 			var rectWidth = this.draw_lhs_width;
 			var rectHeight = lhs_y_end - lhs_y_start - 1;
@@ -1479,7 +1553,7 @@ jQuery.extend(Mgly.CodeMirrorDiffView.prototype, {
 	},
 	trace: function(name) {
 		if(this.settings._debug.indexOf(name) >= 0) {
-			arguments[0] = name+':';
+			arguments[0] = name + ':';
 			console.log([].slice.apply(arguments));
 		} 
 	}
@@ -1491,7 +1565,7 @@ jQuery.pluginMaker = function(plugin) {
 		// get the arguments 
 		var args = jQuery.makeArray(arguments),
 		after = args.slice(1);
-		var rc = undefined;
+		var rc;
 		this.each(function() {
 			// see if we have an instance
 			var instance = jQuery.data(this, plugin.prototype.name);
@@ -1505,7 +1579,7 @@ jQuery.pluginMaker = function(plugin) {
 				}
 			} else {
 				// create the plugin
-				new plugin(this, options);
+				var _plugin = new plugin(this, options);
 			}
 		});
 		if (rc != undefined) return rc;
@@ -1514,3 +1588,5 @@ jQuery.pluginMaker = function(plugin) {
 
 // make the mergely widget
 jQuery.pluginMaker(Mgly.mergely);
+
+})( window, document, jQuery, CodeMirror );

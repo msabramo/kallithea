@@ -92,7 +92,7 @@ Mergely
 -------
 
 Kallithea incorporates some code from the Javascript system called
-[Mergely](http://http://www.mergely.com/).
+[Mergely](http://http://www.mergely.com/), version 3.3.9.
 [Mergely's license](http://www.mergely.com/license.php), a
 [copy of which is included in this repository](LICENSE-MERGELY.html),
 is (GPL|LGPL|MPL).  Kallithea as GPLv3'd project chooses the GPL arm of that
