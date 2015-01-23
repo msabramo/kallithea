@@ -121,19 +121,28 @@ class NotificationModel(BaseModel):
         # send email with notification to all other participants
         for rec in rec_objs:
             ## this is passed into template
-            kwargs = {'subject': subject,
+            html_kwargs = {
+                      'subject': subject,
                       'body': h.rst_w_mentions(body),
                       'when': h.fmt_date(notif.created_on),
                       'user': notif.created_by_user.username,
                       }
 
-            kwargs.update(email_kwargs)
+            txt_kwargs = {
+                      'subject': subject,
+                      'body': body,
+                      'when': h.fmt_date(notif.created_on),
+                      'user': notif.created_by_user.username,
+                      }
+
+            html_kwargs.update(email_kwargs)
+            txt_kwargs.update(email_kwargs)
             email_subject = EmailNotificationModel()\
-                                .get_email_description(type_, **kwargs)
+                                .get_email_description(type_, **txt_kwargs)
             email_txt_body = EmailNotificationModel()\
-                                .get_email_tmpl(type_, 'txt', **kwargs)
+                                .get_email_tmpl(type_, 'txt', **txt_kwargs)
             email_html_body = EmailNotificationModel()\
-                                .get_email_tmpl(type_, 'html', **kwargs)
+                                .get_email_tmpl(type_, 'html', **html_kwargs)
 
             run_task(tasks.send_email, [rec.email], email_subject, email_txt_body,
                      email_html_body, headers)
