@@ -334,7 +334,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
 
             # old attrs fetched from Kallithea database
             admin = getattr(userobj, 'admin', False)
-            active = getattr(userobj, 'active', True)
+            active = getattr(userobj, 'active', self.user_activation_state())
             email = getattr(userobj, 'email', '')
             firstname = getattr(userobj, 'firstname', '')
             lastname = getattr(userobj, 'lastname', '')
