@@ -81,7 +81,7 @@ class Command(BasePasterCommand):
         self.parser.add_option('--update-only',
                            action='store',
                            dest='repo_update_list',
-                           help="Specifies a comma separated list of repositores "
+                           help="Specifies a comma separated list of repositories "
                                 "to update last commit info for. OPTIONAL")
         self.parser.add_option('--invalidate-cache',
                            action='store_true',

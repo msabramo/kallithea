@@ -12,8 +12,8 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                     <span id="clone_id" class="help-block" style="display: none">
                         ${_('URL by id')}: `${c.repo_info.clone_url(with_id=True)}` </br>
                         ${_('''In case this repository is renamed or moved into another group the repository url changes.
-                               Using the above url guarantees that this repository will allways be accessible under such url.
-                               Usefull for CI systems, or any other cases that you need to hardcode the url into 3rd party service.''')}</span>
+                               Using the above url guarantees that this repository will always be accessible under such url.
+                               Useful for CI systems, or any other cases that you need to hardcode the url into 3rd party service.''')}</span>
                 </div>
            </div>
            <div class="field">

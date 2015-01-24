@@ -1438,7 +1438,7 @@ def journal_filter_help():
             date:[20120101100000 TO 20120102]
 
         Generate wildcards using '*' character:
-            "repositroy:vcs*" - search everything starting with 'vcs'
+            "repository:vcs*" - search everything starting with 'vcs'
             "repository:*vcs*" - search for repository containing 'vcs'
 
         Optional AND / OR operators in queries

@@ -284,7 +284,7 @@ class RepoGroupsController(BaseController):
         gr = c.repo_group = RepoGroupModel()._get_repo_group(group_name)
         repos = gr.repositories.all()
         if repos:
-            h.flash(_('This group contains %s repositores and cannot be '
+            h.flash(_('This group contains %s repositories and cannot be '
                       'deleted') % len(repos), category='warning')
             return redirect(url('repos_groups'))
 

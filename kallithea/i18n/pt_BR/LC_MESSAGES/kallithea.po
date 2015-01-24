@@ -133,7 +133,7 @@ msgstr ""
 #: kallithea/controllers/files.py:301 kallithea/controllers/files.py:361
 #: kallithea/controllers/files.py:428
 #, python-format
-msgid "This repository is has been locked by %s on %s"
+msgid "This repository has been locked by %s on %s"
 msgstr "Este repositório foi travado por %s em %s"
 
 #: kallithea/controllers/files.py:313
@@ -621,7 +621,7 @@ msgstr "Ocorreu um erro durante a atualização do grupo de repositórios %s"
 
 #: kallithea/controllers/admin/repo_groups.py:289
 #, python-format
-msgid "This group contains %s repositores and cannot be deleted"
+msgid "This group contains %s repositories and cannot be deleted"
 msgstr "Esse grupo contém %s repositórios e não pode ser excluído"
 
 #: kallithea/controllers/admin/repo_groups.py:296
@@ -955,7 +955,7 @@ msgid "You need to be a registered user to perform this action"
 msgstr "Você precisa ser um usuário registrado para realizar essa ação"
 
 #: kallithea/lib/auth.py:846
-msgid "You need to be a signed in to view this page"
+msgid "You need to be signed in to view this page"
 msgstr "Você precisa estar logado para ver essa página"
 
 #: kallithea/lib/diffs.py:66
@@ -1268,25 +1268,25 @@ msgstr "Acesso administrativo ao repositório"
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1171
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1190
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1310
-msgid "Repositories Group no access"
+msgid "Repository Group no access"
 msgstr "Nenhum acesso ao Grupo de Repositórios"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1172
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1191
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1311
-msgid "Repositories Group read access"
+msgid "Repository Group read access"
 msgstr "Acesso de leitura ao Grupo de Repositórios"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1173
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1192
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1312
-msgid "Repositories Group write access"
+msgid "Repository Group write access"
 msgstr "Acesso de escrita ao Grupo de Repositórios"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1174
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1193
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1313
-msgid "Repositories Group admin access"
+msgid "Repository Group admin access"
 msgstr "Acesso administrativo ao Grupo de Repositórios"
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1176
@@ -1860,7 +1860,7 @@ msgid "Invalid clone url, provide a valid clone http(s)/svn+http(s) url"
 msgstr "URL inválida, por favor, forneça uma URL de clone http(s)/svn+http(s)"
 
 #: kallithea/model/validators.py:519
-msgid "Fork have to be the same type as parent"
+msgid "Fork has to be the same type as parent"
 msgstr "A bifurcação deve ser do mesmo tipo que o pai"
 
 #: kallithea/model/validators.py:534
@@ -2173,7 +2173,7 @@ msgid "Send password reset email"
 msgstr ""
 
 #: kallithea/templates/password_reset.html:64
-msgid "Password reset link will be send to matching email address"
+msgid "Password reset link will be sent to matching email address"
 msgstr ""
 "Link de reinicialização de senha será enviado ao endereço de e-mail "
 "correspondente"
@@ -3302,13 +3302,13 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_creating.html:30
 #, python-format
 msgid ""
-"Repository \"%(repo_name)s\" is beeing created, you will be redirected "
+"Repository \"%(repo_name)s\" is being created, you will be redirected "
 "when this process is finished.repo_name"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_creating.html:42
 msgid ""
-"We're sorry but error occured during this operation. Please check your "
+"We're sorry but error occurred during this operation. Please check your "
 "Kallithea server logs, or contact administrator."
 msgstr ""
 
@@ -3400,7 +3400,7 @@ msgstr "Repositório não está travado"
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:73
 msgid ""
 "Force locking on repository. Works only when anonymous access is "
-"disabled. Trigering a pull locks repository by user who pulled, only the "
+"disabled. Triggering a pull locks repository by user who pulled, only the "
 "same user can unlock by doing a push"
 msgstr ""
 
@@ -3432,7 +3432,7 @@ msgstr "Excluir bifurcações"
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:94
 msgid ""
 "This repository will be renamed in a special way in order to be "
-"unaccesible for Kallithea and VCS systems. If you need to fully delete it"
+"inaccessible for Kallithea and VCS systems. If you need to fully delete it"
 " from file system please do it manually"
 msgstr ""
 "Este repositório será renomeado de um modo especial para não ser mais "
@@ -3549,8 +3549,8 @@ msgid ""
 "In case this repository is renamed or moved into another group the "
 "repository url changes.\n"
 "                               Using above url guarantees that this "
-"repository will allways be accessible under such url.\n"
-"                               Usefull for CI systems, or any other cases"
+"repository will always be accessible under such url.\n"
+"                               Useful for CI systems, or any other cases"
 " that you need to hardcode the url into 3rd party service."
 msgstr ""
 
@@ -3580,7 +3580,7 @@ msgid "http[s] url used for doing remote pulls."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:46
-msgid "Optional select a group to put this repository into."
+msgid "Optionally select a group to put this repository into."
 msgstr "Opcionalmente selecione um grupo no qual colocar esse repositório."
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:55
@@ -3804,7 +3804,7 @@ msgstr "Construir do zero"
 
 #: kallithea/templates/admin/settings/settings_search.html:15
 msgid ""
-"This option completely reindex all the files within Kallithea for proper "
+"This option completely reindexes all the files within Kallithea for proper "
 "fulltext search capabilities."
 msgstr ""
 
@@ -3863,7 +3863,7 @@ msgstr "Requer SSL para operações de VCS"
 #: kallithea/templates/admin/settings/settings_vcs.html:13
 msgid ""
 "Activate to set Kallithea to require SSL for pushing or pulling. If SSL "
-"certificate is missing it will return a HTTP Error 406: Not Acceptable."
+"certificate is missing it will return an HTTP Error 406: Not Acceptable."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_vcs.html:24
@@ -4974,7 +4974,7 @@ msgid "Public repository"
 msgstr "Repositório público"
 
 #: kallithea/templates/data_table/_dt_elements.html:82
-msgid "Repository creating in progress..."
+msgid "Repository creation in progress..."
 msgstr ""
 
 #: kallithea/templates/data_table/_dt_elements.html:96

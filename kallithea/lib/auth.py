@@ -840,7 +840,7 @@ class PermsDecorator(object):
                 p = url.current()
 
                 import kallithea.lib.helpers as h
-                h.flash(_('You need to be a signed in to '
+                h.flash(_('You need to be signed in to '
                           'view this page'),
                         category='warning')
                 return redirect(url('login_home', came_from=p))

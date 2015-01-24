@@ -4,7 +4,7 @@ Mercurial libs compatibility
 
 import mercurial
 import mercurial.demandimport
-## patch demandimport, due to bug in mercurial when it allways triggers demandimport.enable()
+## patch demandimport, due to bug in mercurial when it always triggers demandimport.enable()
 mercurial.demandimport.enable = lambda *args, **kwargs: 1
 from mercurial import archival, merge as hg_merge, patch, ui
 from mercurial import discovery

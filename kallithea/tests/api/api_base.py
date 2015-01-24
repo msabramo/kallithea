@@ -1166,7 +1166,7 @@ class BaseTestApi(object):
             fixture.destroy_repo(repo_name)
 
     @mock.patch.object(RepoModel, 'update', crash)
-    def test_api_update_repo_exception_occured(self):
+    def test_api_update_repo_exception_occurred(self):
         repo_name = 'api_update_me'
         fixture.create_repo(repo_name, repo_type=self.REPO_TYPE)
         id_, params = _build_data(self.apikey, 'update_repo',
@@ -1454,7 +1454,7 @@ class BaseTestApi(object):
             fixture.destroy_user_group(gr_name)
 
     @mock.patch.object(UserGroupModel, 'update', crash)
-    def test_api_update_user_group_exception_occured(self):
+    def test_api_update_user_group_exception_occurred(self):
         gr_name = 'test_group'
         fixture.create_user_group(gr_name)
         id_, params = _build_data(self.apikey, 'update_user_group',
@@ -1582,7 +1582,7 @@ class BaseTestApi(object):
             if UserGroupModel().get_by_name(gr_name):
                 fixture.destroy_user_group(gr_name)
 
-    def test_api_delete_user_group_exception_occured(self):
+    def test_api_delete_user_group_exception_occurred(self):
         gr_name = 'test_group'
         ugroup = fixture.create_user_group(gr_name)
         gr_id = ugroup.users_group_id
@@ -2239,7 +2239,7 @@ class BaseTestApi(object):
         self._compare_ok(id_, expected, given=response.body)
 
     @mock.patch.object(GistModel, 'create', crash)
-    def test_api_create_gist_exception_occured(self):
+    def test_api_create_gist_exception_occurred(self):
         id_, params = _build_data(self.apikey_regular, 'create_gist',
                                   files={})
         response = api_call(self, params)
@@ -2271,7 +2271,7 @@ class BaseTestApi(object):
         self._compare_error(id_, expected, given=response.body)
 
     @mock.patch.object(GistModel, 'delete', crash)
-    def test_api_delete_gist_exception_occured(self):
+    def test_api_delete_gist_exception_occurred(self):
         gist_id = fixture.create_gist().gist_access_id
         id_, params = _build_data(self.apikey, 'delete_gist',
                                   gistid=gist_id)

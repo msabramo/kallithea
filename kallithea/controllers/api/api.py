@@ -1431,7 +1431,7 @@ class ApiController(JSONRPCController):
         :param enable_statistics:
         :type enable_statistics: bool
         :param copy_permissions: Copy permission from group that repository is
-            beeing created.
+            being created.
         :type copy_permissions: bool
 
         OUTPUT::

@@ -95,14 +95,14 @@ class Command(BasePasterCommand):
         self.parser.add_option('--index-only',
                           action='store',
                           dest='repo_list',
-                          help="Specifies a comma separated list of repositores "
+                          help="Specifies a comma separated list of repositories "
                                 "to build index on. If not given all repositories "
                                 "are scanned for indexing. OPTIONAL",
                           )
         self.parser.add_option('--update-only',
                           action='store',
                           dest='repo_update_list',
-                          help="Specifies a comma separated list of repositores "
+                          help="Specifies a comma separated list of repositories "
                                 "to re-build index on. OPTIONAL",
                           )
         self.parser.add_option('-f',

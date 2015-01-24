@@ -1184,10 +1184,10 @@ class Permission(Base, BaseModel):
         ('repository.write', _('Repository write access')),
         ('repository.admin', _('Repository admin access')),
 
-        ('group.none', _('Repositories Group no access')),
-        ('group.read', _('Repositories Group read access')),
-        ('group.write', _('Repositories Group write access')),
-        ('group.admin', _('Repositories Group admin access')),
+        ('group.none', _('Repository Group no access')),
+        ('group.read', _('Repository Group read access')),
+        ('group.write', _('Repository Group write access')),
+        ('group.admin', _('Repository Group admin access')),
 
         ('hg.admin', _('Kallithea Administrator')),
         ('hg.create.none', _('Repository creation disabled')),

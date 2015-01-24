@@ -497,7 +497,7 @@ def ValidCloneUri():
 def ValidForkType(old_data={}):
     class _validator(formencode.validators.FancyValidator):
         messages = {
-            'invalid_fork_type': _(u'Fork have to be the same type as parent')
+            'invalid_fork_type': _(u'Fork has to be the same type as parent')
         }
 
         def validate_python(self, value, state):

@@ -122,7 +122,7 @@ msgstr ""
 #: kallithea/controllers/files.py:301 kallithea/controllers/files.py:361
 #: kallithea/controllers/files.py:428
 #, python-format
-msgid "This repository is has been locked by %s on %s"
+msgid "This repository has been locked by %s on %s"
 msgstr ""
 
 #: kallithea/controllers/files.py:313
@@ -604,7 +604,7 @@ msgstr ""
 
 #: kallithea/controllers/admin/repo_groups.py:289
 #, python-format
-msgid "This group contains %s repositores and cannot be deleted"
+msgid "This group contains %s repositories and cannot be deleted"
 msgstr ""
 
 #: kallithea/controllers/admin/repo_groups.py:296
@@ -936,7 +936,7 @@ msgid "You need to be a registered user to perform this action"
 msgstr ""
 
 #: kallithea/lib/auth.py:846
-msgid "You need to be a signed in to view this page"
+msgid "You need to be signed in to view this page"
 msgstr ""
 
 #: kallithea/lib/diffs.py:66
@@ -1241,25 +1241,25 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1171
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1190
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1310
-msgid "Repositories Group no access"
+msgid "Repository Group no access"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1172
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1191
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1311
-msgid "Repositories Group read access"
+msgid "Repository Group read access"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1173
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1192
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1312
-msgid "Repositories Group write access"
+msgid "Repository Group write access"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1174
 #: kallithea/lib/dbmigrate/schema/db_1_5_0.py:1193
 #: kallithea/lib/dbmigrate/schema/db_1_5_2.py:1313
-msgid "Repositories Group admin access"
+msgid "Repository Group admin access"
 msgstr ""
 
 #: kallithea/lib/dbmigrate/schema/db_1_4_0.py:1176
@@ -1816,7 +1816,7 @@ msgid "Invalid clone url, provide a valid clone http(s)/svn+http(s) url"
 msgstr ""
 
 #: kallithea/model/validators.py:519
-msgid "Fork have to be the same type as parent"
+msgid "Fork has to be the same type as parent"
 msgstr ""
 
 #: kallithea/model/validators.py:534
@@ -2123,7 +2123,7 @@ msgid "Send password reset email"
 msgstr ""
 
 #: kallithea/templates/password_reset.html:64
-msgid "Password reset link will be send to matching email address"
+msgid "Password reset link will be sent to matching email address"
 msgstr ""
 
 #: kallithea/templates/register.html:5 kallithea/templates/register.html:30
@@ -3207,11 +3207,11 @@ msgstr ""
 
 #: kallithea/templates/admin/repos/repo_creating.html:30
 #, python-format
-msgid "Repository \"%(repo_name)s\" is beeing created, you will be redirected when this process is finished.repo_name"
+msgid "Repository \"%(repo_name)s\" is being created, you will be redirected when this process is finished.repo_name"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_creating.html:42
-msgid "We're sorry but error occured during this operation. Please check your Kallithea server logs, or contact administrator."
+msgid "We're sorry but error occurred during this operation. Please check your Kallithea server logs, or contact administrator."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:8
@@ -3294,7 +3294,7 @@ msgid "Repository is not locked"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:73
-msgid "Force locking on repository. Works only when anonymous access is disabled. Trigering a pull locks repository by user who pulled, only the same user can unlock by doing a push"
+msgid "Force locking on repository. Works only when anonymous access is disabled. Triggering a pull locks repository by user who pulled, only the same user can unlock by doing a push"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:83
@@ -3323,7 +3323,7 @@ msgid "Delete forks"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:94
-msgid "This repository will be renamed in a special way in order to be unaccesible for Kallithea and VCS systems. If you need to fully delete it from file system please do it manually"
+msgid "This repository will be renamed in a special way in order to be inaccessible for Kallithea and VCS systems. If you need to fully delete it from file system please do it manually"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_caches.html:4
@@ -3429,8 +3429,8 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit_settings.html:14
 msgid ""
 "In case this repository is renamed or moved into another group the repository url changes.\n"
-"                               Using above url guarantees that this repository will allways be accessible under such url.\n"
-"                               Usefull for CI systems, or any other cases that you need to hardcode the url into 3rd party service."
+"                               Using above url guarantees that this repository will always be accessible under such url.\n"
+"                               Useful for CI systems, or any other cases that you need to hardcode the url into 3rd party service."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:21
@@ -3459,7 +3459,7 @@ msgid "http[s] url used for doing remote pulls."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:46
-msgid "Optional select a group to put this repository into."
+msgid "Optionally select a group to put this repository into."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:55
@@ -3671,7 +3671,7 @@ msgid "Build from scratch"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_search.html:15
-msgid "This option completely reindex all the files within Kallithea for proper fulltext search capabilities."
+msgid "This option completely reindexes all the files within Kallithea for proper fulltext search capabilities."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_search.html:21
@@ -3727,7 +3727,7 @@ msgid "Require SSL for vcs operations"
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_vcs.html:13
-msgid "Activate to set Kallithea to require SSL for pushing or pulling. If SSL certificate is missing it will return a HTTP Error 406: Not Acceptable."
+msgid "Activate to set Kallithea to require SSL for pushing or pulling. If SSL certificate is missing it will return an HTTP Error 406: Not Acceptable."
 msgstr ""
 
 #: kallithea/templates/admin/settings/settings_vcs.html:24
@@ -4796,7 +4796,7 @@ msgid "Public repository"
 msgstr ""
 
 #: kallithea/templates/data_table/_dt_elements.html:82
-msgid "Repository creating in progress..."
+msgid "Repository creation in progress..."
 msgstr ""
 
 #: kallithea/templates/data_table/_dt_elements.html:96
