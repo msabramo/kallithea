@@ -31,7 +31,7 @@ from kallithea.lib.vcs.utils.paths import abspath
 from kallithea.lib.vcs.utils.hgcompat import (
     ui, nullid, match, patch, diffopts, clone, get_contact, pull,
     localrepository, RepoLookupError, Abort, RepoError, hex, scmutil, hg_url,
-    httpbasicauthhandler, httpdigestauthhandler, peer, httppeer
+    httpbasicauthhandler, httpdigestauthhandler, peer, httppeer, sshpeer
 )
 
 from .changeset import MercurialChangeset
@@ -280,6 +280,12 @@ class MercurialRepository(BaseRepository):
         """
         # check first if it's not an local url
         if os.path.isdir(url) or url.startswith('file:'):
+            return True
+
+        if url.startswith('ssh:'):
+            # in case of invalid uri or authentication issues, sshpeer will
+            # throw an exception.
+            sshpeer(repoui or ui.ui(), url).lookup('tip')
             return True
 
         url_prefix = None

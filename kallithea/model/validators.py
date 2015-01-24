@@ -444,7 +444,7 @@ def ValidCloneUri():
     def url_handler(repo_type, url, ui):
         if repo_type == 'hg':
             from kallithea.lib.vcs.backends.hg.repository import MercurialRepository
-            if url.startswith('http'):
+            if url.startswith('http') or url.startswith('ssh'):
                 # initially check if it's at least the proper URL
                 # or does it pass basic auth
                 MercurialRepository._check_url(url, ui)
@@ -473,7 +473,7 @@ def ValidCloneUri():
         messages = {
             'clone_uri': _(u'invalid clone url'),
             'invalid_clone_uri': _(u'Invalid clone url, provide a '
-                                    'valid clone http(s)/svn+http(s) url')
+                                    'valid clone http(s)/svn+http(s)/ssh url')
         }
 
         def validate_python(self, value, state):

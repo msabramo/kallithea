@@ -34,7 +34,7 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                     ${h.text('clone_uri',class_="medium")}
                     ${h.hidden('clone_uri_change', 'NEW')}
                    %endif
-                 <span id="alter_clone_uri_help_block" class="help-block">${_('http[s] url used for doing remote pulls.')}</span>
+                 <span id="alter_clone_uri_help_block" class="help-block">${_('Url used for doing remote pulls.')}</span>
                </div>
             </div>
             <div class="field">

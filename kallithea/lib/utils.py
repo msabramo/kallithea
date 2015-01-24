@@ -381,6 +381,11 @@ def make_ui(read_from='file', path=None, checkpaths=True, clear_session=True):
                                  False)
         if clear_session:
             meta.Session.remove()
+
+        # prevent interactive questions for ssh password / passphrase
+        ssh = baseui.config('ui', 'ssh', default='ssh')
+        baseui.setconfig('ui', 'ssh', '%s -oBatchMode=yes -oIdentitiesOnly=yes' % ssh)
+
     return baseui
 
 

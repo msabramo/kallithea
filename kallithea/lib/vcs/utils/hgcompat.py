@@ -25,6 +25,7 @@ from mercurial.encoding import tolocal
 from mercurial.discovery import findcommonoutgoing
 from mercurial.hg import peer
 from mercurial.httppeer import httppeer
+from mercurial.sshpeer import sshpeer
 from mercurial.util import url as hg_url
 from mercurial.scmutil import revrange
 from mercurial.node import nullrev
