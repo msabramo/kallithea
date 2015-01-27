@@ -41,8 +41,10 @@ class TestChangeSetCommentsController(TestController):
                                 repo_name=HG_REPO, revision=rev))
         # test DB
         self.assertEqual(ChangesetComment.query().count(), 1)
-        response.mustcontain('''<div class="comments-number">%s comment '''
-                             '''(0 inline)''' % 1)
+        response.mustcontain(
+            '''<div class="comments-number">'''
+            ''' 1 comment (0 inline)'''
+        )
 
         self.assertEqual(Notification.query().count(), 1)
         self.assertEqual(ChangesetComment.query().count(), 1)
@@ -77,8 +79,8 @@ class TestChangeSetCommentsController(TestController):
         #test DB
         self.assertEqual(ChangesetComment.query().count(), 1)
         response.mustcontain(
-            '''<div class="comments-number">0 comments'''
-            ''' (%s inline)''' % 1
+            '''<div class="comments-number">'''
+            ''' 0 comments (1 inline)'''
         )
         response.mustcontain(
             '''<div style="display:none" class="inline-comment-placeholder" '''
@@ -116,8 +118,10 @@ class TestChangeSetCommentsController(TestController):
                                 repo_name=HG_REPO, revision=rev))
         # test DB
         self.assertEqual(ChangesetComment.query().count(), 1)
-        response.mustcontain('''<div class="comments-number">%s '''
-                             '''comment (0 inline)''' % 1)
+        response.mustcontain(
+            '''<div class="comments-number">'''
+            ''' 1 comment (0 inline)'''
+        )
 
         self.assertEqual(Notification.query().count(), 2)
         users = [x.user.username for x in UserNotification.query().all()]
@@ -149,5 +153,7 @@ class TestChangeSetCommentsController(TestController):
 
         response = self.app.get(url(controller='changeset', action='index',
                                 repo_name=HG_REPO, revision=rev))
-        response.mustcontain('''<div class="comments-number">0 comments'''
-                             ''' (0 inline)''')
+        response.mustcontain(
+            '''<div class="comments-number">'''
+            ''' 0 comments (0 inline)'''
+        )

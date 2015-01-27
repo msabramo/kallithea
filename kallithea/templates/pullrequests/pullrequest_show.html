@@ -1,5 +1,7 @@
 <%inherit file="/base/base.html"/>
 
+<%namespace name="comment" file="/changeset/changeset_file_comment.html"/>
+
 <%block name="title">
     ${_('%s Pull Request #%s') % (c.repo_name, c.pull_request.pull_request_id)}
     %if c.site_name:
@@ -265,7 +267,7 @@ ${self.repo_context_bar('showpullrequest')}
     <div class="table">
           <div id="changeset_compare_view_content">
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
-                ${ungettext("%d comment", "%d comments", len(c.comments)) % len(c.comments)} ${ungettext("(%d inline)", "(%d inline)", c.inline_cnt) % c.inline_cnt} <span class="firstlink"></span>
+                  ${comment.comment_count(c.inline_cnt, len(c.comments))}
               </div>
               ##CS
               <div style="font-size:1.1em;font-weight: bold;clear:both;padding-top:10px">
@@ -331,7 +333,6 @@ ${self.repo_context_bar('showpullrequest')}
 
 
     ## template for inline comment form
-    <%namespace name="comment" file="/changeset/changeset_file_comment.html"/>
     ${comment.comment_inline_form()}
 
     ## render comments and inlines
