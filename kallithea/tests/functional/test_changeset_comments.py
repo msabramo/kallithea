@@ -43,7 +43,7 @@ class TestChangeSetCommentsController(TestController):
         self.assertEqual(ChangesetComment.query().count(), 1)
         response.mustcontain(
             '''<div class="comments-number">'''
-            ''' 1 comment (0 inline)'''
+            ''' 1 comment (0 inline, 1 general)'''
         )
 
         self.assertEqual(Notification.query().count(), 1)
@@ -80,7 +80,7 @@ class TestChangeSetCommentsController(TestController):
         self.assertEqual(ChangesetComment.query().count(), 1)
         response.mustcontain(
             '''<div class="comments-number">'''
-            ''' 0 comments (1 inline)'''
+            ''' 1 comment (1 inline, 0 general)'''
         )
         response.mustcontain(
             '''<div style="display:none" class="inline-comment-placeholder" '''
@@ -120,7 +120,7 @@ class TestChangeSetCommentsController(TestController):
         self.assertEqual(ChangesetComment.query().count(), 1)
         response.mustcontain(
             '''<div class="comments-number">'''
-            ''' 1 comment (0 inline)'''
+            ''' 1 comment (0 inline, 1 general)'''
         )
 
         self.assertEqual(Notification.query().count(), 2)
@@ -155,5 +155,5 @@ class TestChangeSetCommentsController(TestController):
                                 repo_name=HG_REPO, revision=rev))
         response.mustcontain(
             '''<div class="comments-number">'''
-            ''' 0 comments (0 inline)'''
+            ''' 0 comments (0 inline, 0 general)'''
         )

@@ -108,10 +108,14 @@
 </%def>
 
 
-## show comment count
+## show comment count as "x comments (y inline, z general)"
 <%def name="comment_count(inline_cnt, general_cnt)">
-${ungettext("%d comment", "%d comments", general_cnt) % general_cnt} ${ungettext("(%d inline)", "(%d inline)", inline_cnt) % inline_cnt}
-<span class="firstlink"></span>
+    ${'%s (%s, %s)' % (
+        ungettext("%d comment", "%d comments", inline_cnt + general_cnt) % (inline_cnt + general_cnt),
+        ungettext("%d inline", "%d inline", inline_cnt) % inline_cnt,
+        ungettext("%d general", "%d general", general_cnt) % general_cnt
+    )}
+    <span class="firstlink"></span>
 </%def>
 
 ## generates inlines taken from c.comments var
