@@ -580,8 +580,9 @@ class PullrequestsController(BaseRepoController):
                                                          revs[0], c.cs_branch_name)
                 if len(avail_revs) > 1: # more than just revs[0]
                     # also show changesets that not are descendants but would be merged in
+                    targethead = other_scm_instance.get_changeset(c.a_branch_name).raw_id
                     show = set(org_scm_instance._repo.revs('::%ld & !::%s & !::%s',
-                                                           avail_revs, revs[0], c.a_branch_name))
+                                                           avail_revs, revs[0], targethead))
                     c.update_msg = _('This pull request can be updated with changes on %s:') % c.cs_branch_name
                 else:
                     show = set()
