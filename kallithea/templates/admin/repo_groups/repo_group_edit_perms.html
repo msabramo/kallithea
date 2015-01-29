@@ -41,7 +41,7 @@ ${h.form(url('edit_repo_group_perms', group_name=c.repo_group.group_name),method
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'group.write', disabled="disabled")}</td>
                         <td>${h.radio('u_perm_%s' % r2p.user.username,'group.admin', disabled="disabled")}</td>
                         <td style="white-space: nowrap;">
-                            ${h.gravatar(r2p.user.email, cls="perm-gravatar", size=14)/>
+                            ${h.gravatar(r2p.user.email, cls="perm-gravatar", size=14)}
                             ${r2p.user.username if r2p.user.username != 'default' else _('default')}
                         </td>
                         <td><i class="icon-user"></i> ${_('delegated admin')}</td>
