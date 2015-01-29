@@ -208,7 +208,7 @@ ${self.repo_context_bar('changelog', c.changeset.raw_id)}
           var file_comments = $('.inline-comment-placeholder').toArray();
           renderInlineComments(file_comments);
 
-          linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("inline-comment"));
+          linkInlineComments(document.getElementsByClassName('firstlink'), document.getElementsByClassName("comment"));
 
           pyroutes.register('changeset_home',
                             "${h.url('changeset_home', repo_name='%(repo_name)s', revision='%(revision)s')}",

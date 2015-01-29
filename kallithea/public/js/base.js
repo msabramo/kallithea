@@ -818,6 +818,7 @@ var renderInlineComments = function(file_comments){
         var target_id = $(box).attr('target_id');
         // actual comments with line numbers
         var comments = box.children;
+        var obsolete_comments = [];
         for(var i=0; i<comments.length; i++){
             var data = {
                 'rendered_text': comments[i].outerHTML,
@@ -825,6 +826,7 @@ var renderInlineComments = function(file_comments){
                 'target_id': target_id
             }
             if (_renderInlineComment(data)) {
+                obsolete_comments.push(comments[i]);
                 $(comments[i]).hide();
             }else{
                 var txt = document.createTextNode(
@@ -834,6 +836,12 @@ var renderInlineComments = function(file_comments){
                 comments[i].insertBefore(txt, comments[i].firstChild);
             }
         }
+        // now remove all the obsolete comments that have been copied to their
+        // respective locations.
+        for (var i=0; i < obsolete_comments.length; i++) {
+            obsolete_comments[i].parentNode.removeChild(obsolete_comments[i]);
+        }
+
         $(box).show();
     }
 }
