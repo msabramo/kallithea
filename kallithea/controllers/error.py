@@ -57,7 +57,7 @@ class ErrorController(BaseController):
         resp = request.environ.get('pylons.original_response')
         c.site_name = config.get('title')
 
-        log.debug('### %s ###' % resp and resp.status)
+        log.debug('### %s ###' % (resp and resp.status or 'no response'))
 
         e = request.environ
         c.serv_p = r'%(protocol)s://%(host)s/' \
