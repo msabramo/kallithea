@@ -10,17 +10,19 @@
 # whosaysni <whosaysni@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version:  Kallithea\n"
+"Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2014-02-13 14:34+0000\n"
-"Last-Translator: marcinkuzminski <marcin@python-blog.com>\n"
+"PO-Revision-Date: 2015-01-30 15:18+0200\n"
+"Last-Translator: kobanari <kobanari@nifty.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.2-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
@@ -454,11 +456,11 @@ msgstr "ユーザー %s の更新中にエラーが発生しました"
 
 #: kallithea/controllers/admin/my_account.py:161
 msgid "Successfully updated password"
-msgstr ""
+msgstr "パスワードの更新に成功しました"
 
 #: kallithea/controllers/admin/my_account.py:171
 msgid "Error occurred during update of user password"
-msgstr ""
+msgstr "ユーザーのパスワードの更新でエラーが発生しました"
 
 #: kallithea/controllers/admin/my_account.py:213
 #: kallithea/controllers/admin/users.py:432
@@ -1791,7 +1793,7 @@ msgstr "パスワードに利用出来ない文字列(non-ascii)です"
 
 #: kallithea/model/validators.py:294
 msgid "Invalid old password"
-msgstr ""
+msgstr "古いpasswordが間違っています"
 
 #: kallithea/model/validators.py:310
 msgid "Passwords do not match"
@@ -2727,11 +2729,11 @@ msgstr "新しいメールアドレス"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:1
 msgid "Change your account password"
-msgstr ""
+msgstr "パスワードを変更してください"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:7
 msgid "Current password"
-msgstr ""
+msgstr "現在のパスワード"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:16
 #: kallithea/templates/admin/users/user_edit_profile.html:69
@@ -2740,7 +2742,7 @@ msgstr "新しいパスワード"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:25
 msgid "Confirm new password"
-msgstr ""
+msgstr "新しいパスワードの確認"
 
 #: kallithea/templates/admin/my_account/my_account_profile.html:9
 msgid "Change your avatar at"
@@ -3524,11 +3526,11 @@ msgstr "編集"
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:30
 msgid "new value"
-msgstr ""
+msgstr "新しい値"
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:37
 msgid "http[s] url used for doing remote pulls."
-msgstr ""
+msgstr "remote pull で使う http[s] url です。"
 
 #: kallithea/templates/admin/repos/repo_edit_settings.html:46
 msgid "Optionally select a group to put this repository into."
@@ -4414,7 +4416,7 @@ msgstr "権限を編集"
 
 #: kallithea/templates/base/perms_summary.html:90
 msgid "No permission defined"
-msgstr ""
+msgstr "権限が設定されていません"
 
 #: kallithea/templates/base/root.html:45
 msgid "Add another comment"
@@ -5655,4 +5657,3 @@ msgstr "%s タグ"
 #: kallithea/templates/tags/tags.html:29
 msgid "Compare tags"
 msgstr "タグを比較"
-
