@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2015-01-04 17:38+0200\n"
-"Last-Translator: Niemand Jedermann <predatorix@web.de>\n"
+"PO-Revision-Date: 2015-01-30 09:23+0200\n"
+"Last-Translator: Michael Pohl <michael@mipapo.de>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/de/>\n"
 "Language: de\n"
@@ -488,7 +488,7 @@ msgstr "Die EMail Addresse wurde vom Benutzer entfernt"
 #: kallithea/controllers/admin/my_account.py:274
 #: kallithea/controllers/admin/users.py:315
 msgid "Api key successfully created"
-msgstr ""
+msgstr "API Key wurde erfolgreich erstellt"
 
 #: kallithea/controllers/admin/my_account.py:286
 #: kallithea/controllers/admin/users.py:331
@@ -786,7 +786,7 @@ msgstr "Repositorium wurde %s"
 
 #: kallithea/controllers/admin/repos.py:618
 msgid "Cache invalidation successful"
-msgstr ""
+msgstr "Cache Entfernung war erfolgreich"
 
 #: kallithea/controllers/admin/repos.py:622
 msgid "An error occurred during cache invalidation"
@@ -822,11 +822,15 @@ msgstr ""
 #: kallithea/controllers/admin/settings.py:274
 msgid "Error occurred during updating application settings"
 msgstr ""
+"Ein Fehler ist während der Aktualisierung der Applikationseinstellungen "
+"aufgetreten"
 
 #: kallithea/controllers/admin/settings.py:215
 #, python-format
 msgid "Repositories successfully rescanned added: %s ; removed: %s"
 msgstr ""
+"Die Repositories wurden erfolgreich erneut überprüft hinzugefügt: %s ; "
+"entfernt: %s"
 
 #: kallithea/controllers/admin/settings.py:270
 msgid "Updated application settings"
@@ -834,15 +838,17 @@ msgstr "Aktualisiere Applikations Einstellungen"
 
 #: kallithea/controllers/admin/settings.py:327
 msgid "Updated visualisation settings"
-msgstr ""
+msgstr "Aktualisierte Layouteinstellungen"
 
 #: kallithea/controllers/admin/settings.py:332
 msgid "Error occurred during updating visualisation settings"
 msgstr ""
+"Es ist ein Fehler während der Aktualisierung der Layouteinstellung "
+"aufgetreten"
 
 #: kallithea/controllers/admin/settings.py:358
 msgid "Please enter email address"
-msgstr ""
+msgstr "Bitte gebe eine E-Mailadresse an"
 
 #: kallithea/controllers/admin/settings.py:370
 msgid "Send email task created"
@@ -867,17 +873,18 @@ msgstr "Whoosh Reindizierungs Aufgabe wurde zur Ausführung geplant"
 #: kallithea/controllers/admin/user_groups.py:150
 #, python-format
 msgid "Created user group %s"
-msgstr ""
+msgstr "Nutzergruppe %s erstellt"
 
 #: kallithea/controllers/admin/user_groups.py:161
 #, python-format
 msgid "Error occurred during creation of user group %s"
 msgstr ""
+"Es ist ein Fehler während der Erstellung der Nutzergruppe %s aufgetreten"
 
 #: kallithea/controllers/admin/user_groups.py:199
 #, python-format
 msgid "Updated user group %s"
-msgstr ""
+msgstr "Aktualisierte Nutzergruppe %s"
 
 #: kallithea/controllers/admin/user_groups.py:221
 #, python-format
@@ -886,7 +893,7 @@ msgstr ""
 
 #: kallithea/controllers/admin/user_groups.py:239
 msgid "Successfully deleted user group"
-msgstr ""
+msgstr "Die Nutzergruppe wurde erfolgreich entfernt"
 
 #: kallithea/controllers/admin/user_groups.py:244
 msgid "An error occurred during deletion of user group"
@@ -903,17 +910,17 @@ msgstr ""
 #: kallithea/controllers/admin/user_groups.py:437
 #: kallithea/controllers/admin/users.py:397
 msgid "Updated permissions"
-msgstr ""
+msgstr "Berechtigungen wurden aktualisiert"
 
 #: kallithea/controllers/admin/user_groups.py:441
 #: kallithea/controllers/admin/users.py:401
 msgid "An error occurred during permissions saving"
-msgstr ""
+msgstr "Es ist ein Fehler während des Speicherns der Berechtigungen aufgetreten"
 
 #: kallithea/controllers/admin/users.py:135
 #, python-format
 msgid "Created user %s"
-msgstr ""
+msgstr "Nutzer %s erstellt"
 
 #: kallithea/controllers/admin/users.py:149
 #, python-format
@@ -926,7 +933,7 @@ msgstr "Der Benutzer wurde erfolgreich aktualisiert"
 
 #: kallithea/controllers/admin/users.py:223
 msgid "Successfully deleted user"
-msgstr ""
+msgstr "Der Nutzer wurde erfolgreich gelöscht"
 
 #: kallithea/controllers/admin/users.py:228
 msgid "An error occurred during deletion of user"
@@ -946,7 +953,7 @@ msgstr "Sie können diesen Benutzer nicht editieren"
 #: kallithea/controllers/admin/users.py:483
 #, python-format
 msgid "Added ip %s to user whitelist"
-msgstr ""
+msgstr "Die IP %s wurde zur Nutzerwhitelist hinzugefügt"
 
 #: kallithea/controllers/admin/users.py:489
 msgid "An error occurred during ip saving"
@@ -954,12 +961,12 @@ msgstr ""
 
 #: kallithea/controllers/admin/users.py:503
 msgid "Removed ip address from user whitelist"
-msgstr ""
+msgstr "IP wurde von der Nutzerwhitelist entfernt"
 
 #: kallithea/lib/auth.py:748
 #, python-format
 msgid "IP %s not allowed"
-msgstr ""
+msgstr "IP %s ist nicht erlaubt"
 
 #: kallithea/lib/auth.py:809
 msgid "You need to be a registered user to perform this action"
@@ -971,7 +978,7 @@ msgstr "Sie müssen sich anmelden um diese Seite aufzurufen"
 
 #: kallithea/lib/diffs.py:66
 msgid "Binary file"
-msgstr ""
+msgstr "Binäre Datei"
 
 #: kallithea/lib/diffs.py:82
 msgid "Changeset was too big and was cut off, use diff menu to display this diff"
@@ -1022,7 +1029,7 @@ msgstr "revisionen"
 #: kallithea/lib/helpers.py:716
 #, python-format
 msgid "fork name %s"
-msgstr ""
+msgstr "Fork Name %s"
 
 #: kallithea/lib/helpers.py:733
 #: kallithea/templates/pullrequests/pullrequest_show.html:11
@@ -1068,11 +1075,11 @@ msgstr "[akutalisiert] Benutzer"
 
 #: kallithea/lib/helpers.py:767
 msgid "[created] user group"
-msgstr ""
+msgstr "[erstellt] Nutzergruppe"
 
 #: kallithea/lib/helpers.py:769
 msgid "[updated] user group"
-msgstr ""
+msgstr "[aktualisiert] Nutzergruppe"
 
 #: kallithea/lib/helpers.py:771
 msgid "[commented] on revision in repository"
@@ -1084,7 +1091,7 @@ msgstr ""
 
 #: kallithea/lib/helpers.py:775
 msgid "[closed] pull request for"
-msgstr ""
+msgstr "[geschlossen] Pull Request für"
 
 #: kallithea/lib/helpers.py:777
 msgid "[pushed] into"
@@ -1100,7 +1107,7 @@ msgstr ""
 
 #: kallithea/lib/helpers.py:783
 msgid "[pulled] from"
-msgstr ""
+msgstr "[gezogen] von"
 
 #: kallithea/lib/helpers.py:785
 msgid "[started following] repository"
@@ -1121,7 +1128,7 @@ msgstr "Keine Dateien"
 
 #: kallithea/lib/helpers.py:1171
 msgid "new file"
-msgstr ""
+msgstr "neue Datei"
 
 #: kallithea/lib/helpers.py:1174
 msgid "mod"
@@ -1129,15 +1136,15 @@ msgstr ""
 
 #: kallithea/lib/helpers.py:1177
 msgid "del"
-msgstr ""
+msgstr "entf"
 
 #: kallithea/lib/helpers.py:1180
 msgid "rename"
-msgstr ""
+msgstr "umbenennen"
 
 #: kallithea/lib/helpers.py:1185
 msgid "chmod"
-msgstr ""
+msgstr "chmod"
 
 #: kallithea/lib/helpers.py:1417
 #, python-format
@@ -1195,7 +1202,7 @@ msgstr[1] "%d Sekunden"
 #: kallithea/lib/utils2.py:436
 #, python-format
 msgid "in %s"
-msgstr ""
+msgstr "in %s"
 
 #: kallithea/lib/utils2.py:438
 #, python-format
@@ -1205,7 +1212,7 @@ msgstr "vor %s"
 #: kallithea/lib/utils2.py:440
 #, python-format
 msgid "in %s and %s"
-msgstr ""
+msgstr "in %s und %s"
 
 #: kallithea/lib/utils2.py:443
 #, python-format
@@ -1466,7 +1473,7 @@ msgstr "In Begutachtung"
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1473
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1500 kallithea/model/db.py:1510
 msgid "top level"
-msgstr ""
+msgstr "höchste Ebene"
 
 #: kallithea/lib/dbmigrate/schema/db_1_6_0.py:1395
 #: kallithea/lib/dbmigrate/schema/db_1_7_0.py:1415
@@ -1547,7 +1554,7 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1636
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1663 kallithea/model/db.py:1673
 msgid "User group write access"
-msgstr ""
+msgstr "Nutzergruppe Schreibzugriff"
 
 #: kallithea/lib/dbmigrate/schema/db_1_7_0.py:1423
 #: kallithea/lib/dbmigrate/schema/db_1_8_0.py:1469
@@ -5663,7 +5670,7 @@ msgstr ""
 #: kallithea/templates/tags/tags.html:5
 #, python-format
 msgid "%s Tags"
-msgstr ""
+msgstr "%s Tags"
 
 #: kallithea/templates/tags/tags.html:29
 msgid "Compare tags"
