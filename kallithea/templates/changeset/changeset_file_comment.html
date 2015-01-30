@@ -201,6 +201,14 @@
 $(document).ready(function () {
    MentionsAutoComplete('text', 'mentions_container', _USERS_AC_DATA, _GROUPS_AC_DATA);
 
+   $(window).on('beforeunload', function(){
+      if($('.form-open').size() || $('textarea#text').val()){
+         // this message will not be displayed on all browsers
+         // (e.g. some versions of Firefox), but the user will still be warned
+         return 'There are uncommitted comments.';
+      }
+   });
+
    $('#preview-btn').click(function(){
        var _text = $('#text').val();
        if(!_text){
