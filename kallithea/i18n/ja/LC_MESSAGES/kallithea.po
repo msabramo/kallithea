@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2015-01-31 02:04+0200\n"
-"Last-Translator: Takumi IINO <trot.thunder@gmail.com>\n"
+"PO-Revision-Date: 2015-01-31 02:07+0200\n"
+"Last-Translator: kobanari <kobanari@nifty.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/ja/>\n"
 "Language: ja\n"
@@ -78,7 +78,7 @@ msgstr "ホームページ"
 
 #: kallithea/controllers/error.py:101
 msgid "The request could not be understood by the server due to malformed syntax."
-msgstr "形式が間違っているため、サーバーはリクエストを処理できませんでした"
+msgstr "形式が間違っているため、サーバーはリクエストを処理できませんでした。"
 
 #: kallithea/controllers/error.py:104
 msgid "Unauthorized access to resource"
