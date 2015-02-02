@@ -1,11 +1,11 @@
 .. _installation_win_old:
 
 
-Step by step Installation for Windows
-=====================================
+Installation and upgrade on Windows (XP/Vista/Server 2003/Server 2008)
+======================================================================
 
-
-Kallithea step-by-step install Guide for Windows
+First time install
+::::::::::::::::::
 
 Target OS: Windows XP SP3 32bit English (Clean installation)
 + All Windows Updates until 24-may-2012
@@ -28,9 +28,8 @@ Step1 - Install Visual Studio 2008 Express
 Optional: You can also install MinGW, but VS2008 installation is easier.
 
 Download "Visual C++ 2008 Express Edition with SP1" from:
-http://www.microsoft.com/visualstudio/en-us/products/2008-editions/express
-(if not found or relocated, google for "visual studio 2008 express" for
-updated link)
+http://download.microsoft.com/download/E/8/E/E8EEB394-7F42-4963-A2D8-29559B738298/VS2008ExpressWithSP1ENUX1504728.iso
+(if not found or relocated, google for "visual studio 2008 express" for updated link. This link was taken from http://stackoverflow.com/questions/15318560/visual-c-2008-express-download-link-dead)
 
 You can also download full ISO file for offline installation, just
 choose "All - Offline Install ISO image file" in the previous page and
@@ -273,7 +272,7 @@ What this Guide does not cover:
 
 
 Upgrading
-=========
+:::::::::
 
 Stop running Kallithea
 Open a CommandPrompt like in Step7 (VS2008 path + activate) and type::
