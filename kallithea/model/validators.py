@@ -471,9 +471,9 @@ def ValidCloneUri():
 
     class _validator(formencode.validators.FancyValidator):
         messages = {
-            'clone_uri': _(u'invalid clone url'),
-            'invalid_clone_uri': _(u'Invalid clone url, provide a '
-                                    'valid clone http(s)/svn+http(s)/ssh url')
+            'clone_uri': _(u'invalid clone URL'),
+            'invalid_clone_uri': _(u'Invalid clone URL, provide a '
+                                    'valid clone http(s)/svn+http(s)/ssh URL')
         }
 
         def validate_python(self, value, state):
@@ -486,7 +486,7 @@ def ValidCloneUri():
                 try:
                     url_handler(repo_type, url, make_ui('db', clear_session=False))
                 except Exception:
-                    log.exception('Url validation failed')
+                    log.exception('URL validation failed')
                     msg = M(self, 'clone_uri')
                     raise formencode.Invalid(msg, value, state,
                         error_dict=dict(clone_uri=msg)

@@ -11,14 +11,14 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                     <span class="help-block">${_('Non-changeable id')}: `_${c.repo_info.repo_id}` <span><a id="show_more_clone_id" href="#">${_('What is that?')}</a></span></span>
                     <span id="clone_id" class="help-block" style="display: none">
                         ${_('URL by id')}: `${c.repo_info.clone_url(with_id=True)}` </br>
-                        ${_('''In case this repository is renamed or moved into another group the repository url changes.
-                               Using the above url guarantees that this repository will always be accessible under such url.
-                               Useful for CI systems, or any other cases that you need to hardcode the url into 3rd party service.''')}</span>
+                        ${_('''In case this repository is renamed or moved into another group the repository URL changes.
+                               Using the above URL guarantees that this repository will always be accessible under such URL.
+                               Useful for CI systems, or any other cases that you need to hardcode the URL into 3rd party service.''')}</span>
                 </div>
            </div>
            <div class="field">
                <div class="label">
-                   <label for="clone_uri">${_('Clone uri')}:</label>
+                   <label for="clone_uri">${_('Clone URL')}:</label>
                </div>
                <div class="input">
                    %if c.repo_info.clone_uri:
@@ -34,7 +34,7 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                     ${h.text('clone_uri',class_="medium")}
                     ${h.hidden('clone_uri_change', 'NEW')}
                    %endif
-                 <span id="alter_clone_uri_help_block" class="help-block">${_('Url used for doing remote pulls.')}</span>
+                 <span id="alter_clone_uri_help_block" class="help-block">${_('URL used for doing remote pulls.')}</span>
                </div>
             </div>
             <div class="field">

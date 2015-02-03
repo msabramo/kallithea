@@ -27,8 +27,8 @@ ${h.form(url('admin_settings_visual'), method='post')}
                 <div class="field">
                     <div class="input">
                         ${h.text('gravatar_url', size=80)}
-                        <span class="help-block">${_('''Gravatar url allows you to use another avatar server application.
-                                                        The following variables of the url will be replaced accordingly.
+                        <span class="help-block">${_('''Gravatar URL allows you to use another avatar server application.
+                                                        The following variables of the URL will be replaced accordingly.
                                                         {scheme}    'http' or 'https' sent from running Kallithea server,
                                                         {email}     user email,
                                                         {md5email}  md5 hash of the user email (like at gravatar.com),
@@ -39,7 +39,7 @@ ${h.form(url('admin_settings_visual'), method='post')}
                 <div class="field">
                     <div class="input">
                         ${h.text('clone_uri_tmpl', size=80)}
-                        <span class="help-block">${_('''Schema of clone url construction eg. '{scheme}://{user}@{netloc}/{repo}'.
+                        <span class="help-block">${_('''Schema of clone URL construction eg. '{scheme}://{user}@{netloc}/{repo}'.
                                                         The following variables are available:
                                                         {scheme} 'http' or 'https' sent from running Kallithea server,
                                                         {user}   current user username,

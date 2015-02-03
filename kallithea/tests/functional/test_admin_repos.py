@@ -339,7 +339,7 @@ class _BaseTest(TestController):
                                                 repo_type=self.REPO_TYPE,
                                                 repo_description=description,
                                                 clone_uri='http://127.0.0.1/repo'))
-        response.mustcontain('invalid clone url')
+        response.mustcontain('invalid clone URL')
 
 
     def test_create_remote_repo_wrong_clone_uri_hg_svn(self):
@@ -352,7 +352,7 @@ class _BaseTest(TestController):
                                                 repo_type=self.REPO_TYPE,
                                                 repo_description=description,
                                                 clone_uri='svn+http://127.0.0.1/repo'))
-        response.mustcontain('invalid clone url')
+        response.mustcontain('invalid clone URL')
 
 
     def test_delete(self):
