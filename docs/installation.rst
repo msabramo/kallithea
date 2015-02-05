@@ -1,8 +1,8 @@
 .. _installation:
 
-============
-Installation
-============
+==========================
+Installation on Unix/Linux
+==========================
 
 ``Kallithea`` is written entirely in Python. Before posting any issues make
 sure, your not missing any system libraries and using right version of

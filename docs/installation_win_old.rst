@@ -1,4 +1,4 @@
-.. _installation_win:
+.. _installation_win_old:
 
 
 Step by step Installation for Windows

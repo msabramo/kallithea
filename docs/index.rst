@@ -11,10 +11,10 @@ Users Guide
    :maxdepth: 1
 
    installation
-   installation_win
+   upgrade
+   installation_win_old
    installation_iis
    setup
-   upgrade
 
 **Usage**
 
