@@ -129,7 +129,7 @@ class TestAdminUsersController(TestController):
                                   extern_name=self.test_user_1,
                                   skip_if_exists=True)
         Session().commit()
-        params = usr.get_api_data()
+        params = usr.get_api_data(True)
         params.update({'password_confirmation': ''})
         params.update({'new_password': ''})
         params.update(attrs)
@@ -149,7 +149,7 @@ class TestAdminUsersController(TestController):
         self.checkSessionFlash(response, 'User updated successfully')
 
         updated_user = User.get_by_username(self.test_user_1)
-        updated_params = updated_user.get_api_data()
+        updated_params = updated_user.get_api_data(True)
         updated_params.update({'password_confirmation': ''})
         updated_params.update({'new_password': ''})
 

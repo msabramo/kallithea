@@ -106,7 +106,7 @@ class TestMyAccountController(TestController):
                                   extern_type='internal',
                                   extern_name=self.test_user_1,
                                   skip_if_exists=True)
-        params = usr.get_api_data()  # current user data
+        params = usr.get_api_data(True)  # current user data
         user_id = usr.user_id
         self.log_user(username=self.test_user_1, password='qweqwe')
 
@@ -122,7 +122,7 @@ class TestMyAccountController(TestController):
                                'Your account was updated successfully')
 
         updated_user = User.get_by_username(self.test_user_1)
-        updated_params = updated_user.get_api_data()
+        updated_params = updated_user.get_api_data(True)
         updated_params.update({'password_confirmation': ''})
         updated_params.update({'new_password': ''})
 

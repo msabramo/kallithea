@@ -627,7 +627,7 @@ class User(Base, BaseModel):
             raise Exception('Missing default account!')
         return user
 
-    def get_api_data(self):
+    def get_api_data(self, details=False):
         """
         Common function for generating user related data for API
         """
@@ -639,15 +639,18 @@ class User(Base, BaseModel):
             lastname=user.lastname,
             email=user.email,
             emails=user.emails,
-            api_key=user.api_key,
-            api_keys=user.api_keys,
             active=user.active,
             admin=user.admin,
-            extern_type=user.extern_type,
-            extern_name=user.extern_name,
-            last_login=user.last_login,
-            ip_addresses=user.ip_addresses
         )
+        if details:
+            data.update(dict(
+                extern_type=user.extern_type,
+                extern_name=user.extern_name,
+                api_key=user.api_key,
+                api_keys=user.api_keys,
+                last_login=user.last_login,
+                ip_addresses=user.ip_addresses
+                ))
         return data
 
     def __json__(self):
