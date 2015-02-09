@@ -2565,7 +2565,6 @@ BIN_FILENODE = 6
 }
 
 #graph_content_pr .compare_view_commits .message {
-    white-space: normal !important;
     padding: 0 !important;
     height: 1.1em;
 }
