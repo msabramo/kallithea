@@ -215,6 +215,14 @@ DIFF_FIXTURES = {
           'binary': False,
           'ops': {MOD_FILENODE: 'modified file'}}),
     ],
+    'git_diff_modify_binary_file.diff': [
+        ('file.name', 'M',
+         {'added': 0,
+          'deleted': 0,
+          'binary': True,
+          'ops': {MOD_FILENODE: 'modified file',
+                  BIN_FILENODE: 'binary diff not shown'}})
+    ],
     'hg_diff_copy_file.diff': [
         ('file2', 'M',
          {'added': 0,
@@ -261,9 +269,7 @@ class DiffLibTest(BaseTestCase):
 
     @parameterized.expand([(x,) for x in DIFF_FIXTURES])
     def test_diff(self, diff_fixture):
-
         diff = fixture.load_resource(diff_fixture, strip=False)
-
         diff_proc = DiffProcessor(diff)
         diff_proc_d = diff_proc.prepare()
         data = [(x['filename'], x['operation'], x['stats']) for x in diff_proc_d]

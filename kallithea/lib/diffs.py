@@ -363,7 +363,7 @@ class DiffProcessor(object):
             raise Exception('diff not recognized as valid %s diff' % self.vcs)
         groups = match.groupdict()
         rest = diff_chunk[match.end():]
-        if rest and not rest.startswith('@') and not rest.startswith('literal '):
+        if rest and not rest.startswith('@') and not rest.startswith('literal ') and not rest.startswith('delta '):
             raise Exception('cannot parse diff header: %r followed by %r' % (diff_chunk[:match.end()], rest[:1000]))
         difflines = imap(self._escaper, re.findall(r'.*\n|.+$', rest)) # don't split on \r as str.splitlines do
         return groups, difflines
