@@ -38,7 +38,7 @@
          </div>
         </td>
         <td>
-            ${h.urlify_commit(h.truncate(cs.message,50),c.repo_name, h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
+            ${h.urlify_commit(h.chop_at(cs.message,'\n'),c.repo_name, h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
         </td>
         <td><span class="tooltip" title="${h.tooltip(h.fmt_date(cs.date))}">
                       ${h.age(cs.date)}</span>
