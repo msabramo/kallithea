@@ -906,7 +906,7 @@ class RepositoryField(Base, BaseModel):
     field_label = Column("field_label", String(1024, convert_unicode=False), nullable=False)
     field_value = Column("field_value", String(10000, convert_unicode=False), nullable=False)
     field_desc = Column("field_desc", String(1024, convert_unicode=False), nullable=False)
-    field_type = Column("field_type", String(256), nullable=False, unique=None)
+    field_type = Column("field_type", String(255), nullable=False, unique=None)
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
 
     repository = relationship('Repository')
@@ -2246,17 +2246,17 @@ class PullRequest(Base, BaseModel):
     STATUS_CLOSED = u'closed'
 
     pull_request_id = Column('pull_request_id', Integer(), nullable=False, primary_key=True)
-    title = Column('title', Unicode(256), nullable=True)
+    title = Column('title', Unicode(255), nullable=True)
     description = Column('description', UnicodeText(10240), nullable=True)
-    status = Column('status', Unicode(256), nullable=False, default=STATUS_NEW) # only for closedness, not approve/reject/etc
+    status = Column('status', Unicode(255), nullable=False, default=STATUS_NEW) # only for closedness, not approve/reject/etc
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     updated_on = Column('updated_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     user_id = Column("user_id", Integer(), ForeignKey('users.user_id'), nullable=False, unique=None)
     _revisions = Column('revisions', UnicodeText(20500))  # 500 revisions max
     org_repo_id = Column('org_repo_id', Integer(), ForeignKey('repositories.repo_id'), nullable=False)
-    org_ref = Column('org_ref', Unicode(256), nullable=False)
+    org_ref = Column('org_ref', Unicode(255), nullable=False)
     other_repo_id = Column('other_repo_id', Integer(), ForeignKey('repositories.repo_id'), nullable=False)
-    other_ref = Column('other_ref', Unicode(256), nullable=False)
+    other_ref = Column('other_ref', Unicode(255), nullable=False)
 
     @hybrid_property
     def revisions(self):
@@ -2349,7 +2349,7 @@ class Notification(Base, BaseModel):
     body = Column('body', UnicodeText(50000), nullable=True)
     created_by = Column("created_by", Integer(), ForeignKey('users.user_id'), nullable=True)
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
-    type_ = Column('type', Unicode(256))
+    type_ = Column('type', Unicode(255))
 
     created_by_user = relationship('User')
     notifications_to_users = relationship('UserNotification', cascade="all, delete-orphan")
