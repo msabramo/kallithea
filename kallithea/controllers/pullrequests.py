@@ -324,6 +324,10 @@ class PullrequestsController(BaseRepoController):
         (org_ref_type,
          org_ref_name,
          org_rev) = org_ref.split(':')
+        if org_ref_type == 'rev':
+            org_ref_type = 'branch'
+            org_ref_name = org_repo.scm_instance.get_changeset(org_rev).branch
+            org_ref = '%s:%s:%s' % (org_ref_type, org_ref_name, org_ref_name)
 
         other_repo_name = _form['other_repo']
         other_ref = _form['other_ref'] # will have symbolic name and head revision
