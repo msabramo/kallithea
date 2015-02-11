@@ -351,8 +351,12 @@ class PullrequestsController(BaseRepoController):
 
         title = _form['pullrequest_title']
         if not title:
-            title = '%s#%s to %s#%s' % (org_repo_name, h.short_ref(org_ref_type, org_ref_name),
-                                        other_repo_name, h.short_ref(other_ref_type, other_ref_name))
+            if org_repo_name == other_repo_name:
+                title = '%s to %s' % (h.short_ref(org_ref_type, org_ref_name),
+                                      h.short_ref(other_ref_type, other_ref_name))
+            else:
+                title = '%s#%s to %s#%s' % (org_repo_name, h.short_ref(org_ref_type, org_ref_name),
+                                            other_repo_name, h.short_ref(other_ref_type, other_ref_name))
         description = _form['pullrequest_desc'].strip() or _('No description')
         try:
             pull_request = PullRequestModel().create(
