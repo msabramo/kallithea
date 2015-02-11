@@ -157,7 +157,7 @@
 <div class="comments">
     %if c.authuser.username != 'default':
     <div class="comment-form ac">
-      ${h.form(post_url)}
+      ${h.form(post_url, id="main_form")}
         <div id="edit-container" class="clearfix">
             <div class="comment-help">
                 ${(_('Comments parsed using %s syntax with %s support.') % (('<a href="%s">RST</a>' % h.url('rst_help')),
@@ -218,6 +218,14 @@ $(document).ready(function () {
          // this message will not be displayed on all browsers
          // (e.g. some versions of Firefox), but the user will still be warned
          return 'There are uncommitted comments.';
+      }
+   });
+
+   $('form#main_form').submit(function(){
+      // if no open inline forms, disable the beforeunload check - it would
+      // fail in the check for the textarea we are about to submit
+      if(!$('.form-open').size()){
+          $(window).off('beforeunload');
       }
    });
 
