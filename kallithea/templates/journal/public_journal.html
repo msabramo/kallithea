@@ -12,10 +12,10 @@
 <%block name="header_menu">
     ${self.menu('journal')}
 </%block>
-<%def name="head_extra()">
-<link href="${h.url('public_journal_atom')}" rel="alternate" title="${_('ATOM public journal feed')}" type="application/atom+xml" />
-<link href="${h.url('public_journal_rss')}" rel="alternate" title="${_('RSS public journal feed')}" type="application/rss+xml" />
-</%def>
+<%block name="head_extra">
+  <link href="${h.url('public_journal_atom')}" rel="alternate" title="${_('ATOM public journal feed')}" type="application/atom+xml" />
+  <link href="${h.url('public_journal_rss')}" rel="alternate" title="${_('RSS public journal feed')}" type="application/rss+xml" />
+</%block>
 <%def name="main()">
 
 <div class="box">

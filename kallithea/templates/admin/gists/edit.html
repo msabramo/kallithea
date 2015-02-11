@@ -8,14 +8,14 @@
     %endif
 </%def>
 
-<%def name="js_extra()">
-<script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>
-<script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
-<script type="text/javascript" src="${h.url('/codemirror/mode/meta.js')}"></script>
-</%def>
-<%def name="css_extra()">
-<link rel="stylesheet" type="text/css" href="${h.url('/codemirror/lib/codemirror.css')}"/>
-</%def>
+<%block name="js_extra">
+  <script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>
+  <script type="text/javascript" src="${h.url('/js/codemirror_loadmode.js')}"></script>
+  <script type="text/javascript" src="${h.url('/codemirror/mode/meta.js')}"></script>
+</%block>
+<%block name="css_extra">
+  <link rel="stylesheet" type="text/css" href="${h.url('/codemirror/lib/codemirror.css')}"/>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('Edit Gist')} &middot; ${c.gist.gist_access_id}

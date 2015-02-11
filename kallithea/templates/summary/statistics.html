@@ -15,10 +15,10 @@
     ${self.menu('repositories')}
 </%block>
 
-<%def name="head_extra()">
-<link href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}" rel="alternate" title="${_('%s ATOM feed') % c.repo_name}" type="application/atom+xml" />
-<link href="${h.url('rss_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}" rel="alternate" title="${_('%s RSS feed') % c.repo_name}" type="application/rss+xml" />
-</%def>
+<%block name="head_extra">
+  <link href="${h.url('atom_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}" rel="alternate" title="${_('%s ATOM feed') % c.repo_name}" type="application/atom+xml" />
+  <link href="${h.url('rss_feed_home',repo_name=c.db_repo.repo_name,api_key=c.authuser.api_key)}" rel="alternate" title="${_('%s RSS feed') % c.repo_name}" type="application/rss+xml" />
+</%block>
 
 <%def name="main()">
 ${self.repo_context_bar('summary')}

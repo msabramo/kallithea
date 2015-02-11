@@ -13,8 +13,7 @@
         <link rel="stylesheet" type="text/css" href="${h.url('/css/style.css', ver=c.kallithea_version)}" media="screen"/>
         <link rel="stylesheet" type="text/css" href="${h.url('/css/contextbar.css', ver=c.kallithea_version)}" media="screen"/>
         <link rel="stylesheet" type="text/css" href="${h.url('/fontello/css/kallithea.css', ver=c.kallithea_version)}">
-        <%def name="css_extra()"></%def>
-        ${self.css_extra()}
+        <%block name="css_extra"/>
 
         ## JAVASCRIPT ##
         <script type="text/javascript">
@@ -70,8 +69,7 @@
         <script type="text/javascript" src="${h.url('/js/pyroutes_map.js', ver=c.kallithea_version)}"></script>
         <script type="text/javascript" src="${h.url('/js/base.js', ver=c.kallithea_version)}"></script>
         ## EXTRA FOR JS
-        <%def name="js_extra()"></%def>
-        ${self.js_extra()}
+        <%block name="js_extra"/>
         <script type="text/javascript">
             (function(window,undefined){
                 var History = window.History; // Note: We are using a capital H instead of a lower h
@@ -107,8 +105,7 @@
              });
         </script>
 
-        <%def name="head_extra()"></%def>
-        ${self.head_extra()}
+        <%block name="head_extra"/>
     </head>
     <body id="body">
       ## IE hacks
