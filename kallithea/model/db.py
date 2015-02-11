@@ -682,7 +682,7 @@ class UserApiKeys(Base, BaseModel):
     expires = Column('expires', Float(53), nullable=False)
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
 
-    user = relationship('User', lazy='joined')
+    user = relationship('User')
 
     @property
     def expired(self):
@@ -704,7 +704,7 @@ class UserEmailMap(Base, BaseModel):
     email_id = Column("email_id", Integer(), nullable=False, unique=True, default=None, primary_key=True)
     user_id = Column("user_id", Integer(), ForeignKey('users.user_id'), nullable=True, unique=None, default=None)
     _email = Column("email", String(255, convert_unicode=False), nullable=True, unique=False, default=None)
-    user = relationship('User', lazy='joined')
+    user = relationship('User')
 
     @validates('_email')
     def validate_email(self, key, email):
@@ -736,7 +736,7 @@ class UserIpMap(Base, BaseModel):
     user_id = Column("user_id", Integer(), ForeignKey('users.user_id'), nullable=True, unique=None, default=None)
     ip_addr = Column("ip_addr", String(255, convert_unicode=False), nullable=True, unique=False, default=None)
     active = Column("active", Boolean(), nullable=True, unique=None, default=True)
-    user = relationship('User', lazy='joined')
+    user = relationship('User')
 
     @classmethod
     def _get_ip_range(cls, ip_addr):
@@ -798,7 +798,7 @@ class UserGroup(Base, BaseModel):
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     _group_data = Column("group_data", LargeBinary(), nullable=True)  # JSON data
 
-    members = relationship('UserGroupMember', cascade="all, delete-orphan", lazy="joined")
+    members = relationship('UserGroupMember', cascade="all, delete-orphan")
     users_group_to_perm = relationship('UserGroupToPerm', cascade='all')
     users_group_repo_to_perm = relationship('UserGroupRepoToPerm', cascade='all')
     users_group_repo_group_to_perm = relationship('UserGroupRepoGroupToPerm', cascade='all')
@@ -883,7 +883,7 @@ class UserGroupMember(Base, BaseModel):
     users_group_id = Column("users_group_id", Integer(), ForeignKey('users_groups.users_group_id'), nullable=False, unique=None, default=None)
     user_id = Column("user_id", Integer(), ForeignKey('users.user_id'), nullable=False, unique=None, default=None)
 
-    user = relationship('User', lazy='joined')
+    user = relationship('User')
     users_group = relationship('UserGroup')
 
     def __init__(self, gr_id='', u_id=''):
@@ -1837,7 +1837,7 @@ class UserToPerm(Base, BaseModel):
     permission_id = Column("permission_id", Integer(), ForeignKey('permissions.permission_id'), nullable=False, unique=None, default=None)
 
     user = relationship('User')
-    permission = relationship('Permission', lazy='joined')
+    permission = relationship('Permission')
 
     def __unicode__(self):
         return u'<%s => %s >' % (self.user, self.permission)
@@ -2153,7 +2153,7 @@ class ChangesetComment(Base, BaseModel):
     created_on = Column('created_on', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
     modified_at = Column('modified_at', DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
 
-    author = relationship('User', lazy='joined')
+    author = relationship('User')
     repo = relationship('Repository')
     # status_change is frequently used directly in templates - make it a lazy
     # join to avoid fetching each related ChangesetStatus on demand.
@@ -2212,9 +2212,9 @@ class ChangesetStatus(Base, BaseModel):
     version = Column('version', Integer(), nullable=False, default=0)
     pull_request_id = Column("pull_request_id", Integer(), ForeignKey('pull_requests.pull_request_id'), nullable=True)
 
-    author = relationship('User', lazy='joined')
+    author = relationship('User')
     repo = relationship('Repository')
-    comment = relationship('ChangesetComment', lazy='joined')
+    comment = relationship('ChangesetComment')
     pull_request = relationship('PullRequest')
 
     def __unicode__(self):
@@ -2274,7 +2274,7 @@ class PullRequest(Base, BaseModel):
     def other_ref_parts(self):
         return self.other_ref.split(':')
 
-    author = relationship('User', lazy='joined')
+    author = relationship('User')
     reviewers = relationship('PullRequestReviewers',
                              cascade="all, delete-orphan")
     org_repo = relationship('Repository', primaryjoin='PullRequest.org_repo_id==Repository.repo_id')
@@ -2352,8 +2352,7 @@ class Notification(Base, BaseModel):
     type_ = Column('type', Unicode(256))
 
     created_by_user = relationship('User')
-    notifications_to_users = relationship('UserNotification', lazy='joined',
-                                          cascade="all, delete-orphan")
+    notifications_to_users = relationship('UserNotification', cascade="all, delete-orphan")
 
     @property
     def recipients(self):
@@ -2400,8 +2399,8 @@ class UserNotification(Base, BaseModel):
     read = Column('read', Boolean, default=False)
     sent_on = Column('sent_on', DateTime(timezone=False), nullable=True, unique=None)
 
-    user = relationship('User', lazy="joined")
-    notification = relationship('Notification', lazy="joined")
+    user = relationship('User')
+    notification = relationship('Notification')
 
     def mark_as_read(self):
         self.read = True
