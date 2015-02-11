@@ -21,9 +21,9 @@
     ${_('Edit Gist')} &middot; ${c.gist.gist_access_id}
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('gists')}
-</%def>
+</%block>
 
 <%def name="main()">
 <div class="box">

@@ -13,9 +13,9 @@
     ${h.link_to(_('Admin'),h.url('admin_home'))} &raquo; <span id="user_group_count">0</span> ${_('user groups')}
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('admin')}
-</%def>
+</%block>
 
 <%def name="main()">
 <div class="box">

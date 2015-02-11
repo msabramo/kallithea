@@ -17,9 +17,9 @@
     </span>
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('repositories')}
-</%def>
+</%block>
 
 <%def name="main()">
         <%include file="/index_base.html" args="parent=self,group_name=c.group.group_name"/>

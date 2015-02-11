@@ -9,9 +9,9 @@
 <%def name="breadcrumbs()">
     ${c.site_name}
 </%def>
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('about')}
-</%def>
+</%block>
 <%def name="main()">
 
 <div class="box">

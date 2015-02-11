@@ -24,9 +24,9 @@
     - ${ungettext('showing %d out of %d revision', 'showing %d out of %d revisions', size) % (size, c.total_cs)}
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('repositories')}
-</%def>
+</%block>
 
 <%def name="main()">
 ${self.repo_context_bar('changelog', c.first_revision.raw_id if c.first_revision else None)}

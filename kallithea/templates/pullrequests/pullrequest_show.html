@@ -11,9 +11,9 @@
     ${_('Pull request #%s from %s#%s') % (c.pull_request.pull_request_id, c.pull_request.org_repo.repo_name, c.cs_branch_name)}
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('repositories')}
-</%def>
+</%block>
 
 <%def name="main()">
 <% editable = not c.pull_request.is_closed() and (h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) or c.pull_request.author.user_id == c.authuser.user_id) %>

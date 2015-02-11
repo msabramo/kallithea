@@ -15,9 +15,9 @@
     ${h.link_to(h.show_id(c.cs_ranges[-1]),h.url('changeset_home',repo_name=c.repo_name,revision=c.cs_ranges[-1]))}</td>
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('repositories')}
-</%def>
+</%block>
 
 <%def name="main()">
 ${self.repo_context_bar('changelog')}

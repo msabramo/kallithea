@@ -17,9 +17,9 @@
     ${h.end_form()}
     </h5>
 </%def>
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('journal')}
-</%def>
+</%block>
 <%def name="head_extra()">
 <link href="${h.url('journal_atom', api_key=c.authuser.api_key)}" rel="alternate" title="${_('ATOM journal feed')}" type="application/atom+xml" />
 <link href="${h.url('journal_rss', api_key=c.authuser.api_key)}" rel="alternate" title="${_('RSS journal feed')}" type="application/rss+xml" />

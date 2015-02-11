@@ -24,13 +24,13 @@
   %endif
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     %if c.repo_name:
     ${self.menu('repositories')}
     %else:
     ${self.menu('search')}
     %endif
-</%def>
+</%block>
 <%def name="main()">
 %if c.repo_name:
 ${self.repo_context_bar('options')}

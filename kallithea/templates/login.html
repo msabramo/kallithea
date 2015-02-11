@@ -8,22 +8,6 @@
     %endif
 </%def>
 
-
-<div id="header">
-    <div id="header-inner" class="title">
-        <div id="logo">
-          <a href="${h.url('home')}" style="display: block;">
-            <div class="header">
-                <img src="${h.url('/images/kallithea-logo.svg')}" onerror="this.onerror='';this.src='${h.url('/images/kallithea-logo.png')}'" alt="Kallithea"/>
-            </div>
-            %if c.site_name:
-             <div class="branding">${c.site_name}</div>
-            %endif
-          </a>
-        </div>
-    </div>
-</div>
-
 <div id="login">
     <%include file="/base/flash_msg.html"/>
     <!-- login -->

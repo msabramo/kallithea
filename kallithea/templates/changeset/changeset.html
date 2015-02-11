@@ -13,9 +13,9 @@
     ${_('Changeset')} - <span class='hash'>${h.show_id(c.changeset)}</span>
 </%def>
 
-<%def name="page_nav()">
+<%block name="header_menu">
     ${self.menu('repositories')}
-</%def>
+</%block>
 
 <%def name="main()">
 ${self.repo_context_bar('changelog', c.changeset.raw_id)}
