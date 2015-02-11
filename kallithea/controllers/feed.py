@@ -107,7 +107,7 @@ class FeedController(BaseRepoController):
         desc_msg.append('changeset: <a href="%s">%s</a>' % (_url, cs.raw_id[:8]))
 
         desc_msg.append('<pre>')
-        desc_msg.append(cs.message)
+        desc_msg.append(h.urlify_text(cs.message))
         desc_msg.append('\n')
         desc_msg.extend(changes)
         if self.include_diff:
