@@ -1,8 +1,8 @@
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('My Pull Requests')} &middot; ${c.site_name}
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('My Pull Requests')}

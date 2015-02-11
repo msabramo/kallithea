@@ -1,11 +1,11 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="/base/base.html"/>
-<%def name="title()">
+<%block name="title">
     ${_('%s Repository group dashboard') % c.group.group_name}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%def name="breadcrumbs()">
     <span class="groups_breadcrumbs">

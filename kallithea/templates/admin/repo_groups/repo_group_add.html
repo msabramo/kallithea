@@ -1,12 +1,12 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('Add Repository Group')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${h.link_to(_('Admin'),h.url('admin_home'))}

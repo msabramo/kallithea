@@ -1,6 +1,6 @@
 <%inherit file="/base/base.html"/>
 
-<%def name="title(*args)">
+<%block name="title">
     ${_('%s Files') % c.repo_name}
     %if hasattr(c,'file'):
         &middot; ${h.safe_unicode(c.file.path) or '/'}
@@ -9,7 +9,7 @@
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('Files')}
@@ -80,7 +80,7 @@ var ypjax_links = function(){
         var rev = parts2.shift(); // pop the first element which is the revision
         var f_path = parts2.join('/');
 
-        //page title make this consistent with title() mako function on top
+        //page title - make this consistent with title mako block above
         var title = "${_('%s Files') % c.repo_name}" + " \u00B7 " + (f_path || '/') + " \u00B7 " + "${c.site_name}";
 
         var _node_list_url = node_list_url.replace('__REV__',rev).replace('__FPATH__', f_path);
@@ -97,7 +97,7 @@ var ypjax_links = function(){
     });
 }
 
-// callbacks needed to process the pjax filebrowser
+// callbacks needed to process the ypjax filebrowser
 var callbacks = function(State){
     ypjax_links();
     tooltip_activate();

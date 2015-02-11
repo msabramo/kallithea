@@ -4,12 +4,12 @@
 ##
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('%s Repository Settings') % c.repo_info.repo_name}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('Settings')}

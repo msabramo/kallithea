@@ -1,8 +1,8 @@
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${c.repo_name} ${_('New Pull Request')}
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('New Pull Request')}

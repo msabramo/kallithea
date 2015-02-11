@@ -1,12 +1,12 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('Edit Gist')} &middot; ${c.gist.gist_access_id}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%block name="js_extra">
   <script type="text/javascript" src="${h.url('/codemirror/lib/codemirror.js')}"></script>

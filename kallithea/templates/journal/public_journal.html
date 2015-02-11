@@ -1,11 +1,11 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="/base/base.html"/>
-<%def name="title()">
+<%block name="title">
     ${_('Public Journal')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 <%def name="breadcrumbs()">
     ${c.site_name}
 </%def>

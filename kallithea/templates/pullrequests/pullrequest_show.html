@@ -1,11 +1,11 @@
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('%s Pull Request #%s') % (c.repo_name, c.pull_request.pull_request_id)}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('Pull request #%s from %s#%s') % (c.pull_request.pull_request_id, c.pull_request.org_repo.repo_name, c.cs_branch_name)}

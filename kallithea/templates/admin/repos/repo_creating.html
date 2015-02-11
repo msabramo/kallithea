@@ -5,12 +5,12 @@
 <%def name="flash_msg()">
 </%def>
 
-<%def name="title()">
+<%block name="title">
     ${_('%s Creating Repository') % c.repo_name}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%def name="breadcrumbs_links()">
     ${_('Creating repository')} ${c.repo}

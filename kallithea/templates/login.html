@@ -1,12 +1,12 @@
 ## -*- coding: utf-8 -*-
 <%inherit file="base/root.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('Log In')}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <div id="login">
     <%include file="/base/flash_msg.html"/>

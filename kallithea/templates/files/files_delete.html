@@ -1,11 +1,11 @@
 <%inherit file="/base/base.html"/>
 
-<%def name="title()">
+<%block name="title">
     ${_('%s Files Delete') % c.repo_name}
     %if c.site_name:
         &middot; ${c.site_name}
     %endif
-</%def>
+</%block>
 
 <%block name="header_menu">
     ${self.menu('repositories')}
