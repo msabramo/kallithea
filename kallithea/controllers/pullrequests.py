@@ -457,9 +457,7 @@ class PullrequestsController(BaseRepoController):
             return redirect(old_pull_request.url())
 
         ChangesetCommentsModel().create(
-            text=_('Closed, replaced by %s .') % h.canonical_url('pullrequest_show',
-                                                   repo_name=old_pull_request.other_repo.repo_name,
-                                                   pull_request_id=pull_request.pull_request_id),
+            text=_('Closed, replaced by %s .') % pull_request.url(canonical=True),
             repo=old_pull_request.other_repo.repo_id,
             user=c.authuser.user_id,
             pull_request=old_pull_request.pull_request_id,
