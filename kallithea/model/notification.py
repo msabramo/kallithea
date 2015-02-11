@@ -35,6 +35,7 @@ from sqlalchemy.orm import joinedload, subqueryload
 
 import kallithea
 from kallithea.lib import helpers as h
+from kallithea.lib.utils2 import safe_unicode
 from kallithea.model import BaseModel
 from kallithea.model.db import Notification, User, UserNotification
 from kallithea.model.meta import Session
@@ -302,7 +303,7 @@ class EmailNotificationModel(BaseModel):
         except KeyError, e:
             log.error('error generating email subject for %r from %s: %s', type_, ','.join(self._subj_map.keys()), e)
             raise
-        l = [str(x) for x in [kwargs.get('status_change'), kwargs.get('closing_pr') and _('Closing')] if x]
+        l = [safe_unicode(x) for x in [kwargs.get('status_change'), kwargs.get('closing_pr') and _('Closing')] if x]
         if l:
             subj += ' (%s)' % (', '.join(l))
         return subj
