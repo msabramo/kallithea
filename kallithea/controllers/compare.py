@@ -70,7 +70,7 @@ class CompareController(BaseRepoController):
         :param other_rev: revision we want out compare to be made on other_repo
         """
         ancestor = None
-        if org_rev == other_rev:
+        if org_rev == other_rev or org_repo.EMPTY_CHANGESET in (org_rev, other_rev):
             org_changesets = []
             other_changesets = []
             ancestor = org_rev
@@ -88,18 +88,14 @@ class CompareController(BaseRepoController):
             else:
                 hgrepo = other_repo._repo
 
-            if org_repo.EMPTY_CHANGESET in (org_rev, other_rev):
-                # work around unexpected Mercurial behaviour
-                ancestor = org_repo.EMPTY_CHANGESET
-            else:
-                ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
-                if ancestors:
-                    # FIXME: picks arbitrary ancestor - but there is usually only one
-                    try:
-                        ancestor = hgrepo[ancestors.first()].hex()
-                    except AttributeError:
-                        # removed in hg 3.2
-                        ancestor = hgrepo[ancestors[0]].hex()
+            ancestors = hgrepo.revs("ancestor(id(%s), id(%s))", org_rev, other_rev)
+            if ancestors:
+                # FIXME: picks arbitrary ancestor - but there is usually only one
+                try:
+                    ancestor = hgrepo[ancestors.first()].hex()
+                except AttributeError:
+                    # removed in hg 3.2
+                    ancestor = hgrepo[ancestors[0]].hex()
 
             other_revs = hgrepo.revs("ancestors(id(%s)) and not ancestors(id(%s)) and not id(%s)",
                                      other_rev, org_rev, org_rev)
