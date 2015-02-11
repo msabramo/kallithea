@@ -1222,7 +1222,7 @@ class Repository(Base, BaseModel):
 
     @classmethod
     def lock(cls, repo, user_id, lock_time=None):
-        if not lock_time:
+        if lock_time is not None:
             lock_time = time.time()
         repo.locked = [user_id, lock_time]
         Session().add(repo)
@@ -1358,7 +1358,7 @@ class Repository(Base, BaseModel):
         """
         cmts = ChangesetComment.query()\
             .filter(ChangesetComment.repo == self)
-        if revisions:
+        if revisions is not None:
             cmts = cmts.filter(ChangesetComment.revision.in_(revisions))
         grouped = collections.defaultdict(list)
         for cmt in cmts.all():
@@ -2172,9 +2172,9 @@ class ChangesetComment(Base, BaseModel):
         """
         q = Session().query(User)\
                 .join(ChangesetComment.author)
-        if revision:
+        if revision is not None:
             q = q.filter(cls.revision == revision)
-        elif pull_request_id:
+        elif pull_request_id is not None:
             q = q.filter(cls.pull_request_id == pull_request_id)
         return q.all()
 
