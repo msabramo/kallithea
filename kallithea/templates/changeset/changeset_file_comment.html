@@ -183,9 +183,12 @@
                         <label for="${status}"><i class="icon-circle changeset-status-${status}" /></i>${lbl}</label>
                     </span>
                 %endfor
-                %if is_pr and change_status:
-                <input id="save_close" type="checkbox" name="save_close">
-                <label id="save_close_label" for="save_close">${_("Close")}</label>
+
+                %if is_pr and ( \
+                    h.HasPermissionAny('hg.admin')() or h.HasRepoPermissionAny('repository.admin')(c.repo_name) \
+                    or c.pull_request.author.user_id == c.authuser.user_id):
+                  <input id="save_close" type="checkbox" name="save_close">
+                  <label id="save_close_label" for="save_close">${_("Close")}</label>
                 %endif
               </div>
             %endif
