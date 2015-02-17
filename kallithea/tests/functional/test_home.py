@@ -20,7 +20,7 @@ class TestHomeController(TestController):
         response.mustcontain('var data = {"totalRecords": %s' % len(Repository.getAll()))
         response.mustcontain(r'href=\"/%s\"' % HG_REPO)
 
-        response.mustcontain(r'<i class=\"icon-git\"')
+        response.mustcontain(r'<span class="repotag">git')
         response.mustcontain(r'<i class=\"icon-globe\"')
 
         response.mustcontain("""fixes issue with having custom format for git-log""")

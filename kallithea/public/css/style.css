@@ -501,13 +501,6 @@ div.header img {
     margin: 0px 2px 0px 2px;
 }
 
-#header #header-inner #quick li ul li a.git,
-#header #header-inner #quick li ul li a.git:hover {
-    background-image: url("../images/icons/giticon.png");
-    padding-left: 42px;
-    background-position: 20px 9px;
-}
-
 .groups_breadcrumbs a {
     color: #fff;
 }

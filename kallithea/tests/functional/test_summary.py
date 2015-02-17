@@ -53,7 +53,7 @@ class TestSummaryController(TestController):
 
         #repo type
         response.mustcontain(
-            """<i class="icon-git" """
+            """<span class="repotag">git"""
         )
         #public/private
         response.mustcontain(
@@ -102,7 +102,7 @@ class TestSummaryController(TestController):
 
         #repo type
         response.mustcontain(
-            """<i class="icon-git" """
+            """<span class="repotag">git"""
         )
         #public/private
         response.mustcontain(

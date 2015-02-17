@@ -101,7 +101,7 @@
           <span class="repotag">hg</span>
         %endif
         %if h.is_git(c.db_repo):
-          <i class="icon-git" style="color: #e85634; font-size: 24px"></i>
+          <span class="repotag">git</span>
         %endif
 
         ## public/private
@@ -363,7 +363,7 @@
                     tmpl += '<span class="repotag">hg</span> ';
                 }
                 else if(obj_dict['repo_type'] === 'git'){
-                    tmpl += '<i class="icon-git"></i> ';
+                    tmpl += '<span class="repotag">git</span> ';
                 }
                 if(obj_dict['private']){
                     tmpl += '<i class="icon-keyhole-circled"></i> ';
