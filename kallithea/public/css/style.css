@@ -2764,10 +2764,11 @@ BIN_FILENODE = 6
 .right .logtags {
     line-height: 2.2em;
 }
-.branchtag, .logtags .tagtag, .logtags .booktag {
+.repotag, .branchtag, .logtags .tagtag, .logtags .booktag {
     margin: 0px 2px;
 }
 
+.repotag,
 .branchtag,
 .tagtag,
 .booktag,
@@ -2789,6 +2790,7 @@ BIN_FILENODE = 6
     margin-right: 0.5em;
 }
 
+.repotag,
 .branchtag,
 .tagtag,
 .booktag {
@@ -2803,6 +2805,26 @@ BIN_FILENODE = 6
     line-height: 1em;
     margin: 1px 1px !important;
     display: block;
+}
+
+.repotag {
+    border-color: #56A546;
+    color: #46A546;
+    font-size: 8px;
+    text-transform: uppercase;
+}
+
+#context-bar .repotag,
+.repo-icons .repotag {
+    border-color: white;
+    color: white;
+    margin-top: 3px;
+}
+
+.repo-icons .repotag {
+    margin-top: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 
 .booktag {
@@ -5000,10 +5022,6 @@ div.prev-next-comment div.next-comment {
 
 #help_kb {
     display: none;
-}
-
-.repo-switcher-dropdown .select2-result-label span.repo-icons {
-    margin-left: -12px;
 }
 
 .icon-only-links i {
