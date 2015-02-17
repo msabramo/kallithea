@@ -33,7 +33,7 @@ class TestSummaryController(TestController):
 
         #repo type
         response.mustcontain(
-            """<i class="icon-hg" """
+            """<span class="repotag">hg"""
         )
         #public/private
         response.mustcontain(
@@ -73,7 +73,7 @@ class TestSummaryController(TestController):
 
         #repo type
         response.mustcontain(
-            """<i class="icon-hg" """
+            """<span class="repotag">hg"""
         )
         #public/private
         response.mustcontain(

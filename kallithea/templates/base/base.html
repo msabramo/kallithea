@@ -98,7 +98,7 @@
   <div id="context-bar" class="box">
       <h2>
         %if h.is_hg(c.db_repo):
-          <i class="icon-hg" style="color: #576622; font-size: 24px"></i>
+          <span class="repotag">hg</span>
         %endif
         %if h.is_git(c.db_repo):
           <i class="icon-git" style="color: #e85634; font-size: 24px"></i>
@@ -360,7 +360,7 @@
             if(obj_dict && state.type == 'repo'){
                 tmpl += '<span class="repo-icons">';
                 if(obj_dict['repo_type'] === 'hg'){
-                    tmpl += '<i class="icon-hg"></i> ';
+                    tmpl += '<span class="repotag">hg</span> ';
                 }
                 else if(obj_dict['repo_type'] === 'git'){
                     tmpl += '<i class="icon-git"></i> ';
