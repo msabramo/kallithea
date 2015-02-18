@@ -3,43 +3,9 @@ from kallithea.tests import *
 from kallithea.model.repo import RepoModel
 from kallithea.model.meta import Session
 from kallithea.model.db import Repository
-from kallithea.model.scm import ScmModel
-from kallithea.lib.vcs.backends.base import EmptyChangeset
 from kallithea.tests.fixture import Fixture
 
 fixture = Fixture()
-
-
-def _commit_change(repo, filename, content, message, vcs_type, parent=None, newfile=False):
-    repo = Repository.get_by_repo_name(repo)
-    _cs = parent
-    if not parent:
-        _cs = EmptyChangeset(alias=vcs_type)
-
-    if newfile:
-        nodes = {
-            filename: {
-                'content': content
-            }
-        }
-        cs = ScmModel().create_nodes(
-            user=TEST_USER_ADMIN_LOGIN, repo=repo,
-            message=message,
-            nodes=nodes,
-            parent_cs=_cs,
-            author=TEST_USER_ADMIN_LOGIN,
-        )
-    else:
-        cs = ScmModel().commit_change(
-            repo=repo.scm_instance, repo_name=repo.repo_name,
-            cs=parent, user=TEST_USER_ADMIN_LOGIN,
-            author=TEST_USER_ADMIN_LOGIN,
-            message=message,
-            content=content,
-            f_path=filename
-        )
-    return cs
-
 
 def _commit_div(sha, msg):
     return """<div id="C-%s" class="message">%s</div>""" % (sha, msg)
@@ -66,19 +32,22 @@ class TestCompareController(TestController):
                                     cur_user=TEST_USER_ADMIN_LOGIN)
         self.r1_id = repo1.repo_id
         #commit something !
-        cs0 = _commit_change(repo1.repo_name, filename='file1', content='line1\n',
-                             message='commit1', vcs_type='hg', parent=None, newfile=True)
+        cs0 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\n', message='commit1', vcs_type='hg',
+                parent=None, newfile=True)
 
         #fork this repo
         repo2 = fixture.create_fork('one', 'one-fork')
         self.r2_id = repo2.repo_id
 
         #add two extra commit into fork
-        cs1 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\n',
-                             message='commit2', vcs_type='hg', parent=cs0)
+        cs1 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\n', message='commit2', vcs_type='hg',
+                parent=cs0)
 
-        cs2 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\nline3\n',
-                             message='commit3', vcs_type='hg', parent=cs1)
+        cs2 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\nline3\n', message='commit3',
+                vcs_type='hg', parent=cs1)
 
         rev1 = 'default'
         rev2 = 'default'
@@ -114,19 +83,22 @@ class TestCompareController(TestController):
                                     cur_user=TEST_USER_ADMIN_LOGIN)
         self.r1_id = repo1.repo_id
         #commit something !
-        cs0 = _commit_change(repo1.repo_name, filename='file1', content='line1\n',
-                             message='commit1', vcs_type='git', parent=None, newfile=True)
+        cs0 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\n', message='commit1', vcs_type='git',
+                parent=None, newfile=True)
 
         #fork this repo
         repo2 = fixture.create_fork('one-git', 'one-git-fork')
         self.r2_id = repo2.repo_id
 
         #add two extra commit into fork
-        cs1 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\n',
-                             message='commit2', vcs_type='git', parent=cs0)
+        cs1 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\n', message='commit2', vcs_type='git',
+                parent=cs0)
 
-        cs2 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\nline3\n',
-                             message='commit3', vcs_type='git', parent=cs1)
+        cs2 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\nline3\n', message='commit3',
+                vcs_type='git', parent=cs1)
 
         rev1 = 'master'
         rev2 = 'master'
@@ -165,23 +137,27 @@ class TestCompareController(TestController):
         self.r1_id = repo1.repo_id
 
         #commit something !
-        cs0 = _commit_change(repo1.repo_name, filename='file1', content='line1\n',
-                             message='commit1', vcs_type='hg', parent=None, newfile=True)
+        cs0 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\n', message='commit1', vcs_type='hg',
+                parent=None, newfile=True)
 
         #fork this repo
         repo2 = fixture.create_fork('one', 'one-fork')
         self.r2_id = repo2.repo_id
 
         #now commit something to origin repo
-        cs1_prim = _commit_change(repo1.repo_name, filename='file2', content='line1file2\n',
-                                  message='commit2', vcs_type='hg', parent=cs0, newfile=True)
+        cs1_prim = fixture.commit_change(repo1.repo_name, filename='file2',
+                content='line1file2\n', message='commit2', vcs_type='hg',
+                parent=cs0, newfile=True)
 
         #add two extra commit into fork
-        cs1 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\n',
-                             message='commit2', vcs_type='hg', parent=cs0)
+        cs1 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\n', message='commit2', vcs_type='hg',
+                parent=cs0)
 
-        cs2 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\nline3\n',
-                             message='commit3', vcs_type='hg', parent=cs1)
+        cs2 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\nline3\n', message='commit3',
+                vcs_type='hg', parent=cs1)
 
         rev1 = 'default'
         rev2 = 'default'
@@ -220,23 +196,27 @@ class TestCompareController(TestController):
         self.r1_id = repo1.repo_id
 
         #commit something !
-        cs0 = _commit_change(repo1.repo_name, filename='file1', content='line1\n',
-                             message='commit1', vcs_type='git', parent=None, newfile=True)
+        cs0 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\n', message='commit1', vcs_type='git',
+                parent=None, newfile=True)
 
         #fork this repo
         repo2 = fixture.create_fork('one-git', 'one-git-fork')
         self.r2_id = repo2.repo_id
 
         #now commit something to origin repo
-        cs1_prim = _commit_change(repo1.repo_name, filename='file2', content='line1file2\n',
-                                  message='commit2', vcs_type='git', parent=cs0, newfile=True)
+        cs1_prim = fixture.commit_change(repo1.repo_name, filename='file2',
+                content='line1file2\n', message='commit2', vcs_type='git',
+                parent=cs0, newfile=True)
 
         #add two extra commit into fork
-        cs1 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\n',
-                             message='commit2', vcs_type='git', parent=cs0)
+        cs1 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\n', message='commit2', vcs_type='git',
+                parent=cs0)
 
-        cs2 = _commit_change(repo2.repo_name, filename='file1', content='line1\nline2\nline3\n',
-                             message='commit3', vcs_type='git', parent=cs1)
+        cs2 = fixture.commit_change(repo2.repo_name, filename='file1',
+                content='line1\nline2\nline3\n', message='commit3',
+                vcs_type='git', parent=cs1)
 
         rev1 = 'master'
         rev2 = 'master'
@@ -286,23 +266,28 @@ class TestCompareController(TestController):
         self.r1_id = repo1.repo_id
 
         #commit something !
-        cs0 = _commit_change(repo1.repo_name, filename='file1', content='line1\n',
-                             message='commit1', vcs_type='hg', parent=None,
-                             newfile=True)
-        cs1 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\n',
-                             message='commit2', vcs_type='hg', parent=cs0)
+        cs0 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\n', message='commit1', vcs_type='hg',
+                parent=None, newfile=True)
+        cs1 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\n', message='commit2', vcs_type='hg',
+                parent=cs0)
         #fork this repo
         repo2 = fixture.create_fork('repo1', 'repo1-fork')
         self.r2_id = repo2.repo_id
         #now make cs3-6
-        cs2 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\n',
-                             message='commit3', vcs_type='hg', parent=cs1)
-        cs3 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\nline4\n',
-                             message='commit4', vcs_type='hg', parent=cs2)
-        cs4 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\nline4\nline5\n',
-                             message='commit5', vcs_type='hg', parent=cs3)
-        cs5 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\nline4\nline5\nline6\n',
-                             message='commit6', vcs_type='hg', parent=cs4)
+        cs2 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\n', message='commit3',
+                vcs_type='hg', parent=cs1)
+        cs3 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\nline4\n', message='commit4',
+                vcs_type='hg', parent=cs2)
+        cs4 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\nline4\nline5\n',
+                message='commit5', vcs_type='hg', parent=cs3)
+        cs5 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\nline4\nline5\nline6\n',
+                message='commit6', vcs_type='hg', parent=cs4)
 
         response = self.app.get(url('compare_url',
                                     repo_name=repo2.repo_name,
@@ -348,23 +333,28 @@ class TestCompareController(TestController):
         self.r1_id = repo1.repo_id
 
         #commit something !
-        cs0 = _commit_change(repo1.repo_name, filename='file1', content='line1\n',
-                             message='commit1', vcs_type='hg', parent=None,
-                             newfile=True)
-        cs1 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\n',
-                             message='commit2', vcs_type='hg', parent=cs0)
+        cs0 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\n', message='commit1', vcs_type='hg',
+                parent=None, newfile=True)
+        cs1 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\n', message='commit2', vcs_type='hg',
+                parent=cs0)
         #fork this repo
         repo2 = fixture.create_fork('repo1', 'repo1-fork')
         self.r2_id = repo2.repo_id
         #now make cs3-6
-        cs2 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\n',
-                             message='commit3', vcs_type='hg', parent=cs1)
-        cs3 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\nline4\n',
-                             message='commit4', vcs_type='hg', parent=cs2)
-        cs4 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\nline4\nline5\n',
-                             message='commit5', vcs_type='hg', parent=cs3)
-        cs5 = _commit_change(repo1.repo_name, filename='file1', content='line1\nline2\nline3\nline4\nline5\nline6\n',
-                             message='commit6', vcs_type='hg', parent=cs4)
+        cs2 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\n', message='commit3',
+                vcs_type='hg', parent=cs1)
+        cs3 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\nline4\n', message='commit4',
+                vcs_type='hg', parent=cs2)
+        cs4 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\nline4\nline5\n',
+                message='commit5', vcs_type='hg', parent=cs3)
+        cs5 = fixture.commit_change(repo1.repo_name, filename='file1',
+                content='line1\nline2\nline3\nline4\nline5\nline6\n',
+                message='commit6', vcs_type='hg', parent=cs4)
 
         response = self.app.get(url('compare_url',
                                     repo_name=repo1.repo_name,
@@ -463,9 +453,8 @@ class TestCompareController(TestController):
         self.r1_id = repo1.repo_id
         r1_name = repo1.repo_name
 
-        cs0 = _commit_change(repo=r1_name, filename='file1',
-                       content='line1', message='commit1', vcs_type='hg',
-                       newfile=True)
+        cs0 = fixture.commit_change(repo=r1_name, filename='file1',
+                content='line1', message='commit1', vcs_type='hg', newfile=True)
         Session().commit()
         self.assertEqual(repo1.scm_instance.revisions, [cs0.raw_id])
         #fork the repo1
@@ -480,19 +469,17 @@ class TestCompareController(TestController):
         r2_name = repo2.repo_name
 
 
-        cs1 = _commit_change(repo=r2_name, filename='file1-fork',
-                       content='file1-line1-from-fork', message='commit1-fork',
-                       vcs_type='hg', parent=repo2.scm_instance[-1],
-                       newfile=True)
+        cs1 = fixture.commit_change(repo=r2_name, filename='file1-fork',
+                content='file1-line1-from-fork', message='commit1-fork',
+                vcs_type='hg', parent=repo2.scm_instance[-1], newfile=True)
 
-        cs2 = _commit_change(repo=r2_name, filename='file2-fork',
-                       content='file2-line1-from-fork', message='commit2-fork',
-                       vcs_type='hg', parent=cs1,
-                       newfile=True)
+        cs2 = fixture.commit_change(repo=r2_name, filename='file2-fork',
+                content='file2-line1-from-fork', message='commit2-fork',
+                vcs_type='hg', parent=cs1, newfile=True)
 
-        cs3 = _commit_change(repo=r2_name, filename='file3-fork',
-                       content='file3-line1-from-fork', message='commit3-fork',
-                       vcs_type='hg', parent=cs2, newfile=True)
+        cs3 = fixture.commit_change(repo=r2_name, filename='file3-fork',
+                content='file3-line1-from-fork', message='commit3-fork',
+                vcs_type='hg', parent=cs2, newfile=True)
         #compare !
         rev1 = 'default'
         rev2 = 'default'
@@ -511,9 +498,9 @@ class TestCompareController(TestController):
         response.mustcontain('No files')
         response.mustcontain('No changesets')
 
-        cs0 = _commit_change(repo=r1_name, filename='file2',
-                    content='line1-added-after-fork', message='commit2-parent',
-                    vcs_type='hg', parent=None, newfile=True)
+        cs0 = fixture.commit_change(repo=r1_name, filename='file2',
+                content='line1-added-after-fork', message='commit2-parent',
+                vcs_type='hg', parent=None, newfile=True)
 
         #compare !
         rev1 = 'default'
@@ -545,9 +532,9 @@ class TestCompareController(TestController):
         self.r1_id = repo1.repo_id
         r1_name = repo1.repo_name
 
-        cs0 = _commit_change(repo=r1_name, filename='file1',
-                       content='line1', message='commit1', vcs_type='git',
-                       newfile=True)
+        cs0 = fixture.commit_change(repo=r1_name, filename='file1',
+                content='line1', message='commit1', vcs_type='git',
+                newfile=True)
         Session().commit()
         self.assertEqual(repo1.scm_instance.revisions, [cs0.raw_id])
         #fork the repo1
@@ -562,19 +549,17 @@ class TestCompareController(TestController):
         r2_name = repo2.repo_name
 
 
-        cs1 = _commit_change(repo=r2_name, filename='file1-fork',
-                       content='file1-line1-from-fork', message='commit1-fork',
-                       vcs_type='git', parent=repo2.scm_instance[-1],
-                       newfile=True)
+        cs1 = fixture.commit_change(repo=r2_name, filename='file1-fork',
+                content='file1-line1-from-fork', message='commit1-fork',
+                vcs_type='git', parent=repo2.scm_instance[-1], newfile=True)
 
-        cs2 = _commit_change(repo=r2_name, filename='file2-fork',
-                       content='file2-line1-from-fork', message='commit2-fork',
-                       vcs_type='git', parent=cs1,
-                       newfile=True)
+        cs2 = fixture.commit_change(repo=r2_name, filename='file2-fork',
+                content='file2-line1-from-fork', message='commit2-fork',
+                vcs_type='git', parent=cs1, newfile=True)
 
-        cs3 = _commit_change(repo=r2_name, filename='file3-fork',
-                       content='file3-line1-from-fork', message='commit3-fork',
-                       vcs_type='git', parent=cs2, newfile=True)
+        cs3 = fixture.commit_change(repo=r2_name, filename='file3-fork',
+                content='file3-line1-from-fork', message='commit3-fork',
+                vcs_type='git', parent=cs2, newfile=True)
         #compare !
         rev1 = 'master'
         rev2 = 'master'
@@ -593,9 +578,9 @@ class TestCompareController(TestController):
         response.mustcontain('No files')
         response.mustcontain('No changesets')
 
-        cs0 = _commit_change(repo=r1_name, filename='file2',
-                    content='line1-added-after-fork', message='commit2-parent',
-                    vcs_type='git', parent=None, newfile=True)
+        cs0 = fixture.commit_change(repo=r1_name, filename='file2',
+                content='line1-added-after-fork', message='commit2-parent',
+                vcs_type='git', parent=None, newfile=True)
 
         #compare !
         rev1 = 'master'

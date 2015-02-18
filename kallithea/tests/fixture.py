@@ -25,6 +25,8 @@ from kallithea.model.user import UserModel
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.user_group import UserGroupModel
 from kallithea.model.gist import GistModel
+from kallithea.model.scm import ScmModel
+from kallithea.lib.vcs.backends.base import EmptyChangeset
 
 dn = os.path.dirname
 FIXTURES = os.path.join(dn(dn(os.path.abspath(__file__))), 'tests', 'fixtures')
@@ -260,3 +262,34 @@ class Fixture(object):
                 source = source.strip()
 
         return source
+
+    def commit_change(self, repo, filename, content, message, vcs_type, parent=None, newfile=False):
+        repo = Repository.get_by_repo_name(repo)
+        _cs = parent
+        if not parent:
+            _cs = EmptyChangeset(alias=vcs_type)
+
+        if newfile:
+            nodes = {
+                filename: {
+                    'content': content
+                }
+            }
+            cs = ScmModel().create_nodes(
+                user=TEST_USER_ADMIN_LOGIN, repo=repo,
+                message=message,
+                nodes=nodes,
+                parent_cs=_cs,
+                author=TEST_USER_ADMIN_LOGIN,
+            )
+        else:
+            cs = ScmModel().commit_change(
+                repo=repo.scm_instance, repo_name=repo.repo_name,
+                cs=parent, user=TEST_USER_ADMIN_LOGIN,
+                author=TEST_USER_ADMIN_LOGIN,
+                message=message,
+                content=content,
+                f_path=filename
+            )
+        return cs
+
