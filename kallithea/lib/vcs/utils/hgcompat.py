@@ -41,3 +41,6 @@ if inspect.getargspec(memfilectx.__init__).args[1] != 'repo':
     def _memfilectx__init__(self, repo, *a, **b):
         return _org__init__(self, *a, **b)
     memfilectx.__init__ = _memfilectx__init__
+
+# workaround for 3.3 94ac64bcf6fe and not calling largefiles reposetup correctly
+localrepository._lfstatuswriters = [lambda *msg, **opts: None]
