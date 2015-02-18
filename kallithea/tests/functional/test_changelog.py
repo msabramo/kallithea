@@ -35,7 +35,7 @@ class TestChangelogController(TestController):
         self.app.get(url(controller='changelog', action='index',
                                     repo_name=HG_REPO), {'page': 5})
         response = self.app.get(url(controller='changelog', action='index',
-                                    repo_name=HG_REPO), {'page': 6})
+                                    repo_name=HG_REPO), {'page': 6, 'size': 20})
 
         # Test response after pagination...
         response.mustcontain(
@@ -89,7 +89,7 @@ class TestChangelogController(TestController):
         self.app.get(url(controller='changelog', action='index',
                                     repo_name=GIT_REPO), {'page': 5})
         response = self.app.get(url(controller='changelog', action='index',
-                                    repo_name=GIT_REPO), {'page': 6})
+                                    repo_name=GIT_REPO), {'page': 6, 'size': 20})
 
         # Test response after pagination...
         response.mustcontain(

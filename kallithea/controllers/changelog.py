@@ -94,8 +94,8 @@ class ChangelogController(BaseRepoController):
     @HasRepoPermissionAnyDecorator('repository.read', 'repository.write',
                                    'repository.admin')
     def index(self, repo_name, revision=None, f_path=None):
-        limit = 100
-        default = 20
+        limit = 2000
+        default = 100
         if request.GET.get('size'):
             c.size = max(min(safe_int(request.GET.get('size')), limit), 1)
             session['changelog_size'] = c.size
