@@ -1417,6 +1417,10 @@ div.form div.fields div.field div.button {
     padding: 5px;
 }
 
+#content div.box table td.compact {
+    padding: 0;
+}
+
 #content div.box table tr.selected td {
     background: #FFC;
 }
@@ -2582,6 +2586,7 @@ BIN_FILENODE = 6
     overflow: hidden;
     padding: 0;
     margin: 0;
+    white-space: nowrap;
 }
 
 #graph_content .comments-container {

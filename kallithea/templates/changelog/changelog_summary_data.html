@@ -2,6 +2,8 @@
 %if c.repo_changesets:
 <table class="table_disp">
     <tr>
+        <th class="left"></th>
+        <th class="left"></th>
         <th class="left">${_('Revision')}</th>
         <th class="left">${_('Commit Message')}</th>
         <th class="left">${_('Age')}</th>
@@ -10,8 +12,7 @@
     </tr>
 %for cnt,cs in enumerate(c.repo_changesets):
     <tr class="parity${cnt%2}">
-        <td>
-          <div>
+        <td class="compact">
             <div class="changeset-status-container">
               %if c.statuses.get(cs.raw_id):
                 <div class="changeset-status-ico shortlog">
@@ -24,18 +25,21 @@
                 %endif
                 </div>
               %endif
+            </div>
+        </td>
+        <td class="compact">
               %if c.comments.get(cs.raw_id,[]):
                <div class="comments-container">
                    <div title="${('comments')}">
                        <a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.comments[cs.raw_id][0].comment_id)}">
-                          <i class="icon-comment-alt icon-comment-colored"></i> ${len(c.comments[cs.raw_id])}
+                          <i class="icon-comment-alt icon-comment-colored"></i>${len(c.comments[cs.raw_id])}
                        </a>
                    </div>
                </div>
               %endif
-            </div>
+        </td>
+        <td>
             <pre><a href="${h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id)}">${h.show_id(cs)}</a></pre>
-         </div>
         </td>
         <td>
             ${h.urlify_commit(h.chop_at(cs.message,'\n'),c.repo_name, h.url('changeset_home',repo_name=c.repo_name,revision=cs.raw_id))}
