@@ -30,7 +30,7 @@
                   <div class="comments-cnt" title="${_('Changeset has comments')}">
                       <a href="${h.url('changeset_home',repo_name=c.cs_repo.repo_name,revision=cs.raw_id,anchor='comment-%s' % c.cs_comments[cs.raw_id][0].comment_id)}">
                           ${len(c.cs_comments[cs.raw_id])}
-                          <i class="icon-comment-alt icon-comment-colored"></i>
+                          <i class="icon-comment"></i>
                       </a>
                   </div>
               </div>
