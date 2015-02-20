@@ -2558,7 +2558,8 @@ BIN_FILENODE = 6
 #graph_content .container .mid .message.expanded,
 #graph_content_pr .compare_view_commits .message.expanded {
     height: auto;
-    margin: 4px 0px 4px 0px;
+    margin: 8px 0px 8px 0px;
+    overflow: initial;
 }
 
 #graph_content .container .extra-container {
