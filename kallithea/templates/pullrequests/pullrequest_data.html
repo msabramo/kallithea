@@ -2,7 +2,7 @@
 
 % for pr in c.pullrequests_pager:
   <div class="pr ${'pr-closed' if pr.is_closed() else ''}">
-    <div class="pr-title">
+    <div>
     %if pr.last_review_status:
       <i class="icon-circle changeset-status-${pr.last_review_status}" title="${_("Someone voted: %s") % pr.last_review_status}"></i>
     %else:

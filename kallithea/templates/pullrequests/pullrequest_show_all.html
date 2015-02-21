@@ -41,7 +41,7 @@ ${self.repo_context_bar('showpullrequest')}
         </ul>
     </div>
 
-    <div style="margin: 0 20px">
+    <div style="margin: 0 20px 10px 20px">
         <div>
         %if c.closed:
             ${h.link_to(_('Hide closed pull requests (only show open pull requests)'), h.url('pullrequest_show_all',repo_name=c.repo_name,from_=c.from_))}
