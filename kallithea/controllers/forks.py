@@ -123,10 +123,8 @@ class ForksController(BaseRepoController):
             d.append(r)
         c.forks_pager = Page(d, page=p, items_per_page=20)
 
-        c.forks_data = render('/forks/forks_data.html')
-
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
-            return c.forks_data
+            return render('/forks/forks_data.html')
 
         return render('/forks/forks.html')
 

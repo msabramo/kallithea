@@ -141,8 +141,8 @@ class AdminController(BaseController):
             return url.current(filter=c.search_term, **kw)
 
         c.users_log = Page(users_log, page=p, items_per_page=10, url=url_generator)
-        c.log_data = render('admin/admin_log.html')
 
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
-            return c.log_data
+            return render('admin/admin_log.html')
+
         return render('admin/admin.html')

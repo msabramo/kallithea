@@ -53,9 +53,7 @@ class FollowersController(BaseRepoController):
             .order_by(UserFollowing.follows_from)
         c.followers_pager = Page(d, page=p, items_per_page=20)
 
-        c.followers_data = render('/followers/followers_data.html')
-
         if request.environ.get('HTTP_X_PARTIAL_XHR'):
-            return c.followers_data
+            return render('/followers/followers_data.html')
 
         return render('/followers/followers.html')
