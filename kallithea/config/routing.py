@@ -729,10 +729,6 @@ def make_map(config):
                  '/my_pullrequests',
                  controller='pullrequests',
                  action='show_my', conditions=dict(method=["GET"]))
-    rmap.connect('my_pullrequests_data',
-                 '/my_pullrequests_data',
-                 controller='pullrequests',
-                 action='show_my_data', conditions=dict(method=["GET"]))
 
     rmap.connect('pullrequest_comment',
                  '/{repo_name:.*?}/pull-request-comment/{pull_request_id}',

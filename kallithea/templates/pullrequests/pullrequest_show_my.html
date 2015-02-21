@@ -20,31 +20,19 @@
         ${self.breadcrumbs()}
     </div>
 
-    <div id="pullrequests_container" class="table">
-        ## loaded via AJAX
-        ${_('Loading...')}
+    <div style="margin: 0 20px">
+        <div>
+        %if c.closed:
+            ${h.link_to(_('Hide closed pull requests (only show open pull requests)'), h.url('my_pullrequests'))}
+        %else:
+            ${h.link_to(_('Show closed pull requests (in addition to open pull requests)'), h.url('my_pullrequests',closed=1))}
+        %endif
+        </div>
     </div>
 
-<script type="text/javascript">
-pyroutes.register('my_pullrequests_data', "${url('my_pullrequests_data')}", []);
-
-var show_pullrequests = function(e){
-
-    var url = pyroutes.url('my_pullrequests_data');
-    if ($('#show_closed').prop('checked')) {
-        var url = pyroutes.url('my_pullrequests_data', {'pr_show_closed': '1'});
-    }
-    asynchtml(url, $('#pullrequests_container'), function(){
-        // new #show_closed has just been loaded
-        $('#show_closed').change(function (e) {
-            show_pullrequests(e);
-        });
-    });
-}
-show_pullrequests()
-
-</script>
+    <div id="pullrequests_container" class="table">
+        <%include file='pullrequest_show_my_data.html'/>
+    </div>
 
 </div>
-
 </%def>

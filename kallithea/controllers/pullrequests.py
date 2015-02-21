@@ -210,17 +210,13 @@ class PullrequestsController(BaseRepoController):
         return render('/pullrequests/pullrequest_show_all.html')
 
     @LoginRequired()
-    def show_my(self): # my_account_my_pullrequests
-        c.show_closed = request.GET.get('pr_show_closed')
-        return render('/pullrequests/pullrequest_show_my.html')
-
     @NotAnonymous()
-    def show_my_data(self):
-        c.show_closed = request.GET.get('pr_show_closed')
+    def show_my(self):
+        c.closed = request.GET.get('closed') or ''
 
         def _filter(pr):
             s = sorted(pr, key=lambda o: o.created_on, reverse=True)
-            if not c.show_closed:
+            if not c.closed:
                 s = filter(lambda p: p.status != PullRequest.STATUS_CLOSED, s)
             return s
 
@@ -235,7 +231,7 @@ class PullrequestsController(BaseRepoController):
                                         self.authuser.user_id)\
                                                  )
 
-        return render('/pullrequests/pullrequest_show_my_data.html')
+        return render('/pullrequests/pullrequest_show_my.html')
 
     @LoginRequired()
     @NotAnonymous()
