@@ -8,7 +8,7 @@
 <%def name="breadcrumbs_links()">
     ${_('Changesets')} -
     ${h.link_to(h.show_id(c.cs_ranges[0]),h.url('changeset_home',repo_name=c.repo_name,revision=c.cs_ranges[0]))}</td>
-    <i class="icon-arrow-right"></i>
+    <i class="icon-right"></i>
     ${h.link_to(h.show_id(c.cs_ranges[-1]),h.url('changeset_home',repo_name=c.repo_name,revision=c.cs_ranges[-1]))}</td>
 </%def>
 
@@ -28,7 +28,7 @@ ${self.repo_context_bar('changelog')}
             <div class="code-header">
                 <div>
                     ${h.show_id(c.cs_ranges[0])}
-                    <i class="icon-arrow-right"></i>
+                    <i class="icon-right"></i>
                     ${h.show_id(c.cs_ranges[-1])}
                     <a style="font-weight: bold" href="${h.url('compare_url',repo_name=c.repo_name,org_ref_type='rev',org_ref_name=getattr(c.cs_ranges[0].parents[0] if c.cs_ranges[0].parents else h.EmptyChangeset(),'raw_id'),other_ref_type='rev',other_ref_name=c.cs_ranges[-1].raw_id)}" class="btn btn-small"><i class="icon-git-compare"></i> Compare Revisions</a>
                 </div>
