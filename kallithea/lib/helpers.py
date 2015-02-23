@@ -817,9 +817,9 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'pull':                        (_('[pulled] from'),
                                     None, 'icon-move-down'),
     'started_following_repo':      (_('[started following] repository'),
-                                    None, 'icon-heart icon-heart-colored'),
+                                    None, 'icon-heart'),
     'stopped_following_repo':      (_('[stopped following] repository'),
-                                    None, 'icon-heart-empty icon-heart-colored'),
+                                    None, 'icon-heart-empty'),
     }
 
     action_str = action_map.get(action, action)
