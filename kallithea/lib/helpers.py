@@ -791,7 +791,7 @@ def action_parser(user_log, feed=False, parse_cs=False):
     'admin_created_repo':          (_('[created] repository'),
                                     None, 'icon-plus icon-plus-colored'),
     'admin_forked_repo':           (_('[forked] repository'),
-                                    None, 'icon-fork icon-fork-colored'),
+                                    None, 'icon-fork'),
     'admin_updated_repo':          (_('[updated] repository'),
                                     None, 'icon-pencil icon-pencil-colored'),
     'admin_created_user':          (_('[created] user'),
