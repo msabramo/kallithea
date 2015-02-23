@@ -130,7 +130,7 @@ class PullrequestsController(BaseRepoController):
                 selected = n
                 branch = None
             if branch:
-                log.error('branch %r not found in %s', branch, repo)
+                log.debug('branch %r not found in %s', branch, repo)
 
         bookmarks = []
         for bookmark, bookmarkrev in repo.bookmarks.iteritems():
@@ -263,14 +263,21 @@ class PullrequestsController(BaseRepoController):
         c.default_cs_repo = org_repo.repo_name
         c.cs_refs, c.default_cs_ref = self._get_repo_refs(org_scm_instance, rev=org_rev, branch=branch)
 
+        default_cs_ref_type, default_cs_branch, default_cs_rev = c.default_cs_ref.split(':')
+        if default_cs_ref_type != 'branch':
+            default_cs_branch = org_repo.get_changeset(default_cs_rev).branch
+
         # add org repo to other so we can open pull request against peer branches on itself
         c.a_repos = [(org_repo.repo_name, '%s (self)' % org_repo.repo_name)]
 
-        # add parent of this fork also and select it
         if org_repo.parent:
+            # add parent of this fork also and select it.
+            # use the same branch on destination as on source, if available.
             c.a_repos.append((org_repo.parent.repo_name, '%s (parent)' % org_repo.parent.repo_name))
             c.a_repo = org_repo.parent
-            c.a_refs, c.default_a_ref = self._get_repo_refs(org_repo.parent.scm_instance)
+            c.a_refs, c.default_a_ref = self._get_repo_refs(
+                    org_repo.parent.scm_instance, branch=default_cs_branch)
+
         else:
             c.a_repo = org_repo
             c.a_refs, c.default_a_ref = self._get_repo_refs(org_scm_instance) # without rev and branch
