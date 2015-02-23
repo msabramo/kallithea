@@ -41,9 +41,9 @@ ${h.form(url('users_group', id=c.user_group.users_group_id),method='put', id='ed
                                                 ${h.select('users_group_members',[x[0] for x in c.group_members],c.group_members,multiple=True,size=8,style="min-width:210px")}
                                             </div>
                                             <div style="float:left;width:20px;padding-top:50px">
-                                                <i style="cursor:pointer; padding: 4px; font-size: 16px" id="add_element" class="icon-left-open"></i>
+                                                <i style="cursor:pointer; font-size: 16px" id="add_element" class="icon-left-open"></i>
                                                 <br />
-                                                <i style="cursor:pointer; padding: 4px; font-size: 16px" id="remove_element" class="icon-right-open"></i>
+                                                <i style="cursor:pointer; font-size: 16px" id="remove_element" class="icon-right-open"></i>
                                             </div>
                                             <div style="float:left">
                                                  <div class="text" style="padding: 0px 0px 6px;">${_('Available members')}</div>
