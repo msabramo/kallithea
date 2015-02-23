@@ -3,7 +3,6 @@
  */
 
 i.icon-ellipsis-horizontal:after { content: ' ...';}
-i.icon-disabled { background-image: url('../images/icons/shading.png');} /* todo: use instead of minus sign */
 
 i[class^='icon-'] {
     background-repeat: no-repeat;
