@@ -7,9 +7,6 @@
     %else:
         ${_('%s Compare') % c.repo_name} - ${'%s@%s' % (c.a_repo.repo_name, c.a_ref_name)} &gt; ${'%s@%s' % (c.cs_repo.repo_name, c.cs_ref_name)}
     %endif
-    %if c.site_name:
-        &middot; ${c.site_name}
-    %endif
 </%block>
 
 <%def name="breadcrumbs_links()">

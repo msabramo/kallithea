@@ -38,6 +38,12 @@
 
 ### MAKO DEFS ###
 
+<%block name="branding_title">
+    %if c.site_name:
+    &middot; ${c.site_name}
+    %endif
+</%block>
+
 <%def name="flash_msg()">
     <%include file="/base/flash_msg.html"/>
 </%def>

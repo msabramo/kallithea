@@ -2,9 +2,6 @@
 <%inherit file="/base/base.html"/>
 <%block name="title">
     ${_('Public Journal')}
-    %if c.site_name:
-        &middot; ${c.site_name}
-    %endif
 </%block>
 <%def name="breadcrumbs()">
     ${c.site_name}
