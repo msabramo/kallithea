@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'kallithea';
-  src: url('../font/kallithea.eot?42811111');
-  src: url('../font/kallithea.eot?42811111#iefix') format('embedded-opentype'),
-       url('../font/kallithea.woff?42811111') format('woff'),
-       url('../font/kallithea.ttf?42811111') format('truetype'),
-       url('../font/kallithea.svg?42811111#kallithea') format('svg');
+  src: url('../font/kallithea.eot?81834162');
+  src: url('../font/kallithea.eot?81834162#iefix') format('embedded-opentype'),
+       url('../font/kallithea.woff?81834162') format('woff'),
+       url('../font/kallithea.ttf?81834162') format('truetype'),
+       url('../font/kallithea.svg?81834162#kallithea') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'kallithea';
-    src: url('../font/kallithea.svg?42811111#kallithea') format('svg');
+    src: url('../font/kallithea.svg?81834162#kallithea') format('svg');
   }
 }
 */
@@ -143,3 +143,11 @@
 .icon-circle-empty:before { content: '\e85c'; } /* '' */
 .icon-circle:before { content: '\e85d'; } /* '' */
 .icon-box:before { content: '\e85e'; } /* '' */
+.icon-right:before { content: '\e85f'; } /* '' */
+.icon-left:before { content: '\e860'; } /* '' */
+.icon-left-circled:before { content: '\e861'; } /* '' */
+.icon-right-circled:before { content: '\e862'; } /* '' */
+.icon-up-circled:before { content: '\e863'; } /* '' */
+.icon-up:before { content: '\e864'; } /* '' */
+.icon-down:before { content: '\e865'; } /* '' */
+.icon-down-circled:before { content: '\e866'; } /* '' */
