@@ -205,7 +205,7 @@
 <%def name="repo_group_name(repo_group_name, children_groups)">
   <div style="white-space: nowrap">
   <a href="${h.url('repos_group_home',group_name=repo_group_name)}">
-    <i class="icon-folder-close" title="${_('Repository group')}"></i> ${h.literal(' &raquo; '.join(children_groups))}</a>
+    <i class="icon-folder" title="${_('Repository group')}"></i> ${h.literal(' &raquo; '.join(children_groups))}</a>
   </div>
 </%def>
 
