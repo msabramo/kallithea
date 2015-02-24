@@ -527,7 +527,7 @@ td.quick_repo_menu.active:before {
     font-family: "kallithea";
     content: "\e80d";           /* triangle-down */
     margin-left: 1px;
-    padding-right: 0px;
+    padding-right: 1px;
 }
 
 td.quick_repo_menu.active {
