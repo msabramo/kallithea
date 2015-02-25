@@ -52,8 +52,11 @@
                   % for gr in c.groups:
                     <tr>
                         <td>
-                            <div style="white-space: nowrap">
-                                <a href="${url('repos_group_home',group_name=gr.group_name)}"><i class="icon-folder"></i> ${gr.name}</a>
+                            <div class="dt_repo">
+                              <a href="${url('repos_group_home',group_name=gr.group_name)}">
+                                <i class="icon-folder"></i>
+                                <span class="dt_repo_name">${gr.name}</span>
+                              </a>
                             </div>
                         </td>
                         %if c.visual.stylify_metatags:
