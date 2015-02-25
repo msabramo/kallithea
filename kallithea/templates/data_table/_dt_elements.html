@@ -60,11 +60,7 @@
     %>
   <div style="white-space: nowrap; ${'opacity: 0.5' if rstate == 'repo_state_pending' else ''}}">
     ##NAME
-    %if admin:
-        <a href="${h.url('edit_repo',repo_name=name)}">
-    %else:
-        <a href="${h.url('summary_home',repo_name=name)}">
-    %endif
+    <a href="${h.url('edit_repo' if admin else 'summary_home', repo_name=name)}">
 
     ##TYPE OF REPO
     %if h.is_hg(rtype):
