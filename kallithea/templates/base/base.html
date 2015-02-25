@@ -163,9 +163,9 @@
 
               %if h.HasRepoPermissionAny('repository.write','repository.admin')(c.repo_name) and c.db_repo.enable_locking:
                 %if c.db_repo.locked[0]:
-                  <li>${h.link_to(_('Unlock'), h.url('toggle_locking',repo_name=c.repo_name),class_='locking_del')}</li>
+                  <li><a href="${h.url('toggle_locking', repo_name=c.repo_name)}"><i class="icon-lock"></i> ${_('Unlock')}</a></li>
                 %else:
-                  <li>${h.link_to(_('Lock'), h.url('toggle_locking',repo_name=c.repo_name),class_='locking_add')}</li>
+                  <li><a href="${h.url('toggle_locking', repo_name=c.repo_name)}"><i class="icon-lock-open-alt"></i> ${_('Lock')}</li>
                 %endif
               %endif
               ## TODO: this check feels wrong, it would be better to have a check for permissions
