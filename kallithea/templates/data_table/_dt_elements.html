@@ -58,7 +58,7 @@
       else:
         return name
     %>
-  <div style="white-space: nowrap; ${'opacity: 0.5' if rstate == 'repo_state_pending' else ''}}">
+  <div class="dt_repo ${'dt_repo_pending' if rstate == 'repo_state_pending' else ''}">
     ##NAME
     <a href="${h.url('edit_repo' if admin else 'summary_home', repo_name=name)}">
 
@@ -71,9 +71,9 @@
 
     ##PRIVATE/PUBLIC
     %if private and c.visual.show_private_icon:
-      <i class="icon-keyhole-circled" title="${_('Private repository')}" style="font-size: 16px; vertical-align: -2px; margin: 0px 1px 0px 3px"></i>
+      <i class="icon-keyhole-circled" title="${_('Private repository')}"></i>
     %elif not private and c.visual.show_public_icon:
-      <i class="icon-globe" title="${_('Public repository')}" style="font-size: 16px; vertical-align: -2px; margin: 0px 1px 0px 3px"></i>
+      <i class="icon-globe" title="${_('Public repository')}"></i>
     %else:
       <span style="margin: 0px 8px 0px 8px"></span>
     %endif
@@ -83,7 +83,7 @@
       <a href="${h.url('summary_home',repo_name=fork_of.repo_name)}"><i class="icon-fork"></i></a>
     %endif
     %if rstate == 'repo_state_pending':
-      <i class="icon-wrench" style="color: #036185;" title="${_('Repository creation in progress...')}"></i>
+      <i class="icon-wrench" title="${_('Repository creation in progress...')}"></i>
     %endif
   </div>
 </%def>

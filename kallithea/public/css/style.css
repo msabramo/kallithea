@@ -573,6 +573,23 @@ td.quick_repo_menu .menu_items.hidden {
     display: none;
 }
 
+.dt_repo {
+    white-space: nowrap;
+    color: #577632;
+}
+
+.dt_repo_pending {
+    opacity: 0.5;
+}
+
+.dt_repo i.icon-keyhole-circled,
+.dt_repo i.icon-globe
+{
+    font-size: 16px;
+    vertical-align: -2px;
+    margin: 0px 1px 0px 3px;
+}
+
 .yui-dt-first th {
     text-align: left;
 }
