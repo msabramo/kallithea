@@ -590,6 +590,14 @@ td.quick_repo_menu .menu_items.hidden {
     margin: 0px 1px 0px 3px;
 }
 
+.dt_repo a {
+    text-decoration: none;
+}
+
+.dt_repo .dt_repo_name:hover {
+    text-decoration: underline;
+}
+
 .yui-dt-first th {
     text-align: left;
 }

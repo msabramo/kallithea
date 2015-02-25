@@ -77,7 +77,7 @@
     %else:
       <span style="margin: 0px 8px 0px 8px"></span>
     %endif
-    ${get_name(name)}
+    <span class="dt_repo_name">${get_name(name)}</span>
     </a>
     %if fork_of:
       <a href="${h.url('summary_home',repo_name=fork_of.repo_name)}"><i class="icon-fork"></i></a>
