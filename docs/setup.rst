@@ -447,16 +447,32 @@ uncomment following variables in the ini file::
     issue_server_link = https://myissueserver.com/{repo}/issue/{id}
     issue_prefix = #
 
-`issue_pat` is the regular expression that will fetch issues from commit messages.
-Default regex will match issues in format of #<number> eg. #300.
+`issue_pat` is the regular expression describing which strings in
+commit messages will be treated as issue references. A match group in
+parentheses should be used to specify the actual issue id.
 
-Matched issues will be replace with the link specified as `issue_server_link`
-{id} will be replaced with issue id, and {repo} with repository name.
-Since the # is striped `issue_prefix` is added as a prefix to url.
-`issue_prefix` can be something different than # if you pass
-ISSUE- as issue prefix this will generate an url in format::
+The default expression matches issues in the format '#<number>', e.g. '#300'.
+
+Matched issues are replaced with the link specified as `issue_server_link`
+{id} is replaced with issue id, and {repo} with repository name.
+Since the # is stripped away, `issue_prefix` is prepended to the link text.
+`issue_prefix` doesn't necessarily need to be #: if you set issue
+prefix to ISSUE- this will generate a URL in format::
 
   <a href="https://myissueserver.com/example_repo/issue/300">ISSUE-300</a>
+
+If needed, more than one pattern can be specified by appending a unique suffix to
+the variables. For example::
+
+    issue_pat_wiki = (?:wiki-)(.+)
+    issue_server_link_wiki = https://mywiki.com/{id}
+    issue_prefix_wiki = WIKI-
+
+With these settings, wiki pages can be referenced as wiki-some-id, and every
+such reference will be transformed into::
+
+  <a href="https://mywiki.com/some-id">WIKI-some-id</a>
+
 
 Hook management
 ---------------
