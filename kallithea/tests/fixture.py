@@ -43,17 +43,20 @@ class Fixture(object):
 
     def anon_access(self, status):
         """
-        Context process for disabling anonymous access. use like:
+        Context manager for controlling anonymous access.
+        Anon access will be set and committed, but restored again when exiting the block.
+
+        Usage:
+
         fixture = Fixture()
         with fixture.anon_access(False):
-            #tests
-
-        after this block anon access will be set to `not status`
+            stuff
         """
 
         class context(object):
             def __enter__(self):
                 anon = User.get_default_user()
+                self._before = anon.active
                 anon.active = status
                 Session().add(anon)
                 Session().commit()
@@ -61,7 +64,7 @@ class Fixture(object):
 
             def __exit__(self, exc_type, exc_val, exc_tb):
                 anon = User.get_default_user()
-                anon.active = not status
+                anon.active = self._before
                 Session().add(anon)
                 Session().commit()
 
