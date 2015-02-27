@@ -1816,8 +1816,8 @@ a.metatag[tag="license"]:hover {
     background-image: -moz-linear-gradient(top, #577632, #577632);
     background-image: -ms-linear-gradient( top, #577632, #577632);
     background-image: -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #577632), color-stop( 100%, #577632));
-    background-image: -webkit-linear-gradient( top, #577632, #577632));
-    background-image: -o-linear-gradient( top, #577632, #577632));
+    background-image: -webkit-linear-gradient( top, #577632, #577632);
+    background-image: -o-linear-gradient( top, #577632, #577632);
     background-image: linear-gradient(to bottom, #577632, #577632);
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
     -webkit-border-radius: 4px 4px 4px 4px;
@@ -1851,8 +1851,8 @@ a.metatag[tag="license"]:hover {
     background-image: -moz-linear-gradient( top, #577632, #577632);
     background-image: -ms-linear-gradient( top, #577632, #577632);
     background-image: -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #577632), color-stop( 100%, #577632));
-    background-image: -webkit-linear-gradient( top, #577632, #577632));
-    background-image: -o-linear-gradient( top, #577632, #577632));
+    background-image: -webkit-linear-gradient( top, #577632, #577632);
+    background-image: -o-linear-gradient( top, #577632, #577632);
     background-image: linear-gradient(to bottom, #577632, #577632);
     margin: 0 auto;
     padding: 0;
@@ -3485,8 +3485,8 @@ div.gravatar img {
     background-image: -moz-linear-gradient(top, #F4F4F4, #DADADA);
     background-image: -ms-linear-gradient(top, #F4F4F4, #DADADA);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F4F4F4),color-stop(100%, #DADADA) );
-    background-image: -webkit-linear-gradient(top, #F4F4F4, #DADADA) );
-    background-image: -o-linear-gradient(top, #F4F4F4, #DADADA) );
+    background-image: -webkit-linear-gradient(top, #F4F4F4, #DADADA);
+    background-image: -o-linear-gradient(top, #F4F4F4, #DADADA);
     background-image: linear-gradient(to bottom, #F4F4F4, #DADADA);
 
     border-top: 1px solid #DDD;
