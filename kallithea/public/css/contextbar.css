@@ -140,8 +140,6 @@ ul.horizontal-list li a {
     background: -o-linear-gradient(top, #577632 0%, #577632 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top, #577632 0%, #577632 100%); /* IE10+ */
     background: linear-gradient(to bottom, #577632 0%, #577632 100%); /* W3C */
-    /*Filter on IE will also use overflow:hidden implicitly, and that would clip our inner menus.*/
-    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#577632', endColorstr='#577632',GradientType=0 ); /* IE6-9 */*/
 }
 
 #header #header-inner #quick a,
@@ -201,7 +199,6 @@ ul#context-actions {
     background: -o-linear-gradient(top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* IE10+ */
     background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%); /* W3C */
-    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#88bfe8', endColorstr='#70b0e0',GradientType=0 ); /* IE6-9 */*/
 }
 
 
