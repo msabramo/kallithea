@@ -5,23 +5,23 @@ API
 ===
 
 
-Starting from Kallithea version 1.2 a simple API was implemented.
-There's a single schema for calling all api methods. API is implemented
-with JSON protocol both ways. An url to send API request to Kallithea is
-<your_server>/_admin/api
+Kallithea has a simple JSON RPC API with a single schema for calling all api
+methods. Everything is available by sending JSON encoded http(s) requests to
+<your_server>/_admin/api .
+
 
 API ACCESS FOR WEB VIEWS
 ++++++++++++++++++++++++
 
 API access can also be turned on for each web view in Kallithea that is
-decorated with `@LoginRequired` decorator. To enable API access simple change
-the standard login decorator to `@LoginRequired(api_access=True)`.
+decorated with the `@LoginRequired` decorator. Some views use
+`@LoginRequired(api_access=True)` and are always available. By default only
+RSS/ATOM feed views are enabled. Other views are
+only available if they have been white listed. Edit the
+`api_access_controllers_whitelist` option in your .ini file and define views
+that should have API access enabled.
 
-To make this operation easier, starting from version 1.7.0 there's a white list
-of views that will have API access enabled. Simply edit `api_access_controllers_whitelist`
-option in your .ini file, and define views that should have API access enabled.
-Following example shows how to enable API access to patch/diff raw file and archive
-in Kallithea::
+For example, to enable API access to patch/diff raw file and archive::
 
     api_access_controllers_whitelist =
         ChangesetController:changeset_patch,
@@ -29,71 +29,61 @@ in Kallithea::
         FilesController:raw,
         FilesController:archivefile
 
-
 After this change, a Kallithea view can be accessed without login by adding a
-GET parameter `?api_key=<api_key>` to url. By default this is only
-enabled on RSS/ATOM feed views. Exposing raw diffs is a good way to integrate with
+GET parameter `?api_key=<api_key>` to url.
+
+Exposing raw diffs is a good way to integrate with
 3rd party services like code review, or build farms that could download archives.
 
 
 API ACCESS
 ++++++++++
 
-All clients are required to send JSON-RPC spec JSON data::
+Clients must send JSON encoded JSON-RPC requests::
 
     {
-        "id:"<id>",
-        "api_key":"<api_key>",
-        "method":"<method_name>",
-        "args":{"<arg_key>":"<arg_val>"}
+        "id: "<id>",
+        "api_key": "<api_key>",
+        "method": "<method_name>",
+        "args": {"<arg_key>": "<arg_val>"}
     }
 
-Example call for autopulling remotes repos using curl::
+For example, to pull to a local "CPython" mirror using curl::
+
     curl https://server.com/_admin/api -X POST -H 'content-type:text/plain' --data-binary '{"id":1,"api_key":"xe7cdb2v278e4evbdf5vs04v832v0efvcbcve4a3","method":"pull","args":{"repo":"CPython"}}'
 
-Simply provide
- - *id* A value of any type, which is used to match the response with the request that it is replying to.
- - *api_key* for access and permission validation.
- - *method* is name of method to call
- - *args* is an key:value list of arguments to pass to method
+In general, provide
+ - *id*, a value of any type, can be used to match the response with the request that it is replying to.
+ - *api_key*, for authentication and permission validation.
+ - *method*, the name of the method to call - a list of available methods can be found below.
+ - *args*, the arguments to pass to the method.
 
 .. note::
 
-    api_key can be found in your user account page
+    api_key can be found or set on the user account page
 
-
-Kallithea API will return always a JSON-RPC response::
+The response to the JSON-RPC API call will always be a JSON structure::
 
     {
-        "id":<id>, # matching id sent by request
+        "id":<id>, # the id that was used in the request
         "result": "<result>"|null, # JSON formatted result, null if any errors
         "error": "null"|<error_message> # JSON formatted error (if any)
     }
 
-All responses from API will be `HTTP/1.0 200 OK`, if there's an error while
-calling api *error* key from response will contain failure description
-and result will be null.
+All responses from API will be `HTTP/1.0 200 OK`. If there is an error,
+the reponse will have a failure description in *error* and
+*result* will be null.
 
 
 API CLIENT
 ++++++++++
 
-From version 1.4 Kallithea adds a script that allows to easily
-communicate with API. After installing Kallithea a `kallithea-api` script
-will be available.
+Kallithea comes with a `kallithea-api` command line tool providing a convenient
+way to call the JSON-RPC API.
 
-To get started quickly simply run::
+For example, to call `get_repo`::
 
-  kallithea-api _create_config --apikey=<youapikey> --apihost=<your.kallithea.server>
-
-This will create a file named .config in the directory you executed it storing
-json config file with credentials. You can skip this step and always provide
-both of the arguments to be able to communicate with server
-
-
-after that simply run any api command for example get_repo::
-
- kallithea-api get_repo
+ kallithea-api --apihost=<your.kallithea.server.url> --apikey=<yourapikey> get_repo
 
  calling {"api_key": "<apikey>", "id": 75, "args": {}, "method": "get_repo"} to http://127.0.0.1:5000
  Kallithea said:
@@ -101,9 +91,7 @@ after that simply run any api command for example get_repo::
   'id': 75,
   'result': None}
 
-Ups looks like we forgot to add an argument
-
-Let's try again now giving the repoid as parameters::
+Oops, looks like we forgot to add an argument. Let's try again, now providing the repoid as parameter::
 
     kallithea-api get_repo repoid:myrepo
 
@@ -113,6 +101,12 @@ Let's try again now giving the repoid as parameters::
      'id': 39,
      'result': <json data...>}
 
+To avoid specifying apihost and apikey every time, run::
+
+  kallithea-api --save-config --apihost=<your.kallithea.server.url> --apikey=<yourapikey>
+
+This will create a `~/.config/kallithea` with the specified hostname and apikey
+so you don't have to specify them every time.
 
 
 API METHODS
@@ -122,9 +116,9 @@ API METHODS
 pull
 ----
 
-Pulls given repo from remote location. Can be used to automatically keep
-remote repos up to date. This command can be executed only using api_key
-belonging to user with admin rights
+Pull the given repo from remote location. Can be used to automatically keep
+remote repos up to date.
+This command can only be executed using the api_key of a user with admin rights.
 
 INPUT::
 
@@ -145,10 +139,9 @@ OUTPUT::
 rescan_repos
 ------------
 
-Dispatch rescan repositories action. If remove_obsolete is set
+Rescan repositories. If remove_obsolete is set,
 Kallithea will delete repos that are in database but not in the filesystem.
-This command can be executed only using api_key belonging to user with admin
-rights.
+This command can only be executed using the api_key of a user with admin rights.
 
 INPUT::
 
@@ -171,8 +164,8 @@ invalidate_cache
 ----------------
 
 Invalidate cache for repository.
-This command can be executed only using api_key belonging to user with admin
-rights or regular user that have write or admin or write access to repository.
+This command can only be executed using the api_key of a user with admin rights,
+or that of a regular user with admin or write access to the repository.
 
 INPUT::
 
@@ -189,14 +182,14 @@ OUTPUT::
     result : "Caches of repository `<reponame>`"
     error :  null
 
+
 lock
 ----
 
-Set locking state on given repository by given user. If userid param is skipped
-, then it is set to id of user whos calling this method. If locked param is skipped
-then function shows current lock state of given repo.
-This command can be executed only using api_key belonging to user with admin
-rights or regular user that have admin or write access to repository.
+Set the locking state on the given repository by the given user.
+If param 'userid' is skipped, it is set to the id of the user who is calling this method.
+If param 'locked' is skipped, the current lock state of the repository is returned.
+This command can only be executed using the api_key of a user with admin rights, or that of a regular user with admin or write access to the repository.
 
 INPUT::
 
@@ -225,10 +218,9 @@ OUTPUT::
 get_ip
 ------
 
-Shows IP address as seen from Kallithea server, together with all
+Return IP address as seen from Kallithea server, together with all
 defined IP addresses for given user.
-This command can be executed only using api_key belonging to user with admin
-rights.
+This command can only be executed using the api_key of a user with admin rights.
 
 INPUT::
 
@@ -259,10 +251,10 @@ OUTPUT::
 get_user
 --------
 
-Gets an user by username or user_id, Returns empty result if user is not found.
-If userid param is skipped it is set to id of user who is calling this method.
-This command can be executed only using api_key belonging to user with admin
-rights, or regular users that cannot specify different userid than theirs
+Get a user by username or userid. The result is empty if user can't be found.
+If userid param is skipped, it is set to id of user who is calling this method.
+Any userid can be specified when the command is executed using the api_key of a user with admin rights.
+Regular users can only speicy their own userid.
 
 
 INPUT::
@@ -306,8 +298,8 @@ OUTPUT::
 get_users
 ---------
 
-Lists all existing users. This command can be executed only using api_key
-belonging to user with admin rights.
+List all existing users.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -343,8 +335,8 @@ OUTPUT::
 create_user
 -----------
 
-Creates new user. This command can
-be executed only using api_key belonging to user with admin rights.
+Create new user.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -387,8 +379,8 @@ OUTPUT::
 update_user
 -----------
 
-updates given user if such user exists. This command can
-be executed only using api_key belonging to user with admin rights.
+Update the given user if such user exists.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -433,9 +425,8 @@ OUTPUT::
 delete_user
 -----------
 
-
-deletes givenuser if such user exists. This command can
-be executed only using api_key belonging to user with admin rights.
+Delete given user if such user exists.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -460,8 +451,8 @@ OUTPUT::
 get_user_group
 --------------
 
-Gets an existing user group. This command can be executed only using api_key
-belonging to user with admin rights.
+Get an existing user group.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -504,8 +495,8 @@ OUTPUT::
 get_user_groups
 ---------------
 
-Lists all existing user groups. This command can be executed only using
-api_key belonging to user with admin rights.
+List all existing user groups.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -532,8 +523,8 @@ OUTPUT::
 create_user_group
 -----------------
 
-Creates new user group. This command can be executed only using api_key
-belonging to user with admin rights
+Create a new user group.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -564,9 +555,9 @@ OUTPUT::
 add_user_to_user_group
 ----------------------
 
-Adds a user to a user group. If user exists in that group success will be
-`false`. This command can be executed only using api_key
-belonging to user with admin rights
+Addsa user to a user group. If the user already is in that group, success will be
+`false`.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -584,7 +575,7 @@ OUTPUT::
     id : <id_given_in_input>
     result: {
               "success": True|False # depends on if member is in group
-              "msg": "added member `<username>` to user group `<groupname>` |
+              "msg": "added member `<username>` to a user group `<groupname>` |
                       User is already in that group"
             }
     error:  null
@@ -593,9 +584,9 @@ OUTPUT::
 remove_user_from_user_group
 ---------------------------
 
-Removes a user from a user group. If user is not in given group success will
-be `false`. This command can be executed only
-using api_key belonging to user with admin rights
+Remove a user from a user group. If the user isn't in the given group, success will
+be `false`.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -622,11 +613,10 @@ OUTPUT::
 get_repo
 --------
 
-Gets an existing repository by it's name or repository_id. Members will return
-either users_group or user associated to that repository. This command can be
-executed only using api_key belonging to user with admin
-rights or regular user that have at least read access to repository.
-
+Get an existing repository by its name or repository_id. Members will contain
+either users_group or user associated to that repository.
+This command can only be executed using the api_key of a user with admin rights,
+or that of a regular user with at least read access to the repository.
 
 INPUT::
 
@@ -713,9 +703,9 @@ OUTPUT::
 get_repos
 ---------
 
-Lists all existing repositories. This command can be executed only using
-api_key belonging to user with admin rights or regular user that have
-admin, write or read access to repository.
+List all existing repositories.
+This command can only be executed using the api_key of a user with admin rights,
+or that of a regular user with at least read access to the repository.
 
 
 INPUT::
@@ -752,10 +742,9 @@ OUTPUT::
 get_repo_nodes
 --------------
 
-returns a list of nodes and it's children in a flat list for a given path
-at given revision. It's possible to specify ret_type to show only `files` or
-`dirs`. This command can be executed only using api_key belonging to user
-with admin rights
+Return a list of files and directories for a given path at the given revision.
+It's possible to specify ret_type to show only `files` or `dirs`.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -786,12 +775,13 @@ OUTPUT::
 create_repo
 -----------
 
-Creates a repository. If repository name contains "/", all needed repository
-groups will be created. For example "foo/bar/baz" will create groups
+Create a repository. If repository name contains "/", all needed repository
+groups will be created. For example "foo/bar/baz" will create repository groups
 "foo", "bar" (with "foo" as parent), and create "baz" repository with
-"bar" as group. This command can be executed only using api_key belonging to user with admin
-rights or regular user that have create repository permission. Regular users
-cannot specify owner parameter
+"bar" as group.
+This command can only be executed using the api_key of a user with admin rights,
+or that of a regular user with create repository permission.
+Regular users cannot specify owner parameter.
 
 
 INPUT::
@@ -839,11 +829,12 @@ OUTPUT::
 fork_repo
 ---------
 
-Creates a fork of given repo. In case of using celery this will
-immidiatelly return success message, while fork is going to be created
-asynchronous. This command can be executed only using api_key belonging to
-user with admin rights or regular user that have fork permission, and at least
-read access to forking repository. Regular users cannot specify owner parameter.
+Create a fork of given repo. If using celery, this will
+return success message immidiatelly and fork will be created
+asynchronously.
+This command can only be executed using the api_key of a user with admin rights,
+or that of a regular user with fork permission and at least read access to the repository.
+Regular users cannot specify owner parameter.
 
 
 INPUT::
@@ -875,10 +866,10 @@ OUTPUT::
 delete_repo
 -----------
 
-Deletes a repository. This command can be executed only using api_key belonging
-to user with admin rights or regular user that have admin access to repository.
-When `forks` param is set it's possible to detach or delete forks of deleting
-repository
+Delete a repository.
+This command can only be executed using the api_key of a user with admin rights,
+or that of a regular user with admin access to the repository.
+When `forks` param is set it's possible to detach or delete forks of the deleted repository.
 
 
 INPUT::
@@ -904,9 +895,8 @@ OUTPUT::
 grant_user_permission
 ---------------------
 
-Grant permission for user on given repository, or update existing one
-if found. This command can be executed only using api_key belonging to user
-with admin rights.
+Grant permission for user on given repository, or update existing one if found.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -933,8 +923,8 @@ OUTPUT::
 revoke_user_permission
 ----------------------
 
-Revoke permission for user on given repository. This command can be executed
-only using api_key belonging to user with admin rights.
+Revoke permission for user on given repository.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -961,8 +951,8 @@ grant_user_group_permission
 ---------------------------
 
 Grant permission for user group on given repository, or update
-existing one if found. This command can be executed only using
-api_key belonging to user with admin rights.
+existing one if found.
+This command can only be executed using the api_key of a user with admin rights.
 
 
 INPUT::
@@ -989,8 +979,8 @@ OUTPUT::
 revoke_user_group_permission
 ----------------------------
 
-Revoke permission for user group on given repository.This command can be
-executed only using api_key belonging to user with admin rights.
+Revoke permission for user group on given repository.
+This command can only be executed using the api_key of a user with admin rights.
 
 INPUT::
 
