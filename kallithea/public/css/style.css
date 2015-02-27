@@ -666,7 +666,6 @@ th.yui-dt-hidden .yui-dt-resizer { display: none }
     font-family: arial;
     font-size: inherit;
     border-collapse: separate;
-    *border-collapse: collapse;
     border-spacing: 0;
     border: 1px solid #7f7f7f;
 }
