@@ -4670,6 +4670,10 @@ div.pr-desc {
 div.pr-closed {
     background-color: #eee;
 }
+tr.pr-closed td {
+    background-color: #eee !important;
+    color: #555 !important;
+}
 
 span.pr-closed-tag {
     margin-bottom: 1px;

@@ -1,28 +1,56 @@
 ## -*- coding: utf-8 -*-
 
+<div class="table">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="left">${_('Title')}</th>
+        <th class="left">${_('Author')}</th>
+        <th class="left">${_('Date')}</th>
+        <th class="left">${_('From')}</th>
+        <th class="left">${_('To')}</th>
+      </tr>
+    </thead>
 % for pr in c.pullrequests_pager:
-  <div class="pr ${'pr-closed' if pr.is_closed() else ''}">
-    <div>
-    %if pr.last_review_status:
-      <i class="icon-circle changeset-status-${pr.last_review_status}" title="${_("Someone voted: %s") % pr.last_review_status}"></i>
-    %else:
-      <i class="icon-circle changeset-status-not_reviewed" title="${_("Nobody voted")}"></i>
-    %endif
-      <a href="${pr.url()}">
-      ${pr.title or _("(no title)")}
-       %if pr.is_closed():
-         <span class="pr-closed-tag">${_('Closed')}</span>
-       %endif
-      </a>
-            ${_('opened on %s from') % (h.fmt_date(pr.created_on))}
-            <% org_ref_name=pr.org_ref.rsplit(':', 2)[-2] %>
-            <a href="${h.url('summary_home', repo_name=pr.org_repo.repo_name, anchor=org_ref_name)}">
-              ${pr.org_repo.repo_name}#${org_ref_name}
-            </a>
-    </div>
-  </div>
+    <tr class="${'pr-closed' if pr.is_closed() else ''}">
+      <td>
+        %if pr.last_review_status:
+          <i class="icon-circle changeset-status-${pr.last_review_status}" title="${_("Someone voted: %s") % pr.last_review_status}"></i>
+        %else:
+          <i class="icon-circle changeset-status-not_reviewed" title="${_("Nobody voted")}"></i>
+        %endif
+      </td>
+      <td>
+        <a href="${pr.url()}">
+        ${pr.title or _("(no title)")}
+        %if pr.is_closed():
+          <span class="pr-closed-tag">${_('Closed')}</span>
+        %endif
+        </a>
+      </td>
+      <td>
+        ${pr.author.username_and_name}
+      </td>
+      <td>
+        ${h.fmt_date(pr.created_on)}
+      </td>
+      <td>
+        <% org_ref_name=pr.org_ref.rsplit(':', 2)[-2] %>
+        <a href="${h.url('summary_home', repo_name=pr.org_repo.repo_name, anchor=org_ref_name)}">
+          ${pr.org_repo.repo_name}#${org_ref_name}
+        </a>
+      </td>
+      <td>
+        <% other_ref_name=pr.other_ref.rsplit(':', 2)[-2] %>
+        <a href="${h.url('summary_home', repo_name=pr.other_repo.repo_name, anchor=other_ref_name)}">
+          ${pr.other_repo.repo_name}#${other_ref_name}
+        </a>
+      </td>
+    </tr>
 % endfor
-
+  </table>
+</div>
 
 <div class="notification-paginator">
   <div class="pagination-wh pagination-left">
