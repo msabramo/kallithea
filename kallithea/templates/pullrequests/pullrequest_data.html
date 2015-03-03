@@ -14,7 +14,7 @@
         <th></th>
         <th class="left">${_('Title')}</th>
         <th class="left">${_('Author')}</th>
-        <th class="left">${_('Date')}</th>
+        <th class="left">${_('Age')}</th>
         <th class="left">${_('From')}</th>
         <th class="left">${_('To')}</th>
       </tr>
@@ -54,7 +54,9 @@
         ${pr.author.username_and_name}
       </td>
       <td>
-        ${h.fmt_date(pr.created_on)}
+        <span class="tooltip" title="${h.tooltip(h.fmt_date(pr.created_on))}">
+          ${h.age(pr.created_on)}
+        </span>
       </td>
       <td>
         <% org_ref_name=pr.org_ref.rsplit(':', 2)[-2] %>
