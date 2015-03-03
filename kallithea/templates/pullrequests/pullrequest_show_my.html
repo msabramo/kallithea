@@ -20,7 +20,7 @@
         ${self.breadcrumbs()}
     </div>
 
-    <div style="margin: 0 20px">
+    <div class="normal-indent">
         <div>
         %if c.closed:
             ${h.link_to(_('Hide closed pull requests (only show open pull requests)'), h.url('my_pullrequests'))}
