@@ -4648,13 +4648,12 @@ PULL REQUESTS
 *****/
 .pullrequests_section_head {
     padding: 10px 10px 10px 0px;
+    margin: 0 20px;
     font-size: 16px;
     font-weight: bold;
 }
 
-div.pr-details-title.closed,
-#pullrequests_container li.closed div div
- {
+div.pr-details-title.closed {
     color: #555;
     background: #eee;
 }
@@ -4670,9 +4669,6 @@ div.pr {
 }
 div.pr-desc {
     margin: 0px 20px;
-}
-div.pr-closed {
-    background-color: #eee;
 }
 tr.pr-closed td {
     background-color: #eee !important;
