@@ -1,5 +1,12 @@
 ## -*- coding: utf-8 -*-
 
+<%def name="pullrequest_overview(pullrequests)">
+
+%if not len(pullrequests):
+    <div class="normal-indent empty_data">${_('No entries')}</div>
+    <% return %>
+%endif
+
 <div class="table">
   <table>
     <thead>
@@ -12,7 +19,7 @@
         <th class="left">${_('To')}</th>
       </tr>
     </thead>
-% for pr in c.pullrequests_pager:
+% for pr in pullrequests:
     <tr class="${'pr-closed' if pr.is_closed() else ''}">
       <td>
         %if pr.last_review_status:
@@ -52,8 +59,14 @@
   </table>
 </div>
 
+%if pager in pullrequests:
 <div class="notification-paginator">
   <div class="pagination-wh pagination-left">
-  ${c.pullrequests_pager.pager('$link_previous ~2~ $link_next', **request.GET.mixed())}
+  ${pullrequests.pager('$link_previous ~2~ $link_next', **request.GET.mixed())}
   </div>
 </div>
+%endif
+
+</%def>
+
+${pullrequest_overview(c.pullrequests_pager)}
