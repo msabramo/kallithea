@@ -839,7 +839,7 @@ class UserGroup(Base, BaseModel):
         if cache:
             q = q.options(FromCache(
                             "sql_cache_short",
-                            "get_user_%s" % _hash_key(group_name)
+                            "get_group_%s" % _hash_key(group_name)
                           )
             )
         return q.scalar()
