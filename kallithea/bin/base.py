@@ -128,6 +128,7 @@ class RcConf(object):
             update = True
         with open(self._conf_name, 'wb') as f:
             json.dump(config, f, indent=4)
+            f.write('\n')
 
         if update:
             sys.stdout.write('Updated config in %s\n' % self._conf_name)
