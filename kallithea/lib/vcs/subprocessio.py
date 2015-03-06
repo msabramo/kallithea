@@ -133,7 +133,11 @@ class InputStreamChunker(Thread):
                         "Timed out while waiting for input from subprocess.")
             t.append(b)
             da.set()
-            b = s.read(cs)
+            try:
+                b = s.read(cs)
+            except ValueError: # probably "I/O operation on closed file"
+                b = ''
+
         self.EOF.set()
         da.set()  # for cases when done but there was no input.
 
