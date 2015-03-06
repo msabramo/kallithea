@@ -242,6 +242,29 @@ ${self.repo_context_bar('showpullrequest')}
           </div>
           %endif
         </div>
+
+        %if not c.pull_request_reviewers:
+        <div class="pr-details-title">${_('Potential Reviewers')}</div>
+        <div style="margin: 10px 0 10px 10px; max-width: 250px">
+          <div>
+            ${_('Click to add the repository owner as reviewer:')}
+          </div>
+          <ul style="margin-top: 10px">
+            %for u in [c.pull_request.other_repo.user]:
+              <li>
+                <a class="missing_reviewer missing_reviewer_${u.user_id}"
+                  user_id="${u.user_id}"
+                  fname="${u.name}"
+                  lname="${u.lastname}"
+                  nname="${u.username}"
+                  gravatar_lnk="${h.gravatar_url(u.email, size=28)}"
+                  gravatar_size="14"
+                  title="Click to add reviewer to the list, then Save Changes.">${u.full_name}</a>
+              </li>
+            %endfor
+          </ul>
+        </div>
+        %endif
     </div>
     <div class="form" style="clear:both">
       <div class="fields">
@@ -378,6 +401,11 @@ ${self.repo_context_bar('showpullrequest')}
           if (window.location.hash != "") {
               window.location.href = window.location.href;
           }
+
+          $('.missing_reviewer').click(function(){
+            var $this = $(this);
+            addReviewMember($this.attr('user_id'), $this.attr('fname'), $this.attr('lname'), $this.attr('nname'), $this.attr('gravatar_lnk'), $this.attr('gravatar_size'));
+          });
       });
     </script>
 
