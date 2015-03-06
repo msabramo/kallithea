@@ -1359,6 +1359,8 @@ class Repository(Base, BaseModel):
         cmts = ChangesetComment.query()\
             .filter(ChangesetComment.repo == self)
         if revisions is not None:
+            if not revisions:
+                return [] # don't use sql 'in' on empty set
             cmts = cmts.filter(ChangesetComment.revision.in_(revisions))
         grouped = collections.defaultdict(list)
         for cmt in cmts.all():
