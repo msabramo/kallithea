@@ -348,6 +348,10 @@ beaker.cache.sql_cache_long.key_length = 256
 <%text>## file based cookies (default) ##</%text>
 #beaker.session.type = file
 
+<%text>
+## beaker.session.key should be unique for a given host, even when running
+## on different ports. Otherwise, cookie sessions will be shared and messed up.
+</%text>
 beaker.session.key = kallithea
 beaker.session.secret = ${uuid()}
 
