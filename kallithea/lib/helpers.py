@@ -893,9 +893,6 @@ def gravatar_url(email_address, size=30, ssl_enabled=True):
     _gravatar_url = c.visual.gravatar_url or User.DEFAULT_GRAVATAR_URL
 
     email_address = email_address or _def
-    if isinstance(email_address, unicode):
-        #hashlib crashes on unicode items
-        email_address = safe_str(email_address)
 
     if not _use_gravatar or not email_address or email_address == _def:
         return ""
@@ -906,7 +903,7 @@ def gravatar_url(email_address, size=30, ssl_enabled=True):
         tmpl = _gravatar_url
         parsed_url = urlparse.urlparse(url.current(qualified=True))
         tmpl = tmpl.replace('{email}', email_address)\
-                   .replace('{md5email}', _md5(email_address.lower())) \
+                   .replace('{md5email}', _md5(safe_str(email_address).lower())) \
                    .replace('{netloc}', parsed_url.netloc)\
                    .replace('{scheme}', parsed_url.scheme)\
                    .replace('{size}', safe_str(size))
