@@ -176,7 +176,7 @@ def _set_cache_parameters(query, region, namespace, cache_key):
                         "for region %r namespace %r" %
                         (region, namespace)
                     )
-    query._cache_parameters = region, namespace, cache_key
+    query._cache_parameters = region, safe_str(namespace), cache_key
 
 
 class FromCache(MapperOption):
