@@ -494,28 +494,33 @@ def is_hg(repository):
     return _type == 'hg'
 
 
+def user_or_none(author):
+    email = author_email(author)
+    if email is not None:
+        user = User.get_by_email(email, case_insensitive=True, cache=True)
+        if user is not None:
+            return user
+
+    user = User.get_by_username(author_name(author), case_insensitive=True, cache=True)
+    if user is not None:
+        return user
+
+    return None
+
 def email_or_none(author):
     if not author:
         return None
-    # extract email from the commit string
-    _email = email(author)
-    if _email:
-        # check it against Kallithea database, and use the MAIN email for this
-        # user
-        user = User.get_by_email(_email, case_insensitive=True, cache=True)
-        if user is not None:
-            return user.email
-        return _email
-
-    # See if it contains a username we can get an email from
-    user = User.get_by_username(author_name(author), case_insensitive=True,
-                                cache=True)
+    user = user_or_none(author)
     if user is not None:
-        return user.email
+        return user.email # always use main email address - not necessarily the one used to find user
+
+    # extract email from the commit string
+    email = author_email(author)
+    if email:
+        return email
 
     # No valid email, not a valid user in the system, none!
     return None
-
 
 def person(author, show_attr="username"):
     """Find the user identified by 'author', return one of the users attributes,
@@ -527,22 +532,12 @@ def person(author, show_attr="username"):
     if isinstance(author, User):
         return person_getter(author)
 
-    # Valid email in the attribute passed, see if they're in the system
-    _email = email(author)
-    if _email:
-        user = User.get_by_email(_email, case_insensitive=True, cache=True)
-        if user is not None:
-            return person_getter(user)
-
-    # Maybe it's a username?
-    _author = author_name(author)
-    user = User.get_by_username(_author, case_insensitive=True,
-                                cache=True)
+    user = user_or_none(author)
     if user is not None:
         return person_getter(user)
 
     # Still nothing?  Just pass back the author name if any, else the email
-    return _author or _email
+    return author_name(author) or email(author)
 
 
 def person_by_id(id_, show_attr="username"):

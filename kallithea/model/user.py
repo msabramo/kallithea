@@ -347,11 +347,11 @@ class UserModel(BaseModel):
             raise Exception('You need to pass user_id, api_key or username')
 
         dbuser = None
-        if user_id:
+        if user_id is not None:
             dbuser = self.get(user_id)
-        elif api_key:
+        elif api_key is not None:
             dbuser = self.get_by_api_key(api_key)
-        elif username:
+        elif username is not None:
             dbuser = self.get_by_username(username)
 
         if dbuser is not None and dbuser.active:
