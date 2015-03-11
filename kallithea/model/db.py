@@ -2188,6 +2188,7 @@ class ChangesetStatus(Base, BaseModel):
         Index('cs_version_idx', 'version'),
         Index('cs_pull_request_id_idx', 'pull_request_id'),
         Index('cs_changeset_comment_id_idx', 'changeset_comment_id'),
+        Index('cs_pull_request_id_user_id_version_idx', 'pull_request_id', 'user_id', 'version'),
         UniqueConstraint('repo_id', 'revision', 'version'),
         {'extend_existing': True, 'mysql_engine': 'InnoDB',
          'mysql_charset': 'utf8', 'sqlite_autoincrement': True}
@@ -2291,6 +2292,16 @@ class PullRequest(Base, BaseModel):
     @property
     def last_review_status(self):
         return str(self.statuses[-1].status) if self.statuses else ''
+
+    def user_review_status(self, user_id):
+        """Return the user's latest status votes on PR"""
+        # note: no filtering on repo - that would be redundant
+        status = ChangesetStatus.query()\
+            .filter(ChangesetStatus.pull_request == self)\
+            .filter(ChangesetStatus.user_id == user_id)\
+            .order_by(ChangesetStatus.version)\
+            .first()
+        return str(status.status) if status else ''
 
     def __json__(self):
         return dict(

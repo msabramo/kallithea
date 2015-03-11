@@ -21,12 +21,19 @@
     </thead>
 % for pr in pullrequests:
     <tr class="${'pr-closed' if pr.is_closed() else ''}">
-      <td width="60px">
+      <td width="80px">
         ## review status
         %if pr.last_review_status:
-          <i class="icon-circle changeset-status-${pr.last_review_status}" title="${_("Someone voted: %s") % pr.last_review_status}"></i>
+          <i class="icon-circle changeset-status-${pr.last_review_status}" title="${_("Latest vote: %s") % pr.last_review_status}"></i>
         %else:
           <i class="icon-circle changeset-status-not_reviewed" title="${_("Nobody voted")}"></i>
+        %endif
+
+        <% status = pr.user_review_status(c.authuser.user_id) %>
+        %if status:
+          <i class="icon-circle changeset-status-${status}" title="${_("You voted: %s") % status}"></i>
+        %else:
+          <i class="icon-circle changeset-status-not_reviewed" title="${_("You didn't vote")}"></i>
         %endif
 
         ## delete button
