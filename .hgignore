@@ -21,6 +21,6 @@ syntax: regexp
 ^kallithea\.db$
 ^test\.db$
 ^Kallithea\.egg-info$
-^rc.*\.ini$
+^my\.ini$
 ^fabfile.py
 ^\.idea$

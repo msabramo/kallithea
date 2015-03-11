@@ -11,22 +11,22 @@ Setting up Kallithea
 First, you will need to create a Kallithea configuration file. Run the
 following command to do this::
 
-    paster make-config Kallithea production.ini
+    paster make-config Kallithea my.ini
 
-- This will create the file `production.ini` in the current directory. This
+- This will create the file `my.ini` in the current directory. This
   configuration file contains the various settings for Kallithea, e.g proxy
   port, email settings, usage of static files, cache, celery settings and
   logging.
 
 
-Next, you need to create the databases used by Kallithea. I recommend that you
+Next, you need to create the databases used by Kallithea. It is recommended to
 use postgresql or sqlite (default). If you choose a database other than the
-default ensure you properly adjust the db url in your production.ini
+default ensure you properly adjust the db url in your my.ini
 configuration file to use this other database. Kallithea currently supports
 postgresql, sqlite and mysql databases. Create the database by running
 the following command::
 
-    paster setup-db production.ini
+    paster setup-db my.ini
 
 This will prompt you for a "root" path. This "root" path is the location where
 Kallithea will store all of its repositories on the current machine. After
@@ -36,7 +36,7 @@ up for you.
 
 setup process can be fully automated, example for lazy::
 
-    paster setup-db production.ini --user=nn --password=secret --email=nn@your.kallithea.server --repos=/home/nn/my_repos
+    paster setup-db my.ini --user=nn --password=secret --email=nn@your.kallithea.server --repos=/srv/repos
 
 
 - The ``setup-db`` command will create all of the needed tables and an
@@ -52,22 +52,22 @@ setup process can be fully automated, example for lazy::
 
 You are now ready to use Kallithea, to run it simply execute::
 
-    paster serve production.ini
+    paster serve my.ini
 
 - This command runs the Kallithea server. The web app should be available at the
-  127.0.0.1:5000. This ip and port is configurable via the production.ini
+  127.0.0.1:5000. This ip and port is configurable via the my.ini
   file created in previous step
 - Use the admin account you created above when running ``setup-db``
   to login to the web app.
 - The default permissions on each repository is read, and the owner is admin.
   Remember to update these if needed.
-- In the admin panel you can toggle ldap, anonymous, permissions settings. As
+- In the admin panel you can toggle LDAP, anonymous, permissions settings. As
   well as edit more advanced options on users and repositories
 
 Optionally users can create `rcextensions` package that extends Kallithea
 functionality. To do this simply execute::
 
-    paster make-rcext production.ini
+    paster make-rcext my.ini
 
 This will create `rcextensions` package in the same place that your `ini` file
 lives. With `rcextensions` it's possible to add additional mapping for whoosh,
@@ -96,10 +96,10 @@ login accounts have the correct permissions set on the appropriate directories.
 using the Kallithea web interface.)
 
 If your main directory (the same as set in Kallithea settings) is for example
-set to **/home/hg** and the repository you are using is named `kallithea`, then
+set to **/srv/repos** and the repository you are using is named `kallithea`, then
 to clone via ssh you should run::
 
-    hg clone ssh://user@server.com/home/hg/kallithea
+    hg clone ssh://user@server.com//srv/repos/kallithea
 
 Using other external tools such as mercurial-server_ or using ssh key based
 authentication is fully supported.
@@ -112,12 +112,12 @@ permissions against that.
 Setting up Whoosh full text search
 ----------------------------------
 
-Starting from version 1.1 the whoosh index can be build by using the paster
+The whoosh index can be build by using the paster
 command ``make-index``. To use ``make-index`` you must specify the configuration
 file that stores the location of the index. You may specify the location of the
 repositories (`--repo-location`).  If not specified, this value is retrieved
-from the Kallithea database.  This was required prior to 1.2.  Starting from
-version 1.2 it is also possible to specify a comma separated list of
+from the Kallithea database.
+It is also possible to specify a comma separated list of
 repositories (`--index-only`) to build index only on chooses repositories
 skipping any other found in repos location
 
@@ -126,23 +126,23 @@ the `-f` option, indexing will run always in "incremental" mode.
 
 For an incremental index build use::
 
-    paster make-index production.ini
+    paster make-index my.ini
 
 For a full index rebuild use::
 
-    paster make-index production.ini -f
+    paster make-index my.ini -f
 
 
 building index just for chosen repositories is possible with such command::
 
- paster make-index production.ini --index-only=vcs,kallithea
+    paster make-index my.ini --index-only=vcs,kallithea
 
 
 In order to do periodical index builds and keep your index always up to date.
 It's recommended to do a crontab entry for incremental indexing.
 An example entry might look like this::
 
-    /path/to/python/bin/paster make-index /path/to/kallithea/production.ini
+    /path/to/python/bin/paster make-index /path/to/kallithea/my.ini
 
 When using incremental mode (the default) whoosh will check the last
 modification date of each file and add it to be reindexed if a newer file is
@@ -156,15 +156,9 @@ or in the admin panel you can check `build from scratch` flag.
 Setting up LDAP support
 -----------------------
 
-Kallithea starting from version 1.1 supports ldap authentication. In order
+Kallithea supports LDAP authentication. In order
 to use LDAP, you have to install the python-ldap_ package. This package is
 available via pypi, so you can install it by running
-
-using easy_install::
-
-    easy_install python-ldap
-
-using pip::
 
     pip install python-ldap
 
@@ -172,9 +166,9 @@ using pip::
    python-ldap requires some certain libs on your system, so before installing
    it check that you have at least `openldap`, and `sasl` libraries.
 
-LDAP settings are located in admin->ldap section,
+LDAP settings are located in Admin->LDAP section.
 
-Here's a typical ldap setup::
+Here's a typical LDAP setup::
 
  Connection settings
  Enable LDAP          = checked
@@ -241,7 +235,7 @@ Connection Security : required
         Plain non encrypted connection
 
     LDAPS connection
-        Enable ldaps connection. It will likely require `Port`_ to be set to
+        Enable LDAPS connections. It will likely require `Port`_ to be set to
         a different value (standard LDAPS port is 636). When LDAPS is enabled
         then `Certificate Checks`_ is required.
 
@@ -338,7 +332,7 @@ Email Attribute : required
     The LDAP record attribute which represents the user's email address.
 
 If all data are entered correctly, and python-ldap_ is properly installed
-users should be granted access to Kallithea with ldap accounts.  At this
+users should be granted access to Kallithea with LDAP accounts.  At this
 time user information is copied from LDAP into the Kallithea user database.
 This means that updates of an LDAP user object may not be reflected as a
 user update in Kallithea.
@@ -417,7 +411,7 @@ reverse-proxy setup with basic auth::
 
       AuthType Basic
       AuthName "Kallithea authentication"
-      AuthUserFile /home/web/kallithea/.htpasswd
+      AuthUserFile /srv/kallithea/.htpasswd
       require valid-user
 
       RequestHeader unset X-Forwarded-User
@@ -491,18 +485,18 @@ can be found at *kallithea.lib.hooks*.
 Changing default encoding
 -------------------------
 
-By default Kallithea uses utf8 encoding, starting from 1.3 series this
-can be changed, simply edit default_encoding in .ini file to desired one.
-This affects many parts in Kallithea including committers names, filenames,
+By default, Kallithea uses utf8 encoding.
+It is configurable as `default_encoding` in the .ini file.
+This affects many parts in Kallithea including user names, filenames, and
 encoding of commit messages. In addition Kallithea can detect if `chardet`
 library is installed. If `chardet` is detected Kallithea will fallback to it
 when there are encode/decode errors.
 
 
-Setting Up Celery
------------------
+Celery configuration
+--------------------
 
-Since version 1.1 celery is configured by the Kallithea ini configuration files.
+Celery is configured in the Kallithea ini configuration files.
 Simply set use_celery=true in the ini file then add / change the configuration
 variables inside the ini file.
 
@@ -537,7 +531,7 @@ Nginx virtual host example
 
 Sample config for nginx using proxy::
 
-    upstream rc {
+    upstream kallithea {
         server 127.0.0.1:5000;
         # add more instances for load balancing
         #server 127.0.0.1:5001;
@@ -586,11 +580,11 @@ Sample config for nginx using proxy::
        #root /path/to/installation/kallithea/public;
        include         /etc/nginx/proxy.conf;
        location / {
-            try_files $uri @rhode;
+            try_files $uri @kallithea;
        }
 
-       location @rhode {
-            proxy_pass      http://rc;
+       location @kallithea {
+            proxy_pass      http://kallithea;
        }
 
     }
@@ -699,50 +693,66 @@ that, you'll need to:
 
 Here is a sample excerpt from an Apache Virtual Host configuration file::
 
-    WSGIDaemonProcess pylons \
-        threads=4 \
-        python-path=/home/web/kallithea/pyenv/lib/python2.7/site-packages
-    WSGIScriptAlias / /home/web/kallithea/dispatch.wsgi
+    WSGIDaemonProcess kallithea \
+        processes=1 threads=4 \
+        python-path=/srv/kallithea/pyenv/lib/python2.7/site-packages
+    WSGIScriptAlias / /srv/kallithea/dispatch.wsgi
     WSGIPassAuthorization On
 
-.. note::
-   when running apache as root please add: `user=www-data group=www-data`
-   into above configuration
+Or if using a dispatcher wsgi script with proper virtualenv activation::
+
+    WSGIDaemonProcess kallithea processes=1 threads=4
+    WSGIScriptAlias / /srv/kallithea/dispatch.wsgi
+    WSGIPassAuthorization On
+
 
 .. note::
-   Running Kallithea in multiprocess mode in apache is not supported,
-   make sure you don't specify `processes=num` directive in the config
+   When running apache as root, please make sure it doesn't run Kallithea as
+   root, for examply by adding: `user=www-data group=www-data` to the configuration.
+
+.. note::
+   If running Kallithea in multiprocess mode,
+   make sure you set `instance_id = \*` in the configuration so each process
+   gets it's own cache invalidationkey.
 
 
 Example wsgi dispatch script::
 
     import os
     os.environ["HGENCODING"] = "UTF-8"
-    os.environ['PYTHON_EGG_CACHE'] = '/home/web/kallithea/.egg-cache'
+    os.environ['PYTHON_EGG_CACHE'] = '/srv/kallithea/.egg-cache'
 
     # sometimes it's needed to set the curent dir
-    os.chdir('/home/web/kallithea/')
+    os.chdir('/srv/kallithea/')
 
     import site
-    site.addsitedir("/home/web/kallithea/pyenv/lib/python2.7/site-packages")
+    site.addsitedir("/srv/kallithea/pyenv/lib/python2.7/site-packages")
 
     from paste.deploy import loadapp
     from paste.script.util.logging_config import fileConfig
 
-    fileConfig('/home/web/kallithea/production.ini')
-    application = loadapp('config:/home/web/kallithea/production.ini')
+    fileConfig('/srv/kallithea/my.ini')
+    application = loadapp('config:/srv/kallithea/my.ini')
 
-Note: when using mod_wsgi you'll need to install the same version of
-Mercurial that's inside Kallithea's virtualenv also on the system's Python
-environment.
+Or using proper virtualenv activation::
+
+    activate_this = '/srv/kallithea/venv/bin/activate_this.py'
+    execfile(activate_this,dict(__file__=activate_this))
+
+    import os
+    os.environ['HOME'] = '/srv/kallithea'
+
+    ini = '/srv/kallithea/kallithea.ini'
+    from paste.script.util.logging_config import fileConfig
+    fileConfig(ini)
+    from paste.deploy import loadapp
+    application = loadapp('config:' + ini)
 
 
 Other configuration files
 -------------------------
 
-Some example init.d scripts can be found in init.d directory::
-
-  https://kallithea-scm.org/repos/kallithea/files/tip/init.d/
+Some example init.d scripts can be found in init.d directory: https://kallithea-scm.org/repos/kallithea/files/tip/init.d/
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _python: http://www.python.org/
@@ -752,4 +762,3 @@ Some example init.d scripts can be found in init.d directory::
 .. _python-ldap: http://www.python-ldap.org/
 .. _mercurial-server: http://www.lshift.net/mercurial-server.html
 .. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
-.. _Issues tracker: https://bitbucket.org/conservancy/kallithea/issues

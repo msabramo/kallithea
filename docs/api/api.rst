@@ -10,7 +10,7 @@ methods. Everything is available by sending JSON encoded http(s) requests to
 <your_server>/_admin/api .
 
 
-API ACCESS FOR WEB VIEWS
+API access for web views
 ++++++++++++++++++++++++
 
 API access can also be turned on for each web view in Kallithea that is
@@ -36,7 +36,7 @@ Exposing raw diffs is a good way to integrate with
 3rd party services like code review, or build farms that could download archives.
 
 
-API ACCESS
+API access
 ++++++++++
 
 Clients must send JSON encoded JSON-RPC requests::
@@ -75,7 +75,7 @@ the reponse will have a failure description in *error* and
 *result* will be null.
 
 
-API CLIENT
+API client
 ++++++++++
 
 Kallithea comes with a `kallithea-api` command line tool providing a convenient
@@ -109,7 +109,7 @@ This will create a `~/.config/kallithea` with the specified hostname and apikey
 so you don't have to specify them every time.
 
 
-API METHODS
+API methods
 +++++++++++
 
 

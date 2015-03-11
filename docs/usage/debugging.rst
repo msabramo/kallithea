@@ -9,7 +9,7 @@ possibly debug them.
 
 ** First make sure you're using the latest version available.**
 
-enable detailed debug
+Enable detailed debug
 ---------------------
 
 Kallithea uses standard python logging modules to log it's output.
@@ -19,7 +19,7 @@ This change will allow to see much more detailed output in the logfile or
 console. This generally helps a lot to track issues.
 
 
-enable interactive debug mode
+Enable interactive debug mode
 -----------------------------
 
 To enable interactive debug mode simply comment out `set debug = false` in

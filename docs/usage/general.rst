@@ -16,7 +16,7 @@ delete a repository You can easy restore such action by restoring `rm__<date>`
 from the repository name, and internal repository storage (.hg/.git). There
 is also a special command for cleaning such archived repos::
 
-    paster cleanup-repos --older-than=30d production.ini
+    paster cleanup-repos --older-than=30d my.ini
 
 This command will scan for archived repositories that are older than 30d,
 display them and ask if you want to delete them (there's a --dont-ask flag also)

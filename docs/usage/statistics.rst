@@ -6,7 +6,7 @@ Statistics
 
 The Kallithea statistics system makes heavy demands of the server resources, so
 in order to keep a balance between usability and performance, the statistics are
-cached inside db and are gathered incrementally, this is how Kallithea does
+cached inside db and are gathered incrementally. This is how Kallithea does
 this:
 
 With Celery disabled

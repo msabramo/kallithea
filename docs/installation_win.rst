@@ -71,6 +71,7 @@ If it was not installed or if you are using Python>=2.6,<2.7.9:
 - Go to https://bootstrap.pypa.io
 - Right-click on get-pip.py and choose Saves as...
 - Run "python get-pip.py" in the folder where you downloaded get-pip.py (may require admin access).
+
 (See http://stackoverflow.com/questions/4750806/how-to-install-pip-on-windows for explanations or alternatives)
 
 Note that pip.exe will be placed inside your Python installation's Scripts folder, which is likely not on your path.

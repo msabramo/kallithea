@@ -1,17 +1,21 @@
 .. _index:
 
-.. include:: ./../README.rst
+Administrators Guide
+--------------------
 
-Users Guide
------------
+**Readme**
 
-**Installation:**
+.. toctree::
+   :maxdepth: 1
+
+   readme
+
+**Installation**
 
 .. toctree::
    :maxdepth: 1
 
    installation
-   upgrade
    installation_win
    installation_win_old
    installation_iis

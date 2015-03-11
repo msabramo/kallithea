@@ -1,6 +1,6 @@
-=========
-Kallithea
-=========
+================
+Kallithea README
+================
 
 About
 -----
@@ -23,15 +23,12 @@ Kallithea was forked from RhodeCode in July 2014 and has been heavily modified.
 
 Installation
 ------------
-Stable releases of Kallithea are best installed via::
-
-    easy_install kallithea
-
-Or::
+Official releases of Kallithea can be installed via::
 
     pip install kallithea
 
-Detailed instructions and links may be found on the Installation page.
+The development repository is kept very stable and used in production by the
+developers - you can do the same.
 
 Please visit http://packages.python.org/Kallithea/installation.html for
 more details.
@@ -40,14 +37,10 @@ more details.
 Source code
 -----------
 
-The latest sources can be obtained from https://kallithea-scm.org/repos/kallithea
+The latest sources can be obtained from https://kallithea-scm.org/repos/kallithea.
 
-
-MIRRORS:
-
-Issue tracker and sources at Bitbucket_
-
-https://bitbucket.org/conservancy/kallithea
+The issue tracker and a repository mirror can be found at Bitbucket_ on
+https://bitbucket.org/conservancy/kallithea.
 
 
 
@@ -67,7 +60,7 @@ Kallithea Features
 - Users can fork other users repos, and compare them at any time.
 - Built-in versioned paste functionality (Gist) for sharing code snippets.
 - Integrates easily with other systems, with custom created mappers you can connect it to almost
-  any issue tracker, and with an JSON-RPC API you can make much more
+  any issue tracker, and with a JSON-RPC API you can make much more.
 - Built-in commit API lets you add, edit and commit files right from Kallithea
   web interface using simple editor or upload binary files using simple form.
 - Powerful pull request driven review system with inline commenting,
@@ -75,9 +68,9 @@ Kallithea Features
 - Importing and syncing repositories from remote locations for Git_, Mercurial_ and Subversion.
 - Mako templates let you customize the look and feel of the application.
 - Beautiful diffs, annotations and source code browsing all colored by pygments.
-  Raw diffs are made in Git-diff format for both VCS systems, including Git_ binary-patches
+  Raw diffs are made in Git-diff format for both VCS systems, including Git_ binary-patches.
 - Mercurial_ and Git_ DAG graphs and Flot-powered graphs with zooming and statistics
-  to track activity for repositories
+  to track activity for repositories.
 - Admin interface with user/permission management. Admin activity journal, logs
   pulls, pushes, forks, registrations and other actions made by all users.
 - Server side forks. It is possible to fork a project and modify it freely
@@ -85,69 +78,68 @@ Kallithea Features
 - reST and Markdown README support for repositories.
 - Full text search powered by Whoosh on the source files, commit messages, and file names.
   Built-in indexing daemons, with optional incremental index build
-  (no external search servers required all in one application)
+  (no external search servers required all in one application).
 - Setup project descriptions/tags and info inside built in DB for easy,
   non-filesystem operations.
 - Intelligent cache with invalidation after push or project change, provides
   high performance and always up to date data.
-- RSS/Atom feeds, Gravatar support, downloadable sources as zip/tar/gz
-- Optional async tasks for speed and performance using Celery_
+- RSS/Atom feeds, Gravatar support, downloadable sources as zip/tar/gz.
+- Optional async tasks for speed and performance using Celery_.
 - Backup scripts can do backup of whole app and send it over scp to desired
-  location
-- Based on Pylons, SQLAlchemy, SQLite, Whoosh, vcs
+  location.
+- Based on Pylons, SQLAlchemy, SQLite, Whoosh, vcs.
 
-
-Incoming / Plans
-----------------
-
-- Finer granular permissions per branch, or subrepo
-- Web-based merges for pull requests
-- Tracking history for each lines in files
-- Simple issue tracker
-- SSH-based authentication with server side key management
-- Commit based built in wiki system
-- More statistics and graph (global annotation + some more statistics)
-- Other advancements as development continues (or you can of course make
-  additions and or requests)
 
 License
 -------
 
-``Kallithea`` is released under the GPLv3 license.
+``Kallithea`` is released under the GPLv3 license. ``Kallithea`` is a
+`Software Freedom Conservancy`_ project and thus controlled by a non-profit organization.
+No commercial entity can take ownership of the project and change the direction.
+
+Kallithea started out as an effort to make sure the existing GPLv3 codebase would stay
+available under a legal license. Kallithea thus has to stay GPLv3 compatible ...
+but we are also happy it is GPLv3 and happy to keep it that way.
+A different license (such as AGPL) could perhaps help attract a different community
+with a different mix of Free Software people and companies but we are happy with the current focus.
 
 
-Getting help
-------------
+Community
+---------
 
-Listed bellow are various support resources that should help.
+``Kallithea`` is maintained by its users who contribute the fixes they would like to see.
 
-.. note::
+Get in touch with the rest of the community:
 
-   Please try to read the documentation before posting any issues, especially
-   the **troubleshooting section**
+- Join the mailing list users and developers - see
+  http://lists.sfconservancy.org/mailman/listinfo/kallithea-general.
 
-- Open an issue at `issue tracker <https://bitbucket.org/conservancy/kallithea/issues>`_
+- Use IRC and join #kallithea on FreeNode (irc.freenode.net)
+  or use http://webchat.freenode.net/?channels=kallithea.
 
-- Join #kallithea on FreeNode (irc.freenode.net)
-  or use http://webchat.freenode.net/?channels=kallithea for web access to irc.
+- Follow ``Kallithea`` on Twitter, **@KallitheaSCM**.
 
-You can follow this project on Twitter, **@KallitheaSCM**.
+- Issues can be reported at `issue tracker <https://bitbucket.org/conservancy/kallithea/issues>`_.
+
+   .. note::
+
+       Please try to read the documentation before posting any issues, especially
+       the **troubleshooting section**
 
 
 Online documentation
 --------------------
 
-Online documentation for the current version of Kallithea is available at
- - http://packages.python.org/Kallithea/
- - http://kallithea.readthedocs.org/
+Online documentation for the current version of Kallithea is available at https://pythonhosted.org/Kallithea/.
+Documentation for the current development version can be found on http://kallithea.readthedocs.org/.
 
-You may also build the documentation for yourself: go into ``docs/`` and run::
+You can also build the documentation locally: go to ``docs/`` and run::
 
    make html
 
 (You need to have Sphinx_ installed to build the documentation. If you don't
 have Sphinx_ installed you can install it via the command:
-``easy_install sphinx``)
+``pip install sphinx``)
 
 
 Converting from RhodeCode
@@ -160,7 +152,7 @@ Currently, you have two options for working with an existing RhodeCode database:
 Maintaining Interoperability
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Interoperability with RhodeCode 2.2.5 installations is provided so you don't
+Interoperability with RhodeCode 2.2.X installations is provided so you don't
 have to immediately commit to switching to Kallithea. This option will most
 likely go away once the two projects have diverged significantly.
 
@@ -173,7 +165,7 @@ This location will depend on where you installed Kallithea. If you installed via
    python setup.py install
 
 then you will find this location at
-``$VIRTUAL_ENV/lib/python2.7/site-packages/Kallithea-2.2.5-py2.7.egg/kallithea``
+``$VIRTUAL_ENV/lib/python2.7/site-packages/Kallithea-0.1-py2.7.egg/kallithea``.
 
 One-time Conversion
 ~~~~~~~~~~~~~~~~~~~
@@ -188,10 +180,10 @@ database, using the database string you can find in your ``production.ini`` (or
    pip install sqlalchemy-migrate
    python kallithea/bin/rebranddb.py sqlite:///kallithea.db
 
-.. WARNING::
+.. Note::
 
-   If you used the other method for interoperability, overwrite brand.py with
-   an empty file (or watch out for stray brand.pyc after removing brand.py).
+   If you started out using the branding interoperability approach mentioned
+   above, watch out for stray brand.pyc after removing brand.py.
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _Python: http://www.python.org/
@@ -203,3 +195,4 @@ database, using the database string you can find in your ``production.ini`` (or
 .. _Git: http://git-scm.com/
 .. _Celery: http://celeryproject.org/
 .. _vcs: http://pypi.python.org/pypi/vcs
+.. _Software Freedom Conservancy: http://sfconservancy.org/

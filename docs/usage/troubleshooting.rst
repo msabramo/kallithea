@@ -39,11 +39,11 @@ Troubleshooting
 
 :Q: **Git fails on push/pull?**
 :A: Make sure you're using an wsgi http server that can handle chunked encoding
-    such as `waitress` or `gunicorn`
+    such as `waitress` or `gunicorn`.
 
 |
 
-:Q: **How i use hooks in Kallithea?**
+:Q: **How can I use hooks in Kallithea?**
 :A: It's easy if they are python hooks just use advanced link in hooks section
     in Admin panel, that works only for Mercurial. If you want to use githooks,
     just install proper one in repository eg. create file in
@@ -52,19 +52,19 @@ Troubleshooting
 
 |
 
-:Q: **Kallithea is slow for me, how can i make it faster?**
-:A: See the :ref:`performance` section
+:Q: **Kallithea is slow for me, how can I make it faster?**
+:A: See the :ref:`performance` section.
 
 |
 
 :Q: **UnicodeDecodeError on Apache mod_wsgi**
-:A: Please read: https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/modwsgi/#if-you-get-a-unicodeencodeerror
+:A: Please read: https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/modwsgi/#if-you-get-a-unicodeencodeerror.
 
 |
 
 :Q: **Requests hanging on Windows**
 :A: Please try out with disabled Antivirus software, there are some known problems with Eset Anitivirus. Make sure
-    you have installed latest windows patches (especially KB2789397)
+    you have installed latest windows patches (especially KB2789397).
 
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
@@ -73,6 +73,3 @@ Troubleshooting
 .. _celery: http://celeryproject.org/
 .. _rabbitmq: http://www.rabbitmq.com/
 .. _python-ldap: http://www.python-ldap.org/
-.. _mercurial-server: http://www.lshift.net/mercurial-server.html
-.. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
-.. _Issues tracker: https://bitbucket.org/conservancy/kallithea/issues

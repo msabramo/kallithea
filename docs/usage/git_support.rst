@@ -5,24 +5,18 @@ GIT support
 ===========
 
 
-Git support in Kallithea 1.3 was enabled by default. You need to have a git
-client installed on the machine to make git fully work.
+Kallithea Git support is enabled by default. You just need a git
+command line client installed on the server to make Git work fully.
 
-Although There is one limitation on git usage.
+Web server with chunked encoding
+--------------------------------
 
-- large pushes requires a http server with chunked encoding support.
+Large Git pushes do however require a http server with support for chunked encoding for POST.
 
-if you plan to use git you need to run Kallithea with some
-http server that supports chunked encoding which git http protocol uses,
-i recommend using waitress_ or gunicorn_ (linux only) for `paste` wsgi app
-replacement. Starting from version 1.4 waitress_ is the default wsgi server
-used in Kallithea.
+The Python web servers waitress_ and gunicorn_ (linux only) can be used.
+By default, Kallithea uses waitress_ for `paster serve` instead of the built-in `paste` WSGI server. 
 
-To use, simply change change the following in the .ini file::
-
-    use = egg:Paste#http
-
-to::
+The default paste server is controlled in the .ini file::
 
     use = egg:waitress#main
 
@@ -31,18 +25,18 @@ or::
     use = egg:gunicorn#main
 
 
-And comment out bellow options::
+Also make sure to comment out the following options::
 
     threadpool_workers =
     threadpool_max_requests =
     use_threadpool =
 
 
-You can simply run `paster serve` as usual.
-
+Disabling Git
+-------------
 
 You can always disable git/hg support by editing a
-file **kallithea/__init__.py** and commenting out backends
+file **kallithea/__init__.py** and commenting out the backend.
 
 .. code-block:: python
 
