@@ -131,7 +131,7 @@ Online documentation
 --------------------
 
 Online documentation for the current version of Kallithea is available at https://pythonhosted.org/Kallithea/.
-Documentation for the current development version can be found on http://kallithea.readthedocs.org/.
+Documentation for the current development version can be found on http://docs.kallithea-scm.org/.
 
 You can also build the documentation locally: go to ``docs/`` and run::
 
