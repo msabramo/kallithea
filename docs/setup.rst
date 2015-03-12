@@ -641,7 +641,7 @@ Here is a sample configuration file for apache using proxy::
 
 
 Additional tutorial
-http://wiki.pylonshq.com/display/pylonscookbook/Apache+as+a+reverse+proxy+for+Pylons
+http://pylonsbook.com/en/1.1/deployment.html#using-apache-to-proxy-requests-to-pylons
 
 
 Apache as subdirectory
