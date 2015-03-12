@@ -151,7 +151,7 @@ class MarkupRenderer(object):
         except Exception:
             log.error(traceback.format_exc())
             if safe:
-                log.debug('Fallbacking to render in plain mode')
+                log.debug('Falling back to render in plain mode')
                 return cls.plain(source)
             else:
                 raise
@@ -182,7 +182,7 @@ class MarkupRenderer(object):
         except Exception:
             log.error(traceback.format_exc())
             if safe:
-                log.debug('Fallbacking to render in plain mode')
+                log.debug('Falling back to render in plain mode')
                 return cls.plain(source)
             else:
                 raise

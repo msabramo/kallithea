@@ -23,7 +23,7 @@ class BaseModel(object):
         return d
 
     def get_appstruct(self):
-        """return list with keys and values tupples corresponding
+        """return list with keys and values tuples corresponding
         to this model data """
 
         l = []

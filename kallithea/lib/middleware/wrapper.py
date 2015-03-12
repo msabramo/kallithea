@@ -15,7 +15,7 @@
 kallithea.lib.middleware.wrapper
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-request time mesuring app
+request time measuring app
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:

@@ -54,7 +54,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaAuthPluginBase):
     def accepts(self, user, accepts_empty=True):
         """
         Custom accepts for this auth that doesn't accept empty users. We
-        know that user exisits in database.
+        know that user exists in database.
         """
         return super(KallitheaAuthPlugin, self).accepts(user,
                                                         accepts_empty=False)

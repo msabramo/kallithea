@@ -19,7 +19,7 @@ if os.path.isdir(VCSRC_PATH):
 # list of default encoding used in safe_unicode/safe_str methods
 DEFAULT_ENCODINGS = aslist('utf8')
 
-# path to git executable runned by run_git_command function
+# path to git executable run by run_git_command function
 GIT_EXECUTABLE_PATH = 'git'
 # can be also --branches --tags
 GIT_REV_FILTER = '--all'

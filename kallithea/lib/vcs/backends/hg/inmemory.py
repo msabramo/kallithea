@@ -19,7 +19,7 @@ class MercurialInMemoryChangeset(BaseInMemoryChangeset):
         :param message: message of the commit
         :param author: full username, i.e. "Joe Doe <joe.doe@example.com>"
         :param parents: single parent or sequence of parents from which commit
-          would be derieved
+          would be derived
         :param date: ``datetime.datetime`` instance. Defaults to
           ``datetime.datetime.now()``.
         :param branch: branch name, as string. If none given, default backend's

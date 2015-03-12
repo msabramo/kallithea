@@ -69,7 +69,7 @@ class FBSchemaChanger(ansisql.ANSISchemaChanger):
         """Changing NULL is not supported"""
         # TODO: http://www.firebirdfaq.org/faq103/
         raise exceptions.NotSupportedError(
-            "Firebird does not support altering NULL bevahior.")
+            "Firebird does not support altering NULL behavior.")
 
 
 class FBConstraintGenerator(ansisql.ANSIConstraintGenerator):
@@ -77,7 +77,7 @@ class FBConstraintGenerator(ansisql.ANSIConstraintGenerator):
 
 
 class FBConstraintDropper(ansisql.ANSIConstraintDropper):
-    """Firebird constaint dropper implementation."""
+    """Firebird constraint dropper implementation."""
 
     def cascade_constraint(self, constraint):
         """Cascading constraints is not supported"""

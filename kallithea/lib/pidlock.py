@@ -54,7 +54,7 @@ class DaemonLock(object):
     def _on_finalize(lock, debug):
         if lock.held:
             if debug:
-                print 'leck held finilazing and running lock.release()'
+                print 'lock held finalizing and running lock.release()'
             lock.release()
 
     def lock(self):
@@ -130,7 +130,7 @@ class DaemonLock(object):
         """
         this function will make an actual lock
 
-        :param lockname: acctual pid of file
+        :param lockname: actual pid of file
         :param pidfile: the file to write the pid in
         """
         if self.debug:

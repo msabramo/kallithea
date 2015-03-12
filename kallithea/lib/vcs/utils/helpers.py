@@ -1,5 +1,5 @@
 """
-Utitlites aimed to help achieve mostly basic tasks.
+Utilities aimed to help achieve mostly basic tasks.
 """
 from __future__ import division
 

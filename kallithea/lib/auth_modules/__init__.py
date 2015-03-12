@@ -67,7 +67,7 @@ class KallitheaAuthPluginBase(object):
         Exposes Kallithea validators modules
         """
         # this is a hack to overcome issues with pylons threadlocals and
-        # translator object _() not beein registered properly.
+        # translator object _() not being registered properly.
         class LazyCaller(object):
             def __init__(self, name):
                 self.validator_name = name
@@ -130,7 +130,7 @@ class KallitheaAuthPluginBase(object):
     def get_user(self, username=None, **kwargs):
         """
         Helper method for user fetching in plugins, by default it's using
-        simple fetch by username, but this method can be custimized in plugins
+        simple fetch by username, but this method can be customized in plugins
         eg. container auth plugin to fetch user by environ params
 
         :param username: username if given to fetch from database
@@ -263,7 +263,7 @@ class KallitheaExternalAuthPlugin(KallitheaAuthPluginBase):
             # maybe plugin will clean the username ?
             # we should use the return value
             username = auth['username']
-            # if user is not active from our extern type we should fail to authe
+            # if user is not active from our extern type we should fail to auth
             # this can prevent from creating users in Kallithea when using
             # external authentication, but if it's inactive user we shouldn't
             # create that user anyway
@@ -324,7 +324,7 @@ def importplugin(plugin):
     except (ImportError, TypeError):
         log.error(traceback.format_exc())
         # TODO: make this more error prone, if by some accident we screw up
-        # the plugin name, the crash is preatty bad and hard to recover
+        # the plugin name, the crash is pretty bad and hard to recover
         raise
 
     log.debug("Loaded auth plugin from %s (module:%s, file:%s)"
@@ -346,7 +346,7 @@ def loadplugin(plugin):
     plugin = importplugin(plugin)()
     if plugin.plugin_settings.im_func != KallitheaAuthPluginBase.plugin_settings.im_func:
         raise TypeError("Authentication class %s.KallitheaAuthPluginBase "
-                        "has overriden the plugin_settings method, which is "
+                        "has overridden the plugin_settings method, which is "
                         "forbidden." % plugin)
     return plugin
 
@@ -399,7 +399,7 @@ def authenticate(username, password, environ=None):
 
         log.info('Authenticating user using %s plugin' % plugin.__module__)
         # _authenticate is a wrapper for .auth() method of plugin.
-        # it checks if .auth() sends proper data. for KallitheaExternalAuthPlugin
+        # it checks if .auth() sends proper data. For KallitheaExternalAuthPlugin
         # it also maps users to Database and maps the attributes returned
         # from .auth() to Kallithea database. If this function returns data
         # then auth is correct.

@@ -57,7 +57,7 @@ class LockFile(object):
         if not self._has_lock():
             return
 
-        # if someone removed our file beforhand, lets just flag this issue
+        # if someone removed our file beforehand, lets just flag this issue
         # instead of failing, to make it more usable.
         lfp = self._lock_file_path()
         try:

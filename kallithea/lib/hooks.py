@@ -15,7 +15,7 @@
 kallithea.lib.hooks
 ~~~~~~~~~~~~~~~~~~~
 
-Hooks runned by kallithea
+Hooks run by Kallithea
 
 This file was forked by the Kallithea project in July 2014.
 Original author and date, and relevant copyright and licensing information is below:
@@ -377,9 +377,9 @@ handle_git_post_receive = (lambda repo_path, revs, env:
 
 def handle_git_receive(repo_path, revs, env, hook_type='post'):
     """
-    A really hacky method that is runned by git post-receive hook and logs
+    A really hacky method that is run by git post-receive hook and logs
     an push action together with pushed revisions. It's executed by subprocess
-    thus needs all info to be able to create a on the fly pylons enviroment,
+    thus needs all info to be able to create a on the fly pylons environment,
     connect to database and run the logging code. Hacky as sh*t but works.
 
     :param repo_path:

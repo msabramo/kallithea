@@ -430,7 +430,7 @@ class ChangesetTable(object):
 
         API to :meth:`ChangesetColumn.drop`
 
-        :param column: Column to be droped
+        :param column: Column to be dropped
         :type column: Column instance or string
         """
         if not isinstance(column, sqlalchemy.Column):
@@ -449,7 +449,7 @@ class ChangesetTable(object):
 
         :param name: New name of the table.
         :type name: string
-        :param connection: reuse connection istead of creating new one.
+        :param connection: reuse connection instead of creating new one.
         :type connection: :class:`sqlalchemy.engine.base.Connection` instance
         """
         engine = self.bind
@@ -505,7 +505,7 @@ class ChangesetColumn(object):
 `~migrate.changeset.constraint.PrimaryKeyConstraint` on this column.
         :param populate_default: If True, created column will be \
 populated with defaults
-        :param connection: reuse connection istead of creating new one.
+        :param connection: reuse connection instead of creating new one.
         :type table: Table instance
         :type index_name: string
         :type unique_name: string
@@ -539,7 +539,7 @@ populated with defaults
 
         ``ALTER TABLE DROP COLUMN``, for most databases.
 
-        :param connection: reuse connection istead of creating new one.
+        :param connection: reuse connection instead of creating new one.
         :type connection: :class:`sqlalchemy.engine.base.Connection` instance
         """
         if table is not None:
@@ -633,7 +633,7 @@ class ChangesetIndex(object):
 
         :param name: New name of the Index.
         :type name: string
-        :param connection: reuse connection istead of creating new one.
+        :param connection: reuse connection instead of creating new one.
         :type connection: :class:`sqlalchemy.engine.base.Connection` instance
         """
         engine = self.table.bind

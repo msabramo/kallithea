@@ -278,7 +278,7 @@ class GitRepository(BaseRepository):
     def _get_revision(self, revision):
         """
         For git backend we always return integer here. This way we ensure
-        that changset's revision attribute would become integer.
+        that changeset's revision attribute would become integer.
         """
 
         is_null = lambda o: len(o) == revision.count('0')

@@ -16,7 +16,7 @@ else:
 if sys.version_info >= (2, 6):
     _bytes = bytes
 else:
-    # in py2.6 bytes is a synonim for str
+    # in py2.6 bytes is a synonym for str
     _bytes = str
 
 if sys.version_info >= (2, 6):

@@ -124,7 +124,7 @@ safeid = _make_safe_id_component
 
 def FID(raw_id, path):
     """
-    Creates a uniqe ID for filenode based on it's hash of path and revision
+    Creates a unique ID for filenode based on it's hash of path and revision
     it's safe to use in urls
 
     :param raw_id:
@@ -963,7 +963,7 @@ class Page(_Page):
             nav_items.append(text)
 
         for thispage in xrange(leftmost_page, rightmost_page + 1):
-            # Hilight the current page number and do not use a link
+            # Highlight the current page number and do not use a link
             if thispage == self.page:
                 text = '%s' % (thispage,)
                 # Wrap in a SPAN tag if nolink_attr is set
@@ -1262,7 +1262,7 @@ def fancy_file_stats(stats):
 
 def urlify_text(text_, safe=True):
     """
-    Extrac urls from text and make html links out of them
+    Extract urls from text and make html links out of them
 
     :param text_:
     """

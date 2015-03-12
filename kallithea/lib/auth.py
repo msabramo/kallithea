@@ -236,7 +236,7 @@ def _cached_perms_data(user_id, user_is_admin, user_inherit_default_permissions,
     #==================================================================
     uid = user_id
 
-    # default global permissions taken fron the default user
+    # default global permissions taken from the default user
     default_global_perms = UserToPerm.query()\
         .filter(UserToPerm.user_id == default_user_id)\
         .options(joinedload(UserToPerm.permission))
@@ -554,7 +554,7 @@ class AuthUser(object):
 
         :param user: instance of User object from database
         :param explicit: In case there are permissions both for user and a group
-            that user is part of, explicit flag will defiine if user will
+            that user is part of, explicit flag will define if user will
             explicitly override permissions from group, if it's False it will
             make decision based on the algo
         :param algo: algorithm to decide what permission should be choose if

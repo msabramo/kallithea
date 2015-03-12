@@ -116,7 +116,7 @@ def aslist(obj, sep=None, strip=True):
 
 def convert_line_endings(line, mode):
     """
-    Converts a given line  "line end" accordingly to given mode
+    Converts a given line  "line end" according to given mode
 
     Available modes are::
         0 - Unix

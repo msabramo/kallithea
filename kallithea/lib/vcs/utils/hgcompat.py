@@ -30,8 +30,8 @@ from mercurial.util import url as hg_url
 from mercurial.scmutil import revrange
 from mercurial.node import nullrev
 
-# those authnadlers are patched for python 2.6.5 bug an
-# infinit looping when given invalid resources
+# those authhandlers are patched for python 2.6.5 bug an
+# infinite looping when given invalid resources
 from mercurial.url import httpbasicauthhandler, httpdigestauthhandler
 
 import inspect

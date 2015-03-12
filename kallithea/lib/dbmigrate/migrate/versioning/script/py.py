@@ -120,7 +120,7 @@ class PythonScript(base.BaseScript):
 
     def run(self, engine, step):
         """Core method of Script file.
-        Exectues :func:`update` or :func:`downgrade` functions
+        Executes :func:`update` or :func:`downgrade` functions
 
         :param engine: SQLAlchemy Engine
         :param step: Operation to run

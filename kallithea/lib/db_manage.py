@@ -402,7 +402,7 @@ class DbManage(object):
 
     def reset_permissions(self, username):
         """
-        Resets permissions to default state, usefull when old systems had
+        Resets permissions to default state, useful when old systems had
         bad permissions, we must clean them up
 
         :param username:
@@ -534,8 +534,8 @@ class DbManage(object):
                                             email='anonymous@kallithea-scm.org',
                                             firstname='Anonymous',
                                             lastname='User')
-        # based on configuration options activate/deactive this user which
-        # controlls anonymous access
+        # based on configuration options activate/deactivate this user which
+        # controls anonymous access
         if self.cli_args.get('public_access') is False:
             log.info('Public access disabled')
             user.active = False

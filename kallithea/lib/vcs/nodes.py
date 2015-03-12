@@ -237,7 +237,7 @@ class FileNode(Node):
     """
     Class representing file nodes.
 
-    :attribute: path: path to the node, relative to repostiory's root
+    :attribute: path: path to the node, relative to repository's root
     :attribute: content: if given arbitrary sets content of the file
     :attribute: changeset: if given, first time content is accessed, callback
     :attribute: mode: octal stat mode for a node. Default is 0100644.
@@ -479,7 +479,7 @@ class DirNode(Node):
     """
     DirNode stores list of files and directories within this node.
     Nodes may be used standalone but within repository context they
-    lazily fetch data within same repositorty's changeset.
+    lazily fetch data within same repository's changeset.
     """
 
     def __init__(self, path, nodes=(), changeset=None):

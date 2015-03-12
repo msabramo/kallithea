@@ -50,7 +50,7 @@ def date_fromtimestamp(unixts, tzoffset=0):
 
 def safe_int(val, default=None):
     """
-    Returns int() of val if val is not convertable to int use default
+    Returns int() of val if val is not convertible to int use default
     instead
 
     :param val:

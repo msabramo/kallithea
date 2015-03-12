@@ -118,7 +118,7 @@ def _colored(repo, dag):
 
         # Add unknown parents to nextrow
         tmprow = row[:]
-        tmprow[col:col + 1] = reversed(addparents) # higest revs first (to the right), dead ends last (to the left)
+        tmprow[col:col + 1] = reversed(addparents) # highest revs first (to the right), dead ends last (to the left)
         # Stop looking for non-existing ancestors
         nextrow = []
         for r in tmprow:

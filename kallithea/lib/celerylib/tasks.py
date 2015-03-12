@@ -210,7 +210,7 @@ def get_commits_stats(repo_name, ts_min_y, ts_max_y, recurse_limit=100):
         stats.commit_activity = json.dumps(co_day_auth_aggr)
         stats.commit_activity_combined = json.dumps(overview_data)
 
-        log.debug('last revison %s' % last_rev)
+        log.debug('last revision %s' % last_rev)
         leftovers = len(repo.revisions[last_rev:])
         log.debug('revisions to parse %s' % leftovers)
 

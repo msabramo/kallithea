@@ -323,7 +323,7 @@ class GitChangeset(BaseChangeset):
         """
         cmd = 'blame -l --root -r %s -- "%s"' % (self.id, path)
         # -l     ==> outputs long shas (and we need all 40 characters)
-        # --root ==> doesn't put '^' character for bounderies
+        # --root ==> doesn't put '^' character for boundaries
         # -r sha ==> blames for the given revision
         so, se = self.repository.run_git_command(cmd)
 

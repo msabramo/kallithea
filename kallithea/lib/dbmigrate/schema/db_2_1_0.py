@@ -97,7 +97,7 @@ class BaseModel(object):
         return d
 
     def get_appstruct(self):
-        """return list with keys and values tupples corresponding
+        """return list with keys and values tuples corresponding
         to this model data """
 
         l = []
@@ -1461,7 +1461,7 @@ class RepoGroup(Base, BaseModel):
             if gr is None:
                 break
             if cnt == parents_recursion_limit:
-                # this will prevent accidental infinit loops
+                # this will prevent accidental infinite loops
                 log.error('group nested more than %s' %
                           parents_recursion_limit)
                 break

@@ -124,7 +124,7 @@ def get_cache_region(name, region):
 
 def _get_cache_parameters(query):
     """For a query with cache_region and cache_namespace configured,
-    return the correspoinding Cache instance and cache key, based
+    return the corresponding Cache instance and cache key, based
     on this query's current criterion and parameter values.
 
     """

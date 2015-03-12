@@ -118,7 +118,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
     def get_user(self, username=None, **kwargs):
         """
         Helper method for user fetching in plugins, by default it's using
-        simple fetch by username, but this method can be custimized in plugins
+        simple fetch by username, but this method can be customized in plugins
         eg. container auth plugin to fetch user by environ params
         :param username: username if given to fetch
         :param kwargs: extra arguments needed for user fetching.
@@ -131,7 +131,7 @@ class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
 
     def auth(self, userobj, username, password, settings, **kwargs):
         """
-        Get's the container_auth username (or email). It tries to get username
+        Gets the container_auth username (or email). It tries to get username
         from REMOTE_USER if this plugin is enabled, if that fails
         it tries to get username from HTTP_X_FORWARDED_USER if fallback header
         is set. clean_username extracts the username from this data if it's
@@ -161,8 +161,8 @@ class KallitheaAuthPlugin(auth_modules.KallitheaExternalAuthPlugin):
             username = getattr(userobj, 'username')
 
         if not username:
-            # we don't have any objects in DB user doesn't exist extrac username
-            # from environ based on the settings
+            # we don't have any objects in DB, user doesn't exist, extract
+            # username from environ based on the settings
             username = self._get_username(environ, settings)
 
         # if cannot fetch username, it's a no-go for this plugin to proceed

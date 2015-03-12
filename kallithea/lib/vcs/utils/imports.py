@@ -11,7 +11,7 @@ def import_class(class_path):
         try:
             hgrepo = import_class('vcs.backends.hg.MercurialRepository')
         except VCSError:
-            # hadle error
+            # handle error
     """
     splitted = class_path.split('.')
     mod_path = '.'.join(splitted[:-1])

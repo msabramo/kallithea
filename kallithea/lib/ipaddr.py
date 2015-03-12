@@ -733,7 +733,7 @@ class _BaseNet(_IPAddrBase):
             minus other.
 
         Raises:
-            TypeError: If self and other are of difffering address
+            TypeError: If self and other are of differing address
               versions, or if other is not a network object.
             ValueError: If other is not completely contained by self.
 

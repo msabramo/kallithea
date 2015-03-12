@@ -27,7 +27,7 @@ class ProfilingMiddleware(object):
             profiler.snapshot_stats()
 
             stats = pstats.Stats(profiler)
-            stats.sort_stats('calls') #cummulative
+            stats.sort_stats('calls') #cumulative
 
             # Redirect output
             out = StringIO()

@@ -65,7 +65,7 @@ class BaseRepository(object):
         exists and ``create`` is set to True.
 
         :param repo_path: local path of the repository
-        :param create=False: if set to True, would try to craete repository.
+        :param create=False: if set to True, would try to create repository.
         :param src_url=None: if set, should be proper url from which repository
           would be cloned; requires ``create`` parameter to be set to True -
           raises RepositoryError if src_url is set and create evaluates to
@@ -633,7 +633,7 @@ class BaseChangeset(object):
 
     def walk(self, topurl=''):
         """
-        Similar to os.walk method. Insted of filesystem it walks through
+        Similar to os.walk method. Instead of filesystem it walks through
         changeset starting at given ``topurl``.  Returns generator of tuples
         (topnode, dirnodes, filenodes).
         """
@@ -961,7 +961,7 @@ class BaseInMemoryChangeset(object):
         :param message: message of the commit
         :param author: full username, i.e. "Joe Doe <joe.doe@example.com>"
         :param parents: single parent or sequence of parents from which commit
-          would be derieved
+          would be derived
         :param date: ``datetime.datetime`` instance. Defaults to
           ``datetime.datetime.now()``.
         :param branch: branch name, as string. If none given, default backend's

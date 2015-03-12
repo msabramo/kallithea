@@ -154,7 +154,7 @@ class BaseVCSController(object):
     def _get_by_id(self, repo_name):
         """
         Gets a special pattern _<ID> from clone url and tries to replace it
-        with a repository_name for support of _<ID> non changable urls
+        with a repository_name for support of _<ID> non changeable urls
 
         :param repo_name:
         """
@@ -170,7 +170,7 @@ class BaseVCSController(object):
 
     def _invalidate_cache(self, repo_name):
         """
-        Set's cache for this repository for invalidation on next access
+        Sets cache for this repository for invalidation on next access
 
         :param repo_name: full repo name, also a cache key
         """

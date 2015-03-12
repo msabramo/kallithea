@@ -31,7 +31,7 @@ class PGConstraintGenerator(ansisql.ANSIConstraintGenerator):
 
 
 class PGConstraintDropper(ansisql.ANSIConstraintDropper):
-    """PostgreSQL constaint dropper implementation."""
+    """PostgreSQL constraint dropper implementation."""
     pass
 
 

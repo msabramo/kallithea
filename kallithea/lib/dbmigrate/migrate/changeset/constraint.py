@@ -38,7 +38,7 @@ class ConstraintChangeset(object):
         :param engine: the database engine to use. If this is \
         :keyword:`None` the instance's engine will be used
         :type engine: :class:`sqlalchemy.engine.base.Engine`
-        :param connection: reuse connection istead of creating new one.
+        :param connection: reuse connection instead of creating new one.
         :type connection: :class:`sqlalchemy.engine.base.Connection` instance
         """
         # TODO: set the parent here instead of in __init__
@@ -52,7 +52,7 @@ class ConstraintChangeset(object):
         :param cascade: Issue CASCADE drop if database supports it
         :type engine: :class:`sqlalchemy.engine.base.Engine`
         :type cascade: bool
-        :param connection: reuse connection istead of creating new one.
+        :param connection: reuse connection instead of creating new one.
         :type connection: :class:`sqlalchemy.engine.base.Connection` instance
         :returns: Instance with cleared columns
         """

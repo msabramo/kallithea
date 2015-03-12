@@ -202,7 +202,7 @@ class DiffProcessor(object):
     def __init__(self, diff, vcs='hg', format='gitdiff', diff_limit=None):
         """
         :param diff:   a text in diff format
-        :param vcs: type of version controll hg or git
+        :param vcs: type of version control hg or git
         :param format: format of diff passed, `udiff` or `gitdiff`
         :param diff_limit: define the size of diff that is considered "big"
             based on that parameter cut off will be triggered, set to None
