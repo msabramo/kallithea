@@ -475,7 +475,7 @@ class ScmModel(BaseModel):
 
         :param repo: SCM repo
         :param username: username who pushes
-        :param action: push/push_loca/push_remote
+        :param action: push/push_local/push_remote
         :param repo_name: name of repo
         :param revisions: list of revisions that we pushed
         """
@@ -611,15 +611,15 @@ class ScmModel(BaseModel):
         """
         Commits specified nodes to repo.
 
-        :param user: Kallithea User object or user_id, the commiter
+        :param user: Kallithea User object or user_id, the committer
         :param repo: Kallithea Repository object
         :param message: commit message
         :param nodes: mapping {filename:{'content':content},...}
         :param parent_cs: parent changeset, can be empty than it's initial commit
-        :param author: author of commit, cna be different that commiter only for git
+        :param author: author of commit, cna be different that committer only for git
         :param trigger_push_hook: trigger push hooks
 
-        :returns: new commited changeset
+        :returns: new committed changeset
         """
 
         user = self._get_user(user)
@@ -643,8 +643,8 @@ class ScmModel(BaseModel):
             processed_nodes.append((f_path, content))
 
         message = safe_unicode(message)
-        commiter = user.full_contact
-        author = safe_unicode(author) if author else commiter
+        committer = user.full_contact
+        author = safe_unicode(author) if author else committer
 
         IMC = self._get_IMC_module(scm_instance.alias)
         imc = IMC(scm_instance)
@@ -681,8 +681,8 @@ class ScmModel(BaseModel):
         scm_instance = repo.scm_instance_no_cache()
 
         message = safe_unicode(message)
-        commiter = user.full_contact
-        author = safe_unicode(author) if author else commiter
+        committer = user.full_contact
+        author = safe_unicode(author) if author else committer
 
         imc_class = self._get_IMC_module(scm_instance.alias)
         imc = imc_class(scm_instance)
@@ -736,15 +736,15 @@ class ScmModel(BaseModel):
         """
         Deletes specified nodes from repo.
 
-        :param user: Kallithea User object or user_id, the commiter
+        :param user: Kallithea User object or user_id, the committer
         :param repo: Kallithea Repository object
         :param message: commit message
         :param nodes: mapping {filename:{'content':content},...}
         :param parent_cs: parent changeset, can be empty than it's initial commit
-        :param author: author of commit, cna be different that commiter only for git
+        :param author: author of commit, cna be different that committer only for git
         :param trigger_push_hook: trigger push hooks
 
-        :returns: new commited changeset after deletion
+        :returns: new committed changeset after deletion
         """
 
         user = self._get_user(user)
@@ -759,8 +759,8 @@ class ScmModel(BaseModel):
             processed_nodes.append((f_path, content))
 
         message = safe_unicode(message)
-        commiter = user.full_contact
-        author = safe_unicode(author) if author else commiter
+        committer = user.full_contact
+        author = safe_unicode(author) if author else committer
 
         IMC = self._get_IMC_module(scm_instance.alias)
         imc = IMC(scm_instance)

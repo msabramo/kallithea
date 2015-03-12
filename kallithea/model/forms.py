@@ -12,9 +12,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-this is forms validation classes
+these are form validation classes
 http://formencode.org/module-formencode.validators.html
-for list off all availible validators
+for list of all available validators
 
 we can create our own validators
 

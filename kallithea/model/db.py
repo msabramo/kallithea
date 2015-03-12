@@ -69,7 +69,7 @@ _hash_key = lambda k: hashlib.md5(safe_str(k)).hexdigest()
 
 class BaseModel(object):
     """
-    Base Model for all classess
+    Base Model for all classes
     """
 
     @classmethod
@@ -97,7 +97,7 @@ class BaseModel(object):
         return d
 
     def get_appstruct(self):
-        """return list with keys and values tupples corresponding
+        """return list with keys and values tuples corresponding
         to this model data """
 
         l = []
@@ -1051,7 +1051,7 @@ class Repository(Base, BaseModel):
     def normalize_repo_name(cls, repo_name):
         """
         Normalizes os specific repo_name to the format internally stored inside
-        dabatabase using URL_SEP
+        database using URL_SEP
 
         :param cls:
         :param repo_name:
@@ -1540,7 +1540,7 @@ class RepoGroup(Base, BaseModel):
             if gr is None:
                 break
             if cnt == parents_recursion_limit:
-                # this will prevent accidental infinit loops
+                # this will prevent accidental infinite loops
                 log.error(('more than %s parents found for group %s, stopping '
                            'recursive parent fetching' % (parents_recursion_limit, self)))
                 break

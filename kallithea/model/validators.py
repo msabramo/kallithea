@@ -643,7 +643,7 @@ def ValidPerms(type_='repo'):
                     if member == User.DEFAULT_USER:
                         if str2bool(value.get('repo_private')):
                             # set none for default when updating to
-                            # private repo protects agains form manipulation
+                            # private repo protects against form manipulation
                             v = EMPTY_PERM
                     perms_update.add((member, v, t))
 
