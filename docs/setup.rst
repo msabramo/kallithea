@@ -20,10 +20,10 @@ following command to do this::
 
 
 Next, you need to create the databases used by Kallithea. It is recommended to
-use postgresql or sqlite (default). If you choose a database other than the
-default ensure you properly adjust the db url in your my.ini
+use PostgreSQL or SQLite (default). If you choose a database other than the
+default ensure you properly adjust the database URL in your my.ini
 configuration file to use this other database. Kallithea currently supports
-postgresql, sqlite and mysql databases. Create the database by running
+PostgreSQL, SQLite and MySQL databases. Create the database by running
 the following command::
 
     paster setup-db my.ini
@@ -42,10 +42,10 @@ setup process can be fully automated, example for lazy::
 - The ``setup-db`` command will create all of the needed tables and an
   admin account. When choosing a root path you can either use a new empty
   location, or a location which already contains existing repositories. If you
-  choose a location which contains existing repositories Kallithea will simply
-  add all of the repositories at the chosen location to it's database.
+  choose a location which contains existing repositories Kallithea will
+  add all of the repositories at the chosen location to its database.
   (Note: make sure you specify the correct path to the root).
-- Note: the given path for mercurial_ repositories **must** be write accessible
+- Note: the given path for Mercurial_ repositories **must** be write accessible
   for the application. It's very important since the Kallithea web interface
   will work without write access, but when trying to do a push it will
   eventually fail with permission denied errors unless it has write access.
@@ -72,7 +72,7 @@ functionality. To do this simply execute::
 This will create `rcextensions` package in the same place that your `ini` file
 lives. With `rcextensions` it's possible to add additional mapping for whoosh,
 stats and add additional code into the push/pull/create/delete repo hooks.
-For example for sending signals to build-bots such as jenkins.
+For example for sending signals to build-bots such as Jenkins.
 Please see the `__init__.py` file inside `rcextensions` package
 for more details.
 
@@ -83,7 +83,7 @@ Using Kallithea with SSH
 Kallithea currently only hosts repositories using http and https. (The addition
 of ssh hosting is a planned future feature.) However you can easily use ssh in
 parallel with Kallithea. (Repository access via ssh is a standard "out of
-the box" feature of mercurial_ and you can use this to access any of the
+the box" feature of Mercurial_ and you can use this to access any of the
 repositories that Kallithea is hosting. See PublishingRepositories_)
 
 Kallithea repository structures are kept in directories with the same name
@@ -485,7 +485,7 @@ can be found at *kallithea.lib.hooks*.
 Changing default encoding
 -------------------------
 
-By default, Kallithea uses utf8 encoding.
+By default, Kallithea uses UTF-8 encoding.
 It is configurable as `default_encoding` in the .ini file.
 This affects many parts in Kallithea including user names, filenames, and
 encoding of commit messages. In addition Kallithea can detect if `chardet`
@@ -756,7 +756,7 @@ Some example init.d scripts can be found in init.d directory: https://kallithea-
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _python: http://www.python.org/
-.. _mercurial: http://mercurial.selenic.com/
+.. _Mercurial: http://mercurial.selenic.com/
 .. _celery: http://celeryproject.org/
 .. _rabbitmq: http://www.rabbitmq.com/
 .. _python-ldap: http://www.python-ldap.org/

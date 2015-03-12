@@ -114,7 +114,7 @@ Upgrading Kallithea from Python Package Index (PyPI)
    backed up to ``my.ini.0-1``.)
 
 
-If using a sqlite database, stop the Kallithea process/daemon/service, and
+If using a SQLite database, stop the Kallithea process/daemon/service, and
 then make a copy of the database file::
 
  service kallithea stop
