@@ -285,7 +285,7 @@ class GistsController(BaseController):
 
         ##TODO: maybe move this to model ?
         if revision != last_rev.raw_id:
-            log.error('Last revision %s is different then submited %s'
+            log.error('Last revision %s is different than submitted %s'
                       % (revision, last_rev))
             # our gist has newer version than we
             success = False

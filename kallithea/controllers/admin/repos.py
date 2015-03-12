@@ -508,8 +508,8 @@ class ReposController(BaseRepoController):
     @HasRepoPermissionAllDecorator('repository.admin')
     def edit_advanced_journal(self, repo_name):
         """
-        Set's this repository to be visible in public journal,
-        in other words assing default user to follow this repo
+        Sets this repository to be visible in public journal,
+        in other words asking default user to follow this repo
 
         :param repo_name:
         """

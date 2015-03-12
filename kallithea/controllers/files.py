@@ -583,7 +583,7 @@ class FilesController(BaseRepoController):
                     if fd:  # fd means we used temporary file
                         os.close(fd)
                     if not archive_cache_enabled:
-                        log.debug('Destroing temp archive %s' % archive)
+                        log.debug('Destroying temp archive %s' % archive)
                         os.remove(archive)
                     break
                 yield data

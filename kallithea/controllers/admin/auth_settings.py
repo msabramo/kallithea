@@ -86,7 +86,7 @@ class AuthSettingsController(BaseController):
                 setting = Setting.get_by_name(fullname)
                 if setting:
                     _defaults[fullname] = setting.app_settings_value
-        # we want to show , seperated list of enabled plugins
+        # we want to show , separated list of enabled plugins
         _defaults['auth_plugins'] = ','.join(_defaults['auth_plugins'])
         if defaults:
             _defaults.update(defaults)

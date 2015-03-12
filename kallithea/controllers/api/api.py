@@ -308,7 +308,7 @@ class ApiController(JSONRPCController):
              userid=Optional(OAttr('apiuser'))):
         """
         Set locking state on given repository by given user. If userid param
-        is skipped, then it is set to id of user whos calling this method.
+        is skipped, then it is set to id of user who is calling this method.
         If locked param is skipped then function shows current lock state of
         given repo. This command can be executed only using api_key belonging
         to user with admin rights or regular user that have admin or write
@@ -426,7 +426,7 @@ class ApiController(JSONRPCController):
     def get_locks(self, apiuser, userid=Optional(OAttr('apiuser'))):
         """
         Get all repositories with locks for given userid, if
-        this command is runned by non-admin account userid is set to user
+        this command is run by non-admin account userid is set to user
         who is calling this method, thus returning locks for himself.
 
         :param apiuser: filled automatically from apikey
@@ -535,7 +535,7 @@ class ApiController(JSONRPCController):
 
     def get_user(self, apiuser, userid=Optional(OAttr('apiuser'))):
         """
-        Get's an user by username or user_id, Returns empty result if user is
+        Gets a user by username or user_id, Returns empty result if user is
         not found. If userid param is skipped it is set to id of user who is
         calling this method. This command can be executed only using api_key
         belonging to user with admin rights, or regular users that cannot
@@ -559,7 +559,7 @@ class ApiController(JSONRPCController):
                         "lastname" :    "<lastname>",
                         "email" :       "<email>",
                         "emails":       "[<list of all emails including additional ones>]",
-                        "ip_addresses": "[<ip_addresse_for_user>,...]",
+                        "ip_addresses": "[<ip_address_for_user>,...]",
                         "active" :      "<bool: user active>",
                         "admin" :       "<bool: user is admin>",
                         "extern_name" : "<extern_name>",
@@ -789,7 +789,7 @@ class ApiController(JSONRPCController):
     @HasPermissionAllDecorator('hg.admin')
     def delete_user(self, apiuser, userid):
         """
-        deletes givenuser if such user exists. This command can
+        deletes given user if such user exists. This command can
         be executed only using api_key belonging to user with admin rights.
 
         :param apiuser: filled automatically from apikey
@@ -1513,7 +1513,7 @@ class ApiController(JSONRPCController):
             return dict(
                 msg="Created new repository `%s`" % (repo_name,),
                 success=True,  # cannot return the repo data here since fork
-                               # cann be done async
+                               # can be done async
                 task=task_id
             )
         except Exception:
@@ -1593,7 +1593,7 @@ class ApiController(JSONRPCController):
                   private=Optional(False), landing_rev=Optional('rev:tip')):
         """
         Creates a fork of given repo. In case of using celery this will
-        immidiatelly return success message, while fork is going to be created
+        immediately return success message, while fork is going to be created
         asynchronous. This command can be executed only using api_key belonging to
         user with admin rights or regular user that have fork permission, and at least
         read access to forking repository. Regular users cannot specify owner parameter.
@@ -1687,7 +1687,7 @@ class ApiController(JSONRPCController):
                 msg='Created fork of `%s` as `%s`' % (repo.repo_name,
                                                       fork_name),
                 success=True,  # cannot return the repo data here since fork
-                               # cann be done async
+                               # can be done async
                 task=task_id
             )
         except Exception:
