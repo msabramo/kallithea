@@ -36,6 +36,7 @@ from pylons import request, tmpl_context as c, url
 from pylons.controllers.util import redirect
 from pylons.i18n.translation import _
 
+from kallithea.lib.vcs.utils.hgcompat import unionrepo
 from kallithea.lib.compat import json
 from kallithea.lib.base import BaseRepoController, render
 from kallithea.lib.auth import LoginRequired, HasRepoPermissionAnyDecorator,\
@@ -582,8 +583,14 @@ class PullrequestsController(BaseRepoController):
                 if len(avail_revs) > 1: # more than just revs[0]
                     # also show changesets that not are descendants but would be merged in
                     targethead = other_scm_instance.get_changeset(c.a_branch_name).raw_id
-                    show = set(org_scm_instance._repo.revs('::%ld & !::%s & !::%s',
-                                                           avail_revs, revs[0], targethead))
+                    if org_scm_instance.path != other_scm_instance.path:
+                        hgrepo = unionrepo.unionrepository(org_scm_instance.baseui,
+                                                           other_scm_instance.path,
+                                                           org_scm_instance.path)
+                    else:
+                        hgrepo = org_scm_instance._repo
+                    show = set(hgrepo.revs('::%ld & !::%s & !::%s',
+                                           avail_revs, revs[0], targethead))
                     c.update_msg = _('This pull request can be updated with changes on %s:') % c.cs_branch_name
                 else:
                     show = set()
