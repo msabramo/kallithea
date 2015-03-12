@@ -4,7 +4,7 @@
 Installation on Unix/Linux
 ==========================
 
-``Kallithea`` is written entirely in Python.  Kallithea requires Python version
+**Kallithea** is written entirely in Python.  Kallithea requires Python version
 2.6 or higher.
 
 .. Note:: Alternative very detailed installation instructions for Ubuntu Server
@@ -14,7 +14,7 @@ Installation on Unix/Linux
 Installing Kallithea from Python Package Index (PyPI)
 -----------------------------------------------------
 
-``Kallithea`` can be installed from PyPI with::
+**Kallithea** can be installed from PyPI with::
 
     pip install kallithea
 
@@ -137,7 +137,7 @@ isn't listed, change virtual environments to your venv location::
  source /srv/kallithea/venv/bin/activate
 
 
-Once you have verified the environment you can upgrade ``Kallithea`` with::
+Once you have verified the environment you can upgrade Kallithea with::
 
  pip install --upgrade kallithea
 

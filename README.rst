@@ -5,7 +5,7 @@ Kallithea README
 About
 -----
 
-``Kallithea`` is a fast and powerful management tool for Mercurial_ and Git_
+**Kallithea** is a fast and powerful management tool for Mercurial_ and Git_
 with a built-in push/pull server, full text search and code-review.
 It works on http/https and has a built in permission/authentication system with
 the ability to authenticate via LDAP or ActiveDirectory. Kallithea also provides
@@ -93,7 +93,7 @@ Kallithea Features
 License
 -------
 
-``Kallithea`` is released under the GPLv3 license. ``Kallithea`` is a
+**Kallithea** is released under the GPLv3 license. Kallithea is a
 `Software Freedom Conservancy`_ project and thus controlled by a non-profit organization.
 No commercial entity can take ownership of the project and change the direction.
 
@@ -107,7 +107,7 @@ with a different mix of Free Software people and companies but we are happy with
 Community
 ---------
 
-``Kallithea`` is maintained by its users who contribute the fixes they would like to see.
+**Kallithea** is maintained by its users who contribute the fixes they would like to see.
 
 Get in touch with the rest of the community:
 
@@ -117,7 +117,7 @@ Get in touch with the rest of the community:
 - Use IRC and join #kallithea on FreeNode (irc.freenode.net)
   or use http://webchat.freenode.net/?channels=kallithea.
 
-- Follow ``Kallithea`` on Twitter, **@KallitheaSCM**.
+- Follow Kallithea on Twitter, **@KallitheaSCM**.
 
 - Issues can be reported at `issue tracker <https://bitbucket.org/conservancy/kallithea/issues>`_.
 
