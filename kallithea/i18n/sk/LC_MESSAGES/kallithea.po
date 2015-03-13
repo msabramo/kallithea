@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Kallithea 2.2.5\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2015-03-11 19:07+0200\n"
+"PO-Revision-Date: 2015-03-13 14:24+0200\n"
 "Last-Translator: Andrew Shadura <andrew@shadura.me>\n"
 "Language-Team: Slovak "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/sk/>\n"
@@ -16,14 +16,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 0.9.6\n"
-"Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 2.3-dev\n"
+"Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
 #: kallithea/controllers/pullrequests.py:265
 msgid "There are no changesets yet"
-msgstr ""
+msgstr "Zatiaľ nie sú žiadne zmeny"
 
 #: kallithea/controllers/changelog.py:186
 msgid "All Branches"
@@ -35,12 +35,12 @@ msgstr "(zatvorené)"
 
 #: kallithea/controllers/changeset.py:87
 msgid "Show whitespace"
-msgstr ""
+msgstr "Ukázať medzery"
 
 #: kallithea/controllers/changeset.py:94
 #: kallithea/controllers/changeset.py:101
 msgid "Ignore whitespace"
-msgstr ""
+msgstr "Ignorovať medzery"
 
 #: kallithea/controllers/changeset.py:167
 #, python-format
@@ -56,7 +56,7 @@ msgstr "Taká revízia neexistuje"
 #: kallithea/controllers/pullrequests.py:482
 #, python-format
 msgid "Status change -> %s"
-msgstr "Zmena stavu-> %s"
+msgstr "Zmena stavu -> %s"
 
 #: kallithea/controllers/changeset.py:386
 msgid ""
@@ -83,7 +83,7 @@ msgstr ""
 
 #: kallithea/controllers/error.py:106
 msgid "You don't have permission to view this page"
-msgstr "Nemáte oprávnenie k zobrazeniu tejto stránky"
+msgstr "Nemáte oprávnenie na zobrazenie tejto stránky"
 
 #: kallithea/controllers/error.py:108
 msgid "The resource could not be found"
@@ -127,13 +127,13 @@ msgstr "Kliknite pre pridanie nového súboru"
 #: kallithea/controllers/files.py:93
 #, python-format
 msgid "There are no files yet. %s"
-msgstr "Zatiaľ nie sí žiadne súbory. %s"
+msgstr "Zatiaľ nie sú žiadne súbory. %s"
 
 #: kallithea/controllers/files.py:301 kallithea/controllers/files.py:361
 #: kallithea/controllers/files.py:428
 #, python-format
 msgid "This repository has been locked by %s on %s"
-msgstr ""
+msgstr "Tento repozitár bol uzamknutý používateľom %s dňa %s"
 
 #: kallithea/controllers/files.py:313
 msgid "You can only delete files with revision being a valid branch "
@@ -142,17 +142,17 @@ msgstr ""
 #: kallithea/controllers/files.py:324
 #, python-format
 msgid "Deleted file %s via Kallithea"
-msgstr ""
+msgstr "Zmazaný súbor %s cez Kallithea"
 
 #: kallithea/controllers/files.py:346
 #, python-format
 msgid "Successfully deleted file %s"
-msgstr ""
+msgstr "Úspešne zmazaný súbor %s"
 
 #: kallithea/controllers/files.py:350 kallithea/controllers/files.py:416
 #: kallithea/controllers/files.py:498
 msgid "Error occurred during commit"
-msgstr ""
+msgstr "Došlo k chybe pri ukladaní"
 
 #: kallithea/controllers/files.py:373
 msgid "You can only edit files with revision being a valid branch "
@@ -165,7 +165,7 @@ msgstr ""
 
 #: kallithea/controllers/files.py:403
 msgid "No changes"
-msgstr "Žiadne změny"
+msgstr "Žiadne zmeny"
 
 #: kallithea/controllers/files.py:412 kallithea/controllers/files.py:487
 #, python-format
@@ -415,7 +415,7 @@ msgstr ""
 
 #: kallithea/controllers/admin/gists.py:147
 msgid "Error occurred during gist creation"
-msgstr ""
+msgstr "Došlo k chybe pri vytváraní gist"
 
 #: kallithea/controllers/admin/gists.py:185
 #, python-format
@@ -437,7 +437,7 @@ msgstr ""
 #: kallithea/controllers/admin/gists.py:271
 #, python-format
 msgid "Error occurred during update of gist %s"
-msgstr ""
+msgstr "Došlo k chybe pri aktualizácii gist %s"
 
 #: kallithea/controllers/admin/my_account.py:70
 msgid "You can't edit this user since it's crucial for entire application"
@@ -455,11 +455,11 @@ msgstr ""
 
 #: kallithea/controllers/admin/my_account.py:161
 msgid "Successfully updated password"
-msgstr ""
+msgstr "Úspešne aktualizované heslo"
 
 #: kallithea/controllers/admin/my_account.py:171
 msgid "Error occurred during update of user password"
-msgstr ""
+msgstr "Došlo k chybe pri aktualizácii hesla užívateľa"
 
 #: kallithea/controllers/admin/my_account.py:213
 #: kallithea/controllers/admin/users.py:432
@@ -470,7 +470,7 @@ msgstr ""
 #: kallithea/controllers/admin/my_account.py:219
 #: kallithea/controllers/admin/users.py:438
 msgid "An error occurred during email saving"
-msgstr ""
+msgstr "Došlo k chybe pri ukladaní e-mailovej adresy"
 
 #: kallithea/controllers/admin/my_account.py:228
 #: kallithea/controllers/admin/users.py:449
@@ -737,7 +737,7 @@ msgstr ""
 
 #: kallithea/controllers/admin/repos.py:546
 msgid "Nothing"
-msgstr ""
+msgstr "Nič"
 
 #: kallithea/controllers/admin/repos.py:548
 #, python-format
