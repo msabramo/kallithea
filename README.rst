@@ -30,7 +30,7 @@ Official releases of Kallithea can be installed via::
 The development repository is kept very stable and used in production by the
 developers - you can do the same.
 
-Please visit http://packages.python.org/Kallithea/installation.html for
+Please visit https://docs.kallithea-scm.org/en/latest/installation.html for
 more details.
 
 
@@ -131,7 +131,7 @@ Online documentation
 --------------------
 
 Online documentation for the current version of Kallithea is available at https://pythonhosted.org/Kallithea/.
-Documentation for the current development version can be found on http://docs.kallithea-scm.org/.
+Documentation for the current development version can be found on https://docs.kallithea-scm.org/.
 
 You can also build the documentation locally: go to ``docs/`` and run::
 
