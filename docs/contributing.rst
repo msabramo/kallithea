@@ -47,17 +47,24 @@ Running tests
 -------------
 
 After finishing your changes make sure all tests pass cleanly. You can run
-the testsuite running ``nosetest`` from the project root, or if you use tox
-run tox for python2.6-2.7 with multiple database test. When using `nosetests`
-test.ini file is used and by default it uses SQLite for tests, edit this file
-to change your testing enviroment.
+the testsuite running ``nosetests`` from the project root, or if you use tox
+run ``tox`` for python2.6-2.7 with multiple database test.
 
-There's a special set of tests for push/pull operations, you can run them using::
+When using `nosetests`, the `test.ini` file is used with an SQLite database. Edit
+this file to change your testing enviroment.
+
+It is possible to avoid recreating the full test database on each invocation of
+the tests, thus eliminating the initial delay. To achieve this, run the tests as::
 
     paster serve test.ini --pid-file=test.pid --daemon
-    KALLITHEA_WHOOSH_TEST_DISABLE=1 KALLITHEA_NO_TMP_PATH=1 nosetests -x kallithea/tests/other/test_vcs_operations.py
+    KALLITHEA_WHOOSH_TEST_DISABLE=1 KALLITHEA_NO_TMP_PATH=1 nosetests
     kill -9 $(cat test.pid)
 
+You can run individual tests by specifying their path as argument to nosetests.
+nosetests also has many more options, see `nosetests -h`.
+
+There's a special set of tests for push/pull operations in
+`kallithea/tests/other/test_vcs_operations.py`.
 
 Coding/contribution guidelines
 ------------------------------
