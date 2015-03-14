@@ -10,6 +10,22 @@ Installation on Unix/Linux
 .. Note:: Alternative very detailed installation instructions for Ubuntu Server
    with celery, indexer and daemon scripts: https://gist.github.com/4546398
 
+Installing Kallithea from repository source
+-------------------------------------------
+
+The Kallithea development repository is stable and can be used in production.
+Follow these instructions::
+
+        hg clone https://kallithea-scm.org/repos/kallithea
+        cd kallithea
+        virtualenv ../kallithea-venv
+        source ../kallithea-venv/bin/activate
+        python setup.py develop
+
+You can now proceed to :ref:`setup`.
+
+To upgrade, simply update the repository with ``hg pull -u`` and restart the
+server.
 
 Installing Kallithea from Python Package Index (PyPI)
 -----------------------------------------------------
