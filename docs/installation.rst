@@ -4,17 +4,39 @@
 Installation on Unix/Linux
 ==========================
 
-**Kallithea** is written entirely in Python.  Kallithea requires Python version
-2.6 or higher.
+**Kallithea** is written entirely in Python and requires Python version
+2.6 or higher. Python 3.x is currently not supported.
 
-.. Note:: Alternative very detailed installation instructions for Ubuntu Server
-   with celery, indexer and daemon scripts: https://gist.github.com/4546398
+There are several ways to install Kallithea:
 
-Installing Kallithea from repository source
--------------------------------------------
+- :ref:`installation-source`: The Kallithea development repository is stable
+  and can be used in production. In fact, the Kallithea maintainers do
+  use it in production. The advantage of installation from source and regularly
+  updating it is that you take advantage of the most recent improvements, which
+  is particularly useful because Kallithea is evolving rapidly.
 
-The Kallithea development repository is stable and can be used in production.
-Follow these instructions::
+- :ref:`installation-virtualenv`: If you prefer to only use released versions
+  of Kallithea, the recommended method is to install Kallithea in a virtual
+  Python environment using `virtualenv`. The advantages of this method over
+  direct installation is that Kallithea and its dependencies are completely
+  contained inside the virtualenv (which also means you can have multiple
+  installations side by side or remove it entirely by just removing the
+  virtualenv directory) and does not require root privileges.
+
+- :ref:`installation-without-virtualenv`: The alternative method of installing
+  a Kallithea release is using standard pip. The package will be installed in
+  the same location as all other Python packages you have ever installed. As a
+  result, removing it is not as straightforward as with a virtualenv, as you'd
+  have to remove its dependencies manually and make sure that they not are
+  needed by other packages.
+
+.. _installation-source:
+
+Installation from repository source
+-----------------------------------
+
+To install Kallithea from source in a virtualenv, follow the instructions
+below::
 
         hg clone https://kallithea-scm.org/repos/kallithea
         cd kallithea
@@ -27,39 +49,32 @@ You can now proceed to :ref:`setup`.
 To upgrade, simply update the repository with ``hg pull -u`` and restart the
 server.
 
-Installing Kallithea from Python Package Index (PyPI)
------------------------------------------------------
+.. _installation-virtualenv:
 
-**Kallithea** can be installed from PyPI with::
-
-    pip install kallithea
-
-
-Installation in virtualenv
---------------------------
+Installing a released version in a virtualenv
+---------------------------------------------
 
 It is highly recommended to use a separate virtualenv_ for installing Kallithea.
 This way, all libraries required by Kallithea will be installed separately from your
-main Python installation and things will be less problematic when upgrading the
-system or Kallithea.
+main Python installation and other applications and things will be less
+problematic when upgrading the system or Kallithea.
 An additional benefit of virtualenv_ is that it doesn't require root privileges. 
 
 - Assuming you have installed virtualenv_, create a new virtual environment
-  using virtualenv command::
+  in for example `/srv/kallithea/venv` using the virtualenv command::
 
     virtualenv /srv/kallithea/venv
 
 .. note:: Older versions of virtualenv required ``--no-site-packages`` to work
    correctly. It should no longer be necessary.
 
-- this will install new virtualenv_ into `/srv/kallithea/venv`.
 - Activate the virtualenv_ in your current shell session by running::
 
     source /srv/kallithea/venv/bin/activate
 
-.. note:: If you're using UNIX, *do not* use ``sudo`` to run the
-   ``virtualenv`` script.  It's perfectly acceptable (and desirable)
-   to create a virtualenv as a normal user.
+.. note:: You can't use UNIX ``sudo`` to source the ``virtualenv`` script; it
+   will "activate" a shell that terminates immediately. It is also perfectly
+   acceptable (and desirable) to create a virtualenv as a normal user.
 
 - Make a folder for Kallithea data files, and configuration somewhere on the
   filesystem. For example::
@@ -78,9 +93,28 @@ An additional benefit of virtualenv_ is that it doesn't require root privileges.
 - This will install Kallithea together with pylons and all other required
   python libraries into the activated virtualenv.
 
+You can now proceed to :ref:`setup`.
 
-Requirements for Celery (optional)
-----------------------------------
+.. _installation-without-virtualenv:
+
+Installing a released version without virtualenv
+------------------------------------------------
+
+For installation without virtualenv, 'just' use::
+
+    pip install kallithea
+
+Note that this method requires root privileges and will install packages
+globally without using the system's package manager.
+
+To install as a regular user in ``~/.local``, you can use::
+
+    pip install --user kallithea
+
+You can now proceed to :ref:`setup`.
+
+Celery (optional)
+-----------------
 
 In order to gain maximum performance
 there are some third-party you must install. When Kallithea is used
