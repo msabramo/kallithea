@@ -63,9 +63,6 @@ the tests, thus eliminating the initial delay. To achieve this, run the tests as
 You can run individual tests by specifying their path as argument to nosetests.
 nosetests also has many more options, see `nosetests -h`.
 
-There's a special set of tests for push/pull operations in
-`kallithea/tests/other/test_vcs_operations.py`.
-
 Coding/contribution guidelines
 ------------------------------
 
