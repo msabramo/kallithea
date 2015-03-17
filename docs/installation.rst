@@ -4,7 +4,7 @@
 Installation on Unix/Linux
 ==========================
 
-**Kallithea** is written entirely in Python and requires Python version
+**Kallithea** is written entirely in Python_ and requires Python version
 2.6 or higher. Python 3.x is currently not supported.
 
 There are several ways to install Kallithea:
@@ -113,44 +113,6 @@ To install as a regular user in ``~/.local``, you can use::
 
 You can now proceed to :ref:`setup`.
 
-Celery (optional)
------------------
-
-In order to gain maximum performance
-there are some third-party you must install. When Kallithea is used
-together with celery you have to install some kind of message broker,
-recommended one is rabbitmq_ to make the async tasks work.
-
-Of course Kallithea works in sync mode also and then you do not have to install
-any third party applications. However, using Celery_ will give you a large
-speed improvement when using many big repositories. If you plan to use
-Kallithea for say 7 to 10 repositories, Kallithea will perform perfectly well
-without celery running.
-
-If you make the decision to run Kallithea with celery make sure you run
-celeryd using paster and message broker together with the application.
-
-.. note::
-   Installing message broker and using celery is optional, Kallithea will
-   work perfectly fine without them.
-
-
-**Message Broker**
-
-- preferred is `RabbitMq <http://www.rabbitmq.com/>`_
-- A possible alternative is `Redis <http://code.google.com/p/redis/>`_
-
-For installation instructions you can visit:
-http://ask.github.com/celery/getting-started/index.html.
-This is a very nice tutorial on how to start using celery_ with rabbitmq_
-
-
-Next
-----
-
-You can now proceed to :ref:`setup`.
-
-
 Upgrading Kallithea from Python Package Index (PyPI)
 -----------------------------------------------------
 
@@ -245,7 +207,4 @@ Or::
 
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
-.. _python: http://www.python.org/
-.. _mercurial: http://mercurial.selenic.com/
-.. _celery: http://celeryproject.org/
-.. _rabbitmq: http://www.rabbitmq.com/
+.. _Python: http://www.python.org/

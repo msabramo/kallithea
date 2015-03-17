@@ -15,7 +15,7 @@ following command to do this::
 
 - This will create the file `my.ini` in the current directory. This
   configuration file contains the various settings for Kallithea, e.g proxy
-  port, email settings, usage of static files, cache, celery settings and
+  port, email settings, usage of static files, cache, Celery settings and
   logging.
 
 
@@ -496,15 +496,30 @@ when there are encode/decode errors.
 Celery configuration
 --------------------
 
-Celery is configured in the Kallithea ini configuration files.
-Simply set use_celery=true in the ini file then add / change the configuration
-variables inside the ini file.
+Kallithea can use the distributed task queue system Celery_ to run tasks like
+cloning repositories or sending mails.
 
-Remember that the ini files use the format with '.' not with '_' like celery.
-So for example setting `BROKER_HOST` in celery means setting `broker.host` in
-the config file.
+Kallithea will in most setups work perfectly fine out of the box (without
+Celery), executing all tasks in the web server process. Some tasks can however
+take some time to run and it can be better to run such tasks asynchronously in
+a separate process so the web server can focus on serving web requests.
 
-In order to start using celery run::
+For installation and configuration of Celery, see the `Celery documentation`_.
+Note that Celery requires a message broker service like RabbitMQ_ (recommended)
+or Redis_.
+
+The use of Celery is configured in the Kallithea ini configuration file.
+To enable it, simply set::
+
+ use_celery = true
+
+and add or change the celery.* and broker.* configuration variables.
+
+Remember that the ini files use the format with '.' and not with '_' like
+Celery. So for example setting `BROKER_HOST` in Celery means setting
+`broker.host` in the configuration file.
+
+To start the Celery process, run::
 
  paster celeryd <configfile.ini>
 
@@ -757,8 +772,10 @@ Some example init.d scripts can be found in init.d directory: https://kallithea-
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _python: http://www.python.org/
 .. _Mercurial: http://mercurial.selenic.com/
-.. _celery: http://celeryproject.org/
-.. _rabbitmq: http://www.rabbitmq.com/
+.. _Celery: http://celeryproject.org/
+.. _Celery documentation: http://docs.celeryproject.org/en/latest/getting-started/index.html
+.. _RabbitMQ: http://www.rabbitmq.com/
+.. _Redis: http://redis.io/
 .. _python-ldap: http://www.python-ldap.org/
 .. _mercurial-server: http://www.lshift.net/mercurial-server.html
 .. _PublishingRepositories: http://mercurial.selenic.com/wiki/PublishingRepositories
