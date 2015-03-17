@@ -61,7 +61,13 @@ the tests, thus eliminating the initial delay. To achieve this, run the tests as
     kill -9 $(cat test.pid)
 
 You can run individual tests by specifying their path as argument to nosetests.
-nosetests also has many more options, see `nosetests -h`.
+nosetests also has many more options, see `nosetests -h`. Some useful options
+are::
+
+    -x, --stop            Stop running tests after the first error or failure
+    -s, --nocapture       Don't capture stdout (any stdout output will be
+                          printed immediately) [NOSE_NOCAPTURE]
+    --failed              Run the tests that failed in the last test run.
 
 Coding/contribution guidelines
 ------------------------------
