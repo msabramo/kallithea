@@ -129,34 +129,10 @@ elsewhere (for example in a pull request) until they are ready.
 "Roadmap"
 ---------
 
-We do not have a road map but are waiting for your contributions. Here are some
-ideas of places we might want to go - contributions in these areas are very
-welcome:
+We do not have a road map but are waiting for your contributions. Refer to the
+wiki_ for some ideas of places we might want to go - contributions in these
+areas are very welcome.
 
-* Front end:
-    * kill YUI - more jQuery
-    * remove other dependencies - especially the embedded cut'n'pasted ones
-    * remove hardcoded styling in templates, make markup more semantic while moving all styling to css
-    * switch to bootstrap or some other modern UI library and cleanup of style.css and contextbar.css
-    * new fancy style that looks good
-* testing
-    * better test coverage with the existing high level test framework
-    * test even more high level and javascript - selenium/robot and splinter seems like the top candidates
-    * more unit testing
-* code cleanup
-    * move code from templates to controllers and from controllers to libs or models
-    * more best practice for web apps and the frameworks
-* features
-    * relax dependency version requirements after thorough testing
-    * support for evolve
-    * updates of PRs ... while preserving history and comment context
-    * auto pr merge/rebase
-    * ssh
-    * bitbucket compatible wiki
-    * realtime preview / wysiwyg when editing comments and files
-    * make journal more useful - filtering on branches and files
-    * community mode with self registration and personal space
-    * improve documentation
 
 Thank you for your contribution!
 --------------------------------
@@ -168,3 +144,4 @@ Thank you for your contribution!
 .. _bitbucket: http://bitbucket.org/
 .. _mailing list: http://lists.sfconservancy.org/mailman/listinfo/kallithea-general
 .. _Hosted Weblate: https://hosted.weblate.org/projects/kallithea/kallithea/
+.. _wiki: https://bitbucket.org/conservancy/kallithea/wiki/Home
