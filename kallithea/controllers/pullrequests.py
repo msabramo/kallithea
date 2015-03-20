@@ -584,9 +584,12 @@ class PullrequestsController(BaseRepoController):
                     # also show changesets that not are descendants but would be merged in
                     targethead = other_scm_instance.get_changeset(c.a_branch_name).raw_id
                     if org_scm_instance.path != other_scm_instance.path:
+                        # Note: org_scm_instance.path must come first so all
+                        # valid revision numbers are 100% org_scm compatible
+                        # - both for avail_revs and for revset results
                         hgrepo = unionrepo.unionrepository(org_scm_instance.baseui,
-                                                           other_scm_instance.path,
-                                                           org_scm_instance.path)
+                                                           org_scm_instance.path,
+                                                           other_scm_instance.path)
                     else:
                         hgrepo = org_scm_instance._repo
                     show = set(hgrepo.revs('::%ld & !::%s & !::%s',
