@@ -17,12 +17,12 @@
                 %>
                 %if h.HasPermissionAny('hg.admin','hg.create.repository')() or (group_admin or (group_write and create_on_write)):
                   %if c.group:
-                        <a href="${h.url('new_repo',parent_group=c.group.group_id)}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_('Add Repository')}</a>
+                        <a href="${h.url('new_repo',parent_group=c.group.group_id)}" class="btn btn-small"><i class="icon-plus"></i> ${_('Add Repository')}</a>
                         %if h.HasPermissionAny('hg.admin')() or h.HasRepoGroupPermissionAny('group.admin')(c.group.group_name):
                             <a href="${h.url('new_repos_group', parent_group=c.group.group_id)}" class="btn btn-small"><i class="icon-plus"></i> ${_(u'Add Repository Group')}</a>
                         %endif
                   %else:
-                    <a href="${h.url('new_repo')}" class="btn btn-small btn-success"><i class="icon-plus"></i> ${_('Add Repository')}</a>
+                    <a href="${h.url('new_repo')}" class="btn btn-small"><i class="icon-plus"></i> ${_('Add Repository')}</a>
                     %if h.HasPermissionAny('hg.admin')():
                         <a href="${h.url('new_repos_group')}" class="btn btn-small"><i class="icon-plus"></i> ${_(u'Add Repository Group')}</a>
                     %endif
