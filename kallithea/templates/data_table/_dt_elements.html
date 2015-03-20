@@ -95,7 +95,7 @@
 <%def name="revision(name,rev,tip,author,last_msg)">
   <div>
   %if rev >= 0:
-      <pre><a title="${h.tooltip('%s:\n\n%s' % (author,last_msg))}" class="tooltip" href="${h.url('changeset_home',repo_name=name,revision=tip)}">${'r%s:%s' % (rev,h.short_id(tip))}</a></pre>
+      <a title="${h.tooltip('%s:\n\n%s' % (author,last_msg))}" class="tooltip revision-link" href="${h.url('changeset_home',repo_name=name,revision=tip)}">${'r%s:%s' % (rev,h.short_id(tip))}</a>
   %else:
       ${_('No changesets yet')}
   %endif

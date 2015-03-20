@@ -2667,6 +2667,14 @@ BIN_FILENODE = 6
     text-decoration: none;
 }
 
+#repos_list_wrap .revision-link,
+#shortlog_data .revision-link {
+    font-weight: normal !important;
+    font-family: monospace;
+    font-size: 12px;
+    color: #577632;
+}
+
 .revision-link {
     color: #3F6F9F;
     font-weight: bold !important;
