@@ -2670,6 +2670,7 @@ BIN_FILENODE = 6
 #compare_branches + .table .revision-link,
 #compare_tags + .table .revision-link,
 #compare_bookmarks + .table .revision-link,
+.table #files_data .revision-link,
 #repos_list_wrap .revision-link,
 #shortlog_data .revision-link {
     font-weight: normal !important;
