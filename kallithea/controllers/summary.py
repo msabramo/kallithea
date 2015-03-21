@@ -172,7 +172,7 @@ class SummaryController(BaseRepoController):
             )
         else:
             c.no_data = True
-            c.trending_languages = json.dumps({})
+            c.trending_languages = json.dumps([])
 
         c.enable_downloads = c.db_repo.enable_downloads
         c.readme_data, c.readme_file = \
@@ -196,7 +196,7 @@ class SummaryController(BaseRepoController):
     def statistics(self, repo_name):
         if c.db_repo.enable_statistics:
             c.show_stats = True
-            c.no_data_msg = _('No data loaded yet')
+            c.no_data_msg = _('No data ready yet')
         else:
             c.show_stats = False
             c.no_data_msg = _('Statistics are disabled for this repository')

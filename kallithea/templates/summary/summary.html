@@ -383,8 +383,11 @@ $(document).ready(function(){
         }
 
     }
+    if (data.length == 0) {
+        tbl.innerHTML = "<tr><td>${_('No data ready yet')}</td></tr>";
+    }
 
-    $('#lang_stats').appendChild(tbl);
+    $('#lang_stats').append(tbl);
     $('#code_status_show_more').click(function(){
         $('.stats_hidden').show();
         $('#code_status_show_more').hide();
