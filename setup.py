@@ -98,7 +98,7 @@ data_files = []
 package_data = {'kallithea': ['i18n/*/LC_MESSAGES/*.mo', ], }
 
 description = ('Kallithea is a fast and powerful management tool '
-               'for Mercurial and GIT with a built in push/pull server, '
+               'for Mercurial and Git with a built in push/pull server, '
                'full text search and code-review.')
 
 keywords = ' '.join([

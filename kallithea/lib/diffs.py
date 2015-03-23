@@ -453,8 +453,8 @@ class DiffProcessor(object):
                         LimitedDiffContainer(self.diff_limit,
                                             self.cur_diff_size, _diff)
                     break
-            else:  # GIT binary patch (or empty diff)
-                # GIT Binary patch
+            else:  # Git binary patch (or empty diff)
+                # Git binary patch
                 if head['bin_patch']:
                     stats['ops'][BIN_FILENODE] = 'binary diff not shown'
                 chunks = []
