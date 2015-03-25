@@ -28,7 +28,7 @@ Original author and date, and relevant copyright and licensing information is be
 import time
 import logging
 import traceback
-import formencode
+import formencode.htmlfill
 
 from pylons import request, response, tmpl_context as c, url
 from pylons.controllers.util import redirect
