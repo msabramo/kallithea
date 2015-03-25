@@ -290,7 +290,7 @@ celery.result.serialier = json
 
 celeryd.concurrency = 2
 #celeryd.log.file = celeryd.log
-celeryd.log.level = debug
+celeryd.log.level = DEBUG
 celeryd.max.tasks.per.child = 1
 
 <%text>## tasks will never be sent to the queue, but executed locally instead.</%text>
