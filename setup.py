@@ -56,6 +56,7 @@ requirements = [
     "pycrypto>=2.6.0,<=2.6.1",
     "URLObject==2.3.4",
     "Routes==1.13",
+    "dulwich>=0.9.9,<=0.10.1",
 ]
 
 if sys.version_info < (2, 7):
@@ -67,11 +68,6 @@ requirements.append("mercurial>=2.8.2,<3.4")
 if not is_windows:
     requirements.append("py-bcrypt>=0.3.0,<=0.4")
 
-if sys.version_info < (2, 7):
-    # Dulwich 0.9.6 and later do not support Python2.6.
-    requirements.append("dulwich>=0.9.3,<=0.9.5")
-else:
-    requirements.append("dulwich>=0.9.3,<=0.9.7")
 
 dependency_links = [
 ]
