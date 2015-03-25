@@ -145,8 +145,7 @@ class ForksController(BaseRepoController):
             render('forks/fork.html'),
             defaults=defaults,
             encoding="UTF-8",
-            force_defaults=False
-        )
+            force_defaults=False)
 
     @LoginRequired()
     @NotAnonymous()
@@ -181,7 +180,8 @@ class ForksController(BaseRepoController):
                 defaults=errors.value,
                 errors=errors.error_dict or {},
                 prefix_error=False,
-                encoding="UTF-8")
+                encoding="UTF-8",
+                force_defaults=False)
         except Exception:
             log.error(traceback.format_exc())
             h.flash(_('An error occurred during repository forking %s') %

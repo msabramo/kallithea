@@ -156,7 +156,8 @@ class UserGroupsController(BaseController):
                 defaults=errors.value,
                 errors=errors.error_dict or {},
                 prefix_error=False,
-                encoding="UTF-8")
+                encoding="UTF-8",
+                force_defaults=False)
         except Exception:
             log.error(traceback.format_exc())
             h.flash(_('Error occurred during creation of user group %s') \
@@ -216,7 +217,8 @@ class UserGroupsController(BaseController):
                 defaults=defaults,
                 errors=e,
                 prefix_error=False,
-                encoding="UTF-8")
+                encoding="UTF-8",
+                force_defaults=False)
         except Exception:
             log.error(traceback.format_exc())
             h.flash(_('Error occurred during update of user group %s') \

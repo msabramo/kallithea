@@ -133,7 +133,8 @@ class PermissionsController(BaseController):
                     defaults=defaults,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
             except Exception:
                 log.error(traceback.format_exc())
                 h.flash(_('Error occurred during update of permissions'),

@@ -155,6 +155,7 @@ class ReposController(BaseRepoController):
                 defaults=errors.value,
                 errors=errors.error_dict or {},
                 prefix_error=False,
+                force_defaults=False,
                 encoding="UTF-8")
 
         except Exception:
@@ -203,8 +204,8 @@ class ReposController(BaseRepoController):
             defaults=defaults,
             errors={},
             prefix_error=False,
-            encoding="UTF-8"
-        )
+            encoding="UTF-8",
+            force_defaults=False)
 
     @LoginRequired()
     @NotAnonymous()
@@ -300,7 +301,8 @@ class ReposController(BaseRepoController):
                 defaults=defaults,
                 errors=errors.error_dict or {},
                 prefix_error=False,
-                encoding="UTF-8")
+                encoding="UTF-8",
+                force_defaults=False)
 
         except Exception:
             log.error(traceback.format_exc())

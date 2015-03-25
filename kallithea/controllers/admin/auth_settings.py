@@ -104,8 +104,7 @@ class AuthSettingsController(BaseController):
             errors=errors,
             prefix_error=prefix_error,
             encoding="UTF-8",
-            force_defaults=True,
-        )
+            force_defaults=False)
 
     def auth_settings(self):
         """POST create and store auth settings"""

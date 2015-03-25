@@ -138,8 +138,8 @@ class GistsController(BaseController):
                 defaults=defaults,
                 errors=errors.error_dict or {},
                 prefix_error=False,
-                encoding="UTF-8"
-            )
+                encoding="UTF-8",
+                force_defaults=False)
 
         except Exception, e:
             log.error(traceback.format_exc())

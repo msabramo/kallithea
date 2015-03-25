@@ -100,8 +100,8 @@ class SettingsController(BaseController):
                      defaults=errors.value,
                      errors=errors.error_dict or {},
                      prefix_error=False,
-                     encoding="UTF-8"
-                )
+                     encoding="UTF-8",
+                     force_defaults=False)
 
             try:
                 sett = Ui.get_by_key('push_ssl')
@@ -241,7 +241,8 @@ class SettingsController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
 
             try:
                 sett1 = Setting.create_or_update('title',
@@ -300,8 +301,8 @@ class SettingsController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8"
-                )
+                    encoding="UTF-8",
+                    force_defaults=False)
 
             try:
                 settings = [

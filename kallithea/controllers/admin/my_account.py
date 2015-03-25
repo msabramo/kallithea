@@ -136,7 +136,8 @@ class MyAccountController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
             except Exception:
                 log.error(traceback.format_exc())
                 h.flash(_('Error occurred during update of user %s') \
@@ -147,8 +148,7 @@ class MyAccountController(BaseController):
             render('admin/my_account/my_account.html'),
             defaults=defaults,
             encoding="UTF-8",
-            force_defaults=False
-        )
+            force_defaults=False)
 
     def my_account_password(self):
         c.active = 'password'
@@ -166,7 +166,8 @@ class MyAccountController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
             except Exception:
                 log.error(traceback.format_exc())
                 h.flash(_('Error occurred during update of user password'),

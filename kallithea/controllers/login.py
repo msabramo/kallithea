@@ -134,7 +134,8 @@ class LoginController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
             except UserCreationError, e:
                 # container auth or other auth functions that create users on
                 # the fly can throw this exception signaling that there's issue
@@ -201,7 +202,8 @@ class LoginController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
             except UserCreationError, e:
                 # container auth or other auth functions that create users on
                 # the fly can throw this exception signaling that there's issue
@@ -244,7 +246,8 @@ class LoginController(BaseController):
                     defaults=errors.value,
                     errors=errors.error_dict or {},
                     prefix_error=False,
-                    encoding="UTF-8")
+                    encoding="UTF-8",
+                    force_defaults=False)
 
         return render('/password_reset.html')
 
