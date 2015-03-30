@@ -512,6 +512,8 @@ def PullRequestPostForm():
 
 def GistForm(lifetime_options):
     class _GistForm(formencode.Schema):
+        allow_extra_fields = True
+        filter_extra_fields = True
 
         filename = All(v.BasePath()(),
                        v.UnicodeString(strip=True, required=False))
