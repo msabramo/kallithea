@@ -390,16 +390,17 @@ var ajaxGET = function(url,success) {
         ;
 };
 
-var ajaxPOST = function(url,postData,success) {
+var ajaxPOST = function(url, postData, success, failure) {
     var postData = _toQueryString(postData);
+    if(failure === undefined) {
+        failure = function(jqXHR, textStatus, errorThrown) {
+                if (textStatus != "abort")
+                    alert("Error posting to server: " + textStatus);
+            };
+    }
     return $.ajax({url: url, data: postData, type: 'POST', headers: {'X-PARTIAL-XHR': '1'}, cache: false})
         .done(success)
-        .fail(function(jqXHR, textStatus, errorThrown) {
-                if (textStatus == "abort")
-                    return;
-                alert("Ajax POST error: " + textStatus);
-            })
-        ;
+        .fail(failure);
 };
 
 
@@ -1074,37 +1075,31 @@ var getSelectionLink = function(e) {
 };
 
 var deleteNotification = function(url, notification_id, callbacks){
-    var callback = {
-        success:function(o){
+    var success = function(o){
             $("#notification_"+notification_id).remove();
             _run_callbacks(callbacks);
-        },
-        failure:function(o){
+        };
+    var failure = function(o){
             alert("deleteNotification failure");
-        }
-    };
-    var postData = '_method=delete';
+        };
+    var postData = {'_method': 'delete'};
     var sUrl = url.replace('__NOTIFICATION_ID__',notification_id);
-    var request = YAHOO.util.Connect.asyncRequest('POST', sUrl,
-                                                  callback, postData);
+    ajaxPOST(sUrl, postData, success, failure);
 };
 
 var readNotification = function(url, notification_id, callbacks){
-    var callback = {
-        success:function(o){
+    var success = function(o){
             var $obj = $("#notification_"+notification_id);
             $obj.removeClass('unread');
             $obj.find('.read-notification').remove();
             _run_callbacks(callbacks);
-        },
-        failure:function(o){
+        };
+    var failure = function(o){
             alert("readNotification failure");
-        }
-    };
-    var postData = '_method=put';
+        };
+    var postData = {'_method': 'put'};
     var sUrl = url.replace('__NOTIFICATION_ID__',notification_id);
-    var request = YAHOO.util.Connect.asyncRequest('POST', sUrl,
-                                                  callback, postData);
+    ajaxPOST(sUrl, postData, success, failure);
 };
 
 /** MEMBERS AUTOCOMPLETE WIDGET **/
@@ -1729,14 +1724,12 @@ var addPermAction = function(_html, users_list, groups_list){
 }
 
 function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data) {
-    var callback = {
-        success: function (o) {
+    var success = function (o) {
             $('#' + field_id).remove();
-        },
-        failure: function (o) {
+        };
+    var failure = function (o) {
             alert(_TM['Failed to revoke permission'] + ": " + o.status);
-        }
-    };
+        };
     var query_params = {
         '_method': 'delete'
     }
@@ -1756,8 +1749,7 @@ function ajaxActionRevokePermission(url, obj_id, obj_type, field_id, extra_data)
         query_params['obj_type'] = 'user_group';
     }
 
-    var request = YAHOO.util.Connect.asyncRequest('POST', url, callback,
-            _toQueryString(query_params));
+    ajaxPOST(url, query_params, success, failure);
 };
 
 /* Multi selectors */

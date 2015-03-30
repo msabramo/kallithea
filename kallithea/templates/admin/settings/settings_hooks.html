@@ -60,16 +60,14 @@ ${h.end_form()}
 <script type="text/javascript">
 function ajaxActionHook(hook_id,field_id) {
     var sUrl = "${h.url('admin_settings_hooks')}";
-    var callback = {
-        success: function (o) {
+    var success = function (o) {
             var elem = YUD.get(""+field_id);
             elem.parentNode.removeChild(elem);
-        },
-        failure: function (o) {
+        };
+    var failure = function (o) {
             alert("${_('Failed to remove hook')}");
-        }
-    };
-    var postData = '_method=delete&hook_id=' + hook_id;
-    var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
+        };
+    var postData = {'_method': 'delete', 'hook_id': hook_id};
+    ajaxPOST(sUrl, postData, success, failure);
 };
 </script>
