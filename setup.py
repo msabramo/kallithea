@@ -56,7 +56,7 @@ requirements = [
     "pycrypto>=2.6.0,<=2.6.1",
     "URLObject==2.3.4",
     "Routes==1.13",
-    "dulwich>=0.9.9,<=0.10.1",
+    "dulwich>=0.9.9,<=0.9.9",
 ]
 
 if sys.version_info < (2, 7):
