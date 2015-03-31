@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2014-07-02 19:08-0400\n"
-"PO-Revision-Date: 2015-01-30 09:23+0200\n"
-"Last-Translator: Michael Pohl <michael@mipapo.de>\n"
+"PO-Revision-Date: 2015-03-31 17:00+0200\n"
+"Last-Translator: Peter Vitt <petervitt@web.de>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.2-dev\n"
+"X-Generator: Weblate 2.3-dev\n"
 "Generated-By: Babel 0.9.6\n"
 
 #: kallithea/controllers/changelog.py:90 kallithea/controllers/compare.py:90
@@ -448,8 +448,8 @@ msgstr "Fehler beim Aktualisieren der Kerndaten %s"
 #: kallithea/controllers/admin/my_account.py:70
 msgid "You can't edit this user since it's crucial for entire application"
 msgstr ""
-"Sie können diesen User nicht editieren da er für die ganze Applikation "
-"von entscheidender bedeutung ist."
+"Sie können diesen Benutzer nicht editieren, da er von entscheidender "
+"Bedeutung für die ganze Applikation ist"
 
 #: kallithea/controllers/admin/my_account.py:127
 msgid "Your account was updated successfully"
@@ -864,7 +864,7 @@ msgstr "Die Hooks wurden aktutalisiert"
 
 #: kallithea/controllers/admin/settings.py:418
 msgid "Error occurred during hook creation"
-msgstr ""
+msgstr "Während der Erzeugung des Hooks ist ein Fehler aufgetreten"
 
 #: kallithea/controllers/admin/settings.py:444
 msgid "Whoosh reindex task scheduled"
@@ -889,7 +889,7 @@ msgstr "Aktualisierte Nutzergruppe %s"
 #: kallithea/controllers/admin/user_groups.py:221
 #, python-format
 msgid "Error occurred during update of user group %s"
-msgstr ""
+msgstr "Während des Updates der Benutzergruppe %s ist ein Fehler aufgetreten"
 
 #: kallithea/controllers/admin/user_groups.py:239
 msgid "Successfully deleted user group"
@@ -897,7 +897,7 @@ msgstr "Die Nutzergruppe wurde erfolgreich entfernt"
 
 #: kallithea/controllers/admin/user_groups.py:244
 msgid "An error occurred during deletion of user group"
-msgstr ""
+msgstr "Während des Löschens der Benutzergruppe ist ein Fehler aufgetreten"
 
 #: kallithea/controllers/admin/user_groups.py:311
 msgid "Target group cannot be the same"
@@ -905,7 +905,7 @@ msgstr ""
 
 #: kallithea/controllers/admin/user_groups.py:317
 msgid "User Group permissions updated"
-msgstr ""
+msgstr "Berechtigungen der Benutzergruppe wurden aktualisiert"
 
 #: kallithea/controllers/admin/user_groups.py:437
 #: kallithea/controllers/admin/users.py:397
@@ -925,7 +925,7 @@ msgstr "Nutzer %s erstellt"
 #: kallithea/controllers/admin/users.py:149
 #, python-format
 msgid "Error occurred during creation of user %s"
-msgstr ""
+msgstr "Während des Erstellens des Benutzers %s ist ein Fehler aufgetreten"
 
 #: kallithea/controllers/admin/users.py:188
 msgid "User updated successfully"
@@ -993,12 +993,12 @@ msgstr "Keine Änderungen erkannt"
 #: kallithea/lib/helpers.py:598
 #, python-format
 msgid "Deleted branch: %s"
-msgstr ""
+msgstr "Branch %s gelöscht"
 
 #: kallithea/lib/helpers.py:601
 #, python-format
 msgid "Created tag: %s"
-msgstr ""
+msgstr "Tag %s erstellt"
 
 #: kallithea/lib/helpers.py:614
 msgid "Changeset not found"
@@ -1620,7 +1620,7 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1653
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1680 kallithea/model/db.py:1690
 msgid "Registration disabled"
-msgstr ""
+msgstr "Registrierung deaktiviert"
 
 #: kallithea/lib/dbmigrate/schema/db_1_7_0.py:1438
 #: kallithea/lib/dbmigrate/schema/db_1_8_0.py:1484
@@ -1631,7 +1631,7 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1654
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1681 kallithea/model/db.py:1691
 msgid "User Registration with manual account activation"
-msgstr ""
+msgstr "Benutzerregistrierung mit manueller Kontoaktivierung"
 
 #: kallithea/lib/dbmigrate/schema/db_1_7_0.py:1439
 #: kallithea/lib/dbmigrate/schema/db_1_8_0.py:1485
@@ -1642,7 +1642,7 @@ msgstr ""
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1655
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1682 kallithea/model/db.py:1692
 msgid "User Registration with automatic account activation"
-msgstr ""
+msgstr "Benutzerregistrierung mit automatische Kontoaktivierung"
 
 #: kallithea/lib/dbmigrate/schema/db_2_2_0.py:1647
 #: kallithea/lib/dbmigrate/schema/db_2_2_3.py:1674 kallithea/model/db.py:1684
@@ -1683,7 +1683,7 @@ msgstr "Bitte mindestens %(min)i Zeichen eingeben"
 
 #: kallithea/model/forms.py:156
 msgid "Name must not contain only digits"
-msgstr ""
+msgstr "Name darf nicht nur Ziffern enthalten"
 
 #: kallithea/model/notification.py:231
 #, python-format
@@ -1731,14 +1731,14 @@ msgstr ""
 #: kallithea/model/user.py:222 kallithea/model/user.py:247
 msgid "You can't Edit this user since it's crucial for entire application"
 msgstr ""
-"Sie können diesen User nicht editieren da er für die ganze Applikation "
-"von entscheidender bedeutung ist."
+"Sie können diesen Benutzer nicht editieren, da er von entscheidender "
+"Bedeutung für die ganze Applikation ist"
 
 #: kallithea/model/user.py:270
 msgid "You can't remove this user since it's crucial for entire application"
 msgstr ""
-"Sie können diesen User nicht löschen da er für die ganze Applikation von "
-"entscheidender bedeutung ist."
+"Sie können diesen Benutzer nicht löschen, da er von entscheidender Bedeutung "
+"für die ganze Applikation ist"
 
 #: kallithea/model/user.py:276
 #, python-format
@@ -1753,12 +1753,12 @@ msgstr ""
 
 #: kallithea/model/user.py:333
 msgid "Your new password"
-msgstr ""
+msgstr "Dein neues Passwort"
 
 #: kallithea/model/user.py:334
 #, python-format
 msgid "Your new Kallithea password:%s"
-msgstr ""
+msgstr "Dein neues Kallithea-Passwort: %s"
 
 #: kallithea/model/validators.py:82 kallithea/model/validators.py:83
 msgid "Value cannot be an empty list"
@@ -1779,10 +1779,13 @@ msgid ""
 "Username may only contain alphanumeric characters underscores, periods or"
 " dashes and must begin with alphanumeric character or underscore"
 msgstr ""
+"Der Benutzername darf nur alphanumerische Zeichen, Unterstriche, Punkte oder "
+"Bindestriche enthalten und muss mit einem alphanumerischen Zeichen oder "
+"einem Unterstrich beginnen"
 
 #: kallithea/model/validators.py:151
 msgid "The input is not valid"
-msgstr ""
+msgstr "Die Eingabe ist nicht gültig"
 
 #: kallithea/model/validators.py:158
 #, python-format
@@ -1791,18 +1794,21 @@ msgstr "Benutzername \"%(username)s\" ist ungültig"
 
 #: kallithea/model/validators.py:177
 msgid "Invalid user group name"
-msgstr ""
+msgstr "Ungültiger Benutzergruppenname"
 
 #: kallithea/model/validators.py:178
 #, python-format
 msgid "User group \"%(usergroup)s\" already exists"
-msgstr ""
+msgstr "Benutzergruppe \"%(usergroup)s\" existiert bereits"
 
 #: kallithea/model/validators.py:180
 msgid ""
 "user group name may only contain alphanumeric characters underscores, "
 "periods or dashes and must begin with alphanumeric character"
 msgstr ""
+"Der Name einer Benutzergruppe darf nur alphanumerische Zeichen, "
+"Unterstriche, Punkte oder Bindestriche enthalten und muss mit einem "
+"alphanumerischen Zeichen beginnen"
 
 #: kallithea/model/validators.py:218
 msgid "Cannot assign this group as parent"
@@ -1879,6 +1885,8 @@ msgstr "Forke um den selben typ wie der Vorgesetze zu haben"
 #: kallithea/model/validators.py:534
 msgid "You don't have permissions to create repository in this group"
 msgstr ""
+"Du hast nicht die erforderlichen Berechtigungen, um in dieser Gruppe ein "
+"Repository zu erzeugen"
 
 #: kallithea/model/validators.py:536
 msgid "no permission to create repository in root location"
@@ -1890,7 +1898,7 @@ msgstr ""
 
 #: kallithea/model/validators.py:626
 msgid "This username or user group name is not valid"
-msgstr ""
+msgstr "Dieser Benutzername oder Benutzergruppenname ist nicht gültig"
 
 #: kallithea/model/validators.py:719
 msgid "This is not a valid path"
@@ -1920,7 +1928,7 @@ msgstr ""
 
 #: kallithea/model/validators.py:836
 msgid "Please enter a valid IPv4 or IpV6 address"
-msgstr ""
+msgstr "Bitte gib eine gültige IPv4- oder IPv6-Adresse an"
 
 #: kallithea/model/validators.py:837
 #, python-format
@@ -1942,7 +1950,7 @@ msgstr ""
 
 #: kallithea/templates/about.html:4 kallithea/templates/about.html:20
 msgid "About"
-msgstr ""
+msgstr "Über"
 
 #: kallithea/templates/index.html:5
 msgid "Dashboard"
@@ -1974,7 +1982,7 @@ msgstr "Repositories"
 #: kallithea/templates/admin/repos/repo_add.html:22
 #: kallithea/templates/admin/repos/repos.html:25
 msgid "Add Repository"
-msgstr ""
+msgstr "Repository hinzufügen"
 
 #: kallithea/templates/index_base.html:22
 #: kallithea/templates/index_base.html:27
@@ -1985,7 +1993,7 @@ msgstr ""
 
 #: kallithea/templates/index_base.html:32
 msgid "You have admin right to this group, and can edit it"
-msgstr ""
+msgstr "Du hast Adminrechte für diese Gruppe und kannst sie editieren"
 
 #: kallithea/templates/index_base.html:32
 msgid "Edit Repository Group"
@@ -1993,7 +2001,7 @@ msgstr ""
 
 #: kallithea/templates/index_base.html:45
 msgid "Group Name"
-msgstr ""
+msgstr "Gruppenname"
 
 #: kallithea/templates/index_base.html:46
 #: kallithea/templates/index_base.html:128
@@ -2049,7 +2057,7 @@ msgstr "Letzte Änderung"
 #: kallithea/templates/journal/journal.html:199
 #: kallithea/templates/journal/journal.html:290
 msgid "Tip"
-msgstr ""
+msgstr "Tipp"
 
 #: kallithea/templates/index_base.html:133
 #: kallithea/templates/admin/repo_groups/repo_group_edit_advanced.html:10
@@ -2088,7 +2096,7 @@ msgstr "Klicken um Absteigend zu Sortieren"
 
 #: kallithea/templates/index_base.html:143
 msgid "No repositories found."
-msgstr ""
+msgstr "Keine Repositories gefunden."
 
 #: kallithea/templates/index_base.html:144
 #: kallithea/templates/admin/my_account/my_account_repos.html:60
@@ -2159,25 +2167,25 @@ msgstr "Kein Account?"
 
 #: kallithea/templates/password_reset.html:5
 msgid "Password Reset"
-msgstr ""
+msgstr "Passwort zurücksetzen"
 
 #: kallithea/templates/password_reset.html:29
 #, python-format
 msgid "Reset your Password to %s"
-msgstr ""
+msgstr "Setze dein Passwort auf %s zurück"
 
 #: kallithea/templates/password_reset.html:31
 msgid "Reset your Password"
-msgstr ""
+msgstr "Setze dein Passwort zurück"
 
 #: kallithea/templates/password_reset.html:42
 msgid "Email Address"
-msgstr ""
+msgstr "E-Mailadresse"
 
 #: kallithea/templates/password_reset.html:52
 #: kallithea/templates/register.html:95
 msgid "Captcha"
-msgstr ""
+msgstr "Captcha"
 
 #: kallithea/templates/password_reset.html:63
 msgid "Send password reset email"
@@ -2270,8 +2278,8 @@ msgstr ""
 #, python-format
 msgid "%s entry"
 msgid_plural "%s entries"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s Eintrag"
+msgstr[1] "%s Einträge"
 
 #: kallithea/templates/admin/admin_log.html:6
 #: kallithea/templates/admin/my_account/my_account_repos.html:50
@@ -2324,7 +2332,7 @@ msgstr ""
 
 #: kallithea/templates/admin/auth/auth_settings.html:34
 msgid "Enabled Plugins"
-msgstr ""
+msgstr "Aktivierte Plugins"
 
 #: kallithea/templates/admin/auth/auth_settings.html:36
 msgid ""
@@ -2339,12 +2347,12 @@ msgstr ""
 #: kallithea/templates/admin/auth/auth_settings.html:43
 #: kallithea/templates/base/root.html:63
 msgid "enabled"
-msgstr ""
+msgstr "Aktiviert"
 
 #: kallithea/templates/admin/auth/auth_settings.html:43
 #: kallithea/templates/base/root.html:64
 msgid "disabled"
-msgstr ""
+msgstr "Deaktiviert"
 
 #: kallithea/templates/admin/auth/auth_settings.html:51
 #: kallithea/templates/admin/defaults/defaults.html:87
@@ -2368,7 +2376,7 @@ msgstr "Speichern"
 
 #: kallithea/templates/admin/auth/auth_settings.html:57
 msgid "Plugin"
-msgstr ""
+msgstr "Plugin"
 
 #: kallithea/templates/admin/defaults/defaults.html:5
 #: kallithea/templates/admin/defaults/defaults.html:28
@@ -2472,7 +2480,7 @@ msgstr ""
 #: kallithea/templates/admin/users/user_edit_api_keys.html:8
 #: kallithea/templates/admin/users/user_edit_api_keys.html:27
 msgid "never"
-msgstr ""
+msgstr "nie"
 
 #: kallithea/templates/admin/gists/edit.html:80
 #: kallithea/templates/admin/gists/new.html:52
@@ -2488,7 +2496,7 @@ msgstr ""
 #: kallithea/templates/admin/gists/edit.html:148
 #: kallithea/templates/changeset/changeset_file_comment.html:89
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 #: kallithea/templates/admin/gists/index.html:6
 #: kallithea/templates/admin/gists/index.html:19
@@ -2576,7 +2584,7 @@ msgstr ""
 #: kallithea/templates/email_templates/pull_request.html:4
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: kallithea/templates/admin/gists/show.html:40
 msgid "Public Gist"
@@ -2607,7 +2615,7 @@ msgstr ""
 #: kallithea/templates/files/files_source.html:41
 #: kallithea/templates/files/files_source.html:44
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 #: kallithea/templates/admin/gists/show.html:68
 #: kallithea/templates/files/files_edit.html:54
@@ -2636,7 +2644,7 @@ msgstr "Mein Account"
 #: kallithea/templates/admin/my_account/my_account.html:38
 #: kallithea/templates/admin/users/user_edit.html:42
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: kallithea/templates/admin/my_account/my_account.html:40
 #: kallithea/templates/admin/users/user_edit.html:43
@@ -2645,11 +2653,11 @@ msgstr ""
 
 #: kallithea/templates/admin/my_account/my_account.html:41
 msgid "My Emails"
-msgstr ""
+msgstr "Meine E-Mails"
 
 #: kallithea/templates/admin/my_account/my_account.html:42
 msgid "My Repositories"
-msgstr ""
+msgstr "Meine Repositories"
 
 #: kallithea/templates/admin/my_account/my_account.html:43
 #: kallithea/templates/journal/journal.html:54
@@ -2759,7 +2767,7 @@ msgstr ""
 #: kallithea/templates/admin/my_account/my_account_emails.html:38
 #: kallithea/templates/admin/users/user_edit_emails.html:38
 msgid "New email address"
-msgstr ""
+msgstr "Neue E-Mailadresse"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:1
 msgid "Change your account password"
@@ -2767,16 +2775,16 @@ msgstr ""
 
 #: kallithea/templates/admin/my_account/my_account_password.html:7
 msgid "Current password"
-msgstr ""
+msgstr "Aktuelles Passwort"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:16
 #: kallithea/templates/admin/users/user_edit_profile.html:69
 msgid "New password"
-msgstr ""
+msgstr "Neues Passwort"
 
 #: kallithea/templates/admin/my_account/my_account_password.html:25
 msgid "Confirm new password"
-msgstr ""
+msgstr "Bestätige neues Passwort"
 
 #: kallithea/templates/admin/my_account/my_account_profile.html:9
 msgid "Change your avatar at"
@@ -2790,7 +2798,7 @@ msgstr ""
 #: kallithea/templates/admin/my_account/my_account_profile.html:12
 #: kallithea/templates/admin/users/user_edit_profile.html:11
 msgid "Avatars are disabled"
-msgstr ""
+msgstr "Avatare sind deaktiviert"
 
 #: kallithea/templates/admin/my_account/my_account_profile.html:13
 msgid "Missing email, please update your user email address."
@@ -2799,7 +2807,7 @@ msgstr ""
 #: kallithea/templates/admin/my_account/my_account_profile.html:14
 #: kallithea/templates/admin/users/user_edit_profile.html:15
 msgid "current IP"
-msgstr ""
+msgstr "Aktuelle IP-Adresse"
 
 #: kallithea/templates/admin/my_account/my_account_profile.html:26
 msgid ""
@@ -2883,7 +2891,7 @@ msgstr "Kommentare"
 #: kallithea/templates/admin/notifications/notifications.html:34
 #: kallithea/templates/base/base.html:196
 msgid "Pull Requests"
-msgstr ""
+msgstr "Pull Requests"
 
 #: kallithea/templates/admin/notifications/notifications.html:38
 msgid "Mark all read"
@@ -2919,7 +2927,7 @@ msgstr "Rechte"
 #: kallithea/templates/admin/permissions/permissions.html:41
 #: kallithea/templates/admin/settings/settings.html:42
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: kallithea/templates/admin/permissions/permissions.html:42
 msgid "IP whitelist"
@@ -2927,7 +2935,7 @@ msgstr ""
 
 #: kallithea/templates/admin/permissions/permissions.html:43
 msgid "Overview"
-msgstr ""
+msgstr "Übersicht"
 
 #: kallithea/templates/admin/permissions/permissions_globals.html:7
 msgid "Anonymous access"
@@ -2951,7 +2959,7 @@ msgstr ""
 #: kallithea/templates/admin/permissions/permissions_globals.html:40
 #: kallithea/templates/admin/permissions/permissions_globals.html:54
 msgid "Overwrite existing settings"
-msgstr ""
+msgstr "Bestehende Einstellungen überschreiben"
 
 #: kallithea/templates/admin/permissions/permissions_globals.html:32
 #: kallithea/templates/admin/repos/repo_add_base.html:41
@@ -2971,7 +2979,7 @@ msgstr ""
 #: kallithea/templates/admin/permissions/permissions_globals.html:46
 #: kallithea/templates/data_table/_dt_elements.html:211
 msgid "User group"
-msgstr ""
+msgstr "Benutzergruppe"
 
 #: kallithea/templates/admin/permissions/permissions_globals.html:53
 msgid ""
@@ -3028,7 +3036,7 @@ msgstr ""
 #: kallithea/templates/admin/permissions/permissions_ips.html:32
 #: kallithea/templates/admin/users/user_edit_ips.html:42
 msgid "New ip address"
-msgstr ""
+msgstr "Neue IP-Adresse"
 
 #: kallithea/templates/admin/permissions/permissions_perms.html:1
 msgid "Default user permissions overview"
@@ -3094,7 +3102,7 @@ msgstr "Einstellungen"
 #: kallithea/templates/admin/user_groups/user_group_edit.html:43
 #: kallithea/templates/admin/users/user_edit.html:44
 msgid "Advanced"
-msgstr ""
+msgstr "Erweitert"
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit_advanced.html:1
 #, python-format
@@ -3164,7 +3172,7 @@ msgstr "admin"
 #: kallithea/templates/admin/repos/repo_edit_permissions.html:12
 #: kallithea/templates/admin/user_groups/user_group_edit_perms.html:11
 msgid "user/user group"
-msgstr ""
+msgstr "Benutzer/Benutzergruppe"
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit_perms.html:28
 #: kallithea/templates/admin/repo_groups/repo_group_edit_perms.html:45
@@ -3406,7 +3414,7 @@ msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:85
 msgid "Delete this repository"
-msgstr ""
+msgstr "Dieses Repository löschen"
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:88
 #, python-format
@@ -3450,12 +3458,12 @@ msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_caches.html:15
 msgid "Prefix"
-msgstr ""
+msgstr "Präfix"
 
 #: kallithea/templates/admin/repos/repo_edit_caches.html:16
 #: kallithea/templates/admin/repos/repo_edit_fields.html:6
 msgid "Key"
-msgstr ""
+msgstr "Schlüssel"
 
 #: kallithea/templates/admin/repos/repo_edit_caches.html:17
 #: kallithea/templates/admin/user_groups/user_group_add.html:52
@@ -3590,7 +3598,7 @@ msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_statistics.html:10
 msgid "Reset statistics"
-msgstr ""
+msgstr "Statistiken zurücksetzen"
 
 #: kallithea/templates/admin/repos/repo_edit_statistics.html:10
 msgid "Confirm to remove current statistics"
@@ -3623,19 +3631,19 @@ msgstr ""
 #: kallithea/templates/admin/settings/settings.html:45
 #: kallithea/templates/admin/settings/settings_vcs.html:19
 msgid "Hooks"
-msgstr ""
+msgstr "Hooks"
 
 #: kallithea/templates/admin/settings/settings.html:46
 msgid "Full text search"
-msgstr ""
+msgstr "Volltextsuche"
 
 #: kallithea/templates/admin/settings/settings.html:47
 msgid "System Info"
-msgstr ""
+msgstr "Systeminfo"
 
 #: kallithea/templates/admin/settings/settings_email.html:4
 msgid "Email prefix"
-msgstr ""
+msgstr "E-Mail-Präfix"
 
 #: kallithea/templates/admin/settings/settings_email.html:5
 msgid "Kallithea email from"
@@ -3651,19 +3659,19 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_email.html:9
 msgid "SMTP server"
-msgstr ""
+msgstr "SMTP-Server"
 
 #: kallithea/templates/admin/settings/settings_email.html:10
 msgid "SMTP username"
-msgstr ""
+msgstr "SMTP-Benutzername"
 
 #: kallithea/templates/admin/settings/settings_email.html:11
 msgid "SMTP password"
-msgstr ""
+msgstr "SMTP-Passwort"
 
 #: kallithea/templates/admin/settings/settings_email.html:12
 msgid "SMTP port"
-msgstr ""
+msgstr "SMTP-Port"
 
 #: kallithea/templates/admin/settings/settings_email.html:14
 msgid "SMTP use TLS"
@@ -3806,15 +3814,15 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_system.html:4
 msgid "check for updates"
-msgstr ""
+msgstr "Auf Updates prüfen"
 
 #: kallithea/templates/admin/settings/settings_system.html:5
 msgid "Python version"
-msgstr ""
+msgstr "Python-Version"
 
 #: kallithea/templates/admin/settings/settings_system.html:6
 msgid "Platform"
-msgstr ""
+msgstr "Plattform"
 
 #: kallithea/templates/admin/settings/settings_system.html:7
 msgid "GIT version"
@@ -3831,10 +3839,11 @@ msgstr ""
 #: kallithea/templates/admin/settings/settings_system.html:9
 msgid "Note: please make sure this server can access this url"
 msgstr ""
+"Hinweis: Bitte stelle sicher, dass der Server auf die URL zugreifen kann"
 
 #: kallithea/templates/admin/settings/settings_system.html:14
 msgid "Checking for updates..."
-msgstr ""
+msgstr "Prüfe auf Updates..."
 
 #: kallithea/templates/admin/settings/settings_system.html:22
 msgid "Python packages"
@@ -3872,15 +3881,15 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_vcs.html:42
 msgid "Mercurial Extensions"
-msgstr ""
+msgstr "Mercurial-Erweiterungen"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:47
 msgid "Enable largefiles extension"
-msgstr ""
+msgstr "Erweiterung largefiles aktivieren"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:51
 msgid "Enable hgsubversion extension"
-msgstr ""
+msgstr "Erweiterung hgsubversion aktivieren"
 
 #: kallithea/templates/admin/settings/settings_vcs.html:53
 msgid ""
@@ -3906,7 +3915,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_visual.html:8
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 #: kallithea/templates/admin/settings/settings_visual.html:13
 msgid "Use repository extra fields"
@@ -3918,7 +3927,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_visual.html:18
 msgid "Show Kallithea version"
-msgstr ""
+msgstr "Zeige Kallithea-Version"
 
 #: kallithea/templates/admin/settings/settings_visual.html:20
 msgid "Shows or hides a version number of Kallithea displayed in the footer."
@@ -3983,7 +3992,7 @@ msgstr ""
 
 #: kallithea/templates/admin/settings/settings_visual.html:74
 msgid "Icons"
-msgstr ""
+msgstr "Icons"
 
 #: kallithea/templates/admin/settings/settings_visual.html:79
 msgid "Show public repo icon on repositories"
@@ -4013,22 +4022,22 @@ msgstr ""
 
 #: kallithea/templates/admin/user_groups/user_group_add.html:5
 msgid "Add user group"
-msgstr ""
+msgstr "Benutzergruppe hinzufügen"
 
 #: kallithea/templates/admin/user_groups/user_group_add.html:13
 #: kallithea/templates/base/base.html:76 kallithea/templates/base/base.html:96
 msgid "User groups"
-msgstr ""
+msgstr "Benutzergruppen"
 
 #: kallithea/templates/admin/user_groups/user_group_add.html:15
 #: kallithea/templates/admin/user_groups/user_groups.html:28
 msgid "Add User Group"
-msgstr ""
+msgstr "Benutzergruppe hinzufügen"
 
 #: kallithea/templates/admin/user_groups/user_group_add.html:47
 #: kallithea/templates/admin/user_groups/user_group_edit_settings.html:19
 msgid "Short, optional description for this user group."
-msgstr ""
+msgstr "Kurze, optionale Beschreibung für diese Benutzergruppe."
 
 #: kallithea/templates/admin/user_groups/user_group_edit.html:5
 #, python-format
@@ -4037,7 +4046,7 @@ msgstr ""
 
 #: kallithea/templates/admin/user_groups/user_group_edit.html:14
 msgid "User Groups"
-msgstr ""
+msgstr "Benutzergruppen"
 
 #: kallithea/templates/admin/user_groups/user_group_edit.html:44
 #: kallithea/templates/admin/users/user_edit.html:45
@@ -4054,7 +4063,7 @@ msgstr "Mitglieder"
 #: kallithea/templates/admin/user_groups/user_group_edit_advanced.html:1
 #, python-format
 msgid "User Group: %s"
-msgstr ""
+msgstr "Benutzergruppe: %s"
 
 #: kallithea/templates/admin/user_groups/user_group_edit_advanced.html:19
 #: kallithea/templates/data_table/_dt_elements.html:176
@@ -4064,15 +4073,15 @@ msgstr ""
 
 #: kallithea/templates/admin/user_groups/user_group_edit_advanced.html:21
 msgid "Delete this user group"
-msgstr ""
+msgstr "Diese Benutzergruppe löschen"
 
 #: kallithea/templates/admin/user_groups/user_group_edit_members.html:15
 msgid "No members yet"
-msgstr ""
+msgstr "Noch keine Mitglieder"
 
 #: kallithea/templates/admin/user_groups/user_group_edit_settings.html:40
 msgid "Chosen group members"
-msgstr ""
+msgstr "Ausgewählte Grppenmitglieder"
 
 #: kallithea/templates/admin/user_groups/user_group_edit_settings.html:43
 msgid "Remove all elements"
@@ -4080,7 +4089,7 @@ msgstr ""
 
 #: kallithea/templates/admin/user_groups/user_group_edit_settings.html:53
 msgid "Available members"
-msgstr ""
+msgstr "Verfügbare Mitglieder"
 
 #: kallithea/templates/admin/user_groups/user_group_edit_settings.html:56
 msgid "Add all elements"
@@ -4088,11 +4097,11 @@ msgstr ""
 
 #: kallithea/templates/admin/user_groups/user_groups.html:5
 msgid "User groups administration"
-msgstr ""
+msgstr "Benutzergruppenverwaltung"
 
 #: kallithea/templates/admin/user_groups/user_groups.html:13
 msgid "user groups"
-msgstr ""
+msgstr "Benutzergruppen"
 
 #: kallithea/templates/admin/users/user_add.html:5
 msgid "Add user"
@@ -4107,7 +4116,7 @@ msgstr "Benutzer"
 #: kallithea/templates/admin/users/user_add.html:15
 #: kallithea/templates/admin/users/users.html:27
 msgid "Add User"
-msgstr ""
+msgstr "Benutzer hinzufügen"
 
 #: kallithea/templates/admin/users/user_add.html:53
 msgid "Password confirmation"
@@ -4129,7 +4138,7 @@ msgstr ""
 #: kallithea/templates/admin/users/user_edit_advanced.html:1
 #, python-format
 msgid "User: %s"
-msgstr ""
+msgstr "Benutzer: %s"
 
 #: kallithea/templates/admin/users/user_edit_advanced.html:7
 #: kallithea/templates/admin/users/user_edit_profile.html:51
@@ -4138,11 +4147,11 @@ msgstr ""
 
 #: kallithea/templates/admin/users/user_edit_advanced.html:9
 msgid "Last Login"
-msgstr ""
+msgstr "Letzter Login"
 
 #: kallithea/templates/admin/users/user_edit_advanced.html:10
 msgid "Member of User groups"
-msgstr ""
+msgstr "Mitglieder der Benutzergruppe"
 
 #: kallithea/templates/admin/users/user_edit_advanced.html:21
 #: kallithea/templates/data_table/_dt_elements.html:160
@@ -4152,7 +4161,7 @@ msgstr ""
 
 #: kallithea/templates/admin/users/user_edit_advanced.html:23
 msgid "Delete this user"
-msgstr ""
+msgstr "Diesen Benutzer löschen"
 
 #: kallithea/templates/admin/users/user_edit_ips.html:8
 #, python-format
@@ -4184,27 +4193,27 @@ msgstr ""
 
 #: kallithea/templates/admin/users/users.html:5
 msgid "Users administration"
-msgstr ""
+msgstr "Benutzerverwaltung"
 
 #: kallithea/templates/admin/users/users.html:13
 msgid "users"
-msgstr ""
+msgstr "Benutzer"
 
 #: kallithea/templates/admin/users/users.html:54
 msgid "Firstname"
-msgstr ""
+msgstr "Vorname"
 
 #: kallithea/templates/admin/users/users.html:55
 msgid "Lastname"
-msgstr ""
+msgstr "Nachname"
 
 #: kallithea/templates/admin/users/users.html:56
 msgid "Last login"
-msgstr ""
+msgstr "Letzter Login"
 
 #: kallithea/templates/admin/users/users.html:59
 msgid "Auth type"
-msgstr ""
+msgstr "Authentifizierungsart"
 
 #: kallithea/templates/base/base.html:37
 #, python-format
@@ -4213,7 +4222,7 @@ msgstr ""
 
 #: kallithea/templates/base/base.html:49
 msgid "Support"
-msgstr ""
+msgstr "Support"
 
 #: kallithea/templates/base/base.html:134
 msgid "Create fork"
@@ -4224,7 +4233,7 @@ msgstr ""
 #: kallithea/templates/data_table/_dt_elements.html:15
 #: kallithea/templates/summary/summary.html:11
 msgid "Summary"
-msgstr ""
+msgstr "Zusammenfassung"
 
 #: kallithea/templates/base/base.html:146
 #: kallithea/templates/changelog/changelog.html:17
@@ -4238,7 +4247,7 @@ msgstr ""
 #: kallithea/templates/data_table/_dt_elements.html:31
 #: kallithea/templates/files/files.html:15
 msgid "Files"
-msgstr ""
+msgstr "Dateien"
 
 #: kallithea/templates/base/base.html:149
 msgid "Switch To"
@@ -4247,7 +4256,7 @@ msgstr ""
 #: kallithea/templates/base/base.html:156
 #: kallithea/templates/base/base.html:158
 msgid "Options"
-msgstr ""
+msgstr "Optionen"
 
 #: kallithea/templates/base/base.html:166
 #: kallithea/templates/forks/forks_data.html:21
@@ -4313,7 +4322,7 @@ msgstr ""
 
 #: kallithea/templates/base/base.html:263
 msgid "Forgot password ?"
-msgstr ""
+msgstr "Passwort vergessen?"
 
 #: kallithea/templates/base/base.html:286
 msgid "Log Out"
@@ -4363,7 +4372,7 @@ msgstr ""
 
 #: kallithea/templates/base/base.html:399
 msgid "No matches found"
-msgstr ""
+msgstr "Keine Übereinstimmungen gefunden"
 
 #: kallithea/templates/base/base.html:527
 msgid "Keyboard shortcuts"
@@ -4424,7 +4433,7 @@ msgstr "Rechte"
 #: kallithea/templates/base/perms_summary.html:32
 #: kallithea/templates/base/perms_summary.html:56
 msgid "Edit Permission"
-msgstr ""
+msgstr "Berechtigungen editieren"
 
 #: kallithea/templates/base/perms_summary.html:90
 msgid "No permission defined"
@@ -4445,7 +4454,7 @@ msgstr ""
 
 #: kallithea/templates/base/root.html:48
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: kallithea/templates/base/root.html:49
 msgid "members"
@@ -4528,7 +4537,7 @@ msgstr ""
 #: kallithea/templates/tags/tags.html:55
 #: kallithea/templates/tags/tags_data.html:10
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: kallithea/templates/bookmarks/bookmarks.html:56
 #: kallithea/templates/bookmarks/bookmarks_data.html:12
@@ -4538,7 +4547,7 @@ msgstr ""
 #: kallithea/templates/tags/tags.html:56
 #: kallithea/templates/tags/tags_data.html:12
 msgid "Revision"
-msgstr ""
+msgstr "Revision"
 
 #: kallithea/templates/branches/branches.html:5
 #, python-format
@@ -4625,11 +4634,11 @@ msgstr ""
 #: kallithea/templates/changeset/changeset_range.html:103
 #, python-format
 msgid "Branch %s"
-msgstr ""
+msgstr "Branch %s"
 
 #: kallithea/templates/changelog/changelog.html:299
 msgid "There are no changes yet"
-msgstr ""
+msgstr "Bisher gibt es keine Änderungen"
 
 #: kallithea/templates/changelog/changelog_details.html:4
 #: kallithea/templates/changeset/changeset.html:76
@@ -4664,7 +4673,7 @@ msgstr ""
 
 #: kallithea/templates/changelog/changelog_summary_data.html:7
 msgid "Age"
-msgstr ""
+msgstr "Alter"
 
 #: kallithea/templates/changelog/changelog_summary_data.html:9
 msgid "Refs"
@@ -4727,8 +4736,8 @@ msgstr ""
 #, python-format
 msgid "%d comment"
 msgid_plural "%d comments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d Kommentar"
+msgstr[1] "%d Kommentare"
 
 #: kallithea/templates/changeset/changeset.html:67
 #: kallithea/templates/changeset/changeset_file_comment.html:111
@@ -4822,19 +4831,19 @@ msgstr ""
 #: kallithea/templates/changeset/changeset_file_comment.html:73
 #: kallithea/templates/changeset/changeset_file_comment.html:166
 msgid "Preview"
-msgstr ""
+msgstr "Vorschau"
 
 #: kallithea/templates/changeset/changeset_file_comment.html:80
 #: kallithea/templates/changeset/changeset_file_comment.html:189
 msgid "Comment preview"
-msgstr ""
+msgstr "Kommentarvorschau"
 
 #: kallithea/templates/changeset/changeset_file_comment.html:88
 #: kallithea/templates/changeset/changeset_file_comment.html:196
 #: kallithea/templates/email_templates/changeset_comment.html:11
 #: kallithea/templates/email_templates/pull_request_comment.html:16
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: kallithea/templates/changeset/changeset_file_comment.html:96
 msgid "You need to be logged in to comment."
@@ -4937,11 +4946,11 @@ msgstr ""
 
 #: kallithea/templates/data_table/_dt_elements.html:63
 msgid "Mercurial repository"
-msgstr ""
+msgstr "Mercurial Repository"
 
 #: kallithea/templates/data_table/_dt_elements.html:65
 msgid "Git repository"
-msgstr ""
+msgstr "Git Repository"
 
 #: kallithea/templates/data_table/_dt_elements.html:72
 msgid "Public repository"
@@ -4987,19 +4996,22 @@ msgstr ""
 #: kallithea/templates/email_templates/password_reset.html:4
 #, python-format
 msgid "Hello %s"
-msgstr ""
+msgstr "Hallo %s"
 
 #: kallithea/templates/email_templates/password_reset.html:5
 msgid "We received a request to create a new password for your account."
 msgstr ""
+"Wir haben eine Anforderung erhalten, für deinen Account ein neues Passwort "
+"zu erstellen."
 
 #: kallithea/templates/email_templates/password_reset.html:6
 msgid "You can generate it by clicking following URL"
-msgstr ""
+msgstr "Du kannst es über die folgende URL erstellen"
 
 #: kallithea/templates/email_templates/password_reset.html:10
 msgid "Please ignore this email if you did not request a new password ."
 msgstr ""
+"Bitte ignoriere diese E-Mail, wenn du kein neues Passwort angefordert hast."
 
 #: kallithea/templates/email_templates/pull_request.html:6
 #, python-format
@@ -5013,7 +5025,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_data.html:14
 #: kallithea/templates/pullrequests/pullrequest_show.html:28
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: kallithea/templates/email_templates/pull_request_comment.html:6
 #, python-format
@@ -5088,7 +5100,7 @@ msgstr ""
 #: kallithea/templates/files/files_add.html:49
 #: kallithea/templates/files/files_add.html:53
 msgid "or"
-msgstr ""
+msgstr "oder"
 
 #: kallithea/templates/files/files_add.html:49
 msgid "Upload File"
@@ -5134,11 +5146,11 @@ msgstr ""
 
 #: kallithea/templates/files/files_browser.html:42
 msgid "Size"
-msgstr ""
+msgstr "Größe"
 
 #: kallithea/templates/files/files_browser.html:43
 msgid "Mimetype"
-msgstr ""
+msgstr "MIME-Type"
 
 #: kallithea/templates/files/files_browser.html:44
 msgid "Last Revision"
@@ -5146,7 +5158,7 @@ msgstr ""
 
 #: kallithea/templates/files/files_browser.html:45
 msgid "Last modified"
-msgstr ""
+msgstr "Zuletzt geändert"
 
 #: kallithea/templates/files/files_browser.html:46
 msgid "Last committer"
@@ -5160,7 +5172,7 @@ msgstr ""
 #: kallithea/templates/files/files_delete.html:25
 #: kallithea/templates/files/files_delete.html:45
 msgid "Delete file"
-msgstr ""
+msgstr "Datei löschen"
 
 #: kallithea/templates/files/files_edit.html:4
 #, python-format
@@ -5197,8 +5209,8 @@ msgstr ""
 #, python-format
 msgid "%s author"
 msgid_plural "%s authors"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s Autor"
+msgstr[1] "%s Autoren"
 
 #: kallithea/templates/files/files_source.html:7
 msgid "Diff to Revision"
@@ -5244,7 +5256,7 @@ msgstr ""
 
 #: kallithea/templates/files/files_source.html:71
 msgid "File is too big to display"
-msgstr ""
+msgstr "Die Datei ist zu groß, um sie anzuzeigen"
 
 #: kallithea/templates/files/files_ypjax.html:5
 msgid "annotation"
@@ -5252,7 +5264,7 @@ msgstr ""
 
 #: kallithea/templates/files/files_ypjax.html:23
 msgid "Go Back"
-msgstr ""
+msgstr "Zurück"
 
 #: kallithea/templates/files/files_ypjax.html:24
 msgid "No files at given path"
@@ -5284,11 +5296,11 @@ msgstr ""
 
 #: kallithea/templates/forks/fork.html:71
 msgid "Private"
-msgstr ""
+msgstr "Privat"
 
 #: kallithea/templates/forks/fork.html:80
 msgid "Copy permissions"
-msgstr ""
+msgstr "Berechtigungen kopieren"
 
 #: kallithea/templates/forks/fork.html:84
 msgid "Copy permissions from forked repository"
@@ -5515,7 +5527,7 @@ msgstr ""
 #: kallithea/templates/search/search_content.html:21
 #: kallithea/templates/search/search_path.html:15
 msgid "Permission denied"
-msgstr ""
+msgstr "Zugriff verweigert"
 
 #: kallithea/templates/summary/statistics.html:4
 #, python-format
@@ -5651,7 +5663,7 @@ msgstr ""
 
 #: kallithea/templates/summary/summary.html:193
 msgid "Latest changes"
-msgstr ""
+msgstr "Letzte Änderungen"
 
 #: kallithea/templates/summary/summary.html:195
 msgid "Quick start"
