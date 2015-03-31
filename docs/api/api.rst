@@ -5,7 +5,7 @@ API
 ===
 
 
-Kallithea has a simple JSON RPC API with a single schema for calling all api
+Kallithea has a simple JSON RPC API with a single schema for calling all API
 methods. Everything is available by sending JSON encoded http(s) requests to
 <your_server>/_admin/api .
 
@@ -14,11 +14,11 @@ API access for web views
 ++++++++++++++++++++++++
 
 API access can also be turned on for each web view in Kallithea that is
-decorated with the `@LoginRequired` decorator. Some views use
-`@LoginRequired(api_access=True)` and are always available. By default only
+decorated with the ``@LoginRequired`` decorator. Some views use
+``@LoginRequired(api_access=True)`` and are always available. By default only
 RSS/ATOM feed views are enabled. Other views are
 only available if they have been white listed. Edit the
-`api_access_controllers_whitelist` option in your .ini file and define views
+``api_access_controllers_whitelist`` option in your .ini file and define views
 that should have API access enabled.
 
 For example, to enable API access to patch/diff raw file and archive::
@@ -30,7 +30,7 @@ For example, to enable API access to patch/diff raw file and archive::
         FilesController:archivefile
 
 After this change, a Kallithea view can be accessed without login by adding a
-GET parameter `?api_key=<api_key>` to url.
+GET parameter ``?api_key=<api_key>`` to the URL.
 
 Exposing raw diffs is a good way to integrate with
 3rd party services like code review, or build farms that could download archives.
@@ -70,7 +70,7 @@ The response to the JSON-RPC API call will always be a JSON structure::
         "error": "null"|<error_message> # JSON formatted error (if any)
     }
 
-All responses from API will be `HTTP/1.0 200 OK`. If there is an error,
+All responses from API will be ``HTTP/1.0 200 OK``. If there is an error,
 the reponse will have a failure description in *error* and
 *result* will be null.
 
@@ -78,10 +78,10 @@ the reponse will have a failure description in *error* and
 API client
 ++++++++++
 
-Kallithea comes with a `kallithea-api` command line tool providing a convenient
+Kallithea comes with a ``kallithea-api`` command line tool providing a convenient
 way to call the JSON-RPC API.
 
-For example, to call `get_repo`::
+For example, to call ``get_repo``::
 
  kallithea-api --apihost=<your.kallithea.server.url> --apikey=<yourapikey> get_repo
 
@@ -91,7 +91,8 @@ For example, to call `get_repo`::
   'id': 75,
   'result': None}
 
-Oops, looks like we forgot to add an argument. Let's try again, now providing the repoid as parameter::
+Oops, looks like we forgot to add an argument. Let's try again, now
+providing the ``repoid`` as a parameter::
 
     kallithea-api get_repo repoid:myrepo
 
@@ -101,11 +102,11 @@ Oops, looks like we forgot to add an argument. Let's try again, now providing th
      'id': 39,
      'result': <json data...>}
 
-To avoid specifying apihost and apikey every time, run::
+To avoid specifying ``apihost`` and ``apikey`` every time, run::
 
   kallithea-api --save-config --apihost=<your.kallithea.server.url> --apikey=<yourapikey>
 
-This will create a `~/.config/kallithea` with the specified hostname and apikey
+This will create a ``~/.config/kallithea`` with the specified hostname and apikey
 so you don't have to specify them every time.
 
 
@@ -139,8 +140,8 @@ OUTPUT::
 rescan_repos
 ------------
 
-Rescan repositories. If remove_obsolete is set,
-Kallithea will delete repos that are in database but not in the filesystem.
+Rescan repositories. If ``remove_obsolete`` is set,
+Kallithea will delete repos that are in the database but not in the filesystem.
 This command can only be executed using the api_key of a user with admin rights.
 
 INPUT::
@@ -163,7 +164,7 @@ OUTPUT::
 invalidate_cache
 ----------------
 
-Invalidate cache for repository.
+Invalidate the cache for a repository.
 This command can only be executed using the api_key of a user with admin rights,
 or that of a regular user with admin or write access to the repository.
 
@@ -187,8 +188,8 @@ lock
 ----
 
 Set the locking state on the given repository by the given user.
-If param 'userid' is skipped, it is set to the id of the user who is calling this method.
-If param 'locked' is skipped, the current lock state of the repository is returned.
+If the param ``userid`` is skipped, it is set to the ID of the user who is calling this method.
+If param ``locked`` is skipped, the current lock state of the repository is returned.
 This command can only be executed using the api_key of a user with admin rights, or that of a regular user with admin or write access to the repository.
 
 INPUT::
@@ -425,7 +426,7 @@ OUTPUT::
 delete_user
 -----------
 
-Delete given user if such user exists.
+Delete the given user if such a user exists.
 This command can only be executed using the api_key of a user with admin rights.
 
 
@@ -555,8 +556,8 @@ OUTPUT::
 add_user_to_user_group
 ----------------------
 
-Addsa user to a user group. If the user already is in that group, success will be
-`false`.
+Adds a user to a user group. If the user already is in that group, success will be
+``false``.
 This command can only be executed using the api_key of a user with admin rights.
 
 
@@ -585,7 +586,7 @@ remove_user_from_user_group
 ---------------------------
 
 Remove a user from a user group. If the user isn't in the given group, success will
-be `false`.
+be ``false``.
 This command can only be executed using the api_key of a user with admin rights.
 
 
@@ -614,7 +615,7 @@ get_repo
 --------
 
 Get an existing repository by its name or repository_id. Members will contain
-either users_group or user associated to that repository.
+either users_group or users associated to that repository.
 This command can only be executed using the api_key of a user with admin rights,
 or that of a regular user with at least read access to the repository.
 
@@ -743,7 +744,7 @@ get_repo_nodes
 --------------
 
 Return a list of files and directories for a given path at the given revision.
-It's possible to specify ret_type to show only `files` or `dirs`.
+It is possible to specify ret_type to show only ``files`` or ``dirs``.
 This command can only be executed using the api_key of a user with admin rights.
 
 
@@ -775,7 +776,7 @@ OUTPUT::
 create_repo
 -----------
 
-Create a repository. If repository name contains "/", all needed repository
+Create a repository. If the repository name contains "/", all needed repository
 groups will be created. For example "foo/bar/baz" will create repository groups
 "foo", "bar" (with "foo" as parent), and create "baz" repository with
 "bar" as group.
@@ -829,8 +830,8 @@ OUTPUT::
 fork_repo
 ---------
 
-Create a fork of given repo. If using celery, this will
-return success message immidiatelly and fork will be created
+Create a fork of the given repo. If using Celery, this will
+return success message immediately and a fork will be created
 asynchronously.
 This command can only be executed using the api_key of a user with admin rights,
 or that of a regular user with fork permission and at least read access to the repository.
@@ -869,7 +870,7 @@ delete_repo
 Delete a repository.
 This command can only be executed using the api_key of a user with admin rights,
 or that of a regular user with admin access to the repository.
-When `forks` param is set it's possible to detach or delete forks of the deleted repository.
+When ``forks`` param is set it is possible to detach or delete forks of the deleted repository.
 
 
 INPUT::
@@ -895,7 +896,7 @@ OUTPUT::
 grant_user_permission
 ---------------------
 
-Grant permission for user on given repository, or update existing one if found.
+Grant permission for a user on the given repository, or update the existing one if found.
 This command can only be executed using the api_key of a user with admin rights.
 
 
@@ -923,7 +924,7 @@ OUTPUT::
 revoke_user_permission
 ----------------------
 
-Revoke permission for user on given repository.
+Revoke permission for a user on the given repository.
 This command can only be executed using the api_key of a user with admin rights.
 
 
@@ -950,7 +951,7 @@ OUTPUT::
 grant_user_group_permission
 ---------------------------
 
-Grant permission for user group on given repository, or update
+Grant permission for a user group on the given repository, or update the
 existing one if found.
 This command can only be executed using the api_key of a user with admin rights.
 
@@ -979,7 +980,7 @@ OUTPUT::
 revoke_user_group_permission
 ----------------------------
 
-Revoke permission for user group on given repository.
+Revoke permission for a user group on the given repository.
 This command can only be executed using the api_key of a user with admin rights.
 
 INPUT::

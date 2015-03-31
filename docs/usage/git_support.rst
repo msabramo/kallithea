@@ -5,16 +5,17 @@ Git support
 ===========
 
 
-Kallithea Git support is enabled by default. You just need a git
+Kallithea Git support is enabled by default. You just need a Git
 command line client installed on the server to make Git work fully.
 
 Web server with chunked encoding
 --------------------------------
 
-Large Git pushes do however require a http server with support for chunked encoding for POST.
-
-The Python web servers waitress_ and gunicorn_ (linux only) can be used.
-By default, Kallithea uses waitress_ for `paster serve` instead of the built-in `paste` WSGI server. 
+Large Git pushes requires a http server with support for
+chunked encoding for POST. The Python web servers waitress_ and
+gunicorn_ (linux only) can be used. By default, Kallithea uses
+waitress_ for `paster serve` instead of the built-in `paste` WSGI
+server.
 
 The default paste server is controlled in the .ini file::
 
@@ -35,8 +36,8 @@ Also make sure to comment out the following options::
 Disabling Git
 -------------
 
-You can always disable git/hg support by editing a
-file **kallithea/__init__.py** and commenting out the backend.
+You can always disable Git or Mercurial support by editing the
+file ``kallithea/__init__.py`` and commenting out the backend.
 
 .. code-block:: python
 

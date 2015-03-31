@@ -27,7 +27,7 @@ There are several ways to install Kallithea:
   a Kallithea release is using standard pip. The package will be installed in
   the same location as all other Python packages you have ever installed. As a
   result, removing it is not as straightforward as with a virtualenv, as you'd
-  have to remove its dependencies manually and make sure that they not are
+  have to remove its dependencies manually and make sure that they are not
   needed by other packages.
 
 .. _installation-source:
@@ -58,15 +58,12 @@ It is highly recommended to use a separate virtualenv_ for installing Kallithea.
 This way, all libraries required by Kallithea will be installed separately from your
 main Python installation and other applications and things will be less
 problematic when upgrading the system or Kallithea.
-An additional benefit of virtualenv_ is that it doesn't require root privileges. 
+An additional benefit of virtualenv_ is that it doesn't require root privileges.
 
 - Assuming you have installed virtualenv_, create a new virtual environment
-  in for example `/srv/kallithea/venv` using the virtualenv command::
+  for example, in `/srv/kallithea/venv`, using the virtualenv command::
 
     virtualenv /srv/kallithea/venv
-
-.. note:: Older versions of virtualenv required ``--no-site-packages`` to work
-   correctly. It should no longer be necessary.
 
 - Activate the virtualenv_ in your current shell session by running::
 
@@ -81,7 +78,7 @@ An additional benefit of virtualenv_ is that it doesn't require root privileges.
 
     mkdir /srv/kallithea
 
-- Go into the created directory run this command to install kallithea::
+- Go into the created directory and run this command to install Kallithea::
 
     pip install kallithea
 
@@ -90,7 +87,7 @@ An additional benefit of virtualenv_ is that it doesn't require root privileges.
 
     python setup.py install
 
-- This will install Kallithea together with pylons and all other required
+- This will install Kallithea together with pylons_ and all other required
   python libraries into the activated virtualenv.
 
 You can now proceed to :ref:`setup`.
@@ -117,13 +114,13 @@ Upgrading Kallithea from Python Package Index (PyPI)
 -----------------------------------------------------
 
 .. note::
-   Firstly, it is recommended that you **always** perform a database and
+   It is strongly recommended that you **always** perform a database and
    configuration backup before doing an upgrade.
 
-   (These directions will use '{version}' to note that this is the version of
+   These directions will use '{version}' to note that this is the version of
    Kallithea that these files were used with.  If backing up your Kallithea
    instance from version 0.1 to 0.2, the ``my.ini`` file could be
-   backed up to ``my.ini.0-1``.)
+   backed up to ``my.ini.0-1``.
 
 
 If using a SQLite database, stop the Kallithea process/daemon/service, and
@@ -138,13 +135,13 @@ Back up your configuration file::
  cp my.ini my.ini.{version}
 
 
-Ensure that you are using the Python Virtual Environment that you'd originally
-installed Kallithea in::
+Ensure that you are using the Python virtual environment that you originally
+installed Kallithea in by running::
 
  pip freeze
 
-will list all packages installed in the current environment.  If Kallithea
-isn't listed, change virtual environments to your venv location::
+This will list all packages installed in the current environment.  If
+Kallithea isn't listed, activate the correct virtual environment::
 
  source /srv/kallithea/venv/bin/activate
 
@@ -159,12 +156,12 @@ Then run the following command from the installation directory::
  paster make-config Kallithea my.ini
 
 This will display any changes made by the new version of Kallithea to your
-current configuration. It will try to perform an automerge. It's recommended
-that you re-check the content after the automerge.
+current configuration. It will try to perform an automerge. It is recommended
+that you recheck the content after the automerge.
 
 .. note::
-   Please always make sure your .ini files are up to date. Often errors are
-   caused by missing params added in new versions.
+   Please always make sure your .ini files are up to date. Errors can
+   often be caused by missing parameters added in new versions.
 
 
 It is also recommended that you rebuild the whoosh index after upgrading since
@@ -182,9 +179,9 @@ options that need to be set.
 
 
 .. note::
-   DB schema upgrade library has some limitations and can sometimes fail if you try to
-   upgrade from older major releases. In such case simply run upgrades sequentially, eg.
-   upgrading from 0.1.X to 0.3.X should be done like that: 0.1.X. > 0.2.X > 0.3.X
+   The DB schema upgrade library has some limitations and can sometimes fail if you try to
+   upgrade from older major releases. In such a case simply run upgrades sequentially, e.g.,
+   upgrading from 0.1.X to 0.3.X should be done like this: 0.1.X. > 0.2.X > 0.3.X
    You can always specify what version of Kallithea you want to install for example in pip
    `pip install Kallithea==0.2`
 
@@ -208,3 +205,4 @@ Or::
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv
 .. _Python: http://www.python.org/
+.. _pylons: http://www.pylonsproject.org/

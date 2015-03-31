@@ -23,14 +23,14 @@ Example usage of Subrepos with Kallithea::
     hg ci --message "added remote subrepo"
 
 
-In the file list of a clone of repo1 you will see a connected subrepo at
-revision it was during cloning.
-Clicking in subrepos link should send you to proper repository in Kallithea.
+In the file list of a clone of ``repo1`` you will see a connected
+subrepo at the revision it was at during cloning. Clicking in
+subrepos link should send you to the proper repository in Kallithea.
 
-Cloning repo1 will also clone attached subrepository.
+Cloning ``repo1`` will also clone the attached subrepository.
 
 Next we can edit the subrepo data, and push back to Kallithea. This will update
-both of repositories.
+both of the repositories.
 
 See http://mercurial.aragost.com/kick-start/en/subrepositories/ for more
 information about subrepositories.

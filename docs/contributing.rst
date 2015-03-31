@@ -16,7 +16,7 @@ https://kallithea-scm.org/repos/kallithea/ (which is our self-hosted instance
 of Kallithea).
 
 For now, we use Bitbucket_ for `Pull Requests`_ and `Issue Tracker`_ services. The
-issue tracker is for tracking bugs, not for "support", discussion or ideas -
+issue tracker is for tracking bugs, not for support, discussion, or ideas -
 please use the `mailing list`_ to reach the community.
 
 We use Weblate_ to translate the user interface messages into languages other

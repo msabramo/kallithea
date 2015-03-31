@@ -147,9 +147,9 @@ You can also build the documentation locally: go to ``docs/`` and run::
 
    make html
 
-(You need to have Sphinx_ installed to build the documentation. If you don't
-have Sphinx_ installed you can install it via the command: ``pip install
-sphinx``)
+.. note:: You need to have Sphinx_ installed to build the
+          documentation. If you don't have Sphinx_ installed you can
+          install it via the command: ``pip install sphinx`` .
 
 
 Converting from RhodeCode

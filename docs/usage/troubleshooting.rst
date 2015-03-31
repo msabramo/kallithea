@@ -6,49 +6,50 @@ Troubleshooting
 ===============
 
 :Q: **Missing static files?**
-:A: Make sure either to set the `static_files = true` in the .ini file or
+:A: Make sure either to set the ``static_files = true`` in the .ini file or
    double check the root path for your http setup. It should point to
    for example:
-   /home/my-virtual-python/lib/python2.7/site-packages/kallithea/public
+   ``/home/my-virtual-python/lib/python2.7/site-packages/kallithea/public``
 
 |
 
 :Q: **Can't install celery/rabbitmq?**
-:A: Don't worry Kallithea works without them too. No extra setup is required.
-    Try out great celery docs for further help.
+:A: Don't worry. Kallithea works without them, too. No extra setup is required.
+    Try out the great Celery docs for further help.
 
 |
 
 :Q: **Long lasting push timeouts?**
-:A: Make sure you set a longer timeouts in your proxy/fcgi settings, timeouts
-    are caused by https server and not Kallithea.
+:A: Make sure you set a longer timeout in your proxy/fcgi settings. Timeouts
+    are caused by the http server and not Kallithea.
 
 |
 
 :Q: **Large pushes timeouts?**
-:A: Make sure you set a proper max_body_size for the http server. Very often
-    Apache, Nginx or other http servers kill the connection due to to large
+:A: Make sure you set a proper ``max_body_size`` for the http server. Very often
+    Apache, Nginx, or other http servers kill the connection due to to large
     body.
 
 |
 
 :Q: **Apache doesn't pass basicAuth on pull/push?**
-:A: Make sure you added `WSGIPassAuthorization true`.
+:A: Make sure you added ``WSGIPassAuthorization true``.
 
 |
 
 :Q: **Git fails on push/pull?**
-:A: Make sure you're using an wsgi http server that can handle chunked encoding
-    such as `waitress` or `gunicorn`.
+:A: Make sure you're using a WSGI http server that can handle chunked encoding
+    such as ``waitress`` or ``gunicorn``.
 
 |
 
 :Q: **How can I use hooks in Kallithea?**
-:A: It's easy if they are python hooks just use advanced link in hooks section
-    in Admin panel, that works only for Mercurial. If you want to use githooks,
-    just install proper one in repository eg. create file in
-    `/gitrepo/hooks/pre-receive`. You can also use Kallithea-extensions to
-    connect to callback hooks, for both Git and Mercurial.
+:A: It's easy if they are Python hooks: just use advanced link in
+    hooks section in Admin panel, that works only for Mercurial. If
+    you want to use Git hooks, just install th proper one in the repository,
+    e.g., create a file `/gitrepo/hooks/pre-receive`. You can also use
+    Kallithea-extensions to connect to callback hooks, for both Git
+    and Mercurial.
 
 |
 
@@ -64,7 +65,7 @@ Troubleshooting
 
 :Q: **Requests hanging on Windows**
 :A: Please try out with disabled Antivirus software, there are some known problems with Eset Anitivirus. Make sure
-    you have installed latest windows patches (especially KB2789397).
+    you have installed the latest Windows patches (especially KB2789397).
 
 
 .. _virtualenv: http://pypi.python.org/pypi/virtualenv

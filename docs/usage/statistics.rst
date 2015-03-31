@@ -17,16 +17,16 @@ With Celery disabled
 - This happens on each single visit to the statistics page until all commits are
   fetched. Statistics are kept cached until additional commits are added to the
   repository. In such a case Kallithea will only fetch the new commits when
-  updating it's cache.
+  updating its cache.
 
 
 With Celery enabled
 -------------------
 
 - On the first visit to the summary page Kallithea will create tasks that will
-  execute on celery workers. This task will gather all of the stats until all
+  execute on Celery workers. This task will gather all of the stats until all
   commits are parsed, each task will parse 250 commits, and run the next task to
-  parse next 250 commits, until all of the commits are parsed.
+  parse the next 250 commits until all of the commits are parsed.
 
 .. note::
    At any time you can disable statistics on each repository via the repository
