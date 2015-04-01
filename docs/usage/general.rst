@@ -11,19 +11,21 @@ Repository deleting
 Currently when an admin or owner deletes a repository, Kallithea does
 not physically delete said repository from the filesystem, but instead
 renames it in a special way so that it is not possible to push, clone
-or access repository. It is worth noting that even if someone will be
-given administrative access to Kallithea and will delete a repository,
-you can easy restore such an action by removing ``rm__<date>`` from
-the repository name. There is also a special command for cleaning such
-archived repos::
+or access the repository.
+
+There is a special command for cleaning up such archived repos::
 
     paster cleanup-repos --older-than=30d my.ini
 
-This command will scan for archived repositories that are older than
-30 days, display them, and ask if you want to delete them (there is
-a ``--dont-ask`` flag also) If you host a large amount of repositories with
-forks that are constantly deleted it is recommended that you run such a
+This command scans for archived repositories that are older than
+30 days, displays them, and asks if you want to delete them (unless given
+the ``--dont-ask`` flag). If you host a large amount of repositories with
+forks that are constantly being deleted, it is recommended that you run this
 command via crontab.
+
+It is worth noting that even if someone is given administrative access to
+Kallithea and deletes a repository, you can easily restore such an action by
+renaming the repository directory, removing the ``rm__<date>`` prefix.
 
 Follow current branch in file view
 ----------------------------------
