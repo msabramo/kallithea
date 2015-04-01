@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2015-04-01 03:17+0200\n"
-"PO-Revision-Date: 2015-03-31 17:00+0200\n"
+"PO-Revision-Date: 2015-04-01 12:15+0200\n"
 "Last-Translator: Peter Vitt <petervitt@web.de>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/de/>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.3-dev\n"
 
 #: kallithea/controllers/changelog.py:86
 #: kallithea/controllers/pullrequests.py:247 kallithea/lib/base.py:449
@@ -56,9 +57,8 @@ msgstr "Die angegebene Version existiert nicht in diesem Repository"
 
 #: kallithea/controllers/changeset.py:352
 #: kallithea/controllers/pullrequests.py:699
-#, fuzzy
 msgid "No comments."
-msgstr "%d Kommentar"
+msgstr "Keine Kommentare."
 
 #: kallithea/controllers/changeset.py:382
 msgid ""
@@ -79,8 +79,8 @@ msgstr ""
 #: kallithea/controllers/error.py:96
 msgid "The request could not be understood by the server due to malformed syntax."
 msgstr ""
-"Die Anfrage konnte vom Server nicht ausgewertet werden weil sie einen "
-"Ungültigen Syntax nutzt."
+"Die Anfrage konnte wegen ungültiger Syntax vom Server nicht ausgewertet "
+"werden."
 
 #: kallithea/controllers/error.py:99
 msgid "Unauthorized access to resource"
@@ -99,7 +99,7 @@ msgid ""
 "The server encountered an unexpected condition which prevented it from "
 "fulfilling the request."
 msgstr ""
-"Aufgrund einer Unerwarteten Gegebenheit konnte der Server diese Anfrage "
+"Aufgrund einer unerwarteten Gegebenheit konnte der Server diese Anfrage "
 "nicht vollenden."
 
 #: kallithea/controllers/feed.py:55
@@ -164,7 +164,7 @@ msgstr "Datei %s erfolgreich gelöscht"
 #: kallithea/controllers/files.py:355 kallithea/controllers/files.py:421
 #: kallithea/controllers/files.py:502
 msgid "Error occurred during commit"
-msgstr "Während des Commitens trat ein Fehler auf"
+msgstr "Während des Commits trat ein Fehler auf"
 
 #: kallithea/controllers/files.py:378
 msgid "You can only edit files with revision being a valid branch "
@@ -215,7 +215,7 @@ msgstr "Leeres Repository"
 
 #: kallithea/controllers/files.py:543
 msgid "Unknown archive type"
-msgstr "Unbekannter Archiv Typ"
+msgstr "Unbekannter Archivtyp"
 
 #: kallithea/controllers/files.py:775
 #: kallithea/templates/changeset/changeset_range.html:9
@@ -241,7 +241,7 @@ msgstr "Tags"
 #: kallithea/controllers/forks.py:187
 #, python-format
 msgid "An error occurred during repository forking %s"
-msgstr "Währen des Forken des Repositorys trat ein Fehler auf: %s"
+msgstr "Während des Forkens des Repositorys trat ein Fehler auf: %s"
 
 #: kallithea/controllers/home.py:84
 msgid "Groups"
@@ -304,9 +304,9 @@ msgstr ""
 " an ihre EMail Addresse gesendet"
 
 #: kallithea/controllers/pullrequests.py:130
-#, fuzzy, python-format
+#, python-format
 msgid "%s (closed)"
-msgstr "(geschlossen)"
+msgstr "%s (geschlossen)"
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -335,9 +335,8 @@ msgstr "Fehler beim Erstellen des Pull-Requests: %s"
 
 #: kallithea/controllers/pullrequests.py:356
 #: kallithea/controllers/pullrequests.py:497
-#, fuzzy
 msgid "No description"
-msgstr "Beschreibung"
+msgstr "Keine Beschreibung"
 
 #: kallithea/controllers/pullrequests.py:363
 msgid "Successfully opened new pull request"
@@ -345,9 +344,8 @@ msgstr "Es wurde erfolgreich ein neuer Pullrequest eröffnet"
 
 #: kallithea/controllers/pullrequests.py:366
 #: kallithea/controllers/pullrequests.py:450
-#, fuzzy
 msgid "Error occurred while creating pull request"
-msgstr "Währen des abschicken des Pullrequests trat ein Fehler auf"
+msgstr "Während des Erstellens des Pull Requests trat ein Fehler auf"
 
 #: kallithea/controllers/pullrequests.py:398
 msgid "Missing changesets since the previous pull request:"
@@ -433,9 +431,8 @@ msgid "There is no index to search in. Please run whoosh indexer"
 msgstr "Es gibt keinen durchsuchbaren Index. Bitte den Whoosh Indizierer ausführen"
 
 #: kallithea/controllers/search.py:144
-#, fuzzy
 msgid "An error occurred during search operation."
-msgstr "Während dieser Such Operation trat ein Fehler auf"
+msgstr "Während der Suchoperation trat ein Fehler auf."
 
 #: kallithea/controllers/summary.py:199
 #: kallithea/templates/summary/summary.html:387
@@ -1799,9 +1796,9 @@ msgid ""
 msgstr ""
 
 #: kallithea/model/notification.py:299
-#, fuzzy, python-format
+#, python-format
 msgid "New user %(new_username)s registered"
-msgstr "Benutzername \"%(username)s\" ist ungültig"
+msgstr "Neuer Benutzer %(new_username)s registriert"
 
 #: kallithea/model/notification.py:301
 #, python-format
@@ -2294,12 +2291,11 @@ msgid "Password Reset"
 msgstr "Passwort zurücksetzen"
 
 #: kallithea/templates/password_reset.html:12
-#, fuzzy, python-format
+#, python-format
 msgid "Reset Your Password to %s"
 msgstr "Setze dein Passwort auf %s zurück"
 
 #: kallithea/templates/password_reset.html:14
-#, fuzzy
 msgid "Reset Your Password"
 msgstr "Setze dein Passwort zurück"
 
@@ -2408,7 +2404,7 @@ msgstr "Profil"
 
 #: kallithea/templates/admin/admin.html:13
 #: kallithea/templates/journal/journal.html:12
-#, fuzzy, python-format
+#, python-format
 msgid "%s Entry"
 msgid_plural "%s Entries"
 msgstr[0] "%s Eintrag"
@@ -2979,7 +2975,6 @@ msgid "Pull Requests"
 msgstr "Pull Requests"
 
 #: kallithea/templates/admin/notifications/notifications.html:30
-#, fuzzy
 msgid "Mark All Read"
 msgstr "Markiere alle als gelesen"
 
@@ -2989,7 +2984,6 @@ msgstr "Bisher gibt es keine Benachrichtigungen"
 
 #: kallithea/templates/admin/notifications/show_notification.html:5
 #: kallithea/templates/admin/notifications/show_notification.html:11
-#, fuzzy
 msgid "Show Notification"
 msgstr "Zeige Benachrichtigung"
 
@@ -5978,4 +5972,3 @@ msgstr "%s Tags"
 #, fuzzy
 msgid "Compare Tags"
 msgstr "vergleichsansicht"
-
