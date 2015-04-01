@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2015-04-01 03:17+0200\n"
-"PO-Revision-Date: 2015-03-13 14:24+0200\n"
+"PO-Revision-Date: 2015-04-01 12:59+0200\n"
 "Last-Translator: Andrew Shadura <andrew@shadura.me>\n"
 "Language-Team: Slovak "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/sk/>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 2.3-dev\n"
 
 #: kallithea/controllers/changelog.py:86
 #: kallithea/controllers/pullrequests.py:247 kallithea/lib/base.py:449
@@ -56,9 +57,8 @@ msgstr "Taká revízia neexistuje"
 
 #: kallithea/controllers/changeset.py:352
 #: kallithea/controllers/pullrequests.py:699
-#, fuzzy
 msgid "No comments."
-msgstr ""
+msgstr "Nie sú žiadne komentáre."
 
 #: kallithea/controllers/changeset.py:382
 msgid ""
@@ -296,9 +296,9 @@ msgid ""
 msgstr ""
 
 #: kallithea/controllers/pullrequests.py:130
-#, fuzzy, python-format
+#, python-format
 msgid "%s (closed)"
-msgstr "(zatvorené)"
+msgstr "%s (zatvorené)"
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -421,9 +421,8 @@ msgid "There is no index to search in. Please run whoosh indexer"
 msgstr ""
 
 #: kallithea/controllers/search.py:144
-#, fuzzy
 msgid "An error occurred during search operation."
-msgstr "Došlo k chybe pri vytváraní gist"
+msgstr "Došlo k chybe počas vyhľadávania."
 
 #: kallithea/controllers/summary.py:199
 #: kallithea/templates/summary/summary.html:387
@@ -2359,12 +2358,12 @@ msgstr ""
 
 #: kallithea/templates/admin/admin.html:13
 #: kallithea/templates/journal/journal.html:12
-#, fuzzy, python-format
+#, python-format
 msgid "%s Entry"
 msgid_plural "%s Entries"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%s záznam"
+msgstr[1] "%s záznamy"
+msgstr[2] "%s záznamov"
 
 #: kallithea/templates/admin/admin_log.html:6
 #: kallithea/templates/admin/my_account/my_account_repos.html:50
@@ -2890,9 +2889,8 @@ msgid ""
 msgstr ""
 
 #: kallithea/templates/admin/my_account/my_account_repos.html:1
-#, fuzzy
 msgid "Repositories You Own"
-msgstr "Repozitáre"
+msgstr "Vaše repozitáre"
 
 #: kallithea/templates/admin/my_account/my_account_repos.html:59
 #: kallithea/templates/admin/my_account/my_account_watched.html:59
@@ -3325,9 +3323,9 @@ msgid ""
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_creating.html:9
-#, fuzzy, python-format
+#, python-format
 msgid "%s Creating Repository"
-msgstr "Prázdny repozitár"
+msgstr "Vytváranie repozitára %s"
 
 #: kallithea/templates/admin/repos/repo_creating.html:13
 msgid "Creating repository"
@@ -3411,19 +3409,16 @@ msgid "Confirm to unlock repository."
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:55
-#, fuzzy
 msgid "Unlock Repository"
-msgstr "Prázdny repozitár"
+msgstr "Odblokovať repozitár"
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:61
-#, fuzzy
 msgid "Confirm to lock repository."
-msgstr "Prázdny repozitár"
+msgstr "Potvrdenie blokovania repozitára."
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:63
-#, fuzzy
 msgid "Lock Repository"
-msgstr "Prázdny repozitár"
+msgstr "Zablokovať repozitár"
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:65
 msgid "Repository is not locked"
@@ -3444,9 +3439,8 @@ msgid "Confirm to delete this repository: %s"
 msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:82
-#, fuzzy
 msgid "Delete this Repository"
-msgstr "Prázdny repozitár"
+msgstr "Vymazať tento repozitár"
 
 #: kallithea/templates/admin/repos/repo_edit_advanced.html:85
 #, fuzzy, python-format
@@ -4811,7 +4805,7 @@ msgstr ""
 #: kallithea/templates/changeset/changeset_file_comment.html:24
 #, fuzzy
 msgid "Status change from pull request"
-msgstr "Zmena stavu -> %s"
+msgstr "Zmena stavu"
 
 #: kallithea/templates/changeset/changeset_file_comment.html:25
 #: kallithea/templates/changeset/changeset_file_comment.html:28
@@ -4987,7 +4981,7 @@ msgstr ""
 #: kallithea/templates/compare/compare_cs.html:84
 #, fuzzy, python-format
 msgid "%s changesets"
-msgstr "Zmeny"
+msgstr "%s zmien"
 
 #: kallithea/templates/compare/compare_cs.html:85
 msgid "behind"
@@ -5416,9 +5410,8 @@ msgid "RSS journal feed"
 msgstr ""
 
 #: kallithea/templates/journal/journal.html:56
-#, fuzzy
 msgid "My Repos"
-msgstr "Prázdny repozitár"
+msgstr "Moje repozitáre"
 
 #: kallithea/templates/journal/journal_data.html:61
 msgid "No entries yet"
@@ -5570,7 +5563,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_show.html:102
 #, fuzzy
 msgid "There are no reviewers"
-msgstr "Zatiaľ nie sú žiadne súbory. %s"
+msgstr "Zatiaľ nie sú reviewers"
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:108
 msgid "Origin"
@@ -5631,9 +5624,8 @@ msgid "Save as New Pull Request"
 msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:275
-#, fuzzy
 msgid "Cancel Changes"
-msgstr "Žiadne zmeny"
+msgstr "Zrušiť zmeny"
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:285
 msgid "Pull Request Content"
@@ -5851,9 +5843,8 @@ msgid "Feed"
 msgstr ""
 
 #: kallithea/templates/summary/summary.html:189
-#, fuzzy
 msgid "Latest Changes"
-msgstr "Zmena stavu -> %s"
+msgstr "Posledné zmeny"
 
 #: kallithea/templates/summary/summary.html:191
 msgid "Quick Start"
@@ -5877,4 +5868,3 @@ msgstr ""
 #: kallithea/templates/tags/tags.html:26
 msgid "Compare Tags"
 msgstr ""
-
