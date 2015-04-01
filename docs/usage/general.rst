@@ -76,16 +76,17 @@ URLs with ``repo_name`` for changelogs and files can be exchanged
 with the ``_<ID>`` syntax.
 
 
-Mailing
--------
+E-mail notifications
+--------------------
 
-When the administrator configures the mailing settings in .ini files
-Kallithea will send mails on user registration, or when Kallithea
+When the administrator correctly specified the e-mail settings in the Kallithea
+configuration file, Kallithea will send e-mails on user registration and when
 errors occur.
 
-Mails are also sent for code comments. If someone comments on a changeset
-mail is sent to all participants, the person who commited the changeset
-(if present in Kallithea), and to all people mentioned with the @mention system.
+Mails are also sent for comments on changesets. In this case, an e-mail is sent
+to the committer of the changeset (if known to Kallithea), to all reviewers of
+the pull request (if applicable) and to all people mentioned in the comment
+using @mention notation.
 
 
 Trending source files
