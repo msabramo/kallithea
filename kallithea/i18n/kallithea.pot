@@ -4696,6 +4696,7 @@ msgid "Comments parsed using %s syntax with %s support."
 msgstr ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:70
+#: kallithea/templates/changeset/changeset_file_comment.html:165
 msgid "Use @username inside this text to notify another user"
 msgstr ""
 
@@ -4750,10 +4751,6 @@ msgid "%d general"
 msgid_plural "%d general"
 msgstr[0] ""
 msgstr[1] ""
-
-#: kallithea/templates/changeset/changeset_file_comment.html:165
-msgid "Use @username inside this text to send notification to another local user."
-msgstr ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:172
 msgid "Vote for pull request status"
