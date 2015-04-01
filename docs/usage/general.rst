@@ -119,47 +119,32 @@ clone url in summary page.
 
 
 
-Visual settings in admin pannel
--------------------------------
+Specific features configurable in the Admin settings
+----------------------------------------------------
 
+In general, the Admin settings should be self-explanatory and will not be
+described in more detail in this documentation. However, there are a few
+features that merit further explanation.
 
-Visualisation settings in Kallithea settings view are extra customizations
-of server behavior. There are 3 main sections in the settings.
+Repository extra fields
+~~~~~~~~~~~~~~~~~~~~~~~
 
-General
-~~~~~~~
+In the `Visual` tab, there is an option `Use repository extra
+fields`, which allows to set custom fields for each repository in the system.
+Each new field consists of 3 attributes: ``field key``, ``field label``,
+``field description``.
 
-The `Use repository extra fields` option allows to set a custom fields
-for each repository in the system. Each new field consists of 3
-attributes: ``field key``, ``field label``, ``field
-description``. Example usage of such fields would be to define company
-specific information into repositories, e.g., defining a
-``repo_manager`` key that would give info about a manager of each
-repository. There's no limit for adding custom fields. Newly created
-fields are accessible via API.
-
-The `Show Kallithea version` option toggles displaying the exact
-Kallithea version in the footer
-
-
-Dashboard items
-~~~~~~~~~~~~~~~
-
-Number of items in main page dashboard before pagination is displayed.
-
-
-Icons
-~~~~~
-
-Show public repo icon / Show private repo icon on repositories - defines if
-public/private icons should be shown in the UI.
-
+Example usage of such fields would be to define company-specific information
+into repositories, e.g., defining a ``repo_manager`` key that would give info
+about a manager of each repository.  There's no limit for adding custom fields.
+Newly created fields are accessible via the API.
 
 Meta-Tagging
 ~~~~~~~~~~~~
 
-With this option enabled, special metatags that are recognisible by Kallithea
-will be turned into colored tags. Currently available tags are::
+In the `Visual` tab, option `Stylify recognised meta tags` will cause Kallithea
+to turn certain meta-tags, detected in repository and repository group
+descriptions, into colored tags. Currently recognised tags are::
 
     [featured]
     [stale]
