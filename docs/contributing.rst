@@ -21,8 +21,8 @@ please use the `mailing list`_ to reach the community.
 
 We use Weblate_ to translate the user interface messages into languages other
 than English. Join our project on `Hosted Weblate`_ to help us.
-To register, you can use your Bitbucket or GitHub account.
-
+To register, you can use your Bitbucket or GitHub account. See :ref:`translations`
+for more details.
 
 Getting started
 ---------------
@@ -125,6 +125,8 @@ For now we just have one official branch ("default") and will keep it so stable
 that it can be (and is) used in production. Experimental changes should live
 elsewhere (for example in a pull request) until they are ready.
 
+.. _translations:
+.. include:: ./../kallithea/i18n/how_to
 
 "Roadmap"
 ---------
