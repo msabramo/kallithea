@@ -1,61 +1,87 @@
-##########################
-# to create new language #
-##########################
+============
+Translations
+============
 
-Translations are available on Hosted Weblate under::
+Translations are available on Hosted Weblate at the following URL:
 
     https://hosted.weblate.org/projects/kallithea/kallithea/
 
-Preferred method is to register on Weblate and request new language translation.
+Registered users may contribute to the existing languages, or request a new
+language translations.
 
-manual creation of new language
-+++++++++++++++++++++++++++++++
- 
-Dowload sources of Kallithea. Run::
+Translating using Weblate
+-------------------------
 
-    python setup.py develop
+Weblate_ offers a simple and easy to use interface featuring glossary, machine
+translation, suggestions based on similar translations in other projects,
+automatic checks etc. Weblate imports the source code tree directly from
+the version control system, and commits edits back from time to time.
 
-To prepare the enviroment
+When registering at Weblate, make sure you name and email address you prefer to
+be used when your changes are committed. We can and probably will amend changesets
+coming from Weblate, but having things right from the beginning makes things easier.
 
+Weblate performs sanity checks all the time and tries to prevent you from ignoring
+them. Most common mistakes are inconsistent punctuation, whitespaces, missing or extra
+format parameters, untranslated strings copied into the translation. Please perform
+necessary corrections when they're needed, or override the false positives.
 
-Make sure all translation strings are extracted by running::
+Merging translations from Weblate
+---------------------------------
+
+Weblate rebases its changes every time it pulls from our repository. Pulls are triggered
+by a web hook from Our Own Kallithea every time it receives new commits. Usually merging
+the new translations is a straightforward process consisting of a pull from Weblate-hosted
+repository which is available under Data Exports tab in Weblate interface.
+
+Weblate tries to minimise the number of commits, but that's not always work, especially
+when two translators work with different languages at more or less the same time.
+It makes sense sometimes to re-order or fold commits by the same author when they touch
+just the same language translation. That, however, may confuse Weblate sometimes, in
+which case it should be manually convinced it has to discard the commits it created by
+using its administrative interface.
+
+Manual creation of a new language translation
+---------------------------------------------
+
+In the prepared development environment, run the following to ensure
+all translation strings are extracted and up-to-date::
 
     python setup.py extract_messages
 
 Create new language by executing following command::
+
     python setup.py init_catalog -l <new_language_code>
 
-This creates a new language under directory kallithea/i18n/<new_language_code>
+This creates a new translation under directory `kallithea/i18n/<new_language_code>`
+based on the translation template file, `kallithea/i18n/kallithea.pot`.
 
-Edit the new PO file located in LC_MESSAGES directory with poedit or your
-favorite PO files editor. Do translations and at the end verify the translation
-file for any errors. This can be done by executing::
+Edit the new PO file located in `LC_MESSAGES` directory with poedit or your
+favorite PO files editor. After you finished with the translations, check the
+translation file for errors by executing::
 
     msgfmt -f -c kallithea/i18n/<new_language_code>/LC_MESSAGES/<updated_file.po>
 
-finally compile the translations::
+Finally, compile the translations::
 
     python setup.py compile_catalog -l <new_language_code>
 
-##########################
-# to update translations #
-##########################
+Updating translations
+---------------------
 
-Fetch latest version of strings for translation by running::
+Extract the latest versions of strings for translation by running::
 
     python setup.py extract_messages
 
-Update PO file by doing::
+Update the PO file by doing::
 
-    python setup.py update_catalog -l <new_language_code><- to update the translations
+    python setup.py update_catalog -l <new_language_code>
 
-Edit the new updated po file. Repeat all steps after `init_catalog` step from
+Edit the new updated translation file. Repeat all steps after `init_catalog` step from
 new translation instructions
 
-
-########################
-# testing translations #
-########################
+Testing translations
+--------------------
 
 Edit test.ini file and set lang attribute to::
 
