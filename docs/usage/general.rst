@@ -70,31 +70,32 @@ Creating a pull request
   (and its ancestors) by selecting it and clicking the ``Open new pull request
   for selected changesets`` button.
 
-Non changeable repository urls
-------------------------------
+Permanent repository URLs
+-------------------------
 
 Due to the complicated nature of repository grouping, URLs of repositories
-can often change.
+can often change. For example, a repository originally accessible from::
 
-example::
-
-  #before
   http://server.com/repo_name
-  # after insertion to test_group group the url will be
+
+would get a new URL after moving it to test_group::
+
   http://server.com/test_group/repo_name
 
-This can be an issue for build systems and any other hardcoded scripts, moving
-a repository to a group leads to a need for changing external systems. To
-overcome this Kallithea introduces a non-changable replacement URL. It's
-simply a repository ID prefixed with ``_``. The above URLs are also accessible as::
+Such moving of a repository to a group can be an issue for build systems and
+other scripts where the repository paths are hardcoded. To mitigate this,
+Kallithea provides permanent URLs using the repository ID prefixed with an
+underscore. In all Kallithea URLs, for example those for the changelog and the
+file view, a repository name can be replaced by this ``_ID`` string. Since IDs
+are always the same, moving the repository to a different group will not affect
+such URLs.
+
+In the example, the repository could also be accessible as::
 
   http://server.com/_<ID>
 
-Since IDs are always the same, moving the repository will not affect
-such a URL.  the ``_<ID>`` syntax can be used anywhere in the system so
-URLs with ``repo_name`` for changelogs and files can be exchanged
-with the ``_<ID>`` syntax.
-
+The ID of a given repository can be shown from the repository ``Summary`` page,
+by selecting the ``Show by ID`` button next to ``Clone URL``.
 
 E-mail notifications
 --------------------

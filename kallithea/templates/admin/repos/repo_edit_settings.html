@@ -8,12 +8,12 @@ ${h.form(url('repo', repo_name=c.repo_info.repo_name),method='put')}
                 </div>
                 <div class="input">
                     ${h.text('repo_name',class_="medium")}
-                    <span class="help-block">${_('Non-changeable id')}: `_${c.repo_info.repo_id}` <span><a id="show_more_clone_id" href="#">${_('What is that?')}</a></span></span>
+                    <span class="help-block">${_('Permanent Repository ID')}: `_${c.repo_info.repo_id}` <span><a id="show_more_clone_id" href="#">${_('What is that?')}</a></span></span>
                     <span id="clone_id" class="help-block" style="display: none">
                         ${_('URL by id')}: `${c.repo_info.clone_url(with_id=True)}` </br>
                         ${_('''In case this repository is renamed or moved into another group the repository URL changes.
-                               Using the above URL guarantees that this repository will always be accessible under such URL.
-                               Useful for CI systems, or any other cases that you need to hardcode the URL into 3rd party service.''')}</span>
+                               Using the above permanent URL guarantees that this repository always will be accessible on that URL.
+                               This is useful for CI systems, or any other cases that you need to hardcode the URL into a 3rd party service.''')}</span>
                 </div>
            </div>
            <div class="field">
