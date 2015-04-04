@@ -122,7 +122,7 @@ dictionary located in ``kallithea/config/conf.py`` with new types.
 Cloning remote repositories
 ---------------------------
 
-Kallithea has the ability to clone remote repos from given remote locations.
+Kallithea has the ability to clone repositories from given remote locations.
 Currently it supports the following options:
 
 - hg  -> hg clone
@@ -130,15 +130,15 @@ Currently it supports the following options:
 - git -> git clone
 
 
-.. note:: svn -> hg cloning requires tge ``hgsubversion`` library to be installed.
+.. note:: svn -> hg cloning requires the ``hgsubversion`` library to be
+   installed.
 
-If you need to clone repositories that are protected via basic auth, you
-might pass the url with stored credentials inside, e.g.,
-``http://user:passw@remote.server/repo``, Kallithea will try to login and clone
-using the given credentials. Please take note that they will be stored as
-plaintext inside the database. Kallithea will remove auth info when showing the
-clone url in summary page.
-
+If you need to clone repositories that are protected via basic authentication,
+you can pass the credentials in the URL, e.g.
+``http://user:passw@remote.server/repo``. Kallithea will then try to login and
+clone using the given credentials. Please note that the given credentials will
+be stored as plaintext inside the database. However, the authentication
+information will not be shown in the clone URL on the summary page.
 
 
 Specific features configurable in the Admin settings
