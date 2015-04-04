@@ -39,19 +39,36 @@ currently visible revision.  So for example, if someone is viewing files in the
 arrows will only show revisions on the ``beta`` branch.
 
 
-Compare view from changelog
----------------------------
+Changelog features
+------------------
 
-Checkboxes in the compare view allow users to view a combined compare
-view. You can only show the range between the first and last checkbox
-(no cherry pick).  Clicking more than one checkbox will activate a
-link at the top saying ``Show selected changesets <from-rev> ->
-<to-rev>``. Clicking this will activate the compare view. In this view
-it is also possible to switch to combined compare.
+The core feature of a repository's ``changelog`` page is to show the revisions
+in a repository. However, there are several other features available from the
+changelog.
 
-Compare view is also available from the journal on pushes having more than
-one changeset.
+Branch filter
+  By default, the changelog shows revisions from all branches in the
+  repository. Use the branch filter to restrict to a given branch.
 
+Viewing a changeset
+  A particular changeset can be opened by clicking on either the changeset
+  hash or the commit message, or by ticking the checkbox and clicking the
+  ``Show selected changeset`` button at the top.
+
+Viewing all changes between two changesets
+  To get a list of all changesets between two selected changesets, along with
+  the changes in each one of them, tick the checkboxes of the first and
+  last changeset in the desired range and click the ``Show selected changesets``
+  button at the top. You can only show the range between the first and last
+  checkbox (no cherry-picking).
+
+  From that page, you can proceed to viewing the overall delta between the
+  selected changesets, by clicking the ``Compare revisions`` button.
+
+Creating a pull request
+  You can create a new pull request for the changes of a particular changeset
+  (and its ancestors) by selecting it and clicking the ``Open new pull request
+  for selected changesets`` button.
 
 Non changeable repository urls
 ------------------------------
