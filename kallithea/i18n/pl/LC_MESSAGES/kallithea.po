@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: Kallithea\n"
 "Report-Msgid-Bugs-To: translations@kallithea-scm.org\n"
 "POT-Creation-Date: 2015-04-01 03:17+0200\n"
-"PO-Revision-Date: 2014-12-12 14:22+0200\n"
-"Last-Translator: Michal Čihař <michal@cihar.com>\n"
+"PO-Revision-Date: 2015-04-04 09:08+0200\n"
+"Last-Translator: Andrew Shadura <andrew@shadura.me>\n"
 "Language-Team: Polish "
 "<https://hosted.weblate.org/projects/kallithea/kallithea/pl/>\n"
 "Language: pl\n"
@@ -22,6 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.3-dev\n"
 
 #: kallithea/controllers/changelog.py:86
 #: kallithea/controllers/pullrequests.py:247 kallithea/lib/base.py:449
@@ -61,9 +62,8 @@ msgstr ""
 
 #: kallithea/controllers/changeset.py:352
 #: kallithea/controllers/pullrequests.py:699
-#, fuzzy
 msgid "No comments."
-msgstr "%d komentarz"
+msgstr "Brak komentarzy."
 
 #: kallithea/controllers/changeset.py:382
 msgid ""
@@ -307,9 +307,9 @@ msgid ""
 msgstr "Twoje hasło zostało zresetowane, nowe hasło zostanie wysłane na e-mail"
 
 #: kallithea/controllers/pullrequests.py:130
-#, fuzzy, python-format
+#, python-format
 msgid "%s (closed)"
-msgstr "(zamknięty)"
+msgstr "%s (zamknięty)"
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -338,9 +338,8 @@ msgstr ""
 
 #: kallithea/controllers/pullrequests.py:356
 #: kallithea/controllers/pullrequests.py:497
-#, fuzzy
 msgid "No description"
-msgstr "Opis"
+msgstr "Brak opisu"
 
 #: kallithea/controllers/pullrequests.py:363
 msgid "Successfully opened new pull request"
@@ -348,7 +347,6 @@ msgstr "Prośba o wykonanie połączenia gałęzi została wykonana prawidłowo"
 
 #: kallithea/controllers/pullrequests.py:366
 #: kallithea/controllers/pullrequests.py:450
-#, fuzzy
 msgid "Error occurred while creating pull request"
 msgstr "Wystąpił błąd podczas prośby o połączenie gałęzi"
 
@@ -383,7 +381,6 @@ msgid "Closed, replaced by %s ."
 msgstr ""
 
 #: kallithea/controllers/pullrequests.py:464
-#, fuzzy
 msgid "Pull request update created"
 msgstr "Recenzje wniosków połączenia gałęzi"
 
@@ -424,9 +421,8 @@ msgid "Git pull requests don't support updates yet."
 msgstr ""
 
 #: kallithea/controllers/pullrequests.py:701
-#, fuzzy
 msgid "Closing."
-msgstr "ładuję ..."
+msgstr "Zamknięcie."
 
 #: kallithea/controllers/search.py:135
 msgid "Invalid search query. Try quoting it."
@@ -437,9 +433,8 @@ msgid "There is no index to search in. Please run whoosh indexer"
 msgstr "Nie ma szukanego indeksu. Proszę uruchomić indeksowanie whoosh"
 
 #: kallithea/controllers/search.py:144
-#, fuzzy
 msgid "An error occurred during search operation."
-msgstr "Wystąpił błąd podczas wyszukiwania tej operacji"
+msgstr "Wystąpił błąd podczas operacji wyszukiwania."
 
 #: kallithea/controllers/summary.py:199
 #: kallithea/templates/summary/summary.html:387
@@ -896,11 +891,11 @@ msgid "Error occurred during updating application settings"
 msgstr "Wystąpił błąd podczas aktualizacji ustawień aplikacji"
 
 #: kallithea/controllers/admin/settings.py:213
-#, fuzzy, python-format
+#, python-format
 msgid "Repositories successfully rescanned. Added: %s. Removed: %s."
 msgstr ""
-"Repozytoria z powodzeniem zostały ponownie zeskanowane dodano: %s, "
-"usunięto: %s"
+"Repozytoria z powodzeniem zostały ponownie zeskanowane dodano: %s, usunięto: "
+"%s."
 
 #: kallithea/controllers/admin/settings.py:270
 msgid "Updated application settings"
@@ -1801,7 +1796,7 @@ msgstr ""
 #: kallithea/model/notification.py:299
 #, fuzzy, python-format
 msgid "New user %(new_username)s registered"
-msgstr "Nazwa użytkownika %(username)s jest nieprawidłowa"
+msgstr "Użytkownik %(new_username)s zarejestrował"
 
 #: kallithea/model/notification.py:301
 #, python-format
@@ -2300,7 +2295,7 @@ msgstr "Łącze resetowania hasła"
 #: kallithea/templates/password_reset.html:12
 #, fuzzy, python-format
 msgid "Reset Your Password to %s"
-msgstr "Zapomniałeś hasła?"
+msgstr "Zapomniałeś hasła do %s?"
 
 #: kallithea/templates/password_reset.html:14
 #, fuzzy
@@ -2925,7 +2920,7 @@ msgstr "Zmiana awataru na"
 #: kallithea/templates/admin/my_account/my_account_profile.html:12
 #: kallithea/templates/admin/users/user_edit_profile.html:9
 msgid "Using"
-msgstr "Używa:"
+msgstr "Używa"
 
 #: kallithea/templates/admin/my_account/my_account_profile.html:14
 #: kallithea/templates/admin/users/user_edit_profile.html:11
@@ -3052,8 +3047,8 @@ msgid ""
 "be lost"
 msgstr ""
 "Wszystkie uprawnienia domyślne każdego repozytorium zostaną przywrócone. "
-"Wybrane uprawnienie zostaną skasowane. Pamiętaj, że wszystkie "
-"niestandardowe uprawnienia w repozytoriach zostaną utracone."
+"Wybrane uprawnienie zostaną skasowane. Pamiętaj, że wszystkie niestandardowe "
+"uprawnienia w repozytoriach zostaną utracone"
 
 #: kallithea/templates/admin/permissions/permissions_globals.html:27
 #: kallithea/templates/admin/permissions/permissions_globals.html:40
@@ -3076,8 +3071,8 @@ msgid ""
 "will be lost"
 msgstr ""
 "Wszystkie uprawnienia domyślne każdego repozytorium zostaną przywrócone. "
-"Wybrane uprawnienie zostaną skasowane. Pamiętaj, że wszystkie "
-"niestandardowe uprawnienia w repozytoriach zostaną utracone."
+"Wybrane uprawnienie zostaną skasowane. Pamiętaj, że wszystkie niestandardowe "
+"uprawnienia w repozytoriach zostaną utracone"
 
 #: kallithea/templates/admin/permissions/permissions_globals.html:46
 #: kallithea/templates/data_table/_dt_elements.html:211
@@ -5254,7 +5249,7 @@ msgstr "Otrzymaliśmy prośbę o utworzenie nowego hasła do twojego konta."
 
 #: kallithea/templates/email_templates/password_reset.html:7
 msgid "You can generate it by clicking following URL"
-msgstr "Możesz wygenerować nowe hasło klikając w link URL poniżej:"
+msgstr "Możesz wygenerować nowe hasło klikając w link URL poniżej"
 
 #: kallithea/templates/email_templates/password_reset.html:10
 msgid "Please ignore this email if you did not request a new password ."
@@ -6057,4 +6052,3 @@ msgstr "Etykiety pliku %s"
 #, fuzzy
 msgid "Compare Tags"
 msgstr "Porównaj tagi"
-
