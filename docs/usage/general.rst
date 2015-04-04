@@ -27,13 +27,16 @@ It is worth noting that even if someone is given administrative access to
 Kallithea and deletes a repository, you can easily restore such an action by
 renaming the repository directory, removing the ``rm__<date>`` prefix.
 
-Follow current branch in file view
-----------------------------------
+File view: follow current branch
+--------------------------------
 
-In file view when this checkbox is checked the << and >> arrows will jump
-to changesets within the same branch currently being viewed. So for example
-if someone is viewing files in the ``beta`` branch and marks the `follow current branch`
-checkbox the << and >> buttons will only show revisions for the `'beta`` branch.
+In the file view, left and right arrows allow to jump to the previous and next
+revision. Depending on the way revisions were created in the repository, this
+could jump to a different branch.  When the checkbox ``Follow current branch``
+is checked, these arrows will only jump to revisions on the same branch as the
+currently visible revision.  So for example, if someone is viewing files in the
+``beta`` branch and marks the `Follow current branch` checkbox, the < and >
+arrows will only show revisions on the ``beta`` branch.
 
 
 Compare view from changelog
