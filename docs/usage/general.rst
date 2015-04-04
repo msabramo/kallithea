@@ -113,10 +113,10 @@ using @mention notation.
 Trending source files
 ---------------------
 
-Trending source files are calculated based on a pre-defined dict of known
-types and extensions. If you miss some extension or would like to scan some
-custom files, it is possible to add new types in the ``LANGUAGES_EXTENSIONS_MAP`` dict
-located in ``kallithea/lib/celerylib/tasks.py``.
+Trending source files are calculated based on a predefined dictionary of known
+types and extensions. If an extension is missing or you would like to scan
+custom files, it is possible to extend the ``LANGUAGES_EXTENSIONS_MAP``
+dictionary located in ``kallithea/config/conf.py`` with new types.
 
 
 Cloning remote repositories
