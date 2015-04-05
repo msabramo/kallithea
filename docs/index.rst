@@ -1,7 +1,7 @@
 .. _index:
 
-Administrators Guide
---------------------
+Kallithea Documentation
+-----------------------
 
 **Readme**
 
@@ -28,9 +28,15 @@ Administrators Guide
 
    usage/general
    usage/vcs_support
-   usage/performance
    usage/locking
    usage/statistics
+
+**Administrators Guide**
+
+.. toctree::
+   :maxdepth: 1
+
+   usage/performance
    usage/backup
    usage/debugging
    usage/troubleshooting
