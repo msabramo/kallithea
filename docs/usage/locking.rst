@@ -1,38 +1,28 @@
 .. _locking:
 
-===================================
-Kallithea repository locking system
-===================================
+==================
+Repository locking
+==================
 
-
-The scenario for repos with `locking function` enabled is that
-every initial clone and every pull gives users (with write permission)
+Kallithea has a ``repository locking`` feature, disabled by default. When
+enabled, every initial clone and every pull gives users (with write permission)
 the exclusive right to do a push.
 
-Each repo can be manually unlocked by an admin from the repo settings menu.
+When repository locking is enabled, repositories get a ``locked`` state that
+can be true or false.  The hg/git commands ``hg/git clone``, ``hg/git pull``,
+and ``hg/git push`` influence this state:
 
-| Repos with **locking function=disabled** is the default, that's how repos work
-  today.
-| Repos with **locking function=enabled** behaves like follows:
+- A ``clone`` or ``pull`` action on the repository locks it (``locked=true``)
+  if the user has write/admin permissions on this repository.
 
-Repos have a state called ``locked`` that can be true or false.
-The hg/git commands ``hg/git clone``, ``hg/git pull``, and ``hg/git push``
-influence this state:
+- Kallithea will remember the user who locked the repository so only this
+  specific user can unlock the repo (``locked=false``) by performing a ``push``
+  command.
 
-- The command ``hg/git pull <repo>`` will lock that repo (``locked=true``)
-  if the user has write/admin permissions on this repo
+- Every other command on a locked repository from this user and every command
+  from any other user will result in an HTTP return code 423 (Locked).
+  Additionally, the HTTP error includes the <user> that locked the repository
+  (e.g., “repository <repo> locked by user <user>”).
 
-- The command ``hg/git clone <repo>`` will lock that repo (``locked=true``) if the
-  user has write/admin permissions on this repo
-
-
-Kallithea will remember the user who locked the repo so
-only this specific user can unlock the repo (``locked=false``) by calling
-
-- ``hg/git push <repo>``
-
-Every other command on that repo from this user and
-every command from any other user will result in an http return code 423 (locked).
-
-Additionally, the http error includes the <user> that locked the repo
-(e.g., “repository <repo> locked by user <user>”).
+Each repository can be manually unlocked by an administrator from the
+repository settings menu.
