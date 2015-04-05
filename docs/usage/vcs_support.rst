@@ -49,36 +49,34 @@ Mercurial support
 
 Working with Mercurial subrepositories
 ``````````````````````````````````````
-Example usage of Subrepos with Kallithea::
+This section explains how to use Mercurial subrepositories_ in Kallithea.
+
+Example usage::
 
     ## init a simple repo
-    hg init repo1
-    cd repo1
-    echo "file1" > file1
-    hg add file1
-    hg ci --message "initial file 1"
+    hg init mainrepo
+    cd mainrepo
+    echo "file" > file
+    hg add file
+    hg ci --message "initial file"
 
-    #clone subrepo we want to add
+    # clone subrepo we want to add from Kallithea
     hg clone http://kallithea.local/subrepo
 
-    ## use path like url to existing repo in Kallithea
+    ## specify URL to existing repo in Kallithea as subrepository path
     echo "subrepo = http://kallithea.local/subrepo" > .hgsub
-
     hg add .hgsub
     hg ci --message "added remote subrepo"
 
+In the file list of a clone of ``mainrepo`` you will see a connected
+subrepository at the revision it was cloned with. Clicking on the
+subrepository link sends you to the proper repository in Kallithea.
 
-In the file list of a clone of ``repo1`` you will see a connected
-subrepo at the revision it was at during cloning. Clicking in
-subrepos link should send you to the proper repository in Kallithea.
+Cloning ``mainrepo`` will also clone the attached subrepository.
 
-Cloning ``repo1`` will also clone the attached subrepository.
-
-Next we can edit the subrepo data, and push back to Kallithea. This will update
-both of the repositories.
-
-See http://mercurial.aragost.com/kick-start/en/subrepositories/ for more
-information about subrepositories.
+Next we can edit the subrepository data, and push back to Kallithea. This will
+update both repositories.
 
 .. _waitress: http://pypi.python.org/pypi/waitress
 .. _gunicorn: http://pypi.python.org/pypi/gunicorn
+.. _subrepositories: http://mercurial.aragost.com/kick-start/en/subrepositories/
