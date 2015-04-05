@@ -27,7 +27,7 @@ Administrators Guide
    :maxdepth: 1
 
    usage/general
-   usage/git_support
+   usage/vcs_support
    usage/performance
    usage/locking
    usage/statistics
