@@ -1,33 +1,31 @@
 .. _statistics:
 
-==========
-Statistics
-==========
+=====================
+Repository statistics
+=====================
 
-The Kallithea statistics system makes heavy demands of the server resources, so
-in order to keep a balance between usability and performance, the statistics are
-cached inside db and are gathered incrementally. This is how Kallithea does
-this:
+Kallithea has a ``repository statistics`` feature, disabled by default. When
+enabled, the amount of commits per committer is visualized in a timeline. This
+feature can be enabled using the ``Enable statistics`` checkbox on the
+repository ``Settings`` page.
 
-With Celery disabled
---------------------
+The statistics system makes heavy demands on the server resources, so
+in order to keep a balance between usability and performance, statistics are
+cached inside the database and gathered incrementally.
 
-- On each first visit to the summary page a set of 250 commits are parsed and
-  updates statistics cache.
-- This happens on each single visit to the statistics page until all commits are
-  fetched. Statistics are kept cached until additional commits are added to the
+When Celery is disabled:
+
+  On each first visit to the summary page a set of 250 commits are parsed and
+  added to the statistics cache. This incremental gathering also happens on each
+  visit to the statistics page, until all commits are fetched.
+
+  Statistics are kept cached until additional commits are added to the
   repository. In such a case Kallithea will only fetch the new commits when
-  updating its cache.
+  updating its statistics cache.
 
+When Celery is enabled:
 
-With Celery enabled
--------------------
-
-- On the first visit to the summary page Kallithea will create tasks that will
-  execute on Celery workers. This task will gather all of the stats until all
-  commits are parsed, each task will parse 250 commits, and run the next task to
-  parse the next 250 commits until all of the commits are parsed.
-
-.. note::
-   At any time you can disable statistics on each repository via the repository
-   edit form in the admin panel. To do this just uncheck the statistics checkbox.
+  On the first visit to the summary page, Kallithea will create tasks that will
+  execute on Celery workers. These tasks will gather all of the statistics until
+  all commits are parsed. Each task parses 250 commits, then launches a new
+  task.
