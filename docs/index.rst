@@ -32,7 +32,6 @@ Administrators Guide
    usage/locking
    usage/statistics
    usage/backup
-   usage/subrepos
    usage/debugging
    usage/troubleshooting
 
