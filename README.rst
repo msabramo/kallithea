@@ -157,8 +157,9 @@ Converting from RhodeCode
 
 Currently, you have two options for working with an existing RhodeCode
 database:
- - keep the database unconverted (intended for testing and evaluation)
- - convert the database in a one-time step
+
+- keep the database unconverted (intended for testing and evaluation)
+- convert the database in a one-time step
 
 Maintaining Interoperability
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
