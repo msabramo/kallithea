@@ -2,6 +2,8 @@
 ## usage:
 ## <%namespace name="dt" file="/data_table/_dt_elements.html"/>
 
+<%namespace name="base" file="/base/base.html"/>
+
 <%def name="quick_menu(repo_name)">
   <ul class="menu_items hidden">
   ##<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
@@ -63,11 +65,7 @@
     <a href="${h.url('edit_repo' if admin else 'summary_home', repo_name=name)}">
 
     ##TYPE OF REPO
-    %if h.is_hg(rtype):
-        <span class="repotag" title="${_('Mercurial repository')}">hg</span>
-    %elif h.is_git(rtype):
-        <span class="repotag" title="${_('Git repository')}">git</span>
-    %endif
+    ${base.repotag(rtype)}
 
     ##PRIVATE/PUBLIC
     %if private and c.visual.show_private_icon:

@@ -1276,8 +1276,8 @@ div.label-summary label {
 #content div.box div.form div.fields div.field div.input input#clone_url,
 #content div.box div.form div.fields div.field div.input input#clone_url_id
 {
-    font-size: 16px;
-    padding: 2px;
+    font-size: 14px;
+    padding: 0 2px;
 }
 
 #content div.box div.form div.fields div.field div.file input {

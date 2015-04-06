@@ -85,6 +85,15 @@
   </ul>
 </%def>
 
+<%def name="repotag(repo)">
+  %if h.is_hg(repo):
+    <span class="repotag" title="${_('Mercurial repository')}">hg</span>
+  %endif
+  %if h.is_git(repo):
+    <span class="repotag" title="${_('Git repository')}">git</span>
+  %endif
+</%def>
+
 <%def name="repo_context_bar(current=None, rev=None)">
   <% rev = None if rev == 'tip' else rev %>
   <%
@@ -103,12 +112,7 @@
   <!--- CONTEXT BAR -->
   <div id="context-bar" class="box">
       <h2>
-        %if h.is_hg(c.db_repo):
-          <span class="repotag">hg</span>
-        %endif
-        %if h.is_git(c.db_repo):
-          <span class="repotag">git</span>
-        %endif
+        ${repotag(c.db_repo)}
 
         ## public/private
         %if c.db_repo.private:
