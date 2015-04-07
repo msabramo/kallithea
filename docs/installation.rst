@@ -35,10 +35,10 @@ There are several ways to install Kallithea:
 Installation from repository source
 -----------------------------------
 
-To install Kallithea from source in a virtualenv, follow the instructions
-below::
+To install Kallithea in a virtualenv using the stable branch of the development
+repository, follow the instructions below::
 
-        hg clone https://kallithea-scm.org/repos/kallithea
+        hg clone https://kallithea-scm.org/repos/kallithea -u stable
         cd kallithea
         virtualenv ../kallithea-venv
         source ../kallithea-venv/bin/activate
