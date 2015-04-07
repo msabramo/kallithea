@@ -4966,7 +4966,7 @@ msgstr[2] "%d к строкам"
 #, fuzzy, python-format
 msgid "%d general"
 msgid_plural "%d general"
-msgstr[0] "Главное"
+msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
@@ -5182,7 +5182,7 @@ msgstr "%s запросил рецензирование pull-запроса %s 
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 #, python-format
 msgid "Comment from %s on %s pull request \"%s\""
-msgstr "%s оставил комментарий к pull-запросу \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:9
 msgid "The comment closed the pull request with status"

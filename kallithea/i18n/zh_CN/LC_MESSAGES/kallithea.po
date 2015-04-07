@@ -1771,7 +1771,7 @@ msgstr ""
 #: kallithea/model/notification.py:299
 #, fuzzy, python-format
 msgid "New user %(new_username)s registered"
-msgstr "用户名称 %(username)s 无效"
+msgstr "用户名称 %(new_username)s 无效"
 
 #: kallithea/model/notification.py:301
 #, python-format
@@ -2251,7 +2251,7 @@ msgstr ""
 #: kallithea/templates/password_reset.html:12
 #, fuzzy, python-format
 msgid "Reset Your Password to %s"
-msgstr "忘记了密码？"
+msgstr ""
 
 #: kallithea/templates/password_reset.html:14
 #, fuzzy
@@ -3118,7 +3118,7 @@ msgstr ""
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:5
 #, fuzzy, python-format
 msgid "%s Repository Group Settings"
-msgstr "版本库组"
+msgstr ""
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:21
 msgid "Add Child Group"
@@ -3337,7 +3337,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_creating.html:9
 #, fuzzy, python-format
 msgid "%s Creating Repository"
-msgstr "[创建]版本库"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_creating.html:13
 msgid "Creating repository"
@@ -3359,7 +3359,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit.html:8
 #, fuzzy, python-format
 msgid "%s Repository Settings"
-msgstr "建立版本库"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:49
 msgid "Extra Fields"
@@ -4943,7 +4943,7 @@ msgstr[0] "(%d内嵌)"
 #, fuzzy, python-format
 msgid "%d general"
 msgid_plural "%d general"
-msgstr[0] "通用"
+msgstr[0] ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:165
 #, fuzzy
@@ -5148,17 +5148,17 @@ msgstr ""
 #: kallithea/templates/email_templates/pull_request.html:5
 #, fuzzy, python-format
 msgid "%s mentioned you on %s pull request \"%s\""
-msgstr "[评论]拉取请求"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request.html:7
 #, fuzzy, python-format
 msgid "%s requested your review of %s pull request \"%s\""
-msgstr "为这个拉取请求增加检视人员"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 #, fuzzy, python-format
 msgid "Comment from %s on %s pull request \"%s\""
-msgstr "[评论]拉取请求"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:9
 #, fuzzy
@@ -5543,7 +5543,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_data.html:27
 #, fuzzy, python-format
 msgid "Latest vote: %s"
-msgstr "最新tip版本"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_data.html:29
 msgid "Nobody voted"
@@ -5585,7 +5585,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_show.html:10
 #, fuzzy, python-format
 msgid "Pull request #%s from %s#%s"
-msgstr "拉取请求#%s创建于%s"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:57
 #, fuzzy
@@ -5715,7 +5715,7 @@ msgstr "拉取请求#%s"
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:37
 #, fuzzy, python-format
 msgid "Show Pull Requests from '%s'"
-msgstr "[关闭] 拉取请求"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:47
 #: kallithea/templates/pullrequests/pullrequest_show_my.html:26

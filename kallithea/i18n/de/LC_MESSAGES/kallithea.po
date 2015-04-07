@@ -3400,7 +3400,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit.html:8
 #, fuzzy, python-format
 msgid "%s Repository Settings"
-msgstr "Repository erstellung"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:49
 msgid "Extra Fields"
@@ -4978,7 +4978,7 @@ msgstr[1] ""
 #, fuzzy, python-format
 msgid "%d general"
 msgid_plural "%d general"
-msgstr[0] "Allgemein"
+msgstr[0] ""
 msgstr[1] ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:165
@@ -5066,7 +5066,7 @@ msgstr ""
 #: kallithea/templates/compare/compare_cs.html:84
 #, fuzzy, python-format
 msgid "%s changesets"
-msgstr "Änderungssätze"
+msgstr ""
 
 #: kallithea/templates/compare/compare_cs.html:85
 #, fuzzy
@@ -5622,7 +5622,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_show.html:10
 #, fuzzy, python-format
 msgid "Pull request #%s from %s#%s"
-msgstr "Pull Request"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:57
 #, fuzzy
@@ -5738,22 +5738,22 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:9
 #, fuzzy, python-format
 msgid "Pull Requests from %s'"
-msgstr "Pull Request"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:11
 #, fuzzy, python-format
 msgid "Pull Requests to '%s'"
-msgstr "Pull Request"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:35
 #, fuzzy, python-format
 msgid "Show Pull Requests to %s"
-msgstr "[geschlossen] Pull Request für"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:37
 #, fuzzy, python-format
 msgid "Show Pull Requests from '%s'"
-msgstr "[geschlossen] Pull Request für"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:47
 #: kallithea/templates/pullrequests/pullrequest_show_my.html:26

@@ -308,7 +308,7 @@ msgstr ""
 #: kallithea/controllers/pullrequests.py:130
 #, fuzzy, python-format
 msgid "%s (closed)"
-msgstr "(fermé)"
+msgstr ""
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -1810,7 +1810,7 @@ msgstr ""
 #: kallithea/model/notification.py:299
 #, fuzzy, python-format
 msgid "New user %(new_username)s registered"
-msgstr "Le nom d’utilisateur « %(username)s » n’est pas valide"
+msgstr "Le nom d’utilisateur « %(new_username)s » n’est pas valide"
 
 #: kallithea/model/notification.py:301
 #, python-format
@@ -5277,17 +5277,17 @@ msgstr ""
 #: kallithea/templates/email_templates/pull_request.html:5
 #, fuzzy, python-format
 msgid "%s mentioned you on %s pull request \"%s\""
-msgstr "%(user)s a commenté la demande de pull à %(when)s"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request.html:7
 #, fuzzy, python-format
 msgid "%s requested your review of %s pull request \"%s\""
-msgstr "Ajouter un relecteur à cette requête de pull."
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 #, fuzzy, python-format
 msgid "Comment from %s on %s pull request \"%s\""
-msgstr "[a commenté] la requête de pull pour"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:9
 #, fuzzy
@@ -5675,7 +5675,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_data.html:27
 #, fuzzy, python-format
 msgid "Latest vote: %s"
-msgstr "Dernier sommet"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_data.html:29
 msgid "Nobody voted"
@@ -5717,7 +5717,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_show.html:10
 #, fuzzy, python-format
 msgid "Pull request #%s from %s#%s"
-msgstr "Requête de pull nº%s ouverte le %s"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:57
 #, fuzzy
@@ -5848,7 +5848,7 @@ msgstr "Requête de pull #%s"
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:37
 #, fuzzy, python-format
 msgid "Show Pull Requests from '%s'"
-msgstr "[a fermé] la requête de pull de"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show_all.html:47
 #: kallithea/templates/pullrequests/pullrequest_show_my.html:26

@@ -303,7 +303,7 @@ msgstr "パスワードをリセットに成功しました。新しいパスワ
 #: kallithea/controllers/pullrequests.py:130
 #, fuzzy, python-format
 msgid "%s (closed)"
-msgstr "(閉鎖済み)"
+msgstr ""
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -1776,7 +1776,7 @@ msgstr ""
 #: kallithea/model/notification.py:299
 #, fuzzy, python-format
 msgid "New user %(new_username)s registered"
-msgstr "ユーザー名 %(username)s は不正です"
+msgstr "ユーザー名 %(new_username)s は不正です"
 
 #: kallithea/model/notification.py:301
 #, python-format
@@ -5017,7 +5017,7 @@ msgstr[0] "(%d インライン)"
 #, fuzzy, python-format
 msgid "%d general"
 msgid_plural "%d general"
-msgstr[0] "一般"
+msgstr[0] ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:165
 #, fuzzy
@@ -5196,7 +5196,7 @@ msgstr ""
 #: kallithea/templates/email_templates/changeset_comment.html:7
 #, fuzzy, python-format
 msgid "Comment from %s on %s changeset %s"
-msgstr "%s が %s のチェンジセットにコメント"
+msgstr ""
 
 #: kallithea/templates/email_templates/changeset_comment.html:12
 msgid "The changeset status was changed to"
@@ -5226,17 +5226,17 @@ msgstr "新しいパスワードを生成しない場合はこのメールを無
 #: kallithea/templates/email_templates/pull_request.html:5
 #, fuzzy, python-format
 msgid "%s mentioned you on %s pull request \"%s\""
-msgstr "%s がプルリクエスト\"%s\" にコメントしました"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request.html:7
 #, fuzzy, python-format
 msgid "%s requested your review of %s pull request \"%s\""
-msgstr "%s がプルリクエスト\"%s\" にコメントしました"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 #, fuzzy, python-format
 msgid "Comment from %s on %s pull request \"%s\""
-msgstr "%s がプルリクエスト\"%s\" にコメントしました"
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:9
 #, fuzzy
@@ -5622,7 +5622,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_data.html:27
 #, fuzzy, python-format
 msgid "Latest vote: %s"
-msgstr "最新のtip"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_data.html:29
 msgid "Nobody voted"
@@ -5664,7 +5664,7 @@ msgstr "%s プルリクエスト #%s"
 #: kallithea/templates/pullrequests/pullrequest_show.html:10
 #, fuzzy, python-format
 msgid "Pull request #%s from %s#%s"
-msgstr "%s からのプルリクエスト"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:57
 #, fuzzy

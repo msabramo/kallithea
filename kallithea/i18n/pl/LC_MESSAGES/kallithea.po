@@ -3179,7 +3179,7 @@ msgstr ""
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:5
 #, fuzzy, python-format
 msgid "%s Repository Group Settings"
-msgstr "Repozytorium grupy"
+msgstr ""
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:21
 msgid "Add Child Group"
@@ -3425,7 +3425,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit.html:8
 #, fuzzy, python-format
 msgid "%s Repository Settings"
-msgstr "Używaj w repozytorium dodatkowych pól"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:49
 #, fuzzy
@@ -5044,7 +5044,7 @@ msgstr[2] "(%d linii)"
 #, fuzzy, python-format
 msgid "%d general"
 msgid_plural "%d general"
-msgstr[0] "Główne"
+msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
@@ -5228,7 +5228,7 @@ msgstr ""
 #: kallithea/templates/email_templates/changeset_comment.html:7
 #, fuzzy, python-format
 msgid "Comment from %s on %s changeset %s"
-msgstr "%s komentarzy %s zestawów zmian."
+msgstr ""
 
 #: kallithea/templates/email_templates/changeset_comment.html:12
 msgid "The changeset status was changed to"
@@ -5258,17 +5258,17 @@ msgstr "Proszę zignorować tą wiadomość, jeśli nie poproś o nowe hasło."
 #: kallithea/templates/email_templates/pull_request.html:5
 #, fuzzy, python-format
 msgid "%s mentioned you on %s pull request \"%s\""
-msgstr "%s skomentował nowe połączenie gałęzi \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request.html:7
 #, fuzzy, python-format
 msgid "%s requested your review of %s pull request \"%s\""
-msgstr "%s skomentował nowe połączenie gałęzi \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 #, fuzzy, python-format
 msgid "Comment from %s on %s pull request \"%s\""
-msgstr "%s skomentował nowe połączenie gałęzi \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:9
 #, fuzzy
@@ -5658,7 +5658,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_data.html:27
 #, fuzzy, python-format
 msgid "Latest vote: %s"
-msgstr "ostatni tip"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_data.html:29
 msgid "Nobody voted"
@@ -5700,7 +5700,7 @@ msgstr "%s Połączonych gałęzi #%s"
 #: kallithea/templates/pullrequests/pullrequest_show.html:10
 #, fuzzy, python-format
 msgid "Pull request #%s from %s#%s"
-msgstr "Wniosek połączenia gałęzi #%s otwarty %s"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:57
 #, fuzzy

@@ -298,7 +298,7 @@ msgstr ""
 #: kallithea/controllers/pullrequests.py:130
 #, fuzzy, python-format
 msgid "%s (closed)"
-msgstr "(zavřeno)"
+msgstr ""
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -4990,7 +4990,7 @@ msgstr ""
 #: kallithea/templates/compare/compare_cs.html:84
 #, fuzzy, python-format
 msgid "%s changesets"
-msgstr "Změny"
+msgstr ""
 
 #: kallithea/templates/compare/compare_cs.html:85
 msgid "behind"

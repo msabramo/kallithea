@@ -304,7 +304,7 @@ msgstr ""
 #: kallithea/controllers/pullrequests.py:130
 #, fuzzy, python-format
 msgid "%s (closed)"
-msgstr "(fechado)"
+msgstr ""
 
 #: kallithea/controllers/pullrequests.py:158
 #: kallithea/templates/changeset/changeset.html:12
@@ -1786,7 +1786,7 @@ msgstr ""
 #: kallithea/model/notification.py:299
 #, fuzzy, python-format
 msgid "New user %(new_username)s registered"
-msgstr "O username \"%(username)s\" não é válido"
+msgstr "O username \"%(new_username)s\" não é válido"
 
 #: kallithea/model/notification.py:301
 #, python-format
@@ -2285,7 +2285,7 @@ msgstr "Senha Trocada"
 #: kallithea/templates/password_reset.html:12
 #, fuzzy, python-format
 msgid "Reset Your Password to %s"
-msgstr "Esqueceu sua senha ?"
+msgstr ""
 
 #: kallithea/templates/password_reset.html:14
 #, fuzzy
@@ -3167,7 +3167,7 @@ msgstr ""
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:5
 #, fuzzy, python-format
 msgid "%s Repository Group Settings"
-msgstr "Grupo de repositórios"
+msgstr ""
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:21
 msgid "Add Child Group"
@@ -3414,7 +3414,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit.html:8
 #, fuzzy, python-format
 msgid "%s Repository Settings"
-msgstr "Usar campos extras do repositório"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:49
 #, fuzzy
@@ -5031,7 +5031,7 @@ msgstr[1] "(%d em linha)"
 #, fuzzy, python-format
 msgid "%d general"
 msgid_plural "%d general"
-msgstr[0] "Geral"
+msgstr[0] ""
 msgstr[1] ""
 
 #: kallithea/templates/changeset/changeset_file_comment.html:165
@@ -5213,7 +5213,7 @@ msgstr ""
 #: kallithea/templates/email_templates/changeset_comment.html:7
 #, fuzzy, python-format
 msgid "Comment from %s on %s changeset %s"
-msgstr "%s comentou num changeset de %s."
+msgstr ""
 
 #: kallithea/templates/email_templates/changeset_comment.html:12
 msgid "The changeset status was changed to"
@@ -5243,17 +5243,17 @@ msgstr "Por favor, ignore este email se você não requisitou uma nova senha."
 #: kallithea/templates/email_templates/pull_request.html:5
 #, fuzzy, python-format
 msgid "%s mentioned you on %s pull request \"%s\""
-msgstr "%s comentou no pull request \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request.html:7
 #, fuzzy, python-format
 msgid "%s requested your review of %s pull request \"%s\""
-msgstr "%s comentou no pull request \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:4
 #, fuzzy, python-format
 msgid "Comment from %s on %s pull request \"%s\""
-msgstr "%s comentou no pull request \"%s\""
+msgstr ""
 
 #: kallithea/templates/email_templates/pull_request_comment.html:9
 #, fuzzy
@@ -5642,7 +5642,7 @@ msgstr ""
 #: kallithea/templates/pullrequests/pullrequest_data.html:27
 #, fuzzy, python-format
 msgid "Latest vote: %s"
-msgstr "tip mais recente"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_data.html:29
 msgid "Nobody voted"
@@ -5684,7 +5684,7 @@ msgstr "%s Pull Request #%s"
 #: kallithea/templates/pullrequests/pullrequest_show.html:10
 #, fuzzy, python-format
 msgid "Pull request #%s from %s#%s"
-msgstr "Pull requests de %s"
+msgstr ""
 
 #: kallithea/templates/pullrequests/pullrequest_show.html:57
 #, fuzzy

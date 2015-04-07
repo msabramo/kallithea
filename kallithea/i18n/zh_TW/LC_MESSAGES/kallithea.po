@@ -2242,7 +2242,7 @@ msgstr ""
 #: kallithea/templates/password_reset.html:12
 #, fuzzy, python-format
 msgid "Reset Your Password to %s"
-msgstr "忘記您的密碼?"
+msgstr ""
 
 #: kallithea/templates/password_reset.html:14
 #, fuzzy
@@ -3106,7 +3106,7 @@ msgstr ""
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:5
 #, fuzzy, python-format
 msgid "%s Repository Group Settings"
-msgstr "版本庫群組"
+msgstr ""
 
 #: kallithea/templates/admin/repo_groups/repo_group_edit.html:21
 msgid "Add Child Group"
@@ -3324,7 +3324,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_creating.html:9
 #, fuzzy, python-format
 msgid "%s Creating Repository"
-msgstr "私有版本庫"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_creating.html:13
 msgid "Creating repository"
@@ -3346,7 +3346,7 @@ msgstr ""
 #: kallithea/templates/admin/repos/repo_edit.html:8
 #, fuzzy, python-format
 msgid "%s Repository Settings"
-msgstr "版本庫建立"
+msgstr ""
 
 #: kallithea/templates/admin/repos/repo_edit.html:49
 msgid "Extra Fields"
@@ -4992,7 +4992,7 @@ msgstr ""
 #: kallithea/templates/compare/compare_cs.html:84
 #, fuzzy, python-format
 msgid "%s changesets"
-msgstr "變更"
+msgstr ""
 
 #: kallithea/templates/compare/compare_cs.html:85
 #, fuzzy
