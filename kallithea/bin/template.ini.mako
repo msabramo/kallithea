@@ -145,8 +145,8 @@ use = egg:kallithea
 full_stack = true
 static_files = true
 <%text>## Available Languages:</%text>
-<%text>## de en fr ja pl pt_BR ru zh_CN zh_TW</%text>
-lang = ${lang}
+<%text>## cs de fr hu ja nl_BE pl pt_BR ru sk zh_CN zh_TW</%text>
+lang =
 cache_dir = ${here}/data
 index_dir = ${here}/data/index
 
