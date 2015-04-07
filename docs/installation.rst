@@ -43,6 +43,7 @@ below::
         virtualenv ../kallithea-venv
         source ../kallithea-venv/bin/activate
         python setup.py develop
+        python setup.py compile_catalog   # for translation of the UI
 
 You can now proceed to :ref:`setup`.
 

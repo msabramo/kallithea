@@ -5,6 +5,7 @@ syntax: glob
 *.tox
 *.egg-info
 *.egg
+*.mo
 
 syntax: regexp
 ^rcextensions
