@@ -1,6 +1,6 @@
 from kallithea.model.db import User
 
-from kallithea.tests import *
+from kallithea.tests import BaseTestCase, parameterized, TEST_USER_REGULAR_LOGIN
 from kallithea.tests.fixture import Fixture
 
 from kallithea.model.user_group import UserGroupModel
@@ -17,7 +17,6 @@ class TestUserGroups(BaseTestCase):
         for gr in UserGroupModel.get_all():
             fixture.destroy_user_group(gr)
         Session().commit()
-
 
     @parameterized.expand([
         ([], [], [], [], []),
