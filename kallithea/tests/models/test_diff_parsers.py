@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from kallithea.tests import *
+import pytest
 from kallithea.lib.diffs import DiffProcessor, NEW_FILENODE, DEL_FILENODE, \
     MOD_FILENODE, RENAMED_FILENODE, CHMOD_FILENODE, BIN_FILENODE, COPIED_FILENODE
 from kallithea.tests.fixture import Fixture
@@ -265,13 +265,11 @@ DIFF_FIXTURES = {
 }
 
 
-class DiffLibTest(BaseTestCase):
-
-    @parameterized.expand([(x,) for x in DIFF_FIXTURES])
-    def test_diff(self, diff_fixture):
-        diff = fixture.load_resource(diff_fixture, strip=False)
-        diff_proc = DiffProcessor(diff)
-        diff_proc_d = diff_proc.prepare()
-        data = [(x['filename'], x['operation'], x['stats']) for x in diff_proc_d]
-        expected_data = DIFF_FIXTURES[diff_fixture]
-        self.assertListEqual(expected_data, data)
+@pytest.mark.parametrize("diff_fixture", DIFF_FIXTURES)
+def test_diff(diff_fixture):
+    diff = fixture.load_resource(diff_fixture, strip=False)
+    diff_proc = DiffProcessor(diff)
+    diff_proc_d = diff_proc.prepare()
+    data = [(x['filename'], x['operation'], x['stats']) for x in diff_proc_d]
+    expected_data = DIFF_FIXTURES[diff_fixture]
+    assert expected_data == data

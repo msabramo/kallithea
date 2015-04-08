@@ -1,4 +1,6 @@
-from kallithea.tests import *
+import pytest
+
+from kallithea.tests import BaseTestCase, HG_REPO
 from kallithea.tests.fixture import Fixture
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.repo import RepoModel
@@ -13,6 +15,14 @@ from kallithea.model.permission import PermissionModel
 
 
 fixture = Fixture()
+
+
+def _test_def_perm_equal(user, change_factor=0):
+    perms = UserToPerm.query()\
+            .filter(UserToPerm.user == user)\
+            .all()
+    assert (len(perms) ==
+            len(Permission.DEFAULT_USER_PERMISSIONS,)+change_factor)
 
 
 class TestPermissions(BaseTestCase):
@@ -502,31 +512,37 @@ class TestPermissions(BaseTestCase):
         PermissionModel().create_default_permissions(user=self.u1)
         self._test_def_perm_equal(user=self.u1)
 
-    @parameterized.expand([
-        ('repository.read', 'repository.none'),
-        ('group.read', 'group.none'),
-        ('usergroup.read', 'usergroup.none'),
-        ('hg.create.repository', 'hg.create.none'),
-        ('hg.fork.repository', 'hg.fork.none'),
-        ('hg.register.manual_activate', 'hg.register.auto_activate',)
-    ])
-    def test_set_default_permissions_after_modification(self, perm, modify_to):
-        PermissionModel().create_default_permissions(user=self.u1)
-        self._test_def_perm_equal(user=self.u1)
 
-        old = Permission.get_by_key(perm)
-        new = Permission.get_by_key(modify_to)
-        self.assertNotEqual(old, None)
-        self.assertNotEqual(new, None)
+@pytest.mark.parametrize("perm,modify_to", [
+    ('repository.read', 'repository.none'),
+    ('group.read', 'group.none'),
+    ('usergroup.read', 'usergroup.none'),
+    ('hg.create.repository', 'hg.create.none'),
+    ('hg.fork.repository', 'hg.fork.none'),
+    ('hg.register.manual_activate', 'hg.register.auto_activate',)
+])
+def test_set_default_permissions_after_modification(perm, modify_to):
+    u1 = UserModel().create_or_update(
+        username=u'u1', password=u'qweqwe',
+        email=u'u1@example.com', firstname=u'u1', lastname=u'u1'
+    )
 
-        #now modify permissions
-        p = UserToPerm.query()\
-                .filter(UserToPerm.user == self.u1)\
-                .filter(UserToPerm.permission == old)\
-                .one()
-        p.permission = new
-        Session().add(p)
-        Session().commit()
+    PermissionModel().create_default_permissions(user=u1)
+    _test_def_perm_equal(user=u1)
 
-        PermissionModel().create_default_permissions(user=self.u1)
-        self._test_def_perm_equal(user=self.u1)
+    old = Permission.get_by_key(perm)
+    new = Permission.get_by_key(modify_to)
+    assert old is not None
+    assert new is not None
+
+    #now modify permissions
+    p = UserToPerm.query()\
+            .filter(UserToPerm.user == u1)\
+            .filter(UserToPerm.permission == old)\
+            .one()
+    p.permission = new
+    Session().add(p)
+    Session().commit()
+
+    PermissionModel().create_default_permissions(user=u1)
+    _test_def_perm_equal(user=u1)
