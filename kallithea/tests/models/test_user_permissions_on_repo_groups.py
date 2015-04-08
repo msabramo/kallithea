@@ -1,5 +1,4 @@
 import functools
-from kallithea.tests import *
 
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.db import RepoGroup, User
@@ -35,6 +34,7 @@ def permissions_setup_func(group_name='g0', perm='group.read', recursive='all',
                                          perms_updates=perms_updates,
                                          recursive=recursive, check_perms=False)
     Session().commit()
+
 
 def setup_module():
     global test_u1_id, _get_repo_perms, _get_group_perms

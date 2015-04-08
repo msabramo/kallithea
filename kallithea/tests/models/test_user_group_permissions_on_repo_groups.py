@@ -1,5 +1,4 @@
 import functools
-from kallithea.tests import *
 
 from kallithea.model.repo_group import RepoGroupModel
 from kallithea.model.db import RepoGroup
@@ -168,6 +167,7 @@ def test_user_permissions_on_group_with_recursive_mode_only_with_repos():
     for name, perm in items:
         yield check_tree_perms, name, perm, group, 'group.admin'
 
+
 @with_setup(permissions_setup_func)
 def test_user_permissions_on_group_with_recursive_mode_on_repos():
     # set permission to g0/g0_1 with recursive mode on just repositories
@@ -191,6 +191,7 @@ def test_user_permissions_on_group_with_recursive_mode_on_repos():
         if name == group:
             old_perm = perm
         yield check_tree_perms, name, perm, group, old_perm
+
 
 @with_setup(permissions_setup_func)
 def test_user_permissions_on_group_with_recursive_mode_on_repo_groups():
