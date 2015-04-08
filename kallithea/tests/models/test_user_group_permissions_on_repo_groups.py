@@ -52,6 +52,7 @@ def setup_module():
 
 def teardown_module():
     _destroy_project_tree(test_u2_id)
+    fixture.destroy_user_group('perms_group_1')
 
 
 def test_user_permissions_on_group_without_recursive_mode():
